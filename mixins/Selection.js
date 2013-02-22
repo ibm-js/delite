@@ -104,6 +104,7 @@ define(["dojo/_base/declare", "dojo/_base/array", "dojo/_base/lang"],
 
 			// copy is returned
 			var sel = this.get("selectedItems");
+
 			if(this.selectionMode == "single"){
 				if(value){
 					this.set("selectedItem", item);
