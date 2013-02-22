@@ -104,7 +104,6 @@ define(["dojo/_base/declare", "dojo/_base/array", "dojo/_base/lang"],
 
 			// copy is returned
 			var sel = this.get("selectedItems");
-
 			if(this.selectionMode == "single"){
 				if(value){
 					this.set("selectedItem", item);
@@ -190,7 +189,7 @@ define(["dojo/_base/declare", "dojo/_base/array", "dojo/_base/lang"],
 			
 			return changed;
 		},
-		
+
 		dispatchSelectionChange: function(oldSelectedItem, newSelectedItem, renderer, triggerEvent){
 			// summary:
 			//		Dispatch a selection change event.
@@ -210,6 +209,13 @@ define(["dojo/_base/declare", "dojo/_base/array", "dojo/_base/lang"],
 				renderer: renderer,
 				triggerEvent: triggerEvent
 			});
+		},
+		
+		onChange: function(){
+			// summary:
+			//		Called when the selection changed.
+			// tags:
+			//		callback			
 		}
 	});
 });
