@@ -1,6 +1,6 @@
 define(["doh", "dojo/_base/declare", "../../mixins/Selection", "../../_WidgetBase"],
 	function(doh, declare, Selection, _WidgetBase){
-	doh.register("tests.Selection", [
+	doh.register("mixins.Selection", [
 		function test_Lifecycle(t){
 			var C = declare("MyWidget", [_WidgetBase, Selection], {
 				updateRenderers: function(){
