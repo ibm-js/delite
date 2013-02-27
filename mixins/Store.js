@@ -19,6 +19,12 @@ define(["dojo/_base/declare", "dojo/_base/lang", "dojo/Stateful", "dojo/when"],
 		queryOptions: null,
 
 		itemToRenderItem: function(item, store){
+			// summary:
+			//		Returns the widget internal item for a give store item. By default it returns the store item itself.
+			// item: Object
+			//		The store item.
+			// store: dojo/store/api/Store
+			//		The store the item is coming from
 			// tags:
 			//		protected
 			return item;
@@ -73,7 +79,7 @@ define(["dojo/_base/declare", "dojo/_base/lang", "dojo/Stateful", "dojo/when"],
 					this.removeItem(previousIndex, newItem, items);
 				}else{
 					// this is a put, previous and new index identical
-					this.putItem(previousIndex, newIndex, newItem, items);
+					this.putItem(previousIndex, newItem, items);
 				}
 			}else if(newIndex != -1){
 				// this is a add
@@ -85,20 +91,44 @@ define(["dojo/_base/declare", "dojo/_base/lang", "dojo/Stateful", "dojo/when"],
 		},
 
 		removeItem: function(index, item, items){
+			// summary:
+			//		Remove a widget internal item. This can be redefined but must not be called directly.
+			// index: Number
+			//		The index of the removed item.
+			// item: Object
+			//		The removed item.
+			// items: Array
+			//		The array of items to remove the item from.
 			// tags:
 			//		protected
 			items.splice(index, 1);
 		},
 
-		putItem: function(previousIndex, newIndex, item, items){
+		putItem: function(index, item, items){
+			// summary:
+			//		Modify a widget internal item. This can be redefined but must not be called directly.
+			// index: Number
+			//		The index of the modified item.
+			// item: Object
+			//		The modified item.
+			// items: Array
+			//		The array of items in which the modified item is.
 			// tags:
 			//		protected
-			// we want to keep the same item object and mixin new values
-			// into old object
+
+			// we want to keep the same item object and mixin new values into old object
 			lang.mixin(items[previousIndex], item);
 		},
 
 		addItem: function(index, item, items){
+			// summary:
+			//		Add a widget internal item. This can be redefined but must not be called directly.
+			// index: Number
+			//		The index of the added item.
+			// item: Object
+			//		The added item.
+			// items: Array
+			//		The array of items in which to add the item.
 			// tags:
 			//		protected
 			items.splice(index, 0, item);
