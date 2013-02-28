@@ -1,6 +1,6 @@
 define(["dojo/_base/declare", "dojo/_base/array", "dojo/_base/lang"],
 	function(declare, arr, lang){
-		
+
 	return declare(null, {
 		// summary:
 		//		Mixin for classes for widgets that manage a list of selected data items. Receiving class must extend
@@ -210,13 +210,6 @@ define(["dojo/_base/declare", "dojo/_base/array", "dojo/_base/lang"],
 				renderer: renderer,
 				triggerEvent: triggerEvent
 			});
-		},
-		
-		onChange: function(){
-			// summary:
-			//		Called when the selection changed.
-			// tags:
-			//		callback			
 		}
 	});
 });
