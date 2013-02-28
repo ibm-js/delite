@@ -1,4 +1,4 @@
-define(["dojo/_base/declare", "dojo/_base/array", "dojo/_base/lang", "dojo/Stateful"], 
+define(["dojo/_base/declare", "dojo/_base/array", "dojo/_base/lang", "dojo/Stateful"],
 	function(declare, arr, lang, Stateful){
 		
 	return declare(Stateful, {
@@ -200,20 +200,15 @@ define(["dojo/_base/declare", "dojo/_base/array", "dojo/_base/lang", "dojo/State
 			// renderer: Object
 			//		The visual renderer of the selected/deselected item.
 			// triggerEvent: Event
-			//		The event that lead to the selection of the item. 			
-			this.onChange({
+			//		The event that lead to the selection of the item.
+
+			// we assume we are a WidgetBase and we have an emit method
+			this.emit("change", {
 				oldValue: oldSelectedItem,
 				newValue: newSelectedItem,
 				renderer: renderer,
 				triggerEvent: triggerEvent
 			});
-		},
-		
-		onChange: function(){
-			// summary:
-			//		Called when the selection changed.
-			// tags:
-			//		callback			
 		}
 	});
 });
