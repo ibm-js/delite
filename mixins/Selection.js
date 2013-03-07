@@ -184,13 +184,13 @@ define(["dojo/_base/declare", "dojo/_base/array", "dojo/_base/lang", "dojo/State
 			}						
 			
 			if(dispatch && changed){
-				this.dispatchChange(oldSelectedItem, this.get("selectedItem"), renderer, e);
+				this.dispatchSelectionChange(oldSelectedItem, this.get("selectedItem"), renderer, e);
 			}
 			
 			return changed;
 		},
 		
-		dispatchChange: function(oldSelectedItem, newSelectedItem, renderer, triggerEvent){
+		dispatchSelectionChange: function(oldSelectedItem, newSelectedItem, renderer, triggerEvent){
 			// summary:
 			//		Dispatch a selection change event.
 			// oldSelectedItem: Object
@@ -203,7 +203,7 @@ define(["dojo/_base/declare", "dojo/_base/array", "dojo/_base/lang", "dojo/State
 			//		The event that lead to the selection of the item.
 
 			// we assume we are a WidgetBase and we have an emit method
-			this.emit("change", {
+			this.emit("selection-change", {
 				oldValue: oldSelectedItem,
 				newValue: newSelectedItem,
 				renderer: renderer,
