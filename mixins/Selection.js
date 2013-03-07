@@ -1,9 +1,10 @@
-define(["dojo/_base/declare", "dojo/_base/array", "dojo/_base/lang", "dojo/Stateful"],
-	function(declare, arr, lang, Stateful){
+define(["dojo/_base/declare", "dojo/_base/array", "dojo/_base/lang"],
+	function(declare, arr, lang){
 		
-	return declare(Stateful, {
+	return declare(null, {
 		// summary:
-		//		Base class for widgets that manage a list of selected data items.
+		//		Mixin for classes for widgets that manage a list of selected data items. Receiving class must extend
+		//		dijit/_WidgetBase.
 
 		constructor: function(){
 			this.selectedItems = [];

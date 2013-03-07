@@ -1,10 +1,11 @@
-define(["dojo/_base/declare", "dojo/_base/lang", "dojo/Stateful", "dojo/when", "./_Invalidating"],
-	function(declare, lang, Stateful, when, _Invalidating){
+define(["dojo/_base/declare", "dojo/_base/lang", "dojo/when", "./_Invalidating"],
+	function(declare, lang, when, _Invalidating){
 
-	return declare([Stateful, _Invalidating], {
+	return declare(_Invalidating, {
 
 		// summary:
-		//		This mixin contains the store management.
+		//		Mixin for widgets for store management. The receiving class must extend
+		//		dojo/Stateful and dojo/Evented or dijit/_WidgetBase.
 
 		// store: dojo.store.Store
 		//		The store that contains the events to display.
