@@ -1,7 +1,7 @@
-define(["dojo/_base/declare", "dojo/_base/lang", "dojo/Stateful", "dojo/when"],
-	function(declare, lang, Stateful, when){
+define(["dojo/_base/declare", "dojo/_base/lang", "dojo/Stateful", "dojo/when", "./_Invalidating"],
+	function(declare, lang, Stateful, when, _Invalidating){
 
-	return declare(Stateful, {
+	return declare([Stateful, _Invalidating], {
 
 		// summary:
 		//		This mixin contains the store management.
@@ -17,6 +17,14 @@ define(["dojo/_base/declare", "dojo/_base/lang", "dojo/Stateful", "dojo/when"],
 		// queryOptions: dojo/store/api/Store.QueryOptions?
 		//		Options to be applied when querying the store.
 		queryOptions: null,
+
+		_invalidStore: false,
+
+		constructor: function(){
+			// we want to be able to wait for potentially several of those properties to be set before
+			// actually firing the store request
+			this.addInvalidatingProperties(["store", "query", "queryOptions"]);
+		},
 
 		itemToRenderItem: function(item, store){
 			// summary:
@@ -37,30 +45,40 @@ define(["dojo/_base/declare", "dojo/_base/lang", "dojo/Stateful", "dojo/when"],
 			return items;
 		},
 
-		_setStoreAttr: function(value){
+		refreshRendering: function(){
+			// summary:
+			//		Actually refresh the rendering by querying the store.
 			// tags:
-			//		private
-			var r;
-			if(this._observeHandler){
-				this._observeHandler.remove();
-				this._observeHandler = null;
-			}
-			if(value != null){
-				var results = value.query(this.query, this.queryOptions);
-				if(results.observe){
-					// user asked us to observe the store
-					this._observeHandler = results.observe(lang.hitch(this, this._updateItem), true);
+			//		protected
+			if(this._isStoreInvalidated()){
+				if(this._observeHandler){
+					this._observeHandler.remove();
+					this._observeHandler = null;
 				}
-				// if we have a mapping function between data item and some intermediary items use it
-				results = results.map(lang.hitch(this, function(item){
-					return this.itemToRenderItem(item, value);
-				}));
-				r = when(results, lang.hitch(this, this._initItems));
-			}else{
-				r = this._initItems([]);
+				var store = this.get("store");
+				if(store != null){
+					var results = store.query(this.get("query"), this.get("queryOptions"));
+					if(results.observe){
+						// user asked us to observe the store
+						this._observeHandler = results.observe(lang.hitch(this, this._updateItem), true);
+					}
+					// if we have a mapping function between data item and some intermediary items use it
+					results = results.map(lang.hitch(this, function(item){
+						return this.itemToRenderItem(item, store);
+					}));
+					when(results, lang.hitch(this, this._initItems), lang.hitch(this, this._queryError));
+				}else{
+					this._initItems([]);
+				}
 			}
-			this._set("store", value);
-			return r;
+		},
+
+		_isStoreInvalidated: function(){
+			return this.invalidatedProperties["store"] || this.invalidatedProperties["query"] ||this.invalidatedProperties["queryOptions"];
+		},
+
+		_queryError: function(error){
+			this.emit("query-error", { error: error, cancelable: false, bubbles: true });
 		},
 
 		_updateItem: function(object, previousIndex, newIndex){
@@ -117,7 +135,7 @@ define(["dojo/_base/declare", "dojo/_base/lang", "dojo/Stateful", "dojo/when"],
 			//		protected
 
 			// we want to keep the same item object and mixin new values into old object
-			lang.mixin(items[previousIndex], item);
+			lang.mixin(items[index], item);
 		},
 
 		addItem: function(index, item, items){
