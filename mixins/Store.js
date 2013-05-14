@@ -19,8 +19,6 @@ define(["dojo/_base/declare", "dojo/_base/lang", "dojo/when", "./_Invalidating"]
 		//		Options to be applied when querying the store.
 		queryOptions: null,
 
-		_invalidStore: false,
-
 		constructor: function(){
 			// we want to be able to wait for potentially several of those properties to be set before
 			// actually firing the store request
