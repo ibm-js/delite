@@ -87,7 +87,7 @@ define(["dojo/_base/declare", "dojo/_base/lang", "dojo/when", "./_Invalidating"]
 			var items = this.get("items");
 
 			// if we have a mapping function between data item and some intermediary items use it
-			var newItem = this.itemToRenderItem(object, this.store);
+			var newItem = this.itemToRenderItem(object, this.get("store"));
 
 			if(previousIndex != -1){
 				// this is a remove or a move
