@@ -67,7 +67,7 @@ define(["dojo/_base/declare", "dojo/_base/lang"],
 				this.refreshRendering();
 				this.invalidatedProperties = {};
 				this.invalidRendering = false;
-				this.emit("refresh-complete", { 	bubbles: true, cancelable: false });
+				this.emit("refresh-complete", { bubbles: true, cancelable: false });
 			}
 		},
 		refreshRendering: function(){

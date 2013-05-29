@@ -7,7 +7,7 @@ define(["dojo/_base/declare", "dojo/_base/lang", "dojo/when", "./_Invalidating"]
 		//		Mixin for widgets for store management. The receiving class must extend
 		//		dojo/Stateful and dojo/Evented or dijit/_WidgetBase.
 
-		// store: dojo.store.Store
+		// store: dojo/store/Store
 		//		The store that contains the events to display.
 		store: null,
 
@@ -25,9 +25,20 @@ define(["dojo/_base/declare", "dojo/_base/lang", "dojo/when", "./_Invalidating"]
 			this.addInvalidatingProperties(["store", "query", "queryOptions"]);
 		},
 
+		renderItemToItem: function(/*Object*/ renderItem, /*dojo/store/api/Store*/ store){
+			// summary:
+			//		Create a store item based from the widget internal item. By default it returns the widget internal item itself.
+			// renderItem: Object
+			//		The render item.
+			// store: dojo/store/api/Store
+			//		The store.
+			// returns: Object
+			return renderItem;
+		},
+
 		itemToRenderItem: function(item, store){
 			// summary:
-			//		Returns the widget internal item for a give store item. By default it returns the store item itself.
+			//		Returns the widget internal item for a given store item. By default it returns the store item itself.
 			// item: Object
 			//		The store item.
 			// store: dojo/store/api/Store
