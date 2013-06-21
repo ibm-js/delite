@@ -48,9 +48,9 @@ define(["dojo/_base/declare", "dojo/_base/lang", "dojo/when", "./_Invalidating"]
 			return item;
 		},
 
-		_initItems: function(items){
+		initItems: function(items){
 			// tags:
-			//		private
+			//		protected
 			this.set("items", items);
 			return items;
 		},
@@ -76,9 +76,9 @@ define(["dojo/_base/declare", "dojo/_base/lang", "dojo/when", "./_Invalidating"]
 					results = results.map(lang.hitch(this, function(item){
 						return this.itemToRenderItem(item, store);
 					}));
-					when(results, lang.hitch(this, this._initItems), lang.hitch(this, this._queryError));
+					when(results, lang.hitch(this, this.initItems), lang.hitch(this, this._queryError));
 				}else{
-					this._initItems([]);
+					this.initItems([]);
 				}
 			}
 		},
