@@ -1,5 +1,5 @@
 define([
-	"dijit/tests/mixins/_Invalidating",
-	"dijit/tests/mixins/Selection",
-	"dijit/tests/mixins/Store"
+	"dui/tests/mixins/_Invalidating",
+	"dui/tests/mixins/Selection",
+	"dui/tests/mixins/Store"
 ], 1);

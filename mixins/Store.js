@@ -8,7 +8,7 @@ define(["dojo/_base/declare", "dojo/_base/lang", "dojo/when", "./_Invalidating"]
 		//		dojo/Stateful and dojo/Evented or dijit/_WidgetBase.
 
 		// store: dojo/store/Store
-		//		The store that contains the events to display.
+		//		The store that contains the items to display.
 		store: null,
 
 		// query: Object
@@ -52,7 +52,7 @@ define(["dojo/_base/declare", "dojo/_base/lang", "dojo/when", "./_Invalidating"]
 			// tags:
 			//		protected
 			this.set("items", items);
-			return items;
+			this.emit("query-success", { items: items, cancelable: false, bubbles: true });
 		},
 
 		refreshRendering: function(){

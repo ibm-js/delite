@@ -21,6 +21,8 @@ define(["dojo/_base/declare", "dojo/_base/lang", "dijit/mixins/Store"],
 		}
 	};
 
+	var attrregexp = /^(?!_set)(\w)+(?=Attr$|Func$)/;
+
 	return declare(Store, {
 
 		// summary:
@@ -39,8 +41,32 @@ define(["dojo/_base/declare", "dojo/_base/lang", "dijit/mixins/Store"],
 		mapAtInit: true,
 
 		// mappedKeys: Array?
-		//		Array of item keys to be considered for mapping. If null all the properties of the store item are used as keys.
+		//		Array of item keys to be considered for mapping. If null the component will be introspected to find all the properties
+		// 		ending with "Attr" or "Func" and provide mapping for those. Default is null.
 		mappedKeys: null,
+
+		// copyAllItemProps: Boolean
+		//		If true, in addition to the mapped properties copy all the other properties of the store item into the render item
+		// 		with direct mapping. Default is false.
+		copyAllItemProps: false,
+
+		postMixInProperties: function(){
+			var match;
+			if(!this.mappedKeys){
+				this.mappedKeys = [];
+				for(var prop in this){
+					match = null;
+					if((match = attrregexp.exec(prop)) && match && this.mappedKeys.indexOf(match[0]) == -1){
+						this.mappedKeys.push(match[0]);
+					}
+				}
+			}
+			// which are the considered keys in the store item itself
+			this._itemKeys = [];
+			for(var key in this.mappedKeys){
+				this._itemKeys.push(this[key+"Attr"]?this[key+"Attr"]:key);
+			}
+		},
 
 		renderItemToItem: function(/*Object*/ renderItem, /*dojo/store/api/Store*/ store){
 			// summary:
@@ -78,7 +104,7 @@ define(["dojo/_base/declare", "dojo/_base/lang", "dijit/mixins/Store"],
 
 			var renderItem = {};
 			var mappedKeys = this.mappedKeys?this.mappedKeys:Object.keys(item);
-			var self = this, key;
+			var self = this;
 
 			if(!this.mapAtInit){
 				Object.defineProperty(renderItem, "__item", {
@@ -89,7 +115,7 @@ define(["dojo/_base/declare", "dojo/_base/lang", "dijit/mixins/Store"],
 
 			// special id case
 			renderItem.id = store.getIdentity(item);
-			// general case
+			// general mapping case
 			for(var i = 0; i < mappedKeys.length; i++){
 				if(this.mapAtInit){
 					renderItem[mappedKeys[i]] = getvalue(this, item, mappedKeys[i], store);
@@ -100,6 +126,13 @@ define(["dojo/_base/declare", "dojo/_base/lang", "dijit/mixins/Store"],
 		    				set: function(value){ setvalue(self, this.__item, key, store, value); }
 						});
 					})(mappedKeys[i]);
+				}
+			}
+			if(this.copyAllItemProps){
+				for(var key in item){
+					if(this._itemKeys.indexOf(key) == -1){
+						renderItem[key] = item[key];
+					}
 				}
 			}
 

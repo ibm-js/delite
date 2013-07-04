@@ -1,6 +1,6 @@
 define(["doh", "dojo/_base/declare", "../../_WidgetBase",  "../../mixins/Store",
-	"dojo/store/Observable", "dojo/store/JsonRest", "dojo/store/Memory", "dojo/when"],
-	function(doh, declare, _WidgetBase, Store, Observable, JsonRest, Memory, when){
+	"dojo/store/Observable", "dojo/store/JsonRest", "dojo/store/Memory"],
+	function(doh, declare, _WidgetBase, Store, Observable, JsonRest, Memory){
 
 	var C = declare("MyWidget", [_WidgetBase, Store]);
 
@@ -33,9 +33,10 @@ define(["doh", "dojo/_base/declare", "../../_WidgetBase",  "../../mixins/Store",
 				var store = new C();
 				var myData = [ { id: "foo", name: "Foo" }, { id: "bar", name: "Bar" } ];
 				var callbackCalled = false;
-				store.on("refresh-complete", function(){
+				store.on("query-success", function(){
 					t.assertEqual(myData, store.get("items"));
 					myStore.put({ id: "foo", name : "Foo2" });
+					// this works because put is synchronous & same for add etc...
 					t.assertEqual([ { id: "foo", name: "Foo2" }, { id: "bar", name: "Bar" } ], store.get("items"));
 					myStore.add({ id: "fb", name : "FB" });
 					t.assertEqual( [ { id: "foo", name: "Foo2" }, { id: "bar", name: "Bar" }, { id: "fb", name: "FB" } ], store.get("items"));
