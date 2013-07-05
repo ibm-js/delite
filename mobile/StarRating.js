@@ -194,13 +194,15 @@ define([
 			var i;
 			var parent;
 			var left, h = this.imgNode.height, w = this.imgNode.width / this._nbOfSpriteIcons;
+			var iterationIndex;
 			for(i = 0; i < this.maximum; i++){
-				if(i <= value - 1){
+				iterationIndex = this._getStarIndex(i);
+				if(iterationIndex <= value - 1){
 					left = 0; // full
-				}else if(i >= value){
+				}else if(iterationIndex >= value){
 					left = w; // empty
 				}else{
-					left = w * 2; // half
+					left = w * (this._nbOfSpriteIcons - 1); // half
 				}
 				if(create){
 					parent = domConstruct.create("div", {
@@ -214,6 +216,10 @@ define([
 							"0," + left + "," + w + "," + h, parent.children[0], this.alt, parent, null, null);
 				}
 			}
+		},
+
+		_getStarIndex: function(/*Number*/updateLoopIndex){
+			return updateLoopIndex;
 		}
 	});
 

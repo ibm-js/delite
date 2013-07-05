@@ -62,35 +62,8 @@ define([
 			}
 		},
 
-		_updateStars: function(/*Number*/value, /*Boolean*/create){
-			if(this.isLeftToRight()){
-				return this.inherited(arguments);
-			}else{
-				var i;
-				var parent;
-				var left, h = this.imgNode.height, w = this.imgNode.width / this._nbOfSpriteIcons;
-				for(i = 0; i < this.maximum; i++){
-					index = (this.maximum - i - 1);
-					if(index <= value - 1){
-						left = 0; // full
-					}else if(index >= value){
-						left = w; // empty
-					}else{
-						left = w * 3; // half
-					}
-					if(create){
-						parent = domConstruct.create("div", {
-							style: {"float": "left"}
-						}, this.domNode);
-						iconUtils.createIcon(this.image,
-							"0," + left + "," + w + "," + h, null, this.alt, parent, null, null);
-					}else{
-						parent = this.domNode.children[i];
-						iconUtils.createIcon(this.image,
-								"0," + left + "," + w + "," + h, parent.children[0], this.alt, parent, null, null);
-					}
-				}
-			}
+		_getStarIndex: function(/*Number*/updateLoopIndex){
+			return (this.maximum - updateLoopIndex - 1);
 		}
 	});
 });
