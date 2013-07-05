@@ -4,7 +4,7 @@
 	<meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
 	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no"/>
 	<meta name="apple-mobile-web-app-capable" content="yes"/>
-	<title>Rating</title>
+	<title>StarRating</title>
 
 	<script type="text/javascript" src="../deviceTheme.js" data-dojo-config="mblThemeFiles: ['base'],mblUserAgent:'iPhone'"></script>
 	<script type="text/javascript" src="../../../dojo/dojo.js"
@@ -14,10 +14,10 @@
 		require([
 			"dojo/domReady",
 			"dojo/_base/window",
-			"dojox/mobile/Rating",
-		], function(ready, win, Rating){
+			"dojox/mobile/StarRating",
+		], function(ready, win, StarRating){
 			ready(function(){
-				var widget = new Rating({
+				var widget = new StarRating({
 					image: "images/star-orange.png",
 					numStars: 10,
 					value: 5.5

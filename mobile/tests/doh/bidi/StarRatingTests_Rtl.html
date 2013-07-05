@@ -1,0 +1,448 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<title>StarRating Tests</title>
+<script type="text/javascript" src="../../../deviceTheme.js"></script>
+<script type="text/javascript" src="../../../../../dojo/dojo.js" data-dojo-config="async: true, parseOnLoad: true, has: { 'dojo-bidi': true }"></script>
+<script type="text/javascript" src="../TestUtil.js"></script>
+<script language="JavaScript" type="text/javascript">
+	var timeoutInterval = 1000;
+	var val = {"star": 0, "star_rtl": 0};
+	require([
+		"dojo/ready", // dojo.ready
+		"dijit/registry",
+		"doh/runner",	//doh functions
+		"dojo/query",
+		"dojo/string",
+		"dojo/sniff",
+		"dojo/dom-geometry",
+		"dojox/mobile/StarRating",
+		"dojox/mobile",
+		"dojox/mobile/compat",
+		"dojox/mobile/parser"
+	], function(ready, registry, runner, query, string, has, domGeometry, StarRating){
+
+		increment = function(suffix){
+			if(val["star" + (suffix ? suffix : "")] == 7){ return; }
+			val["star" + (suffix ? suffix : "")] += 0.5;
+			registry.byId("star" + (suffix ? suffix : "")).set("value", val["star" + (suffix ? suffix : "")]);
+			document.getElementById("value" + (suffix ? suffix : "")).innerHTML = val["star" + (suffix ? suffix : "")];
+		};
+
+		decrement = function(suffix){
+			if(val["star" + (suffix ? suffix : "")] == 0){ return; }
+			val["star" + (suffix ? suffix : "")] -= 0.5;
+			registry.byId("star" + (suffix ? suffix : "")).set("value", val["star" + (suffix ? suffix : "")]);
+			document.getElementById("value" + (suffix ? suffix : "")).innerHTML = val["star" + (suffix ? suffix : "")];
+		};
+
+		ready(function(){
+			// Create two StarRating widgets programmaticaly
+			var rating = new StarRating({
+				image:"../../images/star-4-bidi.png",
+				numStars:7,
+				editable:true,
+				editHalfValues: true,
+				value: 3.5
+			}, "editablestar6");
+			rating.on('change', function(event){
+				document.getElementById("editablestar6value").innerHTML = "Rating is " + event.value + " star" + (event.value > 1 ? "s" : "");
+			});
+			rating.startup();
+			rating = new StarRating({
+				image:"../../images/star-4-bidi.png",
+				numStars:7,
+				editable:true,
+				editHalfValues: true,
+				value: 3.5
+			}, "editablestar6_rtl");
+			rating.on('change', function(event){
+				document.getElementById("editablestar6value_rtl").innerHTML = "Rating is " + event.value + " star" + (event.value > 1 ? "s" : "");
+			});
+			rating.startup();
+
+			var EMPTY_STAR_CLIP = has('webkit') ?  "rect(0px 80px 40px 40px)" : "rect(0px, 80px, 40px, 40px)";
+			var FULL_STAR_CLIP = has('webkit') ? "rect(0px 40px 40px 0px)" : "rect(0px, 40px, 40px, 0px)";
+			var HALF_STAR_CLIP = has('webkit') ? "rect(0px 120px 40px 80px)" : "rect(0px, 120px, 40px, 80px)";
+			var HALF_STAR_RTL_CLIP = has('webkit') ? "rect(0px 160px 40px 120px)" : "rect(0px, 160px, 40px, 120px)";
+			
+			var checkRating = function(ratingId, numStars, rtl, expectedValue){
+				var rating = registry.byId(ratingId);
+				var stars = query('div img', ratingId);
+				var i, node;
+				runner.assertEqual(expectedValue, rating.value, 'the rating value is not the expected one for ' + ratingId);
+				runner.assertEqual(numStars, stars.length, "number of stars displayed on node with id star");
+				for(i=0; i < stars.length; i++){
+					node = stars[i];
+					if(rtl){
+						if((numStars - i) > expectedValue){
+							if ((numStars - i - 0.5) == expectedValue){
+								runner.assertEqual(HALF_STAR_RTL_CLIP, node.style.clip, 'star ' + i + ' should be half empty in ' + ratingId);
+							}else{
+								runner.assertEqual(EMPTY_STAR_CLIP, node.style.clip, 'star ' + i + ' should be empty in ' + ratingId);
+							}
+						}else{
+							runner.assertEqual(FULL_STAR_CLIP, node.style.clip, 'star ' + i + ' should be full in ' + ratingId);
+						}
+					}else{
+						if(i > (expectedValue - 1)){
+							if(i == (expectedValue - 0.5)){
+								runner.assertEqual(HALF_STAR_CLIP, node.style.clip, 'star ' + i + ' should be half empty in ' + ratingId);
+							}else{
+								runner.assertEqual(EMPTY_STAR_CLIP, node.style.clip, 'star ' + i + ' should be empty in ' + ratingId);
+							}
+						}else{
+							runner.assertEqual(FULL_STAR_CLIP, node.style.clip, 'star ' + i + ' should be full in ' + ratingId);
+						}
+					}
+				}
+			}
+			
+			var checkTooltip = function(ratingId, expectedTooltip){
+				runner.assertEqual(expectedTooltip, document.getElementById(ratingId).title, 'tooltip text is not the expected one for ' + ratingId);
+			}
+
+			var fireMouseUpAndDownOnStar= function(ratingId, starIndex /*first index is 0*/, pixelsFromCenter/*?Number of pixels from the center of the star for the clientX coordinate of events*/){
+				var starNode = query('div img', ratingId)[starIndex];
+				var starBox = domGeometry.position(starNode.parentNode); // position of the parent div (image bigger than that because it is a sprite)
+				var clientX = starBox.x + (starBox.w / 2) + (pixelsFromCenter ? pixelsFromCenter : 0);
+				fireOnMouseDown(starNode, {clientX: clientX});
+				fireOnMouseUp(starNode, {clientX: clientX});
+			}
+
+			var fireMouseUpAndDownOnZeroSettingArea= function(ratingId, rtl){
+				var node = document.getElementById(ratingId);
+				var starBox = domGeometry.position(node);
+				var clientX = rtl ? starBox.x + starBox.w : starBox.x;
+				fireOnMouseDown(node, {clientX: clientX});
+				fireOnMouseUp(node, {clientX: clientX});
+			}
+
+			var defaultEditableRatingTest = function(ratingId, tooltipText, halfStars, zeroSetting, expectedInitialValue, rtl){
+				var expected;
+				// Check initial rating
+				checkRating(ratingId, 7, rtl, expectedInitialValue);
+				// check rating change after firing down and up events on a star
+				fireMouseUpAndDownOnStar(ratingId, 2, rtl ? 1 : -1);
+				expected = rtl ? (halfStars ? 4.5: 5) : (halfStars ? 2.5: 3);
+				checkRating(ratingId, 7, rtl, expected);
+				// check tooltip
+				checkTooltip(ratingId, string.substitute(tooltipText, {value: expected.toLocaleString(), numStars: 7}));
+				// set zero rating
+				fireMouseUpAndDownOnZeroSettingArea(ratingId, rtl);
+				expected = zeroSetting ? 0 : 0.5;
+				checkRating(ratingId, 7, rtl, expected);
+				// check tooltip
+				checkTooltip(ratingId, string.substitute(tooltipText, {value: expected.toLocaleString(), numStars: 7}));
+				///////////////////////////////////////////
+				// TODO: CHECK USING MOVE TO SET VALUES
+				///////////////////////////////////////////
+			}
+
+			runner.register("dojox.mobile.test.doh.StarRatingTests", [
+				{
+					name: 'test read only ltr',
+					timeout: 4000,
+					runTest: function(){
+						var deferred = new doh.Deferred();
+						var plusButton = document.getElementById('starplus');
+						var minusButton = document.getElementById('starminus');
+						setTimeout(deferred.getTestCallback(function(){
+							var i;
+							var expected;
+							// Check initial rating
+							checkRating('star', 7, false, 0);
+							// Check rating change when clicking the plus button
+							for(i=0; i < 14; i++){
+								fireOnClick(plusButton);
+								expected = (i + 1) * 0.5;
+								checkRating('star', 7, false, expected);
+								// check tooltip
+								checkTooltip('star', expected.toLocaleString());
+							}
+							// Check rating change when clicking the minus button
+							for(i=0; i < 14; i++){
+								fireOnClick(minusButton);
+								expected = (13 - i) * 0.5;
+								checkRating('star', 7, false, expected);
+								// check tooltip
+								checkTooltip('star', expected.toLocaleString());
+							}
+							// Fire down and up events on a star: doesn't change anything
+							fireMouseUpAndDownOnStar('star', 2, -1);
+							checkRating('star', 7, false, 0);
+						}), 2000);
+						return deferred;
+					}
+				},
+				{
+					name: 'test editable ltr',
+					timeout: 4000,
+					runTest: function(){
+						var deferred = new doh.Deferred();
+						setTimeout(deferred.getTestCallback(function(){
+							defaultEditableRatingTest('editablestar1', '${value}', false, true, 0, false);
+						}), 100);
+						return deferred;
+					}
+				},
+				{
+					name: 'test editable half values ltr',
+					timeout: 4000,
+					runTest: function(){
+						var deferred = new doh.Deferred();
+						setTimeout(deferred.getTestCallback(function(){
+							defaultEditableRatingTest('editablestar2', '${value}', true, true, 0, false);
+						}), 100);
+						return deferred;
+					}
+				},
+				{
+					name: 'test editable half values custom tooltip ltr',
+					timeout: 4000,
+					runTest: function(){
+						var deferred = new doh.Deferred();
+						setTimeout(deferred.getTestCallback(function(){
+							defaultEditableRatingTest('editablestar3', 'The current rating is ${value} star(s) over ${numStars}', true, true, 0, false);
+						}), 100);
+						return deferred;
+					}
+				},
+				{
+					name: 'test editable half values no tooltip ltr',
+					timeout: 4000,
+					runTest: function(){
+						var deferred = new doh.Deferred();
+						setTimeout(deferred.getTestCallback(function(){
+							defaultEditableRatingTest('editablestar4', '', true, true, 0, false);
+						}), 100);
+						return deferred;
+					}
+				},
+				{
+					name: 'test editable half values no zero setting ltr',
+					timeout: 4000,
+					runTest: function(){
+						var deferred = new doh.Deferred();
+						setTimeout(deferred.getTestCallback(function(){
+							defaultEditableRatingTest('editablestar5', '${value}', true, false, 0.5, false);
+						}), 100);
+						return deferred;
+					}
+				},
+				{
+					name: 'test editable programmatic onchange ltr',
+					timeout: 4000,
+					runTest: function(){
+						var deferred = new doh.Deferred();
+						setTimeout(deferred.getTestCallback(function(){
+							var expected;
+							var id = 'editablestar6';
+							var messageNode = document.getElementById(id + 'value');
+							// Check initial rating
+							checkRating(id, 7, false, 3.5);
+							// Check message
+							runner.assertEqual('Rating is 3.5 stars', messageNode.innerHTML, 'message is not the one expected for ' + id)
+							// check rating change after firing down and up events on a star
+							fireMouseUpAndDownOnStar(id, 2, -1);
+							expected = 2.5;
+							checkRating(id, 7, false, expected);
+							// Check message
+							runner.assertEqual('Rating is 2.5 stars', messageNode.innerHTML, 'message is not the one expected for ' + id)
+							// check tooltip
+							checkTooltip(id, expected.toLocaleString());
+							// set zero rating
+							fireMouseUpAndDownOnZeroSettingArea(id, false);
+							expected = 0;
+							checkRating(id, 7, false, expected);
+							// Check message
+							runner.assertEqual('Rating is 0 star', messageNode.innerHTML, 'message is not the one expected for ' + id)
+							// check tooltip
+							checkTooltip(id, expected.toLocaleString());
+							///////////////////////////////////////////
+							// TODO: CHECK USING MOVE TO SET VALUES
+							///////////////////////////////////////////
+						}), 100);
+						return deferred;
+					}
+				},
+				{
+					name: 'test read only rtl',
+					timeout: 4000,
+					runTest: function(){
+						var deferred = new doh.Deferred();
+						var plusButton = document.getElementById('starplus_rtl');
+						var minusButton = document.getElementById('starminus_rtl');
+						setTimeout(deferred.getTestCallback(function(){
+							var i;
+							var expected;
+							// Check initial rating
+							checkRating('star_rtl', 7, true, 0);
+							// Check rating change when clicking the plus button
+							for(i=0; i < 14; i++){
+								fireOnClick(plusButton);
+								expected = (i + 1) * 0.5;
+								checkRating('star_rtl', 7, true, expected);
+								// check tooltip
+								checkTooltip('star_rtl', expected.toLocaleString());
+							}
+							// Check rating change when clicking the minus button
+							for(i=0; i < 14; i++){
+								fireOnClick(minusButton);
+								expected = (13 - i) * 0.5;
+								checkRating('star_rtl', 7, true, expected);
+								// check tooltip
+								checkTooltip('star_rtl', expected.toLocaleString());
+							}
+							// Fire down and up events on a star: doesn't change anything
+							fireMouseUpAndDownOnStar('star_rtl', 2, -1);
+							checkRating('star_rtl', 7, true, 0);
+						}), 100);
+						return deferred;
+					}
+				},
+				{
+					name: 'test editable rtl',
+					timeout: 4000,
+					runTest: function(){
+						var deferred = new doh.Deferred();
+						setTimeout(deferred.getTestCallback(function(){
+							defaultEditableRatingTest('editablestar1_rtl', '${value}', false, true, 0, true);
+						}), 100);
+						return deferred;
+					}
+				},
+				{
+					name: 'test editable half values rtl',
+					timeout: 4000,
+					runTest: function(){
+						var deferred = new doh.Deferred();
+						setTimeout(deferred.getTestCallback(function(){
+							defaultEditableRatingTest('editablestar2_rtl', '${value}', true, true, 0, true);
+						}), 100);
+						return deferred;
+					}
+				},
+				{
+					name: 'test editable half values custom tooltip rtl',
+					timeout: 4000,
+					runTest: function(){
+						var deferred = new doh.Deferred();
+						setTimeout(deferred.getTestCallback(function(){
+							defaultEditableRatingTest('editablestar3_rtl', 'The current rating is ${value} star(s) over ${numStars}', true, true, 0, true);
+						}), 100);
+						return deferred;
+					}
+				},
+				{
+					name: 'test editable half values no tooltip rtl',
+					timeout: 4000,
+					runTest: function(){
+						var deferred = new doh.Deferred();
+						setTimeout(deferred.getTestCallback(function(){
+							defaultEditableRatingTest('editablestar4_rtl', '', true, true, 0, true);
+						}), 100);
+						return deferred;
+					}
+				},
+				{
+					name: 'test editable half values no zero setting rtl',
+					timeout: 4000,
+					runTest: function(){
+						var deferred = new doh.Deferred();
+						setTimeout(deferred.getTestCallback(function(){
+							defaultEditableRatingTest('editablestar5_rtl', '${value}', true, false, 0.5, true);
+						}), 100);
+						return deferred;
+					}
+				},
+				{
+					name: 'test editable programmatic onchange rtl',
+					timeout: 4000,
+					runTest: function(){
+						var deferred = new doh.Deferred();
+						setTimeout(deferred.getTestCallback(function(){
+							var expected;
+							var id = 'editablestar6_rtl';
+							var messageNode = document.getElementById('editablestar6value_rtl');
+							// Check initial rating
+							checkRating(id, 7, true, 3.5);
+							// Check message
+							runner.assertEqual('Rating is 3.5 stars', messageNode.innerHTML, 'message is not the one expected for ' + id)
+							// check rating change after firing down and up events on a star
+							fireMouseUpAndDownOnStar(id, 2, 1);
+							expected = 4.5;
+							checkRating(id, 7, true, expected);
+							// Check message
+							runner.assertEqual('Rating is 4.5 stars', messageNode.innerHTML, 'message is not the one expected for ' + id)
+							// check tooltip
+							checkTooltip(id, expected.toLocaleString());
+							// set zero rating
+							fireMouseUpAndDownOnZeroSettingArea(id, true);
+							expected = 0;
+							checkRating(id, 7, true, expected);
+							// Check message
+							runner.assertEqual('Rating is 0 star', messageNode.innerHTML, 'message is not the one expected for ' + id)
+							// check tooltip
+							checkTooltip(id, expected.toLocaleString());
+							///////////////////////////////////////////
+							// TODO: CHECK USING MOVE TO SET VALUES
+							///////////////////////////////////////////
+						}), 100);
+						return deferred;
+					}
+				}
+			]);
+			runner.run();
+		});
+	})
+</script>
+</head>
+<body style="visibility:hidden;">
+	<div data-dojo-type="dojox/mobile/View" dir="LTR">
+		<div>
+			<h1>Default direction</h1>
+			<span id="star" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",numStars:7'></span>
+			<span id="value">0</span><br>
+			<button id="starminus" type="button" onclick="decrement()">&minus;</button>
+			<button id="starplus" type="button" onclick="increment()">+</button>
+			<p>
+			Editable: <span id="editablestar1" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",numStars:7,editable:true'></span>
+			<p>
+			Editable (half values increment): <span id="editablestar2" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",numStars:7,editable:true, editHalfValues: true'></span>
+			<p>
+			Custom tooltip: <span id="editablestar3" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",numStars:7,editable:true, editHalfValues: true, tooltipText: "The current rating is ${value} star(s) over ${numStars}"'></span>
+			<p>
+			No tooltip: <span id="editablestar4" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",numStars:7,editable:true, editHalfValues: true, tooltipText: ""'></span>
+			<p>
+			No zero setting: <span id="editablestar5" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",numStars:7,editable:true, editHalfValues: true, value: 0.5, zeroAreaWidth: 0'></span>
+			<p>
+			Programmatic: <span id="editablestar6"></span><br>
+			<span id="editablestar6value"></span>
+		</div>
+		<div dir="RTL">
+			<h1>RTL direction</h1>
+			<span id="star_rtl" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",numStars:7'></span>
+			<span id="value_rtl">0</span><br>
+			<button id="starminus_rtl" type="button" onclick="decrement('_rtl')">&minus;</button>
+			<button id="starplus_rtl" type="button" onclick="increment('_rtl')">+</button>
+			<p>
+			Editable: <span id="editablestar1_rtl" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",numStars:7,editable:true'></span>
+			<p>
+			Editable (half values increment): <span id="editablestar2_rtl" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",numStars:7,editable:true, editHalfValues: true'></span>
+			<p>
+			Custom tooltip: <span id="editablestar3_rtl" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",numStars:7,editable:true, editHalfValues: true, tooltipText: "The current rating is ${value} star(s) over ${numStars}"'></span>
+			<p>
+			No tooltip: <span id="editablestar4_rtl" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",numStars:7,editable:true, editHalfValues: true, tooltipText: ""'></span>
+			<p>
+			No zero setting: <span id="editablestar5_rtl" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",numStars:7,editable:true, editHalfValues: true, value: 0.5, zeroAreaWidth: 0'></span>
+			<p>
+			Programmatic: <span id="editablestar6_rtl"></span>
+			<span id="editablestar6value_rtl"></span>
+		</div>
+	</div>	
+</body>
+</html>
