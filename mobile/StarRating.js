@@ -73,8 +73,6 @@ define([
 
 		_eventsHandlers: [],
 		_nbOfSpriteIcons: 3,
-		_x: null, // x position of the widget
-		_w: null, // width of the widget
 
 		// baseClass: String
 		//		The name of the CSS class of this widget.
