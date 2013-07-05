@@ -48,8 +48,8 @@
 				editHalfValues: true,
 				value: 3.5
 			}, "editablestar6");
-			rating.on('change', function(event){
-				document.getElementById("editablestar6value").innerHTML = "Rating is " + event.value + " star" + (event.value > 1 ? "s" : "");				
+			rating.watch('value', function(name, oldValue, value){
+				document.getElementById("editablestar6value").innerHTML = "Rating is " + value + " star" + (value > 1 ? "s" : "");				
 			});
 			rating.startup();
 

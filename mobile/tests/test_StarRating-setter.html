@@ -13,12 +13,11 @@
 		var val = 0;
 		require([
 			"dojo/ready",
-			"dojo/on",
 			"dijit/registry",
 			"dojox/mobile/StarRating",
 			"dojo/parser",
 			"dojox/mobile/compat"
-		], function(ready, on, registry, StarRating){
+		], function(ready, registry, StarRating){
 
 			increment = function(){
 				if(val == 7){ return; }
@@ -42,8 +41,8 @@
 					editHalfValues: true,
 					value: 3.5
 				}, "editablestar6");
-				on(rating, 'change', function(event){
-					document.getElementById("editablestar6value").innerHTML = "Rating is " + event.value + " star" + (event.value > 1 ? "s" : "");
+				rating.watch('value', function(name, oldValue, value){
+					document.getElementById("editablestar6value").innerHTML = "Rating is " + value + " star" + (value > 1 ? "s" : "");
 				});
 				rating.startup();
 			});

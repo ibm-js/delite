@@ -25,8 +25,6 @@ define([
 		//		The widget can be used in read-only or in editable mode. In editable mode, the widget allows to set the
 		//		rating to 0 stars or not using the zeroAreaWidth property. In this mode, it also allows to set
 		//		half values or not using the editHalfValues property.
-		//		When the value of the rating is updated, and event 'change' is emitted by this widget.
-		//		The event contains the new value in an attribute named 'value'.
 		//		This widget supports right to left direction (using the HTML dir property on the widget dom node or a parent node).
 		//		In desktop browser, the widget displays a tooltip that read the current rating. The tooltip text can be customized
 		//		using the tooltipText property. 
@@ -97,8 +95,9 @@ define([
 			var img = this.imgNode = domConstruct.create("img");
 			on(img, "load",
 				lang.hitch(this, function(){
-					this.set("value", this.value);
-					this.emit('change', {value: this.value});
+					var value = this.value;
+					this.value = null; // so that watch callbacks are called the first time the value is set !
+					this.set("value", value);
 					if(this.editable){
 						this.on(touch.press, lang.hitch(this, this._onTouchStart));
 					}
@@ -188,7 +187,6 @@ define([
 			// tags:
 			//		private
 			var createChildren = this.domNode.children.length != this.maximum;
-			var oldValue = this.value;
 			this._set("value", value);
 			if(typeof value == 'number' && this.tooltipText && typeof this.tooltipText === 'string'){
 				// TODO: restrict the number of digits displayed for the value in the tooltip in IE
@@ -199,9 +197,6 @@ define([
 				domConstruct.empty(this.domNode);
 			}
 			this._updateStars(value, createChildren);
-			if(value !== oldValue){
-				this.emit('change', {value: value});
-			}
 		},
 
 		_updateStars: function(/*Number*/value, /*Boolean*/create){
