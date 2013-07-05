@@ -6,7 +6,7 @@
 	<meta name="apple-mobile-web-app-capable" content="yes"/>
 	<title>StarRating</title>
 	<script type="text/javascript" src="../../deviceTheme.js" data-dojo-config="mblThemeFiles: ['base']"></script>
-	<script type="text/javascript" src="../../../../dojo/dojo.js" data-dojo-config="async: true, parseOnLoad: true, has: { 'dojo-bidi': true }"></script>
+	<script type="text/javascript" src="../../../../dojo/dojo.js" data-dojo-config="packages: [{name: 'dojox', location:'../dui'}, {name: 'dijit', location:'../dui'}], async: true, parseOnLoad: true, has: { 'dojo-bidi': true }"></script>
 
 	<script type="text/javascript">
 		var val = {"star": 0, "star_rtl": 0};
@@ -14,8 +14,7 @@
 			"dojo/ready",
 			"dijit/registry",
 			"dojox/mobile/StarRating",
-			"dojox/mobile/parser",
-			"dojox/mobile",
+			"dojo/parser",
 			"dojox/mobile/compat"
 		], function(ready, registry, StarRating){
 
@@ -36,7 +35,7 @@
 			ready(function(){
 				var rating = new StarRating({
 					image:"../images/star-4-bidi.png",
-					numStars:7,
+					maximum:7,
 					editable:true,
 					editHalfValues: true,
 					value: 3.5
@@ -47,13 +46,12 @@
 				rating.startup();
 				rating = new StarRating({
 					image:"../images/star-4-bidi.png",
-					numStars:7,
+					maximum:7,
 					editable:true,
 					editHalfValues: true,
 					value: 3.5
 				}, "editablestar6_rtl");
 				rating.on('change', function(event){
-					console.log("debug");
 					document.getElementById("editablestar6value_rtl").innerHTML = "Rating is " + event.value + " star" + (event.value > 1 ? "s" : "");
 				});
 				rating.startup();
@@ -70,40 +68,40 @@
 	<div data-dojo-type="dojox/mobile/View">
 		<div dir="LTR">
 			<h1>LTR direction</h1>
-			<span id="star" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../images/star-4-bidi.png",numStars:7'></span>
+			<span id="star" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../images/star-4-bidi.png",maximum:7'></span>
 			<span id="value">0</span><br>
 			<button type="button" onclick="decrement()">&minus;</button>
 			<button type="button" onclick="increment()">+</button>
 			<p>
-			Editable: <span id="editablestar1" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../images/star-4-bidi.png",numStars:7,editable:true'></span>
+			Editable: <span id="editablestar1" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../images/star-4-bidi.png",maximum:7,editable:true'></span>
 			<p>
-			Editable (half values increment): <span id="editablestar2" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../images/star-4-bidi.png",numStars:7,editable:true, editHalfValues: true'></span>
+			Editable (half values increment): <span id="editablestar2" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../images/star-4-bidi.png",maximum:7,editable:true, editHalfValues: true'></span>
 			<p>
-			Custom tooltip: <span id="editablestar3" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../images/star-4-bidi.png",numStars:7,editable:true, editHalfValues: true, tooltipText: "The current rating is ${value} star(s) over ${numStars}"'></span>
+			Custom tooltip: <span id="editablestar3" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../images/star-4-bidi.png",maximum:7,editable:true, editHalfValues: true, tooltipText: "The current rating is ${value} star(s) over ${maximum}"'></span>
 			<p>
-			No tooltip: <span id="editablestar4" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../images/star-4-bidi.png",numStars:7,editable:true, editHalfValues: true, tooltipText: ""'></span>
+			No tooltip: <span id="editablestar4" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../images/star-4-bidi.png",maximum:7,editable:true, editHalfValues: true, tooltipText: ""'></span>
 			<p>
-			No zero setting: <span id="editablestar5" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../images/star-4-bidi.png",numStars:7,editable:true, editHalfValues: true, value: 0.5, zeroAreaWidth: 0'></span>
+			No zero setting: <span id="editablestar5" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../images/star-4-bidi.png",maximum:7,editable:true, editHalfValues: true, value: 0.5, zeroAreaWidth: 0'></span>
 			<p>
 			Programmatic: <span id="editablestar6"></span><br>
 			<span id="editablestar6value"></span>
 		</div>
 		<div dir="RTL">
 			<h1>RTL direction</h1>
-			<span id="star_rtl" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../images/star-4-bidi.png",numStars:7'></span>
+			<span id="star_rtl" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../images/star-4-bidi.png",maximum:7'></span>
 			<span id="value_rtl">0</span><br>
 			<button type="button" onclick="decrement('_rtl')">&minus;</button>
 			<button type="button" onclick="increment('_rtl')">+</button>
 			<p>
-			Editable: <span id="editablestar1_rtl" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../images/star-4-bidi.png",numStars:7,editable:true'></span>
+			Editable: <span id="editablestar1_rtl" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../images/star-4-bidi.png",maximum:7,editable:true'></span>
 			<p>
-			Editable (half values increment): <span id="editablestar2_rtl" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../images/star-4-bidi.png",numStars:7,editable:true, editHalfValues: true'></span>
+			Editable (half values increment): <span id="editablestar2_rtl" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../images/star-4-bidi.png",maximum:7,editable:true, editHalfValues: true'></span>
 			<p>
-			Custom tooltip: <span id="editablestar3_rtl" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../images/star-4-bidi.png",numStars:7,editable:true, editHalfValues: true, tooltipText: "The current rating is ${value} star(s) over ${numStars}"'></span>
+			Custom tooltip: <span id="editablestar3_rtl" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../images/star-4-bidi.png",maximum:7,editable:true, editHalfValues: true, tooltipText: "The current rating is ${value} star(s) over ${maximum}"'></span>
 			<p>
-			No tooltip: <span id="editablestar4_rtl" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../images/star-4-bidi.png",numStars:7,editable:true, editHalfValues: true, tooltipText: ""'></span>
+			No tooltip: <span id="editablestar4_rtl" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../images/star-4-bidi.png",maximum:7,editable:true, editHalfValues: true, tooltipText: ""'></span>
 			<p>
-			No zero setting: <span id="editablestar5_rtl" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../images/star-4-bidi.png",numStars:7,editable:true, editHalfValues: true, value: 0.5, zeroAreaWidth: 0'></span>
+			No zero setting: <span id="editablestar5_rtl" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../images/star-4-bidi.png",maximum:7,editable:true, editHalfValues: true, value: 0.5, zeroAreaWidth: 0'></span>
 			<p>
 			Programmatic: <span id="editablestar6_rtl"></span><br>
 			<span id="editablestar6value_rtl"></span>

@@ -22,20 +22,21 @@ define([
 
 		buildRendering: function(){
 			this.inherited(arguments);
-			// init the dir attribute
+			// init the dir attribute when it has not been initialized by the dojo parser
 			if(!this.dir){
 				var parent = this.domNode.parentNode;
 				while(parent){
 					if(parent.dir){
 						this.dir = parent.dir;
-						if(this.dir.toLowerCase && typeof this.dir.toLowerCase == 'function'){
-							this.dir = this.dir.toLowerCase();
-						}
 						parent = null;
 					}else{
 						parent = parent.parentNode;
 					}
 				}
+			}
+			if(this.dir){
+				// support both "LTR" and "ltr"
+				this.dir = this.dir.toLowerCase();
 			}
 			if(this.editable && !this.isLeftToRight()){
 				// Zero setting area is on the right side
@@ -57,7 +58,7 @@ define([
 			if(this.isLeftToRight()){
 				return this.inherited(arguments);
 			}else{
-				return (starStripLength - x) / (starStripLength / this.numStars);
+				return (starStripLength - x) / (starStripLength / this.maximum);
 			}
 		},
 
@@ -68,8 +69,8 @@ define([
 				var i;
 				var parent;
 				var left, h = this.imgNode.height, w = this.imgNode.width / this._nbOfSpriteIcons;
-				for(i = 0; i < this.numStars; i++){
-					index = (this.numStars - i - 1);
+				for(i = 0; i < this.maximum; i++){
+					index = (this.maximum - i - 1);
 					if(index <= value - 1){
 						left = 0; // full
 					}else if(index >= value){

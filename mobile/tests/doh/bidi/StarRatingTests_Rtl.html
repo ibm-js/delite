@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <title>StarRating Tests</title>
 <script type="text/javascript" src="../../../deviceTheme.js"></script>
-<script type="text/javascript" src="../../../../../dojo/dojo.js" data-dojo-config="async: true, parseOnLoad: true, has: { 'dojo-bidi': true }"></script>
+<script type="text/javascript" src="../../../../../dojo/dojo.js" data-dojo-config="packages: [{name: 'dojox', location:'../dui'}, {name: 'dijit', location:'../dui'}], async: true, parseOnLoad: true, has: { 'dojo-bidi': true }"></script>
 <script type="text/javascript" src="../TestUtil.js"></script>
 <script language="JavaScript" type="text/javascript">
 	var timeoutInterval = 1000;
@@ -20,9 +20,8 @@
 		"dojo/sniff",
 		"dojo/dom-geometry",
 		"dojox/mobile/StarRating",
-		"dojox/mobile",
-		"dojox/mobile/compat",
-		"dojox/mobile/parser"
+		"dojo/parser",
+		"dojox/mobile/compat"
 	], function(ready, registry, runner, query, string, has, domGeometry, StarRating){
 
 		increment = function(suffix){
@@ -42,8 +41,9 @@
 		ready(function(){
 			// Create two StarRating widgets programmaticaly
 			var rating = new StarRating({
+				id: "editablestar6",
 				image:"../../images/star-4-bidi.png",
-				numStars:7,
+				maximum:7,
 				editable:true,
 				editHalfValues: true,
 				value: 3.5
@@ -53,8 +53,9 @@
 			});
 			rating.startup();
 			rating = new StarRating({
+				id: "editablestar6_rtl",
 				image:"../../images/star-4-bidi.png",
-				numStars:7,
+				maximum:7,
 				editable:true,
 				editHalfValues: true,
 				value: 3.5
@@ -69,17 +70,18 @@
 			var HALF_STAR_CLIP = has('webkit') ? "rect(0px 120px 40px 80px)" : "rect(0px, 120px, 40px, 80px)";
 			var HALF_STAR_RTL_CLIP = has('webkit') ? "rect(0px 160px 40px 120px)" : "rect(0px, 160px, 40px, 120px)";
 			
-			var checkRating = function(ratingId, numStars, rtl, expectedValue){
+			var checkRating = function(ratingId, maximum, rtl, expectedValue){
 				var rating = registry.byId(ratingId);
+				runner.assertTrue(rating, ratingId + ' not found in dijit registry');
 				var stars = query('div img', ratingId);
 				var i, node;
 				runner.assertEqual(expectedValue, rating.value, 'the rating value is not the expected one for ' + ratingId);
-				runner.assertEqual(numStars, stars.length, "number of stars displayed on node with id star");
+				runner.assertEqual(maximum, stars.length, "number of stars displayed on node with id star");
 				for(i=0; i < stars.length; i++){
 					node = stars[i];
 					if(rtl){
-						if((numStars - i) > expectedValue){
-							if ((numStars - i - 0.5) == expectedValue){
+						if((maximum - i) > expectedValue){
+							if ((maximum - i - 0.5) == expectedValue){
 								runner.assertEqual(HALF_STAR_RTL_CLIP, node.style.clip, 'star ' + i + ' should be half empty in ' + ratingId);
 							}else{
 								runner.assertEqual(EMPTY_STAR_CLIP, node.style.clip, 'star ' + i + ' should be empty in ' + ratingId);
@@ -130,13 +132,13 @@
 				expected = rtl ? (halfStars ? 4.5: 5) : (halfStars ? 2.5: 3);
 				checkRating(ratingId, 7, rtl, expected);
 				// check tooltip
-				checkTooltip(ratingId, string.substitute(tooltipText, {value: expected.toLocaleString(), numStars: 7}));
+				checkTooltip(ratingId, string.substitute(tooltipText, {value: expected.toLocaleString(), maximum: 7}));
 				// set zero rating
 				fireMouseUpAndDownOnZeroSettingArea(ratingId, rtl);
 				expected = zeroSetting ? 0 : 0.5;
 				checkRating(ratingId, 7, rtl, expected);
 				// check tooltip
-				checkTooltip(ratingId, string.substitute(tooltipText, {value: expected.toLocaleString(), numStars: 7}));
+				checkTooltip(ratingId, string.substitute(tooltipText, {value: expected.toLocaleString(), maximum: 7}));
 				///////////////////////////////////////////
 				// TODO: CHECK USING MOVE TO SET VALUES
 				///////////////////////////////////////////
@@ -206,7 +208,7 @@
 					runTest: function(){
 						var deferred = new doh.Deferred();
 						setTimeout(deferred.getTestCallback(function(){
-							defaultEditableRatingTest('editablestar3', 'The current rating is ${value} star(s) over ${numStars}', true, true, 0, false);
+							defaultEditableRatingTest('editablestar3', 'The current rating is ${value} star(s) over ${maximum}', true, true, 0, false);
 						}), 100);
 						return deferred;
 					}
@@ -332,7 +334,7 @@
 					runTest: function(){
 						var deferred = new doh.Deferred();
 						setTimeout(deferred.getTestCallback(function(){
-							defaultEditableRatingTest('editablestar3_rtl', 'The current rating is ${value} star(s) over ${numStars}', true, true, 0, true);
+							defaultEditableRatingTest('editablestar3_rtl', 'The current rating is ${value} star(s) over ${maximum}', true, true, 0, true);
 						}), 100);
 						return deferred;
 					}
@@ -405,40 +407,40 @@
 	<div data-dojo-type="dojox/mobile/View" dir="LTR">
 		<div>
 			<h1>Default direction</h1>
-			<span id="star" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",numStars:7'></span>
+			<span id="star" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",maximum:7'></span>
 			<span id="value">0</span><br>
 			<button id="starminus" type="button" onclick="decrement()">&minus;</button>
 			<button id="starplus" type="button" onclick="increment()">+</button>
 			<p>
-			Editable: <span id="editablestar1" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",numStars:7,editable:true'></span>
+			Editable: <span id="editablestar1" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",maximum:7,editable:true'></span>
 			<p>
-			Editable (half values increment): <span id="editablestar2" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",numStars:7,editable:true, editHalfValues: true'></span>
+			Editable (half values increment): <span id="editablestar2" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",maximum:7,editable:true, editHalfValues: true'></span>
 			<p>
-			Custom tooltip: <span id="editablestar3" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",numStars:7,editable:true, editHalfValues: true, tooltipText: "The current rating is ${value} star(s) over ${numStars}"'></span>
+			Custom tooltip: <span id="editablestar3" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",maximum:7,editable:true, editHalfValues: true, tooltipText: "The current rating is ${value} star(s) over ${maximum}"'></span>
 			<p>
-			No tooltip: <span id="editablestar4" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",numStars:7,editable:true, editHalfValues: true, tooltipText: ""'></span>
+			No tooltip: <span id="editablestar4" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",maximum:7,editable:true, editHalfValues: true, tooltipText: ""'></span>
 			<p>
-			No zero setting: <span id="editablestar5" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",numStars:7,editable:true, editHalfValues: true, value: 0.5, zeroAreaWidth: 0'></span>
+			No zero setting: <span id="editablestar5" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",maximum:7,editable:true, editHalfValues: true, value: 0.5, zeroAreaWidth: 0'></span>
 			<p>
 			Programmatic: <span id="editablestar6"></span><br>
 			<span id="editablestar6value"></span>
 		</div>
 		<div dir="RTL">
 			<h1>RTL direction</h1>
-			<span id="star_rtl" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",numStars:7'></span>
+			<span id="star_rtl" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",maximum:7'></span>
 			<span id="value_rtl">0</span><br>
 			<button id="starminus_rtl" type="button" onclick="decrement('_rtl')">&minus;</button>
 			<button id="starplus_rtl" type="button" onclick="increment('_rtl')">+</button>
 			<p>
-			Editable: <span id="editablestar1_rtl" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",numStars:7,editable:true'></span>
+			Editable: <span id="editablestar1_rtl" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",maximum:7,editable:true'></span>
 			<p>
-			Editable (half values increment): <span id="editablestar2_rtl" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",numStars:7,editable:true, editHalfValues: true'></span>
+			Editable (half values increment): <span id="editablestar2_rtl" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",maximum:7,editable:true, editHalfValues: true'></span>
 			<p>
-			Custom tooltip: <span id="editablestar3_rtl" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",numStars:7,editable:true, editHalfValues: true, tooltipText: "The current rating is ${value} star(s) over ${numStars}"'></span>
+			Custom tooltip: <span id="editablestar3_rtl" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",maximum:7,editable:true, editHalfValues: true, tooltipText: "The current rating is ${value} star(s) over ${maximum}"'></span>
 			<p>
-			No tooltip: <span id="editablestar4_rtl" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",numStars:7,editable:true, editHalfValues: true, tooltipText: ""'></span>
+			No tooltip: <span id="editablestar4_rtl" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",maximum:7,editable:true, editHalfValues: true, tooltipText: ""'></span>
 			<p>
-			No zero setting: <span id="editablestar5_rtl" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",numStars:7,editable:true, editHalfValues: true, value: 0.5, zeroAreaWidth: 0'></span>
+			No zero setting: <span id="editablestar5_rtl" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",maximum:7,editable:true, editHalfValues: true, value: 0.5, zeroAreaWidth: 0'></span>
 			<p>
 			Programmatic: <span id="editablestar6_rtl"></span>
 			<span id="editablestar6value_rtl"></span>

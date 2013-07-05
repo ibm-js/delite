@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <title>StarRating Tests</title>
 <script type="text/javascript" src="../../../deviceTheme.js"></script>
-<script type="text/javascript" src="../../../../../dojo/dojo.js" data-dojo-config="async: true, parseOnLoad: true"></script>
+<script type="text/javascript" src="../../../../../dojo/dojo.js" data-dojo-config="packages: [{name: 'dojox', location:'../dui'}, {name: 'dijit', location:'../dui'}], async: true, parseOnLoad: true"></script>
 <script type="text/javascript" src="../TestUtil.js"></script>
 <script language="JavaScript" type="text/javascript">
 	var timeoutInterval = 1000;
@@ -20,9 +20,8 @@
 		"dojo/sniff",
 		"dojo/dom-geometry",
 		"dojox/mobile/StarRating",
-		"dojox/mobile",
 		"dojox/mobile/compat",
-		"dojox/mobile/parser"
+		"dojo/parser"
 	], function(ready, registry, runner, query, string, has, domGeometry, StarRating){
 
 		increment = function(suffix){
@@ -42,8 +41,9 @@
 		ready(function(){
 			// Create two rating widgets programmaticaly
 			var rating = new StarRating({
+				id: "editablestar6",
 				image:"../../images/star-4.png",
-				numStars:7,
+				maximum:7,
 				editable:true,
 				editHalfValues: true,
 				value: 3.5
@@ -57,12 +57,12 @@
 			var FULL_STAR_CLIP = has('webkit') ? "rect(0px 40px 40px 0px)" : "rect(0px, 40px, 40px, 0px)";
 			var HALF_STAR_CLIP = has('webkit') ? "rect(0px 120px 40px 80px)" : "rect(0px, 120px, 40px, 80px)";
 			
-			var checkRating = function(ratingId, numStars, expectedValue){
+			var checkRating = function(ratingId, maximum, expectedValue){
 				var rating = registry.byId(ratingId);
 				var stars = query('div img', ratingId);
 				var i, node;
 				runner.assertEqual(expectedValue, rating.value, 'the rating value is not the expected one for ' + ratingId);
-				runner.assertEqual(numStars, stars.length, "number of stars displayed on node with id star");
+				runner.assertEqual(maximum, stars.length, "number of stars displayed on node with id star");
 				for(i=0; i < stars.length; i++){
 					node = stars[i];
 					if(i > (expectedValue - 1)){
@@ -106,13 +106,13 @@
 				expected = (halfStars ? 2.5: 3);
 				checkRating(ratingId, 7, expected);
 				// check tooltip
-				checkTooltip(ratingId, string.substitute(tooltipText, {value: expected.toLocaleString(), numStars: 7}));
+				checkTooltip(ratingId, string.substitute(tooltipText, {value: expected.toLocaleString(), maximum: 7}));
 				// set zero rating
 				fireMouseUpAndDownOnZeroSettingArea(ratingId);
 				expected = zeroSetting ? 0 : 0.5;
 				checkRating(ratingId, 7, expected);
 				// check tooltip
-				checkTooltip(ratingId, string.substitute(tooltipText, {value: expected.toLocaleString(), numStars: 7}));
+				checkTooltip(ratingId, string.substitute(tooltipText, {value: expected.toLocaleString(), maximum: 7}));
 				///////////////////////////////////////////
 				// TODO: CHECK USING MOVE TO SET VALUES
 				///////////////////////////////////////////
@@ -182,7 +182,7 @@
 					runTest: function(){
 						var deferred = new doh.Deferred();
 						setTimeout(deferred.getTestCallback(function(){
-							defaultEditableRatingTest('editablestar3', 'The current rating is ${value} star(s) over ${numStars}', true, true, 0);
+							defaultEditableRatingTest('editablestar3', 'The current rating is ${value} star(s) over ${maximum}', true, true, 0);
 						}), 100);
 						return deferred;
 					}
@@ -230,7 +230,7 @@
 							// Check message
 							runner.assertEqual('Rating is 2.5 stars', messageNode.innerHTML, 'message is not the one expected for ' + id)
 							// check tooltip
-							checkTooltip(id, string.substitute(tooltipText, {value: expected.toLocaleString(), numStars: 7}));
+							checkTooltip(id, string.substitute(tooltipText, {value: expected.toLocaleString(), maximum: 7}));
 							// set zero rating
 							fireMouseUpAndDownOnZeroSettingArea(id);
 							expected = 0;
@@ -238,7 +238,7 @@
 							// Check message
 							runner.assertEqual('Rating is 0 star', messageNode.innerHTML, 'message is not the one expected for ' + id)
 							// check tooltip
-							checkTooltip(id, string.substitute(tooltipText, {value: expected.toLocaleString(), numStars: 7}));
+							checkTooltip(id, string.substitute(tooltipText, {value: expected.toLocaleString(), maximum: 7}));
 							///////////////////////////////////////////
 							// TODO: CHECK USING MOVE TO SET VALUES
 							///////////////////////////////////////////
@@ -255,20 +255,20 @@
 <body style="visibility:hidden;">
 	<div data-dojo-type="dojox/mobile/View">
 		<div>
-			<span id="star" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4.png",numStars:7'></span>
+			<span id="star" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4.png",maximum:7'></span>
 			<span id="value">0</span><br>
 			<button id="starminus" type="button" onclick="decrement()">&minus;</button>
 			<button id="starplus" type="button" onclick="increment()">+</button>
 			<p>
-			Editable: <span id="editablestar1" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4.png",numStars:7,editable:true'></span>
+			Editable: <span id="editablestar1" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4.png",maximum:7,editable:true'></span>
 			<p>
-			Editable (half values increment): <span id="editablestar2" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4.png",numStars:7,editable:true, editHalfValues: true'></span>
+			Editable (half values increment): <span id="editablestar2" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4.png",maximum:7,editable:true, editHalfValues: true'></span>
 			<p>
-			Custom tooltip: <span id="editablestar3" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4.png",numStars:7,editable:true, editHalfValues: true, tooltipText: "The current rating is ${value} star(s) over ${numStars}"'></span>
+			Custom tooltip: <span id="editablestar3" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4.png",maximum:7,editable:true, editHalfValues: true, tooltipText: "The current rating is ${value} star(s) over ${maximum}"'></span>
 			<p>
-			No tooltip: <span id="editablestar4" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4.png",numStars:7,editable:true, editHalfValues: true, tooltipText: ""'></span>
+			No tooltip: <span id="editablestar4" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4.png",maximum:7,editable:true, editHalfValues: true, tooltipText: ""'></span>
 			<p>
-			No zero setting: <span id="editablestar5" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4.png",numStars:7,editable:true, editHalfValues: true, value: 0.5, zeroAreaWidth: 0'></span>
+			No zero setting: <span id="editablestar5" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4.png",maximum:7,editable:true, editHalfValues: true, value: 0.5, zeroAreaWidth: 0'></span>
 			<p>
 			Programmatic: <span id="editablestar6"></span><br>
 			<span id="editablestar6value"></span>

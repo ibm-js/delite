@@ -39,9 +39,9 @@ define([
 		//		have the same width.
 		image: "",
 
-		// numStars: Number
-		//		The number of stars to show.
-		numStars: 5,
+		// maximum: Number
+		//		The maximum rating, that is also the number of stars to show.
+		maximum: 5,
 
 		// value: Number
 		//		The current value of the Rating.
@@ -68,7 +68,7 @@ define([
 		// tooltipText: String
 		//		On desktop browsers, a tooltip displays the value of the current rating (attribute title of the dom node). This parameter
 		//		allows you to set the message displayed by the tooltip. In the tooltip text, the substring ${value} is replaced by the actual
-		//		value of the Rating widget, while ${numStars} is replaced by the value of numStars.
+		//		value of the Rating widget, while ${maximum} is replaced by the value of maximum.
 		tooltipText: "${value}",
 
 		/* internal properties */
@@ -179,7 +179,7 @@ define([
 
 		_xToRawValue: function(/*Number*/x, /*Number*/domNodeWidth){
 			var starStripLength = domNodeWidth - this.zeroAreaWidth;
-			return (x - this.zeroAreaWidth) / (starStripLength / this.numStars);
+			return (x - this.zeroAreaWidth) / (starStripLength / this.maximum);
 		},
 
 		_setValueAttr: function(/*Number*/value){
@@ -187,12 +187,12 @@ define([
 			//		Sets the value of the Rating.
 			// tags:
 			//		private
-			var createChildren = this.domNode.children.length != this.numStars;
+			var createChildren = this.domNode.children.length != this.maximum;
 			var oldValue = this.value;
 			this._set("value", value);
 			if(typeof value == 'number' && this.tooltipText && typeof this.tooltipText === 'string'){
 				// TODO: restrict the number of digits displayed for the value in the tooltip in IE
-				this.domNode.title = string.substitute(this.tooltipText, {value: this.value.toLocaleString(), numStars: this.numStars});
+				this.domNode.title = string.substitute(this.tooltipText, {value: this.value.toLocaleString(), maximum: this.maximum});
 			}
 			if(this.imgNode.height == 0){ return; } // loading of image has not been completed yet
 			if(createChildren){
@@ -208,7 +208,7 @@ define([
 			var i;
 			var parent;
 			var left, h = this.imgNode.height, w = this.imgNode.width / this._nbOfSpriteIcons;
-			for(i = 0; i < this.numStars; i++){
+			for(i = 0; i < this.maximum; i++){
 				if(i <= value - 1){
 					left = 0; // full
 				}else if(i >= value){
