@@ -1,6 +1,6 @@
 define([
 	"dojo/_base/declare",
-	"dojo/sniff",
+	"dojo/has",
 	"dojo/dom-construct",
 	"../iconUtils"
 ], function(declare, has, domConstruct, iconUtils){

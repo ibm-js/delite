@@ -1,7 +1,7 @@
 define([
 	"dojo/_base/declare",
 	"dojo/_base/lang",
-	"dojo/sniff",
+	"dojo/has",
 	"dojo/on",
 	"dojo/string",
 	"dojo/touch",
@@ -105,13 +105,6 @@ define([
 			iconUtils.createIcon(this.image, null, img);
 		},
 
-		_registerEventsHandler: function(/*Array*/events, /*Function*/handler){
-			var i;
-			for(i=0; i < events.length; i++){
-				this._eventsHandlers.push(this.on(events[i], lang.hitch(this, handler)));
-			}
-		},
-
 		_removeEventsHandlers: function(){
 			while(this._eventsHandlers.length){
 				this._eventsHandlers.pop().remove();
@@ -122,12 +115,12 @@ define([
 			event.preventDefault();
 			if(!this._eventsHandlers.length){
 				// handle move on the stars strip
-				this._registerEventsHandler([touch.move], this._onTouchMove);
+				this._eventsHandlers.push(this.on(touch.move, lang.hitch(this, this._onTouchMove)));
 				// handle the end of the value editing
-				this._registerEventsHandler([touch.release,
-				                             touch.cancel], this._onTouchEnd);
+				this._eventsHandlers.push(this.on(touch.release, lang.hitch(this, this._onTouchEnd)));
+				this._eventsHandlers.push(this.on(touch.cancel, lang.hitch(this, this._onTouchEnd)));
 				if(!has('touch')){ // needed only on desktop, for the case when the mouse cursor leave the widget and mouseup is thrown outside of it
-					this._registerEventsHandler([touch.leave], this._onTouchEnd);
+					this._eventsHandlers.push(this.on(touch.leave, lang.hitch(this, this._onTouchEnd)));
 				}
 			}else{
 				// Remove event handlers (stopping the rating process)
