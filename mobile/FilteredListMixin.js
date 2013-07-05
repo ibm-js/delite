@@ -39,7 +39,7 @@ define([
 		//		the necessary glue to ensure the list is filtered according to the filter criteria
 		//		entered in the SearchBox.
 		//
-		//		The filtering works for lists backed by a store (dojo/store or dojo/data), as well 
+		//		The filtering works for lists backed by a store (dojo/store), as well
 		//		as for lists not backed by a store. When filtering a list backed by a store 
 		//		containing hierarchical data (data items that are children of a parent data item), 
 		//		the store must support recursive search queries such that the filtering can match 
@@ -194,7 +194,7 @@ define([
 				if (this._filterBox && this._filterBox.isInstanceOf(SearchBox)){ 
 					// If the list is backed by a dojox/mobile/_StoreListMixin, it
 					// has a labelProperty which is given precedence. 
-					this._filterBox.set("searchAttr", this.labelProperty ? this.labelProperty : "label");
+					this._filterBox.set("searchAttr", this.labelAttr ? this.labelAttr : "label");
 					if(!this._filterBox.placeHolder){
 						// Give precedence to the placeHolder that may be specified on the provided SearchBox
 						this._filterBox.set("placeHolder", this.placeHolder);
@@ -209,8 +209,8 @@ define([
 				this._filterBox =
 					new SearchBox({
 						// If the list is backed by a dojox/mobile/_StoreListMixin, it
-						// has a labelProperty which is given precedence. 
-						searchAttr: this.labelProperty ? this.labelProperty : "label",
+						// has a labelAttr which is given precedence.
+						searchAttr: this.labelAttr ? this.labelAttr : "label",
 						ignoreCase: true,
 						incremental: true,
 						onSearch: lang.hitch(this, "_onFilter"),
@@ -308,22 +308,7 @@ define([
 			//		Initializes the store.
 			// tags:
 			//		private
-			var store = this.store;
-			if(!store.get || !store.query){ // if old store (dojo/data)
-				// Detect the old dojo/data stores (since the stores don't actually extend a common
-				// base class, there is no direct way to do this check. Hence we rely on the presence 
-				// or absence of these two properties of the new stores which are required for the
-				// list widgets).
-				// TODO: to be removed when removing the support for lists backed by the old dojo/data 
-				// (EdgeToEdgeDataStore, RoundRectDataList).
-				require(["dojo/store/DataStore"], lang.hitch(this, function(DataStore){
-					// wrap the dojo/data store into a dojo/store
-					store = new DataStore({store: store});	
-					this._filterBox.store = store;				
-				}));
-			}else{
-				this._filterBox.store = store;
-			}
+			this._filterBox.store = this.store;
 		},
 	
 		_createStore: function(initStoreFunction/* Function */){
@@ -345,7 +330,7 @@ define([
 					return item.listItem;
 				};
 					
-				aspect.before(this, "generateList", function(){
+				aspect.before(this, "initItems", function(){
 					// remove all children
 					array.forEach(this.getChildren(), function(child){
 						child.domNode.parentNode.removeChild(child.domNode);
@@ -361,10 +346,12 @@ define([
 				});
 				var listData = {items: items};
 				// store for the dojox/mobile/EdgeToEdgeStoreList
-				var store = new Memory({idProperty:"label", data: listData});
+				var store = new Memory({data: listData});
 				this.store = null;
 				this.query = {};
-				this.setStore(store, this.query, this.queryOptions);
+				this.set("store", store);
+				this.set("query", this.query);
+				this.set("queryOptions", this.queryOptions);
 				lang.hitch(this, initStoreFunction)();
 			}));
 		},
@@ -375,7 +362,7 @@ define([
 			// tags:
 			//		private
 			if(this.onFilter(results, query, options) === false){ return; } // user's filtering action
-			this.setQuery(query);
+			this.set("query", query);
 			
 			// Do not use this.getScrollableView() because this doesn't cover the
 			// use-case when the scrollable is not created by this mixin.
