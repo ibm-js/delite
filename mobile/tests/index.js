@@ -138,6 +138,7 @@ var tests = [
 	{ url: "test_ProgressIndicator.html", tags: "ProgressIndicator", priority: priority.high },
 	{ url: "test_StarRating-prog.html", tags: "StarRating" },
 	{ url: "test_StarRating-setter.html", tags: "StarRating" },
+	{ url: "test_StarRating-stateful.html", tags: "StarRating" },
 	{ url: "test_StarRating.html", tags: "StarRating", priority: priority.high },
 	{ url: "test_RoundRect.html", tags: "RoundRect", priority: priority.high },
 	{ url: "test_RoundRectCategory.html", tags: "RoundRectList", priority: priority.high },

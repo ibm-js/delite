@@ -37,6 +37,10 @@ define([
 		//		have the same width.
 		image: "",
 
+		// alt: String
+		//		An alternate text for the icon image.
+		alt: "", // TODO: SHOULD BE ABLE TO DEFINE ONE ALT VALUE FOR EACH ICON (FULL, EMPTY, HALF) !!!!
+
 		// maximum: Number
 		//		The maximum rating, that is also the number of stars to show.
 		maximum: 5,
@@ -44,10 +48,6 @@ define([
 		// value: Number
 		//		The current value of the Rating.
 		value: 0,
-
-		// alt: String
-		//		An alternate text for the icon image.
-		alt: "",
 
 		// editable: Boolean
 		//		Is the user allowed to edit the value of the Rating by touching / clicking the stars ?
@@ -58,10 +58,10 @@ define([
 		editHalfValues: false,
 
 		// zeroAreaWidth: Number
-		//		The number of pixel to add to the left of the widget (or right if the direction is rtl) to allow setting the value to 0.
-		//		The pixels are only added if the widget is editable.
+		//		The number of pixel to add to the left of the widget (or right if the direction is rtl) to allow setting the value to 0
+		//		when editable is set to true. Default value is 0 if the widget is not editable, 20 if the widget is editable.
 		//		Set this value to 0 to forbid the user from setting the value to zero during edition.
-		zeroAreaWidth: 20,
+		zeroAreaWidth: 0,
 
 		// tooltipText: String
 		//		On desktop browsers, a tooltip displays the value of the current rating (attribute title of the dom node). This parameter
@@ -71,14 +71,18 @@ define([
 
 		/* internal properties */
 
-		_eventsHandlers: [],
+		_touchStartHandler: null,
+		_otherEventsHandlers: [],
 		_nbOfSpriteIcons: 3,
 
 		// baseClass: String
 		//		The name of the CSS class of this widget.
 		baseClass: "mblRating",
 
-		constructor: function(){
+		postMixInProperties: function(){
+			if(this.editable){
+				this.zeroAreaWidth = 20;
+			}
 			if(this.zeroAreaWidth < 0){
 				this.zeroAreaWidth = 0;
 			}
@@ -87,38 +91,24 @@ define([
 		buildRendering: function(){
 			this.inherited(arguments);
 			this.domNode.style.display = "inline-block";
-			if(this.editable){
-				this.domNode.style.paddingLeft = this.zeroAreaWidth + "px";
-			}
-			var img = this.imgNode = domConstruct.create("img");
-			on(img, "load",
-				lang.hitch(this, function(){
-					var value = this.value;
-					this.value = null; // so that watch callbacks are called the first time the value is set !
-					this.set("value", value);
-					if(this.editable){
-						this.on(touch.press, lang.hitch(this, this._onTouchStart));
-					}
-				}));
-			iconUtils.createIcon(this.image, null, img);
 		},
 
 		_removeEventsHandlers: function(){
-			while(this._eventsHandlers.length){
-				this._eventsHandlers.pop().remove();
+			while(this._otherEventsHandlers.length){
+				this._otherEventsHandlers.pop().remove();
 			}
 		},
 
 		_onTouchStart: function(/*Event*/ event){
 			event.preventDefault();
-			if(!this._eventsHandlers.length){
+			if(!this._otherEventsHandlers.length){
 				// handle move on the stars strip
-				this._eventsHandlers.push(this.on(touch.move, lang.hitch(this, this._onTouchMove)));
+				this._otherEventsHandlers.push(this.on(touch.move, lang.hitch(this, this._onTouchMove)));
 				// handle the end of the value editing
-				this._eventsHandlers.push(this.on(touch.release, lang.hitch(this, this._onTouchEnd)));
-				this._eventsHandlers.push(this.on(touch.cancel, lang.hitch(this, this._onTouchEnd)));
+				this._otherEventsHandlers.push(this.on(touch.release, lang.hitch(this, this._onTouchEnd)));
+				this._otherEventsHandlers.push(this.on(touch.cancel, lang.hitch(this, this._onTouchEnd)));
 				if(!has('touch')){ // needed only on desktop, for the case when the mouse cursor leave the widget and mouseup is thrown outside of it
-					this._eventsHandlers.push(this.on(touch.leave, lang.hitch(this, this._onTouchEnd)));
+					this._otherEventsHandlers.push(this.on(touch.leave, lang.hitch(this, this._onTouchEnd)));
 				}
 			}else{
 				// Remove event handlers (stopping the rating process)
@@ -172,6 +162,44 @@ define([
 			return (x - this.zeroAreaWidth) / (starStripLength / this.maximum);
 		},
 
+		_setImageAttr: function(/*String*/imagePath){
+			this._set("image", imagePath);
+			if(this._touchStartHandler){
+				this._touchStartHandler.remove();
+				this._touchStartHandler = null;
+			}
+			if(this.imgNode){
+				domConstruct.destroy(this.imgNode);
+				this.imgNode = null;
+			};
+			var img = this.imgNode = domConstruct.create("img");
+			on(img, "load",
+				lang.hitch(this, function(){
+					var value = this.value;
+					this.value = null; // so that watch callbacks are called the first time the value is set !
+					this.set("value", value);
+					if(this.editable && !this._touchStartHandler){
+						this._touchStartHandler = this.on(touch.press, lang.hitch(this, this._onTouchStart));
+					}
+				}));
+			iconUtils.createIcon(this.image, null, img);
+		},
+
+		_setAltAttr: function(/*String*/value){
+			var i;
+			var children = this.domNode.children;
+			this._set("alt", value);
+			for(i=0; i < children.length; i++){
+				children[i].children[0].alt = this.alt;
+			}
+		},
+
+		_setMaximumAttr: function(/*Number*/value){
+			this._set("maximum", value);
+			// set value to trigger redrawing of the widget
+			this.set("value", this.value);
+		},
+
 		_setValueAttr: function(/*Number*/value){
 			// summary:
 			//		Sets the value of the Rating.
@@ -179,15 +207,36 @@ define([
 			//		private
 			var createChildren = this.domNode.children.length != this.maximum;
 			this._set("value", value);
-			if(typeof value == 'number' && this.tooltipText && typeof this.tooltipText === 'string'){
-				// TODO: restrict the number of digits displayed for the value in the tooltip in IE
-				this.domNode.title = string.substitute(this.tooltipText, {value: this.value.toLocaleString(), maximum: this.maximum});
-			}
+			this._updateTooltip();
 			if(this.imgNode.height == 0){ return; } // loading of image has not been completed yet
 			if(createChildren){
 				domConstruct.empty(this.domNode);
 			}
 			this._updateStars(value, createChildren);
+		},
+
+		_setEditableAttr: function(/*Boolean*/value){
+			this._set("editable", value);
+			if(this.editable && !this._touchStartHandler){
+				this._touchStartHandler = this.on(touch.press, lang.hitch(this, this._onTouchStart));
+			}else if(!this.editable && this._touchStartHandler){
+				this._touchStartHandler.remove();
+				this._touchStartHandler = null;
+			}
+		},
+
+		_setZeroAreaWidthAttr: function(/*Number*/value){
+			this._set("zeroAreaWidth", value);
+			this.domNode.style.paddingLeft = this.zeroAreaWidth + "px";
+		},
+
+		_setTooltipTextAttr: function(/*Number*/value){
+			this._set("tooltipText", value);
+			this._updateTooltip();
+		},
+
+		_updateTooltip: function(){
+			this.domNode.title = string.substitute(this.tooltipText, {value: this.value.toLocaleString(), maximum: this.maximum});
 		},
 
 		_updateStars: function(/*Number*/value, /*Boolean*/create){

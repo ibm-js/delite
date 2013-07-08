@@ -38,11 +38,6 @@ define([
 				// support both "LTR" and "ltr"
 				this.dir = this.dir.toLowerCase();
 			}
-			if(this.editable && !this.isLeftToRight()){
-				// Zero setting area is on the right side
-				this.domNode.style.paddingLeft = "0px";
-				this.domNode.style.paddingRight = this.zeroAreaWidth + "px";
-			}
 		},
 
 		_inZeroSettingArea: function(/*Number*/x, /*Number*/domNodeWidth){
@@ -59,6 +54,15 @@ define([
 				return this.inherited(arguments);
 			}else{
 				return (starStripLength - x) / (starStripLength / this.maximum);
+			}
+		},
+
+		_setZeroAreaWidthAttr: function(/*Number*/value){
+			this.inherited(arguments);
+			if(!this.isLeftToRight()){
+				// Zero setting area is on the right side
+				this.domNode.style.paddingLeft = "0px";
+				this.domNode.style.paddingRight = this.zeroAreaWidth + "px";
 			}
 		},
 
