@@ -272,6 +272,37 @@
 					}
 				},
 				{
+					name: 'test stateful properties ltr',
+					timeout: 4000,
+					runTest: function(){
+						var deferred = new doh.Deferred();
+						setTimeout(deferred.getTestCallback(function(){
+							var ratingId = 'editablestar2';
+							var rating = registry.byId(ratingId);
+							var newMax = 5;
+							var expected;
+							rating.set('maximum', newMax);
+							checkRating(ratingId, newMax, false, 0);
+							rating.set('editable', false);
+							fireMouseUpAndDownOnStar(ratingId, 1, -1);
+							checkRating(ratingId, newMax, false, 0);
+							rating.set('editHalfValues', false);
+							rating.set('editable', true);
+							fireMouseUpAndDownOnStar(ratingId, 1, -1);
+							expected = 2;
+							checkRating(ratingId, newMax, false, expected);
+							rating.set('tooltipText', 'le rating est ${value} sur ${maximum}');
+							checkTooltip(ratingId, 'le rating est ' + expected.toLocaleString() + ' sur ' + newMax.toLocaleString());
+							rating.set('zeroAreaWidth', 0);
+							rating.set('editHalfValues', true);
+							fireMouseUpAndDownOnZeroSettingArea(ratingId);
+							expected = 0.5;
+							checkRating(ratingId, newMax, false, expected);
+						}), 100);
+						return deferred;
+					}
+				},
+				{
 					name: 'test read only rtl',
 					timeout: 4000,
 					runTest: function(){
@@ -393,6 +424,37 @@
 							///////////////////////////////////////////
 							// TODO: CHECK USING MOVE TO SET VALUES
 							///////////////////////////////////////////
+						}), 100);
+						return deferred;
+					}
+				},
+				{
+					name: 'test stateful properties rtl',
+					timeout: 4000,
+					runTest: function(){
+						var deferred = new doh.Deferred();
+						setTimeout(deferred.getTestCallback(function(){
+							var ratingId = 'editablestar2_rtl';
+							var rating = registry.byId(ratingId);
+							var newMax = 5;
+							var expected;
+							rating.set('maximum', newMax);
+							checkRating(ratingId, newMax, true, 0);
+							rating.set('editable', false);
+							fireMouseUpAndDownOnStar(ratingId, 3, 1);
+							checkRating(ratingId, newMax, true, 0);
+							rating.set('editHalfValues', false);
+							rating.set('editable', true);
+							fireMouseUpAndDownOnStar(ratingId, 3, 1);
+							expected = 2;
+							checkRating(ratingId, newMax, true, expected);
+							rating.set('tooltipText', 'le rating est ${value} sur ${maximum}');
+							checkTooltip(ratingId, 'le rating est ' + expected.toLocaleString() + ' sur ' + newMax.toLocaleString());
+							rating.set('zeroAreaWidth', 0);
+							rating.set('editHalfValues', true);
+							fireMouseUpAndDownOnZeroSettingArea(ratingId, true);
+							expected = 0.5;
+							checkRating(ratingId, newMax, true, expected);
 						}), 100);
 						return deferred;
 					}
