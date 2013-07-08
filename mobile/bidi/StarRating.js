@@ -24,7 +24,7 @@ define([
 			this.inherited(arguments);
 			// init the dir attribute when it has not been initialized by the dojo parser
 			if(!this.dir){
-				var parent = this.domNode.parentNode;
+				var parent = this.domNode;
 				while(parent){
 					if(parent.dir){
 						this.dir = parent.dir;
