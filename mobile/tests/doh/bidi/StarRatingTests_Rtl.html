@@ -60,7 +60,7 @@
 				editHalfValues: true,
 				value: 3.5
 			}, "editablestar6_rtl");
-			rating.watch('value', function(name, oldValue, newValue){
+			rating.watch('value', function(name, oldValue, value){
 				document.getElementById("editablestar6value_rtl").innerHTML = "Rating is " + value + " star" + (value > 1 ? "s" : "");
 			});
 			rating.startup();

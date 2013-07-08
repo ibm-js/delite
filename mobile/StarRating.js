@@ -61,7 +61,7 @@ define([
 		//		The number of pixel to add to the left of the widget (or right if the direction is rtl) to allow setting the value to 0
 		//		when editable is set to true. Default value is 0 if the widget is not editable, 20 if the widget is editable.
 		//		Set this value to 0 to forbid the user from setting the value to zero during edition.
-		zeroAreaWidth: 0,
+		zeroAreaWidth: null,
 
 		// tooltipText: String
 		//		On desktop browsers, a tooltip displays the value of the current rating (attribute title of the dom node). This parameter
@@ -80,11 +80,12 @@ define([
 		baseClass: "mblRating",
 
 		postMixInProperties: function(){
-			if(this.editable){
-				this.zeroAreaWidth = 20;
-			}
-			if(this.zeroAreaWidth < 0){
-				this.zeroAreaWidth = 0;
+			if(this.zeroAreaWidth == null){
+				this.zeroAreaWidth = this.editable ? 20 : 0;
+			}else{
+				if(this.zeroAreaWidth < 0){
+					this.zeroAreaWidth = 0;
+				}
 			}
 		},
 
