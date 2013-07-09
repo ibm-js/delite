@@ -1,9 +1,8 @@
 define([
 	"dojo/_base/declare",
 	"dojo/has",
-	"dojo/dom-construct",
-	"../iconUtils"
-], function(declare, has, domConstruct, iconUtils){
+	"dojo/dom-construct"
+], function(declare, has, domConstruct){
 
 	// module:
 	//		dojox/mobile/bidi/StarRating

@@ -8,9 +8,8 @@ define([
 	"dojo/dom-construct",
 	"dojo/dom-geometry",
 	"dijit/_WidgetBase",
-	"./iconUtils",
 	"dojo/has!dojo-bidi?dojox/mobile/bidi/StarRating"
-], function(declare, lang, has, on, string, touch, domConstruct, domGeometry, WidgetBase, iconUtils, BidiStarRating){
+], function(declare, lang, has, on, string, touch, domConstruct, domGeometry, WidgetBase, BidiStarRating){
 
 	// module:
 	//		dojox/mobile/StarRating
@@ -63,7 +62,8 @@ define([
 		// zeroAreaWidth: Number
 		//		The number of pixel to add to the left of the widget (or right if the direction is rtl) to allow setting the value to 0
 		//		when editable is set to true. Default value is 0 if the widget is not editable, 20 if the widget is editable.
-		//		Set this value to 0 to forbid the user from setting the value to zero during edition.
+		//		Set this value to 0 to forbid the user from setting the value to zero during edition. Setting this attribute to a negative
+		//		value is not supported.
 		zeroAreaWidth: null,
 
 		// tooltipText: String
@@ -80,10 +80,6 @@ define([
 		postMixInProperties: function(){
 			if(this.zeroAreaWidth == null){
 				this.zeroAreaWidth = this.editable ? 20 : 0;
-			}else{
-				if(this.zeroAreaWidth < 0){
-					this.zeroAreaWidth = 0;
-				}
 			}
 		},
 
