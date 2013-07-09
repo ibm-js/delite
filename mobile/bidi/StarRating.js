@@ -16,10 +16,6 @@ define([
 		//		This class should not be used directly.
 		//		Mobile StarRating widget loads this module when user sets "has: {'dojo-bidi': true }" in data-dojo-config.
 
-		/* internal properties */
-
-		_nbOfSpriteIcons: 4,
-
 		buildRendering: function(){
 			this.inherited(arguments);
 			// init the dir attribute when it has not been initialized by the dojo parser
@@ -72,27 +68,24 @@ define([
 			}else{
 				var i, index;
 				var parent;
-				var left, h = this.imgNode.height, w = this.imgNode.width / this._nbOfSpriteIcons;
+				var starClass;
 				for(i = 0; i < this.maximum; i++){
 					index = (this.maximum - i - 1);
 					if(index <= value - 1){
-						left = 0; // full
+						starClass = this.baseClass + "FullStar";
 					}else if(index >= value){
-						left = w; // empty
+						starClass = this.baseClass + "EmptyStar";
 					}else{
-						left = w * 3; // half
+						starClass = this.baseClass + "HalfStarRtl";
 					}
 					if(create){
 						parent = domConstruct.create("div", {
 							style: {"float": "left"}
 						}, this.domNode);
-						iconUtils.createIcon(this.image,
-							"0," + left + "," + w + "," + h, null, this.alt, parent, null, null);
 					}else{
 						parent = this.domNode.children[i];
-						iconUtils.createIcon(this.image,
-								"0," + left + "," + w + "," + h, parent.children[0], this.alt, parent, null, null);
 					}
+					parent.className = this.baseClass + "StarIcon " + starClass;
 				}
 			}
 		}

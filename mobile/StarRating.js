@@ -20,26 +20,29 @@ define([
 		//		A widget that displays a rating, usually with stars, and that allows setting a different rating value
 		//		by touching the stars.
 		// description:
-		//		This widget shows the rating using an image sprite that contains full stars, half stars and empty stars
-		//		(note that because this widget is using your own set of star icons, they do not have to be stars at all).
+		//		This widget shows the rating using an image sprite that contains full stars, half stars and empty stars.
+		//		The star displayed can be fully customized by redefining the following css classes in your application:
+		//		- mblStarRatingStarIcon: defines the size of each star icon, and the css sprite to use as the background image stars;
+		//		- mblStarRatingFullStar: defines the background-position of the css sprite to display a full star icon;
+		//		- mblStarRatingHalfStar: defines the background-position of the css sprite to display a half star icon (ltr);
+		//		- mblStarRatingHalfStarRtl: defines the background-position of the css sprite to display a half star icon (rtl);
+		//		- mblStarRatingEmptyStar: defines the background-position of the css sprite to display an empty star icon.
+		//		Note that if your using a different baseClass than the default one 'mblStarRating', you should replace 'mblStarRating'
+		//		in the previous css class names with your baseClass value (for example, with a baseClass of 'myClass', the css classes to use
+		//		will be myClassStarIcon, myClassFullStar, myClassHalfStar, myClassHalfStarRtl, myClassEmptyStar).
+		//
 		//		The widget can be used in read-only or in editable mode. In editable mode, the widget allows to set the
 		//		rating to 0 stars or not using the zeroAreaWidth property. In this mode, it also allows to set
 		//		half values or not using the editHalfValues property.
+		//
 		//		This widget supports right to left direction (using the HTML dir property on the widget dom node or a parent node).
 		//		In desktop browser, the widget displays a tooltip that read the current rating. The tooltip text can be customized
 		//		using the tooltipText property. 
 
 
-		// image: String
-		//		Path to a star image, which includes three stars if bidi support is not enabled (full star,
-		//		empty star, and half star, from left to right), or four stars if bidi support is enabled (full star,
-		//		empty star, left-to-right half star, right-to-left half star, from left to right). All stars must
-		//		have the same width.
-		image: "",
-
-		// alt: String
-		//		An alternate text for the icon image.
-		alt: "", // TODO: SHOULD BE ABLE TO DEFINE ONE ALT VALUE FOR EACH ICON (FULL, EMPTY, HALF) !!!!
+		// baseClass: String
+		//		The name of the CSS class of this widget.
+		baseClass: "mblStarRating",
 
 		// maximum: Number
 		//		The maximum rating, that is also the number of stars to show.
@@ -73,11 +76,6 @@ define([
 
 		_touchStartHandler: null,
 		_otherEventsHandlers: [],
-		_nbOfSpriteIcons: 3,
-
-		// baseClass: String
-		//		The name of the CSS class of this widget.
-		baseClass: "mblRating",
 
 		postMixInProperties: function(){
 			if(this.zeroAreaWidth == null){
@@ -163,38 +161,6 @@ define([
 			return (x - this.zeroAreaWidth) / (starStripLength / this.maximum);
 		},
 
-		_setImageAttr: function(/*String*/imagePath){
-			this._set("image", imagePath);
-			if(this._touchStartHandler){
-				this._touchStartHandler.remove();
-				this._touchStartHandler = null;
-			}
-			if(this.imgNode){
-				domConstruct.destroy(this.imgNode);
-				this.imgNode = null;
-			};
-			var img = this.imgNode = domConstruct.create("img");
-			on(img, "load",
-				lang.hitch(this, function(){
-					var value = this.value;
-					this.value = null; // so that watch callbacks are called the first time the value is set !
-					this.set("value", value);
-					if(this.editable && !this._touchStartHandler){
-						this._touchStartHandler = this.on(touch.press, lang.hitch(this, this._onTouchStart));
-					}
-				}));
-			iconUtils.createIcon(this.image, null, img);
-		},
-
-		_setAltAttr: function(/*String*/value){
-			var i;
-			var children = this.domNode.children;
-			this._set("alt", value);
-			for(i=0; i < children.length; i++){
-				children[i].children[0].alt = this.alt;
-			}
-		},
-
 		_setMaximumAttr: function(/*Number*/value){
 			this._set("maximum", value);
 			// set value to trigger redrawing of the widget
@@ -209,7 +175,6 @@ define([
 			var createChildren = this.domNode.children.length != this.maximum;
 			this._set("value", value);
 			this._updateTooltip();
-			if(this.imgNode.height == 0){ return; } // loading of image has not been completed yet
 			if(createChildren){
 				domConstruct.empty(this.domNode);
 			}
@@ -243,26 +208,23 @@ define([
 		_updateStars: function(/*Number*/value, /*Boolean*/create){
 			var i;
 			var parent;
-			var left, h = this.imgNode.height, w = this.imgNode.width / this._nbOfSpriteIcons;
+			var starClass;
 			for(i = 0; i < this.maximum; i++){
 				if(i <= value - 1){
-					left = 0; // full
+					starClass = this.baseClass + "FullStar";
 				}else if(i >= value){
-					left = w; // empty
+					starClass = this.baseClass + "EmptyStar";
 				}else{
-					left = w * 2; // half
+					starClass = this.baseClass + "HalfStar";
 				}
 				if(create){
 					parent = domConstruct.create("div", {
 						style: {"float": "left"}
 					}, this.domNode);
-					iconUtils.createIcon(this.image,
-						"0," + left + "," + w + "," + h, null, this.alt, parent, null, null);
 				}else{
 					parent = this.domNode.children[i];
-					iconUtils.createIcon(this.image,
-							"0," + left + "," + w + "," + h, parent.children[0], this.alt, parent, null, null);
 				}
+				parent.className = this.baseClass +  "StarIcon " + starClass;
 			}
 		}
 	});

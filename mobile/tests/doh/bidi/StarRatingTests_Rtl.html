@@ -65,15 +65,10 @@
 			});
 			rating.startup();
 
-			var EMPTY_STAR_CLIP = has('webkit') ?  "rect(0px 80px 40px 40px)" : "rect(0px, 80px, 40px, 40px)";
-			var FULL_STAR_CLIP = has('webkit') ? "rect(0px 40px 40px 0px)" : "rect(0px, 40px, 40px, 0px)";
-			var HALF_STAR_CLIP = has('webkit') ? "rect(0px 120px 40px 80px)" : "rect(0px, 120px, 40px, 80px)";
-			var HALF_STAR_RTL_CLIP = has('webkit') ? "rect(0px 160px 40px 120px)" : "rect(0px, 160px, 40px, 120px)";
-			
 			var checkRating = function(ratingId, maximum, rtl, expectedValue){
 				var rating = registry.byId(ratingId);
 				runner.assertTrue(rating, ratingId + ' not found in dijit registry');
-				var stars = query('div img', ratingId);
+				var stars = query('div', ratingId);
 				var i, node;
 				runner.assertEqual(expectedValue, rating.value, 'the rating value is not the expected one for ' + ratingId);
 				runner.assertEqual(maximum, stars.length, "number of stars displayed on node with id star");
@@ -82,22 +77,22 @@
 					if(rtl){
 						if((maximum - i) > expectedValue){
 							if ((maximum - i - 0.5) == expectedValue){
-								runner.assertEqual(HALF_STAR_RTL_CLIP, node.style.clip, 'star ' + i + ' should be half empty in ' + ratingId);
+								runner.assertEqual("mblStarRatingStarIcon mblStarRatingHalfStarRtl", node.className, 'star ' + i + ' should be half empty in ' + ratingId);
 							}else{
-								runner.assertEqual(EMPTY_STAR_CLIP, node.style.clip, 'star ' + i + ' should be empty in ' + ratingId);
+								runner.assertEqual("mblStarRatingStarIcon mblStarRatingEmptyStar", node.className, 'star ' + i + ' should be empty in ' + ratingId);
 							}
 						}else{
-							runner.assertEqual(FULL_STAR_CLIP, node.style.clip, 'star ' + i + ' should be full in ' + ratingId);
+							runner.assertEqual("mblStarRatingStarIcon mblStarRatingFullStar", node.className, 'star ' + i + ' should be full in ' + ratingId);
 						}
 					}else{
 						if(i > (expectedValue - 1)){
 							if(i == (expectedValue - 0.5)){
-								runner.assertEqual(HALF_STAR_CLIP, node.style.clip, 'star ' + i + ' should be half empty in ' + ratingId);
+								runner.assertEqual("mblStarRatingStarIcon mblStarRatingHalfStar", node.className, 'star ' + i + ' should be half empty in ' + ratingId);
 							}else{
-								runner.assertEqual(EMPTY_STAR_CLIP, node.style.clip, 'star ' + i + ' should be empty in ' + ratingId);
+								runner.assertEqual("mblStarRatingStarIcon mblStarRatingEmptyStar", node.className, 'star ' + i + ' should be empty in ' + ratingId);
 							}
 						}else{
-							runner.assertEqual(FULL_STAR_CLIP, node.style.clip, 'star ' + i + ' should be full in ' + ratingId);
+							runner.assertEqual("mblStarRatingStarIcon mblStarRatingFullStar", node.className, 'star ' + i + ' should be full in ' + ratingId);
 						}
 					}
 				}
@@ -108,8 +103,8 @@
 			}
 
 			var fireMouseUpAndDownOnStar= function(ratingId, starIndex /*first index is 0*/, pixelsFromCenter/*?Number of pixels from the center of the star for the clientX coordinate of events*/){
-				var starNode = query('div img', ratingId)[starIndex];
-				var starBox = domGeometry.position(starNode.parentNode); // position of the parent div (image bigger than that because it is a sprite)
+				var starNode = query('div', ratingId)[starIndex];
+				var starBox = domGeometry.position(starNode); // position of the parent div (image bigger than that because it is a sprite)
 				var clientX = starBox.x + (starBox.w / 2) + (pixelsFromCenter ? pixelsFromCenter : 0);
 				fireOnMouseDown(starNode, {clientX: clientX});
 				fireOnMouseUp(starNode, {clientX: clientX});
@@ -292,7 +287,7 @@
 							expected = 2;
 							checkRating(ratingId, newMax, false, expected);
 							rating.set('tooltipText', 'le rating est ${value} sur ${maximum}');
-							checkTooltip(ratingId, 'le rating est ' + expected.toLocaleString() + ' sur ' + newMax.toLocaleString());
+							checkTooltip(ratingId, 'le rating est ' + expected.toLocaleString() + ' sur ' + newMax);
 							rating.set('zeroAreaWidth', 0);
 							rating.set('editHalfValues', true);
 							fireMouseUpAndDownOnZeroSettingArea(ratingId);
@@ -449,7 +444,7 @@
 							expected = 2;
 							checkRating(ratingId, newMax, true, expected);
 							rating.set('tooltipText', 'le rating est ${value} sur ${maximum}');
-							checkTooltip(ratingId, 'le rating est ' + expected.toLocaleString() + ' sur ' + newMax.toLocaleString());
+							checkTooltip(ratingId, 'le rating est ' + expected.toLocaleString() + ' sur ' + newMax);
 							rating.set('zeroAreaWidth', 0);
 							rating.set('editHalfValues', true);
 							fireMouseUpAndDownOnZeroSettingArea(ratingId, true);
@@ -485,7 +480,7 @@
 			No zero setting: <span id="editablestar5" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",maximum:7,editable:true, editHalfValues: true, value: 0.5, zeroAreaWidth: 0'></span>
 			<p>
 			Programmatic: <span id="editablestar6"></span><br>
-			<span id="editablestar6value"></span>
+			<span id="editablestar6value">Rating is 3.5 stars</span>
 		</div>
 		<div dir="RTL">
 			<h1>RTL direction</h1>
@@ -505,7 +500,7 @@
 			No zero setting: <span id="editablestar5_rtl" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",maximum:7,editable:true, editHalfValues: true, value: 0.5, zeroAreaWidth: 0'></span>
 			<p>
 			Programmatic: <span id="editablestar6_rtl"></span>
-			<span id="editablestar6value_rtl"></span>
+			<span id="editablestar6value_rtl">Rating is 3.5 stars</span>
 		</div>
 	</div>	
 </body>

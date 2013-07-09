@@ -5,7 +5,7 @@
 	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no"/>
 	<meta name="apple-mobile-web-app-capable" content="yes"/>
 	<title>StarRating stateful attributes</title>
-	<script type="text/javascript" src="../../deviceTheme.js" data-dojo-config="mblThemeFiles: ['base']"></script>
+	<script type="text/javascript" src="../../deviceTheme.js" data-dojo-config="'dojo-bidi': true"></script>
 	<script type="text/javascript" src="../../../../dojo/dojo.js"
 		data-dojo-config="packages: [{name: 'dojox', location:'../dui'}, {name: 'dijit', location:'../dui'}], async: true, parseOnLoad: true, has: { 'dojo-bidi': true }"></script>
 
@@ -44,12 +44,6 @@
 					var value = isBoolean ? (event.target.value == 'true') : event.target.value;
 					rating.set(attribute, value);
 					ratingrtl.set(attribute, value);
-				};
-				dom.byId('imageSelect').onchange = function(event){
-					updateRatingAttribute('image', event);
-				};
-				dom.byId('altInput').onchange = function(event){
-					updateRatingAttribute('alt', event);
 				};
 				dom.byId('maximumInput').onchange = function(event){
 					updateRatingAttribute('maximum', event);
@@ -92,17 +86,6 @@
  			<span id="srw_rtl" dir="rtl"></span>
 			<div>
 				<table>
-					<tr>
-						<td>image:</td>
-						<td><select id="imageSelect">
-								<option value="../images/star-4-bidi.png">Green Stars</option>
-								<option value="../images/star-6-bidi.png">Yellow Stars</option>
-							</select></td>
-					</tr>
-					<tr>
-						<td>alt:</td>
-						<td><input id="altInput" type="text" value=""></td>
-					</tr>
 					<tr>
 						<td>maximum:</td>
 						<td><input id="maximumInput" type="text" value="7"></td>
