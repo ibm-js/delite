@@ -99,10 +99,6 @@
 				}
 			}
 			
-			var checkTooltip = function(ratingId, expectedTooltip){
-				runner.assertEqual(expectedTooltip, document.getElementById(ratingId).title, 'tooltip text is not the expected one for ' + ratingId);
-			}
-
 			var fireMouseUpAndDownOnStar= function(ratingId, starIndex /*first index is 0*/, pixelsFromCenter/*?Number of pixels from the center of the star for the clientX coordinate of events*/){
 				var starNode = query('div', ratingId)[starIndex];
 				var starBox = domGeometry.position(starNode); // position of the parent div (image bigger than that because it is a sprite)
@@ -127,14 +123,10 @@
 				fireMouseUpAndDownOnStar(ratingId, 2, rtl ? 1 : -1);
 				expected = rtl ? (halfStars ? 4.5: 5) : (halfStars ? 2.5: 3);
 				checkRating(ratingId, 7, rtl, expected);
-				// check tooltip
-				checkTooltip(ratingId, string.substitute(tooltipText, {value: expected.toLocaleString(), maximum: 7}));
 				// set zero rating
 				fireMouseUpAndDownOnZeroSettingArea(ratingId, rtl);
 				expected = zeroSetting ? 0 : 0.5;
 				checkRating(ratingId, 7, rtl, expected);
-				// check tooltip
-				checkTooltip(ratingId, string.substitute(tooltipText, {value: expected.toLocaleString(), maximum: 7}));
 				///////////////////////////////////////////
 				// TODO: CHECK USING MOVE TO SET VALUES
 				///////////////////////////////////////////
@@ -158,16 +150,12 @@
 								fireOnClick(plusButton);
 								expected = (i + 1) * 0.5;
 								checkRating('star', 7, false, expected);
-								// check tooltip
-								checkTooltip('star', expected.toLocaleString());
 							}
 							// Check rating change when clicking the minus button
 							for(i=0; i < 14; i++){
 								fireOnClick(minusButton);
 								expected = (13 - i) * 0.5;
 								checkRating('star', 7, false, expected);
-								// check tooltip
-								checkTooltip('star', expected.toLocaleString());
 							}
 							// Fire down and up events on a star: doesn't change anything
 							fireMouseUpAndDownOnStar('star', 2, -1);
@@ -194,28 +182,6 @@
 						var deferred = new doh.Deferred();
 						setTimeout(deferred.getTestCallback(function(){
 							defaultEditableRatingTest('editablestar2', '${value}', true, true, 0, false);
-						}), 100);
-						return deferred;
-					}
-				},
-				{
-					name: 'test editable half values custom tooltip ltr',
-					timeout: 4000,
-					runTest: function(){
-						var deferred = new doh.Deferred();
-						setTimeout(deferred.getTestCallback(function(){
-							defaultEditableRatingTest('editablestar3', 'The current rating is ${value} star(s) over ${maximum}', true, true, 0, false);
-						}), 100);
-						return deferred;
-					}
-				},
-				{
-					name: 'test editable half values no tooltip ltr',
-					timeout: 4000,
-					runTest: function(){
-						var deferred = new doh.Deferred();
-						setTimeout(deferred.getTestCallback(function(){
-							defaultEditableRatingTest('editablestar4', '', true, true, 0, false);
 						}), 100);
 						return deferred;
 					}
@@ -250,16 +216,12 @@
 							checkRating(id, 7, false, expected);
 							// Check message
 							runner.assertEqual('Rating is 2.5 stars', messageNode.innerHTML, 'message is not the one expected for ' + id)
-							// check tooltip
-							checkTooltip(id, expected.toLocaleString());
 							// set zero rating
 							fireMouseUpAndDownOnZeroSettingArea(id, false);
 							expected = 0;
 							checkRating(id, 7, false, expected);
 							// Check message
 							runner.assertEqual('Rating is 0 star', messageNode.innerHTML, 'message is not the one expected for ' + id)
-							// check tooltip
-							checkTooltip(id, expected.toLocaleString());
 							///////////////////////////////////////////
 							// TODO: CHECK USING MOVE TO SET VALUES
 							///////////////////////////////////////////
@@ -287,8 +249,6 @@
 							fireMouseUpAndDownOnStar(ratingId, 1, -1);
 							expected = 2;
 							checkRating(ratingId, newMax, false, expected);
-							rating.set('tooltipText', 'le rating est ${value} sur ${maximum}');
-							checkTooltip(ratingId, 'le rating est ' + expected.toLocaleString() + ' sur ' + newMax);
 							rating.set('zeroAreaWidth', 0);
 							rating.set('editHalfValues', true);
 							fireMouseUpAndDownOnZeroSettingArea(ratingId);
@@ -315,16 +275,12 @@
 								fireOnClick(plusButton);
 								expected = (i + 1) * 0.5;
 								checkRating('star_rtl', 7, true, expected);
-								// check tooltip
-								checkTooltip('star_rtl', expected.toLocaleString());
 							}
 							// Check rating change when clicking the minus button
 							for(i=0; i < 14; i++){
 								fireOnClick(minusButton);
 								expected = (13 - i) * 0.5;
 								checkRating('star_rtl', 7, true, expected);
-								// check tooltip
-								checkTooltip('star_rtl', expected.toLocaleString());
 							}
 							// Fire down and up events on a star: doesn't change anything
 							fireMouseUpAndDownOnStar('star_rtl', 2, -1);
@@ -351,28 +307,6 @@
 						var deferred = new doh.Deferred();
 						setTimeout(deferred.getTestCallback(function(){
 							defaultEditableRatingTest('editablestar2_rtl', '${value}', true, true, 0, true);
-						}), 100);
-						return deferred;
-					}
-				},
-				{
-					name: 'test editable half values custom tooltip rtl',
-					timeout: 4000,
-					runTest: function(){
-						var deferred = new doh.Deferred();
-						setTimeout(deferred.getTestCallback(function(){
-							defaultEditableRatingTest('editablestar3_rtl', 'The current rating is ${value} star(s) over ${maximum}', true, true, 0, true);
-						}), 100);
-						return deferred;
-					}
-				},
-				{
-					name: 'test editable half values no tooltip rtl',
-					timeout: 4000,
-					runTest: function(){
-						var deferred = new doh.Deferred();
-						setTimeout(deferred.getTestCallback(function(){
-							defaultEditableRatingTest('editablestar4_rtl', '', true, true, 0, true);
 						}), 100);
 						return deferred;
 					}
@@ -407,16 +341,12 @@
 							checkRating(id, 7, true, expected);
 							// Check message
 							runner.assertEqual('Rating is 4.5 stars', messageNode.innerHTML, 'message is not the one expected for ' + id)
-							// check tooltip
-							checkTooltip(id, expected.toLocaleString());
 							// set zero rating
 							fireMouseUpAndDownOnZeroSettingArea(id, true);
 							expected = 0;
 							checkRating(id, 7, true, expected);
 							// Check message
 							runner.assertEqual('Rating is 0 star', messageNode.innerHTML, 'message is not the one expected for ' + id)
-							// check tooltip
-							checkTooltip(id, expected.toLocaleString());
 							///////////////////////////////////////////
 							// TODO: CHECK USING MOVE TO SET VALUES
 							///////////////////////////////////////////
@@ -444,8 +374,6 @@
 							fireMouseUpAndDownOnStar(ratingId, 3, 1);
 							expected = 2;
 							checkRating(ratingId, newMax, true, expected);
-							rating.set('tooltipText', 'le rating est ${value} sur ${maximum}');
-							checkTooltip(ratingId, 'le rating est ' + expected.toLocaleString() + ' sur ' + newMax);
 							rating.set('zeroAreaWidth', 0);
 							rating.set('editHalfValues', true);
 							fireMouseUpAndDownOnZeroSettingArea(ratingId, true);
@@ -474,10 +402,6 @@
 			<p>
 			Editable (half values increment): <span id="editablestar2" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",maximum:7,editable:true, editHalfValues: true'></span>
 			<p>
-			Custom tooltip: <span id="editablestar3" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",maximum:7,editable:true, editHalfValues: true, tooltipText: "The current rating is ${value} star(s) over ${maximum}"'></span>
-			<p>
-			No tooltip: <span id="editablestar4" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",maximum:7,editable:true, editHalfValues: true, tooltipText: ""'></span>
-			<p>
 			No zero setting: <span id="editablestar5" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",maximum:7,editable:true, editHalfValues: true, value: 0.5, zeroAreaWidth: 0'></span>
 			<p>
 			Programmatic: <span id="editablestar6"></span><br>
@@ -493,10 +417,6 @@
 			Editable: <span id="editablestar1_rtl" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",maximum:7,editable:true'></span>
 			<p>
 			Editable (half values increment): <span id="editablestar2_rtl" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",maximum:7,editable:true, editHalfValues: true'></span>
-			<p>
-			Custom tooltip: <span id="editablestar3_rtl" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",maximum:7,editable:true, editHalfValues: true, tooltipText: "The current rating is ${value} star(s) over ${maximum}"'></span>
-			<p>
-			No tooltip: <span id="editablestar4_rtl" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",maximum:7,editable:true, editHalfValues: true, tooltipText: ""'></span>
 			<p>
 			No zero setting: <span id="editablestar5_rtl" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",maximum:7,editable:true, editHalfValues: true, value: 0.5, zeroAreaWidth: 0'></span>
 			<p>

@@ -35,8 +35,6 @@ define([
 		//		half values or not using the editHalfValues property.
 		//
 		//		This widget supports right to left direction (using the HTML dir property on the widget dom node or a parent node).
-		//		In desktop browser, the widget displays a tooltip that read the current rating. The tooltip text can be customized
-		//		using the tooltipText property. 
 
 
 		// baseClass: String
@@ -65,12 +63,6 @@ define([
 		//		Set this value to 0 to forbid the user from setting the value to zero during edition. Setting this attribute to a negative
 		//		value is not supported.
 		zeroAreaWidth: null,
-
-		// tooltipText: String
-		//		On desktop browsers, a tooltip displays the value of the current rating (attribute title of the dom node). This parameter
-		//		allows you to set the message displayed by the tooltip. In the tooltip text, the substring ${value} is replaced by the actual
-		//		value of the Rating widget, while ${maximum} is replaced by the value of maximum.
-		tooltipText: "${value}",
 
 		/* internal properties */
 
@@ -170,7 +162,6 @@ define([
 			//		private
 			var createChildren = this.domNode.children.length != this.maximum;
 			this._set("value", value);
-			this._updateTooltip();
 			if(createChildren){
 				domConstruct.empty(this.domNode);
 			}
@@ -190,15 +181,6 @@ define([
 		_setZeroAreaWidthAttr: function(/*Number*/value){
 			this._set("zeroAreaWidth", value);
 			this.domNode.style.paddingLeft = this.zeroAreaWidth + "px";
-		},
-
-		_setTooltipTextAttr: function(/*Number*/value){
-			this._set("tooltipText", value);
-			this._updateTooltip();
-		},
-
-		_updateTooltip: function(){
-			this.domNode.title = string.substitute(this.tooltipText, {value: this.value.toLocaleString(), maximum: this.maximum});
 		},
 
 		_updateStars: function(/*Number*/value, /*Boolean*/create){

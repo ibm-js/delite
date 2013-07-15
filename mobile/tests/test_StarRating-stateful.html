@@ -48,9 +48,6 @@
 				dom.byId('zeroAreaWidthInput').onchange = function(event){
 					updateRatingAttribute('zeroAreaWidth', event);
 				};
-				dom.byId('tooltipTextInput').onchange = function(event){
-					updateRatingAttribute('tooltipText', event);
-				};
 			});
 		});
 	</script>
@@ -94,10 +91,6 @@
 					<tr>
 						<td>zeroSettingArea:</td>
 						<td><input id="zeroAreaWidthInput" type="text" value="20"></td>
-					</tr>
-					<tr>
-						<td>tooltipText (supports placeholders ${value} and ${maximum}):</td>
-						<td><input id="tooltipTextInput" type="text" value="${value}"></td>
 					</tr>
 				</table>
 			</div>
