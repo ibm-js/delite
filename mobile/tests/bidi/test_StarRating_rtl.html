@@ -49,7 +49,8 @@
 					maximum:7,
 					editable:true,
 					editHalfValues: true,
-					value: 3.5
+					value: 3.5,
+					dir: "rtl"
 				}, "editablestar6_rtl");
 				rating.watch('value', function(name, oldValue, value){
 					document.getElementById("editablestar6value_rtl").innerHTML = "Rating is " + value + " star" + (value > 1 ? "s" : "");
@@ -66,7 +67,7 @@
 </head>
 <body style="visibility:hidden;">
 	<div data-dojo-type="dojox/mobile/View">
-		<div dir="LTR">
+		<div>
 			<h1>LTR direction</h1>
 			<span id="star" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../images/star-4-bidi.png",maximum:7'></span>
 			<span id="value">0</span><br>
@@ -86,7 +87,7 @@
 			Programmatic: <span id="editablestar6"></span><br>
 			<span id="editablestar6value"></span>
 		</div>
-		<div dir="RTL">
+		<div dir="rtl">
 			<h1>RTL direction</h1>
 			<span id="star_rtl" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../images/star-4-bidi.png",maximum:7'></span>
 			<span id="value_rtl">0</span><br>

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <title>StarRating Tests</title>
-<script type="text/javascript" src="../../../deviceTheme.js"></script>
+<script type="text/javascript" src="../../../deviceTheme.js" data-dojo-config="'dojo-bidi': true"></script>
 <script type="text/javascript" src="../../../../../dojo/dojo.js" data-dojo-config="packages: [{name: 'dojox', location:'../dui'}, {name: 'dijit', location:'../dui'}], async: true, parseOnLoad: true, has: { 'dojo-bidi': true }"></script>
 <script type="text/javascript" src="../TestUtil.js"></script>
 <script language="JavaScript" type="text/javascript">
@@ -58,7 +58,8 @@
 				maximum:7,
 				editable:true,
 				editHalfValues: true,
-				value: 3.5
+				value: 3.5,
+				dir: "rtl"
 			}, "editablestar6_rtl");
 			rating.watch('value', function(name, oldValue, value){
 				document.getElementById("editablestar6value_rtl").innerHTML = "Rating is " + value + " star" + (value > 1 ? "s" : "");
@@ -461,7 +462,7 @@
 </script>
 </head>
 <body style="visibility:hidden;">
-	<div data-dojo-type="dojox/mobile/View" dir="LTR">
+	<div data-dojo-type="dojox/mobile/View">
 		<div>
 			<h1>Default direction</h1>
 			<span id="star" data-dojo-type="dojox/mobile/StarRating" data-dojo-props='image:"../../images/star-4-bidi.png",maximum:7'></span>

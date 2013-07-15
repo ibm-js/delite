@@ -15,26 +15,6 @@ define([
 		//		This class should not be used directly.
 		//		Mobile StarRating widget loads this module when user sets "has: {'dojo-bidi': true }" in data-dojo-config.
 
-		buildRendering: function(){
-			this.inherited(arguments);
-			// init the dir attribute when it has not been initialized by the dojo parser
-			if(!this.dir){
-				var parent = this.domNode;
-				while(parent){
-					if(parent.dir){
-						this.dir = parent.dir;
-						parent = null;
-					}else{
-						parent = parent.parentNode;
-					}
-				}
-			}
-			if(this.dir){
-				// support both "LTR" and "ltr"
-				this.dir = this.dir.toLowerCase();
-			}
-		},
-
 		_inZeroSettingArea: function(/*Number*/x, /*Number*/domNodeWidth){
 			if(this.isLeftToRight()){
 				return this.inherited(arguments);

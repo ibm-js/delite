@@ -20,20 +20,26 @@
 		], function(ready, dom, registry, StarRating){
 
 			ready(function(){
-				var ratingProperties = {
+				var rating = new StarRating({
 						image:"../images/star-4-bidi.png",
 						maximum:7,
 						editable:true,
 						editHalfValues: false,
 						value: 3
-				};
-				var rating = new StarRating(ratingProperties, "srw");
+					}, "srw");
  				rating.watch(function(name, oldValue, value){
 					var console = dom.byId("console");
 					console.innerHTML = 'LTR: ' + new Date() + ': ' + name + ' attribute updated from ' + oldValue + ' to ' + value + '<br>' + console.innerHTML;
 				});
 				rating.startup();
-				var ratingrtl = new StarRating(ratingProperties, "srw_rtl");
+				var ratingrtl = new StarRating({
+					image:"../images/star-4-bidi.png",
+					maximum:7,
+					editable:true,
+					editHalfValues: false,
+					value: 3,
+					dir: "rtl"
+				}, "srw_rtl");
  				ratingrtl.watch(function(name, oldValue, value){
 					var console = dom.byId("console");
 					console.innerHTML = 'RTL: ' + new Date() + ': ' + name + ' attribute updated from ' + oldValue + ' to ' + value + '<br>' + console.innerHTML;
@@ -83,7 +89,7 @@
 			<br>
 			Right to Left StarRating:
 			<br>
- 			<span id="srw_rtl" dir="rtl"></span>
+ 			<span id="srw_rtl"></span>
 			<div>
 				<table>
 					<tr>
