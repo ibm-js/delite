@@ -90,12 +90,12 @@ define([
 			event.preventDefault();
 			if(!this._otherEventsHandlers.length){
 				// handle move on the stars strip
-				this._otherEventsHandlers.push(this.on(touch.move, lang.hitch(this, this._onTouchMove)));
+				this._otherEventsHandlers.push(this.on(touch.move, lang.hitch(this, '_onTouchMove')));
 				// handle the end of the value editing
-				this._otherEventsHandlers.push(this.on(touch.release, lang.hitch(this, this._onTouchEnd)));
-				this._otherEventsHandlers.push(this.on(touch.cancel, lang.hitch(this, this._onTouchEnd)));
+				this._otherEventsHandlers.push(this.on(touch.release, lang.hitch(this, '_onTouchEnd')));
+				this._otherEventsHandlers.push(this.on(touch.cancel, lang.hitch(this, '_onTouchEnd')));
 				if(!has('touch')){ // needed only on desktop, for the case when the mouse cursor leave the widget and mouseup is thrown outside of it
-					this._otherEventsHandlers.push(this.on(touch.leave, lang.hitch(this, this._onTouchEnd)));
+					this._otherEventsHandlers.push(this.on(touch.leave, lang.hitch(this, '_onTouchEnd')));
 				}
 			}else{
 				// Remove event handlers (stopping the rating process)
@@ -171,7 +171,7 @@ define([
 		_setEditableAttr: function(/*Boolean*/value){
 			this._set("editable", value);
 			if(this.editable && !this._touchStartHandler){
-				this._touchStartHandler = this.on(touch.press, lang.hitch(this, this._onTouchStart));
+				this._touchStartHandler = this.on(touch.press, lang.hitch(this, '_onTouchStart'));
 			}else if(!this.editable && this._touchStartHandler){
 				this._touchStartHandler.remove();
 				this._touchStartHandler = null;
