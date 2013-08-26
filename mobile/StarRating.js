@@ -9,11 +9,12 @@ define([
 	"dojo/touch",
 	"dojo/keys",
 	"dojo/dom-construct",
+	"dojo/dom-class",
 	"dojo/dom-geometry",
 	"dijit/_WidgetBase",
 	"dojo/has!dojo-bidi?dojox/mobile/bidi/StarRating",
 	"dojo/i18n!./nls/StarRating"
-], function(declare, lang, array, string, has, on, string, touch, keys, domConstruct, domGeometry, WidgetBase, BidiStarRating, messages){
+], function(declare, lang, array, string, has, on, string, touch, keys, domConstruct, domClass, domGeometry, WidgetBase, BidiStarRating, messages){
 
 	// module:
 	//		dojox/mobile/StarRating
@@ -74,7 +75,8 @@ define([
 
 		/* internal properties */
 
-		_touchStartHandler: null,
+		_enterValue: null,
+		_initialEventHandler: null,
 		_otherEventsHandlers: [],
 		_keyDownHandler: null,
 		_incrementKeyCodes: [keys.RIGHT_ARROW, keys.UP_ARROW, keys.NUMPAD_PLUS], // keys to press to increment value
@@ -125,14 +127,34 @@ define([
 			}
 		},
 
+		_onTouchEnter: function(/*Event*/ event){
+			this._enterValue = this.value;
+			domClass.add(this.domNode, 'hovered');
+			this._onTouchStart(event);
+		},
+
 		_onTouchMove: function(/*Event*/ event){
-			this._setValueAttr(this._coordToValue(event));
+			if(has('touch')){
+				this._setValueAttr(this._coordToValue(event));
+			}else{
+				this._updateStars(this._coordToValue(event), false);
+			}
 		},
 
 		_onTouchEnd: function(/*Event*/ event){
-			this._setValueAttr(this._coordToValue(event));
-			// Remove event handlers
-			this._removeEventsHandlers();
+			if(has('touch')){
+				this._setValueAttr(this._coordToValue(event));
+				// Remove event handlers
+				this._removeEventsHandlers();
+			}else if(event.type === 'mouseup' || event.type === 'MSPointerUp'){
+				this._setValueAttr(this._coordToValue(event));
+				this._enterValue = this.value;
+			}else{
+				this._setValueAttr(this._enterValue);
+				domClass.remove(this.domNode, 'hovered');
+				// Remove event handlers
+				this._removeEventsHandlers();
+			}
 		},
 
 		_onKeyDown: function(/*Event*/ event){
@@ -225,11 +247,15 @@ define([
 				this._keyDownHandler = null;
 			}
 			this.domNode.setAttribute('aria-disabled', !this.editable);
-			if(this.editable && !this._touchStartHandler){
-				this._touchStartHandler = this.on(touch.press, lang.hitch(this, '_onTouchStart'));
-			}else if(!this.editable && this._touchStartHandler){
-				this._touchStartHandler.remove();
-				this._touchStartHandler = null;
+			if(this.editable && !this._initialEventHandler){
+				if(has('touch')){
+					this._initialEventHandler = this.on(touch.press, lang.hitch(this, '_onTouchStart'));
+				}else{
+					this._initialEventHandler = this.on(touch.enter, lang.hitch(this, '_onTouchEnter'));
+				}
+			}else if(!this.editable && this._initialEventHandler){
+				this._initialEventHandler.remove();
+				this._initialEventHandler = null;
 			}
 		},
 

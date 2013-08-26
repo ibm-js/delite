@@ -46,6 +46,27 @@ function fireOnClick(obj, eventMixin){
 	}
 }
 
+function fireOnMouseOver(obj, eventMixin){
+	var anchorNode;
+	if(typeof obj === "string"){
+		var demoWidget = registry.byId(obj);
+		anchorNode = demoWidget.domNode;
+	}else{
+		anchorNode = obj;
+	}
+	if(dojo.isIE<9){
+		anchorNode.fireEvent( "onmouseover" );
+	}else{
+		var eventName = "mouseover";
+		if (dojo.isIE >= 10){
+			eventName = "MSPointerOver";
+		}
+		var e = document.createEvent('Events');
+		e.initEvent(eventName, true, true);
+		anchorNode.dispatchEvent(lang.mixin(e, eventMixin));
+	}
+}
+
 function fireOnMouseDown(obj, eventMixin){
 	var anchorNode;
 	if(typeof obj === "string"){
@@ -66,6 +87,7 @@ function fireOnMouseDown(obj, eventMixin){
 		anchorNode.dispatchEvent(lang.mixin(e, eventMixin));
 	}
 }
+
 function fireOnMouseUp(obj, eventMixin){
 	var anchorNode;
 	if(typeof obj === "string"){
@@ -80,6 +102,27 @@ function fireOnMouseUp(obj, eventMixin){
 		var eventName = "mouseup";
 		if (dojo.isIE >= 10){
 			eventName = "MSPointerUp";
+		}
+		var e = document.createEvent('Events');
+		e.initEvent(eventName, true, true);
+		anchorNode.dispatchEvent(lang.mixin(e, eventMixin));
+	}
+}
+
+function fireOnMouseOut(obj, eventMixin){
+	var anchorNode;
+	if(typeof obj === "string"){
+		var demoWidget = registry.byId(obj);
+		anchorNode = demoWidget.domNode;
+	}else{
+		anchorNode = obj;
+	}
+	if(dojo.isIE<9){
+		anchorNode.fireEvent( "onmouseout" );
+	}else{
+		var eventName = "mouseout";
+		if (dojo.isIE >= 10){
+			eventName = "MSPointerOut";
 		}
 		var e = document.createEvent('Events');
 		e.initEvent(eventName, true, true);
