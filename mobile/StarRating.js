@@ -264,9 +264,7 @@ define([
 		},
 
 		_updateStars: function(/*Number*/value, /*Boolean*/create){
-			var i;
-			var parent;
-			var starClass;
+			var i, parent, starClass;
 			for(i = 0; i < this.maximum; i++){
 				if(i <= value - 1){
 					starClass = this.baseClass + "FullStar";
