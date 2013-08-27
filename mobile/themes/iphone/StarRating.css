@@ -1,3 +1,6 @@
+.mblStarRating.hovered {
+  opacity: 0.5;
+}
 .mblStarRatingStarIcon {
   height: 40px;
   width: 40px;
