@@ -1,0 +1,10 @@
+/* CSS for desktop theme for ExampleWidget */
+
+.duiExampleWidget {
+	color: red;
+	background: aqua;
+}
+
+.duiExampleWidget:after {
+	content: " (desktop theme)";
+}

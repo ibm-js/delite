@@ -44,7 +44,8 @@ function endProcess(){
 }
 
 function processFolder(folder, usingCommonSubstitution){
-	var folderFiles = getLessFiles(folder);
+	var folderFiles = getLessFiles(folder),
+		theme = folder.replace(/.*\//, "");
 	
 	if(usingCommonSubstitution){
 		var commonFiles = getLessFiles("../common");
@@ -54,27 +55,27 @@ function processFolder(folder, usingCommonSubstitution){
 			if(themeFile){
 				// If there is a .less file in the theme folder, use it. 
 				outputFile = themeFile.replace(".less", ".css");
-				applyLess(themeFile, null, outputFile);
+				applyLess(theme, themeFile, null, outputFile);
 			}else{
 				// Otherwise, fall back to the .less file which is in 'common'.
 				var fileName = commonFiles.dic[commonFile];
 				outputFile = folder + "/" + fileName.replace(".less", ".css");
 				// dui.mobile mirroring support
 				if(fileName.indexOf("_rtl") == -1){ 
-					applyLess(commonFile, '@import "' + folder + '/variables.less";', outputFile);
+					applyLess(theme, commonFile, '@import "' + folder + '/variables.less";', outputFile);
 				}else{
-					applyLess(commonFile, '@import "' + folder + '/variables_rtl.less";', outputFile);
+					applyLess(theme, commonFile, '@import "' + folder + '/variables_rtl.less";', outputFile);
 				}
 			}
 		});
 	}else{
 		folderFiles.array.forEach(function(file){
-			applyLess(file, null, file.replace(".less", ".css"));
+			applyLess(theme, file, null, file.replace(".less", ".css"));
 		});
 	}
 }
 
-function applyLess(file, prependText, outputFile){ 
+function applyLess(theme, file, prependText, outputFile){
 	beginProcess();
 	console.log("compiling:", file);
 	
@@ -84,6 +85,10 @@ function applyLess(file, prependText, outputFile){
 	if(prependText){
 		lessContent = prependText + lessContent;
 	}
+
+	// If theme name is mentioned in the less file, substitute it.  Used by ExampleWidget for testing.
+	lessContent = lessContent.replace(/{{theme}}/g, theme);
+
 	parser.parse(lessContent, function(error, tree){
 		if(error){
 			less.writeError(error);
