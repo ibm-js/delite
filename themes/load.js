@@ -24,7 +24,6 @@ define([
 		[/BlackBerry|BB10/, "blackberry"],
 		[/iPhone|iPad/, "ios"],
 		[/MSIE 10|WindowsPhone/, "windows"],
-		[/Custom/, "custom"],
 		[/.*/, "desktop"]
 	];
 
@@ -47,8 +46,10 @@ define([
 		//		Typically the array returned will contain one path, but it may contain more if we are loading RTL
 		//		files or compatibility files.
 
-		var base = "./" + theme + "/" + widget
-		return has("dojo-bidi") ? [ base + ".css", base + "_rtl.css" ] : [ base + ".css"];
+		var base = widget.replace(/\.css$/, ""),
+			suffix = /\.css$/.test(widget) ? ".css" : "",
+			path = "./" + theme + "/" + base
+		return has("dojo-bidi") ? [ path + suffix, path + "_rtl" + suffix ] : [ path + suffix];
 	}
 
 	return {
@@ -65,12 +66,11 @@ define([
 		//		widget does not match, the iPhone theme is used.
 		//
 		//	|	http://your.server.com/yourapp.html // automatic detection
-		//	|	http://your.server.com/yourapp.html?theme=Android // forces Android theme
-		//	|	http://your.server.com/yourapp.html?theme=Holodark // forces Holodark theme
-		//	|	http://your.server.com/yourapp.html?theme=BlackBerry // forces Blackberry theme
-		//	|	http://your.server.com/yourapp.html?theme=Custom // forces Custom theme
-		//	|	http://your.server.com/yourapp.html?theme=iPhone // forces iPhone theme
-		//	|	http://your.server.com/yourapp.html?theme=iPad // forces iPad theme
+		//	|	http://your.server.com/yourapp.html?theme=android // forces Android theme
+		//	|	http://your.server.com/yourapp.html?theme=holodark // forces Holodark theme
+		//	|	http://your.server.com/yourapp.html?theme=blackBerry // forces Blackberry theme
+		//	|	http://your.server.com/yourapp.html?theme=custom // forces Custom theme
+		//	|	http://your.server.com/yourapp.html?theme=ios // forces iPhone theme
 		//
 		//		To simulate a particular device from the application code, the user agent
 		//		can be forced by setting dojoConfig.userAgent as follows:
