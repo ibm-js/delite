@@ -29,7 +29,9 @@ define(["dojo/has"], function(has){
 		// summary:
 		//		CSS loading plugin for the DUI widgets.
 		//
-		//		This plugin will load the specified css file, and insert its content into the document.
+		//		This plugin will load the specified css file, or alternately an AMD module returning CSS,
+		//		and insert its content into the document.
+		//
 		//		Similar to dojo/text!, this plugin won't resolve until it has completed loading the specified CSS.
 		//		
 		//		This loader has the following limitations:
@@ -38,10 +40,7 @@ define(["dojo/has"], function(has){
 		//	  		  Imported CSS files should not have @import statements, but rather
 		//			  all CSS files needed should be listed in the widget's define([...], ...) dependency list.
 		//
-		//			- Will not work cross domain.  To work in a cross domain scenario, you must do a build.
-		//	    	  This is necessary anyway because widget templates also do not load cross domain
-		//			  (unless you do a build).  A build will inline the widget templates and
-		//	  		  the widget CSS into the widget's javascript file.
+		//			- Loading CSS files will not work cross domain.  Instead you should use AMD modules returning CSS.
 		//
 		//		For a more full featured loader one can use:
 		//
@@ -66,7 +65,7 @@ define(["dojo/has"], function(has){
 			//		   cause needless network requests.
 			//		2. Avoid browser branching/hacks.  Many browsers have issues detecting
 			//		   when CSS has finished loading and require tricks to detect it.
-			require(["dojo/text!" + path], function(css){
+			require([/\.css$/.test(path) ? "dojo/text!" + path : path], function(css){
 				// Adjust relative image paths to be relative to document location rather than to the CSS file.
 				// This is necessary since we are inserting the CSS as <style> nodes rather than as <link> nodes.
 				var pathToCssFile = path.replace(/[^/]+$/, ""),
