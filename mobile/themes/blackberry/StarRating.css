@@ -1,5 +1,8 @@
-.mblStarRating.hovered {
+.mblStarRating.mblStarRatingHovered {
   opacity: 0.5;
+}
+.mblStarRating {
+  -ms-touch-action: none;
 }
 .mblStarRatingStarIcon {
   height: 40px;
