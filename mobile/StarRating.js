@@ -8,11 +8,12 @@ define([
 	"dojo/touch",
 	"dojo/keys",
 	"dojo/dom-construct",
+	"dojo/dom-class",
 	"dojo/dom-geometry",
 	"dui/_WidgetBase",
 	"dojo/has!dojo-bidi?dui/mobile/bidi/StarRating",
 	"dojo/i18n!./nls/StarRating"
-], function(declare, lang, array, string, has, on, touch, keys, domConstruct, domGeometry, WidgetBase, BidiStarRating, messages){
+], function(declare, lang, array, string, has, on, touch, keys, domConstruct, domClass, domGeometry, WidgetBase, BidiStarRating, messages){
 
 	// module:
 	//		dui/mobile/StarRating
@@ -73,7 +74,10 @@ define([
 
 		/* internal properties */
 
-		_touchStartHandler: null,
+		_enterValue: null,
+		_hovering: false,
+		_hoveredValue: null,
+		_startHandlers: null,
 		_otherEventsHandlers: [],
 		_keyDownHandler: null,
 		_incrementKeyCodes: [keys.RIGHT_ARROW, keys.UP_ARROW, keys.NUMPAD_PLUS], // keys to press to increment value
@@ -107,30 +111,57 @@ define([
 			}
 		},
 
-		_onTouchStart: function(/*Event*/ event){
+		_wireHandlers: function(/*Event*/ event){
 			event.preventDefault();
 			if(!this._otherEventsHandlers.length){
 				// handle move on the stars strip
 				this._otherEventsHandlers.push(this.on(touch.move, lang.hitch(this, '_onTouchMove')));
 				// handle the end of the value editing
-				this._otherEventsHandlers.push(this.on(touch.release, lang.hitch(this, '_onTouchEnd')));
-				this._otherEventsHandlers.push(this.on(touch.cancel, lang.hitch(this, '_onTouchEnd')));
-				if(!has('touch')){ // needed only on desktop, for the case when the mouse cursor leave the widget and mouseup is thrown outside of it
-					this._otherEventsHandlers.push(this.on(touch.leave, lang.hitch(this, '_onTouchEnd')));
-				}
-			}else{
-				// Remove event handlers (stopping the rating process)
-				this._removeEventsHandlers();
+				this._otherEventsHandlers.push(this.on(touch.release, lang.hitch(this, '_onTouchRelease')));
+				this._otherEventsHandlers.push(this.on(touch.leave, lang.hitch(this, '_onTouchLeave')));
+				this._otherEventsHandlers.push(this.on(touch.cancel, lang.hitch(this, '_onTouchLeave')));
 			}
 		},
 
-		_onTouchMove: function(/*Event*/ event){
-			this._setValueAttr(this._coordToValue(event));
+		_onTouchEnter: function(/*Event*/ event){
+			this._wireHandlers(event);
+			if(event.type !== 'dojotouchover'){ // Note: this will be replaced by a test on event.pointerType when we'll implement the pointer event spec in dojo.
+				this._hovering = true;
+				domClass.add(this.domNode, this.baseClass + 'Hovered');
+			}
+			this._enterValue = this.value;
 		},
 
-		_onTouchEnd: function(/*Event*/ event){
+		_onTouchMove: function(/*Event*/ event){
+			var newValue = this._coordToValue(event);
+			if(this._hovering){
+				if(newValue != this._hoveredValue){
+					domClass.add(this.domNode, this.baseClass + 'Hovered');
+					this._updateStars(newValue, false);
+					this._hoveredValue = newValue;
+				}
+			}else{
+				this._setValueAttr(newValue);
+			}
+		},
+
+		_onTouchRelease: function(/*Event*/ event){
 			this._setValueAttr(this._coordToValue(event));
-			// Remove event handlers
+			this._enterValue = this.value;
+			if(!this._hovering){
+				this._removeEventsHandlers();
+			}else{
+				domClass.remove(this.domNode, this.baseClass + 'Hovered');
+			}
+		},
+
+		_onTouchLeave: function(/*Event*/ event){
+			if(this._hovering){
+				this._hovering = false;
+				this._hoveredValue = null;
+				domClass.remove(this.domNode, this.baseClass + 'Hovered');
+				this._setValueAttr(this._enterValue);
+			}
 			this._removeEventsHandlers();
 		},
 
@@ -224,11 +255,14 @@ define([
 				this._keyDownHandler = null;
 			}
 			this.domNode.setAttribute('aria-disabled', !this.editable);
-			if(this.editable && !this._touchStartHandler){
-				this._touchStartHandler = this.on(touch.press, lang.hitch(this, '_onTouchStart'));
-			}else if(!this.editable && this._touchStartHandler){
-				this._touchStartHandler.remove();
-				this._touchStartHandler = null;
+			if(this.editable && !this._startHandlers){
+				this._startHandlers = [this.on(touch.enter, lang.hitch(this, '_onTouchEnter')),
+				                       this.on(touch.press, lang.hitch(this, '_wireHandlers'))];
+			}else if(!this.editable && this._startHandlers){
+				while(this._startHandlers.length){
+					this._startHandlers.pop().remove();
+				}
+				this._startHandlers = null;
 			}
 		},
 
