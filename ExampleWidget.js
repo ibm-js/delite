@@ -3,7 +3,7 @@ define([
 	"./_WidgetBase",
 	"./_CssStateMixin",
 	"./_TemplatedMixin",
-	"./themes/load!ExampleWidget.css"	// inserts the CSS for this widget for page's theme
+	"./themes/load!ExampleWidget"	// inserts the CSS for this widget for page's theme
 ], function(declare, _WidgetBase, _CssStateMixin, _TemplatedMixin){
 
 	return declare([_WidgetBase, _CssStateMixin, _TemplatedMixin], {
