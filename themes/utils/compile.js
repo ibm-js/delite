@@ -2,9 +2,9 @@ var fs = require("fs");
 var path = require("path");
 var less = require("less");
 
-var themeFolders = ["../android", "../iphone", "../blackberry", "../holodark", "../windows", "../custom"];
+var themeFolders = ["../android", "../ios", "../blackberry", "../holodark", "../windows", "../custom"];
 
-var commonFolders = ["../common/domButtons", "../common/transitions"];
+var commonFolders = ["../common/transitions"];
 
 var batchQueue = [];
 var batchIndex = 0;
@@ -13,7 +13,6 @@ var processProgress = 0;
 themeFolders.forEach(function(folder){ 
 	batchQueue.push(function(){
 		processFolder(folder, true);
-		processFolder(folder + "/dijit", false);
 	});
 });
 
@@ -81,7 +80,7 @@ function applyLess(file, prependText, outputFile){
 	
 	var parser = new(less.Parser)({paths: [path.dirname(file)], filename: file, optimization: 1});
 	var lessContent = fs.readFileSync(file, "utf-8");
-	
+
 	if(prependText){
 		lessContent = prependText + lessContent;
 	}
@@ -90,11 +89,11 @@ function applyLess(file, prependText, outputFile){
 			less.writeError(error);
 			process.exit(1);
 		}
+
+		console.log("writing:", outputFile);
 		var fd = fs.openSync(outputFile, "w");
-		
-		fs.write(fd, tree.toCSS({compress: false}).replace(/\n/g, "\r\n"), 0, "utf-8", function(f){
+		fs.write(fd, tree.toCSS({compress: false}), 0, "utf-8", function(f){
 			fs.close(fd);
-			console.log("writing:", outputFile);
 			endProcess();
 		});
 	});
