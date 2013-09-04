@@ -54,12 +54,13 @@ function processFolder(folder, usingCommonSubstitution){
 			var themeFile = folderFiles.dic[commonFiles.dic[commonFile]];
 			if(themeFile){
 				// If there is a .less file in the theme folder, use it. 
-				outputFile = themeFile.replace(".less", ".css");
+				outputFile = themeFile.replace(".less", ".js");
 				applyLess(theme, themeFile, null, outputFile);
 			}else{
 				// Otherwise, fall back to the .less file which is in 'common'.
 				var fileName = commonFiles.dic[commonFile];
-				outputFile = folder + "/" + fileName.replace(".less", ".css");
+
+				outputFile = folder + "/" + fileName.replace(".less", ".js");
 				// dui.mobile mirroring support
 				if(fileName.indexOf("_rtl") == -1){ 
 					applyLess(theme, commonFile, '@import "' + folder + '/variables.less";', outputFile);
@@ -70,7 +71,7 @@ function processFolder(folder, usingCommonSubstitution){
 		});
 	}else{
 		folderFiles.array.forEach(function(file){
-			applyLess(theme, file, null, file.replace(".less", ".css"));
+			applyLess(theme, file, null, file.replace(".less", ".js"));
 		});
 	}
 }
@@ -95,9 +96,19 @@ function applyLess(theme, file, prependText, outputFile){
 			process.exit(1);
 		}
 
+		// Get output CSS
+		var outputText = tree.toCSS({compress: false});
+
+		// If the caller asked to output an AMD module rather than a plain CSS file, add define() wrapper around CSS.
+		// Assumes no single quotes or other weird characters, although double quotes for url("...") are OK.
+		if(/\.js$/.test(outputFile)){
+			outputText = "define(function(){ return '\\\n" + outputText.replace(/\n/mg, "\\\n") + "'; } );\n";
+		}
+
+		// Now write out that CSS as an AMD module
 		console.log("writing:", outputFile);
 		var fd = fs.openSync(outputFile, "w");
-		fs.write(fd, tree.toCSS({compress: false}), 0, "utf-8", function(f){
+		fs.write(fd, outputText, 0, "utf-8", function(f){
 			fs.close(fd);
 			endProcess();
 		});
