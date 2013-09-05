@@ -1,3 +1,5 @@
+// Generated from ../common/ExampleWidget.less for theme windows
+
 define(function(){ return '\
 .duiToolBarButtonHasArrow-styles {\
   width: 27px;\
@@ -13,7 +15,6 @@ define(function(){ return '\
   background-size: 27px 27px;\
   background-repeat: no-repeat;\
 }\
-/* CSS for windows theme for ExampleWidget */\
 .duiExampleWidget {\
   color: #ffffff;\
   background: transparent;\

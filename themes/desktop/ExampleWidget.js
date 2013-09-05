@@ -1,5 +1,6 @@
+// Generated from ../common/ExampleWidget.less for theme desktop
+
 define(function(){ return '\
-/* CSS for desktop theme for ExampleWidget */\
 .duiExampleWidget {\
   color: #000000;\
   background: #a4a4a4;\

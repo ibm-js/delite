@@ -1,5 +1,6 @@
+// Generated from ../common/ExampleWidget.less for theme holodark
+
 define(function(){ return '\
-/* CSS for holodark theme for ExampleWidget */\
 .duiExampleWidget {\
   color: #ffffff;\
   background: #333333;\

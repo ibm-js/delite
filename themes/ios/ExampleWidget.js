@@ -1,5 +1,6 @@
+// Generated from ../common/ExampleWidget.less for theme ios
+
 define(function(){ return '\
-/* CSS for ios theme for ExampleWidget */\
 .duiExampleWidget {\
   color: #ffffff;\
   background: #5877a2;\
