@@ -2,7 +2,7 @@ var fs = require("fs");
 var path = require("path");
 var less = require("less");
 
-var themeFolders = ["../android", "../ios", "../blackberry", "../holodark", "../windows", "../custom"];
+var themeFolders = ["../android", "../ios", "../blackberry", "../holodark", "../windows", "../custom", "../desktop"];
 
 var commonFolders = ["../common/transitions"];
 

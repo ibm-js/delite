@@ -1,5 +1,5 @@
 define(function(){ return '\
-.mblToolBarButtonHasArrow-styles {\
+.duiToolBarButtonHasArrow-styles {\
   width: 27px;\
   height: 27px;\
   border-radius: 20px;\
