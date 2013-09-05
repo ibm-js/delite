@@ -1,8 +1,9 @@
 -------------------------------------------------------------------------------
-Dojo Mobile Themes
+DUI Themes
 -------------------------------------------------------------------------------
 
-Dojo provides platform-specific themes for Android 2, Android 3/4, iOS and Blackberry. There is also a generic theme named "custom".  
+Dui provides platform-specific themes for Android 2, Android 3/4, iOS and Blackberry.
+There is also a generic theme named "custom".  
 
 All themes are generated using the Less CSS library (http://lesscss.org/).
 
@@ -11,7 +12,9 @@ Building mobile themes
 
 1. Install Node.js (http://nodejs.org/). 
 
-2. Run compile.bat or compile.sh to generate all themes.
+2. npm install less
+
+3. Run compile.bat or compile.sh to generate all themes.
 
 You can also run cleanup.bat or cleanup.sh to remove all the generated css files.  
 
