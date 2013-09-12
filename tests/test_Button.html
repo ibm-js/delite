@@ -52,7 +52,7 @@
 </head>
 <body>
 	<button data-dojo-type="dui/Button" data-dojo-id="btn1">Default</button>
-	<button onclick="btn1.set('label', 'Changed');">Change label to 'Changed'</button>
+	<button onclick="btn1.label = 'Changed';">Change label to 'Changed'</button>
 	<hr>
 	<button data-dojo-type="dui/Button" data-dojo-id="btn2" class="duiBlueButton">Blue</button>
 	class="duiBlueButton"
@@ -70,7 +70,7 @@
 			data-dojo-props='iconClass:"duiIconSave"'>
 		Icon Button
 	</button>
-	<button onclick="T1465.set('iconClass', 'duiIconCut');">Change icon to cut</button>
+	<button onclick="T1465.iconClass = 'duiIconCut';">Change icon to cut</button>
 	<div id="msgArea" style="margin:15px"></div>
 </body>
 </html>
