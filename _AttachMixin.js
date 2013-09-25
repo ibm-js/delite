@@ -5,9 +5,8 @@ define([
 	"dojo/_base/lang", // lang.getObject
 	"dojo/mouse",
 	"dojo/on",
-	"dojo/touch",
-	"./_WidgetBase"
-], function(require, array, declare, lang, mouse, on, touch, _WidgetBase){
+	"dojo/touch"
+], function(require, array, declare, lang, mouse, on, touch){
 
 	// module:
 	//		dui/_AttachMixin
@@ -23,7 +22,7 @@ define([
 	// In that case, the a11yclick variable below will get set to point to that synthetic event.
 	var a11yclick;
 
-	var _AttachMixin = declare("dui._AttachMixin", null, {
+	return declare("dui._AttachMixin", null, {
 		// summary:
 		//		Mixin for widgets to attach to dom nodes and setup events via
 		//		convenient data-dojo-attach-point and data-dojo-attach-event DOM attributes.
@@ -203,13 +202,9 @@ define([
 
 		_detachTemplateNodes: function() {
 			// summary:
-			//		Detach and clean up the attachments made in _attachtempalteNodes.
+			//		Detach and clean up the attachments made in _attachTemplateNodes.
 
-			// Delete all attach points to prevent IE6 memory leaks.
-			var _attachScope = this.attachScope || this;
-			array.forEach(this._attachPoints, function(point){
-				delete _attachScope[point];
-			});
+			// Delete all attach points
 			this._attachPoints = [];
 
 			// And same for event handlers
@@ -222,6 +217,4 @@ define([
 			this.inherited(arguments);
 		}
 	});
-
-	return _AttachMixin;
 });
