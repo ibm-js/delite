@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" 
+		content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no"/>
+	<meta name="apple-mobile-web-app-capable" content="yes"/>
+	<title>ScrollableContainer demo</title>
+
+	<script type="text/javascript" src="../mobile/deviceTheme.js"></script>
+	<script type="text/javascript" src="../../dojo/dojo.js"
+		data-dojo-config="async: true, parseOnLoad: false"></script>
+
+	<script type="text/javascript">
+		require([
+			"dojo/parser",
+			"dui/registry",
+			"dui/mobile/ListItem",
+			"dui/ScrollableContainer",
+			"dui/mobile/TabBar",
+			"dui/themes/load!FlexboxLayout", // Temporary, awaiting for Flexbox-based layout containers
+			"dojo/domReady!"
+		], function(parser, registry, ListItem){
+			parser.parse().then(function(){
+				var w = registry.byId("categ1");
+				for(var i = 1; i <= 300; i++){
+					var item = new ListItem({label:"Category "+i, variableHeight: true});
+					w.addChild(item);
+				}
+			});
+		});
+	</script>
+
+	<style>
+	html,body{
+		height: 100%;
+		overflow: hidden;
+	}
+	.top{
+		width: 100%;
+		height: 100%;
+	}
+	.scrollContainer{
+		height: 100%
+	}
+	.list1 li{
+		border-style: solid;
+		border-width: 1px 0px 1px 0px;
+		border-top-color: #BABABC;
+		border-bottom-color: #89898C;
+		background-color: #ACACAF;
+		line-height: 0px;
+	}
+	.list1 li:nth-child(even){
+		background-color: #97979B;
+	}
+	#categ1 {
+		font-size: 18px;
+	}
+	#categ1 li{
+		line-height: 70px;
+	}
+	p {
+		font-family: Helvetica;
+		font-size: 12px;
+	}
+	
+	.iphone_theme .duiTabBarSegmentedControl .duiTabBarButtonIconArea {
+		display: none;
+	}
+	
+	
+	</style>
+</head>
+<body style="visibility:hidden;">
+	<div class="vBox top">
+		<ul data-dojo-type="dui/mobile/TabBar" 
+			data-dojo-props="barType: {'iphone_theme': 'segmentedControl','*':'tallTab'}">
+			<li data-dojo-type="dui/mobile/TabBarButton" 
+				data-dojo-props='icon1:"../mobile/tests/images/tab-icon-16.png", 
+					icon2:"../mobile/tests/images/tab-icon-16h.png",
+					selected:true'>New</li>
+			<li data-dojo-type="dui/mobile/TabBarButton" 
+				data-dojo-props='icon1:"../mobile/tests/images/tab-icon-15.png", 
+					icon2:"../mobile/tests/images/tab-icon-15h.png"'>What's Hot</li>
+			<li data-dojo-type="dui/mobile/TabBarButton" 
+				data-dojo-props='icon1:"../mobile/tests/images/tab-icon-10.png", 
+					icon2:"../mobile/tests/images/tab-icon-10h.png"'>Genius</li>
+		</ul>
+		
+		<div id="categ" data-dojo-type="dui/ScrollableContainer"
+			class="scrollContainer">
+			<ul data-dojo-type="dui/mobile/EdgeToEdgeList" class="list1" id="categ1">
+			</ul>
+		</div>
+
+		<ul data-dojo-type="dui/mobile/TabBar" 
+			style="border-bottom: none;">
+			<li data-dojo-type="dui/mobile/TabBarButton" 
+				data-dojo-props='icon1:"../mobile/tests/images/tab-icon-16.png", 
+					icon2:"../mobile/tests/images/tab-icon-16h.png", 
+					selected:true'>Featured</li>
+			<li data-dojo-type="dui/mobile/TabBarButton" 
+				data-dojo-props='icon1:"../mobile/tests/images/tab-icon-15.png", 
+					icon2:"../mobile/tests/images/tab-icon-15h.png"'>Categories</li>
+			<li data-dojo-type="dui/mobile/TabBarButton" 
+				data-dojo-props='icon1:"../mobile/tests/images/tab-icon-10.png", 
+					icon2:"../mobile/tests/images/tab-icon-10h.png"'>Top 25</li>
+			<li data-dojo-type="dui/mobile/TabBarButton" 
+				data-dojo-props='icon1:"../mobile/tests/images/tab-icon-11.png", 
+					icon2:"../mobile/tests/images/tab-icon-11h.png"'>Search</li>
+			<li data-dojo-type="dui/mobile/TabBarButton" 
+				data-dojo-props='icon1:"../mobile/tests/images/tab-icon-13.png", 
+					icon2:"../mobile/tests/images/tab-icon-13h.png"'>Updates</li>
+		</ul>
+	</div>
+</body>
+</html>
