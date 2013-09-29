@@ -22,10 +22,10 @@ by [ComposeJS](https://github.com/kriszyp/compose) either, although Kitson has
 so using his branch is another option, if we could live with ComposeJS's limited features like
 lack of C3MRO.
 
-Anyway, for now, the custom setters are supported by dui/register, which
-takes a syntax similar to the dijit V1 way of declaring widgets:
+Anyway, for now, the custom setters are supported by dui/Statful, which
+takes the same syntax as the dijit V1 way of declaring widgets:
 
-	register("dui-button", ... {
+	declare(Stateful, {
 		label: "Press",
 		_setLabelAttr: function(val){
 				this._set("label", ...);
@@ -34,19 +34,10 @@ takes a syntax similar to the dijit V1 way of declaring widgets:
 		}
 	});
 
-Dui/register will note all the properties defined in the prototype, direct and inherited,
+Dui/Stateful will note all the properties defined in the prototype, direct and inherited,
 and call Object.defineProperty() on the widget's prototype to add native ES5 setters.
 
 In this way we support native accessors while building on top of the old dojo.declare() code.
-
-Dui/register also takes the shorthand syntaxes from Dijit V1 like:
-
-	_setTabIndexAttr: "focusNode"
-
-in addition to a new syntax that means to setup a custom setter that merely calls this._set(),
-thus causing a watch() notification:
-
-	_setLabelAttr: null,
 
 # Observation
 
@@ -55,7 +46,7 @@ the widget properties.  This is needed for reactive templates etc.   I.e. we wan
 
 	myWidget.watch("myProperty", callback);
 
-and have it work even when widget properties are set via native acessors, i.e. via:
+and have it work even when widget properties are set via native accessors, i.e. via:
 
 	myWidget.myProperty = 123;
 
@@ -73,18 +64,7 @@ library.  However, after changing an object property (or set of object propertie
 `Platform.performMicroTaskCheckpoint()`, or a similar method like `observer.deliver()`, so this hardly seems
 like an acceptable solution.
 
-Therefore, DUI aims to monitor property changes by having custom setters for all watchable properties.
-
-The widget prototype should define custom setters for any properties that can be watched.   There's a shorthand
-though, as listed above:
-
-	register("dui-button", ... {
-		label: "Press",
-		_setLabelAttr: null
-	});
-
-If you call watch() on a property without a custom setter, watch() will create one on the fly on the instance.
-However, that will be slower than having it in the prototype.
+Therefore, dui/Stateful monitors property changes by having custom setters for all watchable properties.
 
 # Reactive templates
 
@@ -92,5 +72,17 @@ TODO: merge from wkeese/handlebars branch
 
 # Custom elements
 
-TODO: implement and document
+Dui/register is for declaring widgets and is meant (in the future) to specify the widget's custom tag:
 
+	register("dui-button", ... {
+		label: "Press",
+		_setLabelAttr: function(val){
+				this._set("label", ...);
+				...
+			}
+		}
+	});
+
+It also allows the shorthand syntax for declaring setters from Dijit V1 like:
+
+	_setTabIndexAttr: "focusNode"
