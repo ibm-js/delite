@@ -3,7 +3,6 @@ define([
 	"dojo/_base/array", // array.forEach array.map
 	"dojo/aspect",
 	"dojo/_base/config", // config.blankGif
-	"dojo/_base/declare", // declare
 	"dojo/Deferred",
 	"dojo/dom", // dom.byId
 	"dojo/dom-attr", // domAttr.set domAttr.remove
@@ -15,14 +14,15 @@ define([
 	"dojo/_base/kernel",
 	"dojo/_base/lang", // mixin(), isArray(), etc.
 	"dojo/on",
-	"dojo/Stateful", // Stateful
 	"dojo/_base/window", // win.body()
+	"./register",
 	"./Destroyable",
+	"./Stateful",
 	"dojo/has!dojo-bidi?./_BidiMixin",
 	"./registry"    // registry.getUniqueId(), registry.findWidgets()
-], function(require, array, aspect, config, declare, Deferred,
+], function(require, array, aspect, config, Deferred,
 			dom, domAttr, domClass, domConstruct, domGeometry, domStyle, has, kernel,
-			lang, on, Stateful, win, Destroyable, _BidiMixin, registry){
+			lang, on, win, register, Destroyable, Stateful, _BidiMixin, registry){
 
 	// module:
 	//		dui/_WidgetBase
@@ -56,8 +56,7 @@ define([
 		};
 	}
 
-	// TODO: remove dependence on Stateful
-	var _WidgetBase = declare("dui._WidgetBase", [Stateful, Destroyable], {
+	var _WidgetBase = register("dui-widgetbase", [Stateful, Destroyable], {
 		// summary:
 		//		Base class for all widgets.
 		//
@@ -94,9 +93,34 @@ define([
 		"class": "",
 		_setClassAttr: { node: "domNode", type: "class" },
 
-		// style: String||Object
+		// style: String|Object
 		//		HTML style attributes as cssText string or name/value hash
 		style: "",
+		_setStyleAttr: function(/*String||Object*/ value){
+			// summary:
+			//		Sets the style attribute of the widget according to value,
+			//		which is either a hash like {height: "5px", width: "3px"}
+			//		or a plain string
+			// tags:
+			//		protected
+
+			var mapNode = this.domNode;
+
+			// Note: technically we should revert any style setting made in a previous call
+			// to his method, but that's difficult to keep track of.
+
+			if(lang.isObject(value)){
+				domStyle.set(mapNode, value);
+			}else{
+				if(mapNode.style.cssText){
+					mapNode.style.cssText += "; " + value;
+				}else{
+					mapNode.style.cssText = value;
+				}
+			}
+
+			this._set("style", value);
+		},
 
 		// title: String
 		//		HTML title attribute.
@@ -118,6 +142,7 @@ define([
 		//		widget state.
 		baseClass: "",
 
+/*=====
 		// srcNodeRef: [readonly] DomNode
 		//		pointer to original DOM node
 		srcNodeRef: null,
@@ -158,29 +183,16 @@ define([
 		//		The document this widget belongs to.  If not specified to constructor, will default to
 		//		srcNodeRef.ownerDocument, or if no sourceRef specified, then to the document global
 		ownerDocument: null,
-		_setOwnerDocumentAttr: function(val){
-			// this setter is merely to avoid automatically trying to set this.domNode.ownerDocument
-			this._set("ownerDocument", val);
-		},
 
-		/*=====
 		// _started: [readonly] Boolean
 		//		startup() has completed.
 		_started: false,
-		=====*/
+=====*/
 
 		// _blankGif: [protected] String
 		//		Path to a blank 1x1 image.
 		//		Used by `<img>` nodes in templates that really get their image via CSS background-image.
 		_blankGif: config.blankGif || require.toUrl("dojo/resources/blank.gif"),
-
-		/*=====
-		// props: [private] Object
-		//		For every property with a custom setter, this hash holds the raw value of the property.
-		//		The widget's prototype's props{} hash holds the default (initial) values of all the properties,
-		//		and then each widget instance has its own props{} hash to hold changes to the initial values.
-		_props: {},
-		=====*/
 
 		//////////// INITIALIZATION METHODS ///////////////////////////////////////
 
@@ -197,9 +209,6 @@ define([
 			//		- use srcNodeRef.innerHTML as my contents
 			//		- if this is a behavioral widget then apply behavior to that srcNodeRef
 			//		- otherwise, replace srcNodeRef with my generated DOM tree
-
-			// this.props holds values for all widget properties with custom setters and/or getters.
-			this._props = lang.delegate(this._props);
 
 			// Setup queue of actions to perform after the rendering has completed.  Used by runAfterRendering(),
 			// which is used by custom setters.
@@ -221,9 +230,7 @@ define([
 			// tags:
 			//		private
 
-			// Note that we skip calling this.inherited(), i.e. dojo/Stateful::postscript(), because 1.x widgets don't
-			// expect their custom setters to get called until after buildRendering().  Consider changing for 2.0.
-
+			this.inherited(arguments);
 			this.create(params, srcNodeRef);
 		},
 
@@ -484,127 +491,6 @@ define([
 			});
 		},
 
-		////////////////// GET/SET, CUSTOM SETTERS, ETC. ///////////////////
-
-		_setStyleAttr: function(/*String||Object*/ value){
-			// summary:
-			//		Sets the style attribute of the widget according to value,
-			//		which is either a hash like {height: "5px", width: "3px"}
-			//		or a plain string
-			// tags:
-			//		protected
-
-			var mapNode = this.domNode;
-
-			// Note: technically we should revert any style setting made in a previous call
-			// to his method, but that's difficult to keep track of.
-
-			if(lang.isObject(value)){
-				domStyle.set(mapNode, value);
-			}else{
-				if(mapNode.style.cssText){
-					mapNode.style.cssText += "; " + value;
-				}else{
-					mapNode.style.cssText = value;
-				}
-			}
-
-			this._set("style", value);
-		},
-
-		set: function(name, value){
-			// summary:
-			//		Sets a hash of properties on a widget.  For example:
-			//
-			//	|	myWidget.set({
-			//	|		foo: "Howdy",
-			//	|		bar: 3
-			//	|	});
-			//
-			//	This is equivalent to calling myWidget.foo = "Howdy" and myWidget.bar = 3
-
-			for(var x in name){
-				this[x] = name[x];
-			}
-		},
-
-		_attrPairNames: {}, // shared between all widgets
-		_getAttrNames: function(name){
-			// summary:
-			//		Helper function for _introspect.
-			//		Caches attribute name values so we don't do the string ops every time.
-			// tags:
-			//		private
-
-			var apn = this._attrPairNames;
-			if(apn[name]){ return apn[name]; }
-			var uc = name.replace(/^[a-z]|-[a-zA-Z]/g, function(c){ return c.charAt(c.length-1).toUpperCase(); });
-			return (apn[name] = {
-				n: name+"Node",
-				s: "_set"+uc+"Attr",	// converts dashes to camel case, ex: accept-charset --> _setAcceptCharsetAttr
-				g: "_get"+uc+"Attr",
-				l: uc.toLowerCase()		// lowercase name w/out dashes, ex: acceptcharset
-			});
-		},
-
-		_set: function(/*String*/ name, /*anything*/ value){
-			// summary:
-			//		Helper function to save new value for specified property without calling it's custom setter,
-			//		and then call handlers registered with watch() if the value has changed.
-			//
-			//		_set() is often used to announce that correlated values have changed without causing an infinite
-			//		loop.  For example, setting Tree.path also affects the value of Tree.paths, and vice-versa,
-			//		but we need to avoid an infinite recursion where the path setter calls the paths setter, and so on.
-
-			// property value is stored in this._props or this, depending on whether or not it has a custom setter
-			var location = name in this._props ? this._props : this;
-
-			var oldValue = location[name];
-			location[name] = value;
-			if(this._created && value !== oldValue){
-				if(this._watchCallbacks){
-					this._watchCallbacks(name, oldValue, value);
-				}
-				// TODO: may want to get rid of this for 2.0, if its causing too much chatter.
-				this.emit("attrmodified-" + name, {
-					detail: {
-						prevValue: oldValue,
-						newValue: value
-					}
-				});
-			}
-		},
-
-		watch: function(/*String?*/ name, /*Function*/ callback){
-			// Most browsers have a way to monitor changes to DOMNode properties.  IE has onpropertychange,
-			// Firefox has watch(), and experimental versions of Chrome have Object.observe().  Unfortunately, current
-			// versions of WebKit, particularly on mobile, apparently have no similar method.
-
-			// For properties that already have custom setters, there's no problem, because the custom setter
-			// announces when a property has changed by calling _set().  However, for properties without custom setters,
-			// our only options are to create dummy custom setters, or do dirty polling.   We choose the former.
-
-			// NB: In the future, when widgets extend HTMLElement rather than existing as separate objects, this approach will
-			// limit which properties can be watched, because one shouldn't create custom setters for DOMNode
-			// properties that need to be accessed directly, like HTMLInputElement.value.  Once you create a custom
-			// setter there's no way to actually change what the HTMLInput is displaying.
-
-			if(!("name" in this._props)){
-				// There's no custom setter in the prototype so create one on the fly in the instance
-				this._props[name] = this[name];
-				Object.defineProperty(this, name, {
-					set: function(val){
-						this._set(name, val);
-					},
-					get: function(){
-						return this._props[name];
-					}
-				});
-			}
-
-			this.inherited(arguments);
-		},
-
 		emit: function(/*String*/ type, /*Object?*/ eventObj, /*Array?*/ callbackArgs){
 			// summary:
 			//		Used by widgets to signal that a synthetic event occurred, ex:
@@ -672,8 +558,16 @@ define([
 			// summary:
 			//		Maps on() type parameter (ex: "mousemove") to method name (ex: "onMouseMove").
 			//		If type is a synthetic event like touch.press then returns undefined.
-
-			return this.constructor._onMap[typeof type == "string" && type.toLowerCase()];	// String
+			var ctor = this.constructor, map = ctor._onMap;
+			if(!map){
+				map = (ctor._onMap = {});
+				for(var attr in ctor.prototype){
+					if(/^on/.test(attr)){
+						map[attr.replace(/^on/, "").toLowerCase()] = attr;
+					}
+				}
+			}
+			return map[typeof type == "string" && type.toLowerCase()];	// String
 		},
 
 		toString: function(){

@@ -1,20 +1,9 @@
 define([
-	"dojo/_base/declare"
-], function (declare) {
+	"dojo/_base/declare",
+	"dojo/dom-attr", // domAttr.set domAttr.remove
+	"dojo/dom-class" // domClass.add domClass.replace
+], function (declare, domAttr, domClass) {
 	'use strict';
-
-	var apn = {};
-	function propNames(name){
-		// summary:
-		//		Helper function to map "foo" --> "_setFooAttr" with caching to avoid recomputing strings
-
-		if(apn[name]){ return apn[name]; }
-		var uc = name.replace(/^[a-z]|-[a-zA-Z]/g, function(c){ return c.charAt(c.length-1).toUpperCase(); });
-		return (apn[name] = {
-			s: "_set" + uc + "Attr",	// converts dashes to camel case, ex: accept-charset --> _setAcceptCharsetAttr
-			g: "_get" + uc + "Attr"
-		});
-	}
 
 	function genSetter(/*String*/ attr, /*Object*/ commands){
 		// summary:
@@ -35,12 +24,7 @@ define([
 
 		function genSimpleSetter(command){
 			var mapNode = command.node || command || "domNode";	// this[mapNode] is the DOMNode to adjust
-			switch(command ? command.type : "null"){
-				case "null":
-					// _setFooAttr: null means to not do anything except make the property watchable
-					return function(value){
-						this._set(attr, value);
-					};					
+			switch(command.type){
 				case "innerText":
 					return function(value){
 						this.runAfterRender(function(){
@@ -141,57 +125,17 @@ define([
 		// Create the widget class by extending specified superclasses and adding specified properties.
 		// Then create a a wrapper class around that, with native accessors and introspected metadata.
 
-		// If classes in superclass array are wrapped (see end of this method), then unwrap them
-		superclasses = superclasses instanceof Array ? superclasses :
-			typeof superclasses == "function" ? [superclasses] : [];
-		superclasses = superclasses.map(function(superclass){
-			return superclass._ctor || superclass;
-		});
-
-		// Convert shorthand notations like alt: "focusNode" into real functions
 		props = props || {};
-		Object.keys(props).forEach(function(name){
-			var names = propNames(name);
-			if(props[names.s] && typeof props[names.s] != "function"){
-				// overwrites the original property but probably no one will mind
-				props[names.s] = genSetter(name, props[names.s]);
+		props.tag = props.declaredClass = tag;	// for debugging
+
+		// Convert shorthand notations like _setAltAttr: "focusNode" into real functions.
+		for(var name in props){
+			if(/^_set[A-Z](.*)Attr$/.test(name) && typeof props[name] != "function"){
+				props[name] = genSetter(name.charAt(4).toLowerCase() + name.substr(5, name.length - 9), props[name]);
 			}
-		});
+		}
 
 		// Generate class
-		var ctor = declare(superclasses, props),
-			proto = ctor.prototype;
-
-		// Generate a wrapper class around the real class.  We'll setup native accessors on the wrapper class,
-		// and also generate _onMap, mapping names like "mousedown" to functions like onMouseDown.
-		// Don't setup the native constructors on the real class because that would interfere with when we later
-		// extended the real class.
-		var wrapperCtor = declare(ctor, {
-			_ctor: ctor,	// for debugging
-			tag: tag,	// for debugging
-			_props: {}
-		});
-		var onMap = (wrapperCtor._onMap = {}), props = wrapperCtor.prototype._props;
-		Object.keys(proto).forEach(function(name){
-			if(/^on/.test(name)){
-				onMap[name.substring(2).toLowerCase()] = name;
-			}
-			var names = propNames(name);
-			if(proto[names.s]){
-				props[name] = proto[name];	// save raw property value
-				Object.defineProperty(wrapperCtor.prototype, name, {
-					set: function(val){
-						this[names.s](val);
-					},
-					get: proto[names.g] ? function(){
-						return this[names.g]();
-					} : function(){
-						return this._props[name];
-					}
-				});
-			}
-		});
-
-		return wrapperCtor;
+		return declare(superclasses, props);
 	}
 });

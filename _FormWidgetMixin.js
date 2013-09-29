@@ -1,6 +1,5 @@
 define([
 	"dojo/_base/array", // array.forEach
-	"dojo/_base/declare", // declare
 	"dojo/dom-attr", // domAttr.set
 	"dojo/dom-style", // domStyle.get
 	"dojo/_base/lang", // lang.hitch lang.isArray
@@ -8,13 +7,14 @@ define([
 	"dojo/on",
 	"dojo/sniff", // has("webkit")
 	"dojo/window", // winUtils.scrollIntoView
-	"./a11y"    // a11y.hasDefaultTabStop
-], function(array, declare, domAttr, domStyle, lang, mouse, on, has, winUtils, a11y){
+	"./a11y",    // a11y.hasDefaultTabStop
+	"./register"
+], function(array, domAttr, domStyle, lang, mouse, on, has, winUtils, a11y, register){
 
 	// module:
 	//		dui/form/_FormWidgetMixin
 
-	return declare("dui.form._FormWidgetMixin", null, {
+	return register("dui-formwidget-mixin", null, {
 		// summary:
 		//		Mixin for widgets corresponding to native HTML elements such as `<checkbox>` or `<button>`,
 		//		which can be children of a `<form>` node or a `dui/form/Form` widget.
@@ -86,8 +86,7 @@ define([
 					this._set("active", false);
 
 					// clear tab stop(s) on this widget's focusable node(s)  (ComboBox has two focusable nodes)
-					var attachPointNames =
-						("_setTabIndexAttr" in this) ? this._setTabIndexAttr : "focusNode";
+					var attachPointNames = this.focusNode ? ["focusNode"] : [];
 					array.forEach(lang.isArray(attachPointNames) ? attachPointNames : [attachPointNames], function(attachPointName){
 						var node = this[attachPointName];
 						// complex code because tabIndex=-1 on a <div> doesn't work on FF
