@@ -23,14 +23,18 @@ define(["dojo/_base/declare", "dojo/_base/lang"], function(declare, lang){
 		//		control and the ability to watch for property changes.
 		//
 		//		The class also provides the functionality to auto-magically manage getters
-		//		and setters for object attributes/properties.
+		//		and setters for class attributes/properties.  Note though that expando properties
+		//		(i.e. properties added to an instance but not in the prototype) are not supported.
 		//
-		//		Getters and Setters should follow the format of _xxxGetter or _xxxSetter where
+		//		Getters and Setters should follow the format of _setXxxAttr or _getXxxAttr where
 		//		the xxx is a name of the attribute to handle.  So an attribute of "foo"
-		//		would have a custom getter of _fooGetter and a custom setter of _fooSetter.
+		//		would have a custom getter of _getFooAttr and a custom setter of _setFooAttr.
+		//		Setters must save and announce the new property value by calling this._set("foo", val),
+		//		and getters should access the property value as this._fooAttr.
 		//
 		// example:
-		//	|	var obj = new Stateful();
+		//	|	var MyClass = declare(Stateful, {});
+		//	|	var obj = new MyClass();
 		//	|	obj.watch("foo", function(){
 		//	|		console.log("foo changed to " + this.foo);
 		//	|	});
@@ -55,6 +59,8 @@ define(["dojo/_base/declare", "dojo/_base/lang"], function(declare, lang){
 				// _setFooAttr method.
 				if(!(names.p in proto)){
 					(function(prop, shadowProp, getter, setter){
+						// TODO: this set enumerable:false on prototype.shadowProp, but not on instance.shadowProp
+						// (instance.shadowProp is set when the instance changes the value)... so, useless?
 						Object.defineProperty(proto, shadowProp, {value: proto[prop], enumerable: false, writable: true});
 						Object.defineProperty(proto, prop, {
 							set: function(x){
@@ -89,7 +95,7 @@ define(["dojo/_base/declare", "dojo/_base/lang"], function(declare, lang){
 			//	|	})
 
 			for(var x in hash){
-				if(name.hasOwnProperty(x) && x !="_watchCallbacks"){
+				if(hash.hasOwnProperty(x) && x != "_watchCallbacks"){
 					this[x] = hash[x];
 				}
 			}
