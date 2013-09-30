@@ -183,7 +183,7 @@ define(["doh/main", "../../Stateful", "dojo/_base/declare"], function(doh, State
 			attr4.bar = 4;
 			t.is(4, attr4.foo, "value set properly");
 			t.is(["bar", null, 3, "foo", null, 3, "foo", 3, 4, "bar", 3, 4], output);
-		}
+		},
 		// serialize test commented out because:
 		//		1. won't print values in prototype like foo
 		//		2. prints _fooAttr shadow value that's supposed to be hidden
@@ -204,7 +204,96 @@ define(["doh/main", "../../Stateful", "dojo/_base/declare"], function(doh, State
 		}
 		*/
 
-		// TODO: tests for subclasses
+		function subclasses1(){
+			// Test when superclass and subclass are declared first, and afterwards instantiated
+			var SuperClass = declare(Stateful, {
+				foo: null,
+				bar: null
+			});
+			var SubClass = declare(SuperClass, {
+				bar: 5
+			});
+
+			var sub = new SubClass();
+			var fooWatchedVal;
+			sub.watch("foo", function(prop, o, n){
+				fooWatchedVal = n;
+			});
+			var barWatchedVal;
+			sub.watch("bar", function(prop, o, n){
+				barWatchedVal = n;
+			});
+			sub.foo = 3;
+			doh.is(3, fooWatchedVal, "foo watch() on SubClass");
+			sub.bar = 4;
+			doh.is(4, barWatchedVal, "bar watch() on SubClass");
+
+			var sup = new SuperClass();
+			var superFooWatchedVal;
+			sup.watch("foo", function(prop, o, n){
+				superFooWatchedVal = n;
+			});
+			var superBarWatchedVal;
+			sup.watch("bar", function(prop, o, n){
+				superBarWatchedVal = n;
+			});
+			sup.foo = 5;
+			doh.is(5, superFooWatchedVal, "foo watch() on SuperClass");
+			sup.bar = 6;
+			doh.is(6, superBarWatchedVal, "bar watch() on SuperClass");
+			doh.is(3, fooWatchedVal, "SubClass listener on foo not called");
+			doh.is(4, barWatchedVal, "SubClass listener on bar not called");
+		},
+
+		function subclasses2(){
+			// Test when superclass is declared and instantiated, then subclass is declared and use later
+			var output = [];
+			var SuperClass = declare(Stateful, {
+				foo: null,
+				bar: null
+			});
+			var sup = new SuperClass();
+			var superFooWatchedVal;
+			sup.watch("foo", function(prop, o, n){
+				superFooWatchedVal = n;
+			});
+			var superBarWatchedVal;
+			sup.watch("bar", function(prop, o, n){
+				superBarWatchedVal = n;
+			});
+			sup.foo = 5;
+			doh.is(5, superFooWatchedVal, "foo watch() on SuperClass");
+			sup.bar = 6;
+			doh.is(6, superBarWatchedVal, "bar watch() on SuperClass");
+
+			var customSetterCalled;
+			var SubClass = declare(SuperClass, {
+				bar: 5,
+				_setBarAttr: function(val){
+					// this should get called even though SuperClass doesn't have a custom setter for "bar"
+					customSetterCalled = true;
+					this._set("bar", val);
+				}
+			});
+			var sub = new SubClass();
+			var fooWatchedVal;
+			sub.watch("foo", function(prop, o, n){
+				fooWatchedVal = n;
+			});
+			var barWatchedVal;
+			sub.watch("bar", function(prop, o, n){
+				barWatchedVal = n;
+			});
+			sub.foo = 3;
+			doh.is(3, fooWatchedVal, "foo watch() on SubClass");
+			sub.bar = 4;
+			doh.is(4, barWatchedVal, "bar watch() on SubClass");
+			doh.t(customSetterCalled, "SubClass custom setter called");
+
+			doh.is(5, superFooWatchedVal, "SuperClass listener on foo not called");
+			sup.bar = 6;
+			doh.is(6, superBarWatchedVal, "SuperClass listener on bar not called");
+		}
 	]);
 
 });
