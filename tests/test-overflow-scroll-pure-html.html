@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" 
+		content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no"/>
+	<meta name="apple-mobile-web-app-capable" content="yes"/>
+	<title>Test overflow:scroll</title>
+	
+	<!-- Test for the scroll events during overflow:scroll -->
+	
+	<style>
+		html, body {
+			width: 100%;
+			height: 100%;
+			-ms-touch-action: none;
+			overflow: hidden;
+			/* avoid horizontal scroll and ensure vert. scrollbar 
+				is always visible: */
+			margin: 0 0;
+			background-color: yellow;
+			
+			/* No effect anywhere?
+			scrollbar-3dlight-color:#ffd700; 
+			scrollbar-arrow-color:#ff0; 
+			scrollbar-base-color:#ff6347; 
+			scrollbar-darkshadow-color:#ffa500; 
+			scrollbar-face-color:#008080; 
+			scrollbar-highlight-color:#ff69b4; 
+			scrollbar-shadow-color:#f0f;
+			*/
+			
+			/* Not helpful on WP8... 
+			-ms-scrollbar-3dlight-color:#ffd700; 
+			-ms-scrollbar-arrow-color:#ff0; 
+			-ms-scrollbar-base-color:#ff6347; 
+			-ms-scrollbar-darkshadow-color:#ffa500; 
+			-ms-scrollbar-face-color:#008080; 
+			-ms-scrollbar-highlight-color:#ff69b4; 
+			-ms-scrollbar-shadow-color:#f0f;
+			*/
+		}
+
+/* These Without these, Chrome/desktop shows scrollbars, while with these it shows a 
+*/
+/* Needed for seeing scroll indicator on stock browser (at least S3 Android 4.1.2 
+ and Nexus Android 4.2.2). BUT this also has the undesired effect that it styles
+ the scroll indicator in Chrome where this is not needed...
+  */
+		::-webkit-scrollbar { width: 3px; height: 3px;}
+		::-webkit-scrollbar-button {  background-color: #666; }
+		::-webkit-scrollbar-track {  background-color: #999;}
+		::-webkit-scrollbar-track-piece { background-color: #ffffff;}
+		::-webkit-scrollbar-thumb { height: 50px; background-color: #666; border-radius: 3px;}
+		::-webkit-scrollbar-corner { background-color: #999;}
+		::-webkit-resizer { background-color: #666;}
+
+		#topContainer {
+			top: 0px;
+			width: 100%;
+			height: 100%;
+		}
+		
+		#scroller {
+			width: 90%;
+			height: 60%;
+			transform: translate3d(0px, 0px, 0px);
+			-webkit-transform: translate3d(0px, 0px, 0px);
+			-webkit-transform: translateZ(0);
+			overflow-y: scroll;
+			/* -ms-touch-action: pan-y; */
+			overflow-x: hidden;
+			-webkit-overflow-scrolling: touch;
+			/* -ms-overflow-style: scrollbar; */ /* when using it the DIV doesn't scroll! */
+			/* -ms-overflow-style: -ms-autohiding-scrollbar; */ /* no effect */
+		}
+		#msgArea {
+			width: 100%;
+			height: 30%;
+			overflow: scroll;
+		}
+	</style>
+	
+	<script type="text/javascript">
+		var numberOfListItems = 500;
+		var scroller, msgArea;
+		var msPointerEnabled = false;
+		
+		window.onload = function() {
+			var contentStr = "<ul>";
+			var i;
+			
+			// msIE = navigator.userAgent.match(/MSIE/) != null;
+			msPointerEnabled = window.navigator.msPointerEnabled;
+			scroller = document.getElementById("scroller"); 
+			msgArea = document.getElementById("msgArea"); 
+			
+			// Fill the scroller with content.
+			var fill = true;
+			var inputFields = false;
+			if(fill){
+				for(var i = 1; i <= numberOfListItems; i++) {
+					contentStr += 
+						inputFields ?
+						"<input type=\"text\" value=\"" + i + "/" + numberOfListItems + "\"><br/>" :
+						"<li>Line " + i + "/" + numberOfListItems + "</li>";
+				};
+				contentStr += "</ul>";
+				scroller.innerHTML = contentStr;
+			}
+
+			var duringTouch = false;
+			var counter = 0, counterDuringTouch = 0;
+			
+			var prevDefault = function(e){
+				// Necessary for instance on Safari to avoid browser scroll
+				// (such that it doesn't interfere with testing the performance of 
+				// the CSS transform).
+				var doIt = true;
+				if(doIt){
+					e.preventDefault();
+					e.stopPropagation();
+					e.stopImmediatePropagation && e.stopImmediatePropagation();
+				}
+			};
+			
+			var logLine = function(str){
+				if(msgArea){
+					msgArea.innerHTML += str + "\n"; 
+					msgArea.scrollTop = msgArea.scrollHeight;
+				}
+			};
+			
+			var clearMsg = function(){
+				if(msgArea){
+					msgArea.innerHTML = "";
+				}
+			};
+			
+			var showCounters = function(){
+				logLine("# during touch: " + counterDuringTouch +
+					" # during momentum: " + (counter - counterDuringTouch) +
+					" st: " + scroller.scrollTop);
+			};
+			
+			var initCounters = function(){
+				counterDuringTouch = 0;
+				counter = 0;
+				logLine("init done");
+			};
+			
+			// Scroll interaction
+			var onTouchStart = function(e){
+				prevDefault();
+				logLine("touchstart st: " + scroller.scrollTop);
+				duringTouch = true;
+				initCounters();
+			};
+
+			var onTouchMove = function(e){
+				prevDefault();
+			};
+		
+			var onTouchEnd = function(e){
+				prevDefault();
+				logLine("touchend st: " + scroller.scrollTop);
+				duringTouch = false;
+			};
+			
+			var onTouchCancel = function(e){
+				prevDefault();
+				logLine("touchcancel st: " + scroller.scrollTop);
+				duringTouch = false;
+			};
+			
+			var onScroll = function(e){
+				var st = scroller.scrollTop;
+				if (!msPointerEnabled){
+					// Touching the DOM during the scroll messes up the scrolling 
+					// on Lumia/WP8!
+					logLine("scrollTop: " + st + " px" + " target: " + e.target.id);
+				}
+				if(duringTouch){
+					counterDuringTouch++;
+				}
+				counter++;
+				
+				if (scroller.offsetHeight + scroller.scrollTop >= scroller.scrollHeight) {
+					logLine(">>> scrolled to bottom");
+				}else if(scroller.scrollTop == 0){
+					logLine("<<< scrolled to top");
+				}
+			};
+			
+			var withEvents = true;
+			if(withEvents){
+				scroller.addEventListener(
+					msPointerEnabled ? "MSPointerDown" : "touchstart", onTouchStart, true);
+				// move and end events may arrive on top-level
+				document.addEventListener(
+					msPointerEnabled ? "MSPointerMove" : "touchmove", onTouchMove, true);
+				document.addEventListener(
+					msPointerEnabled ? "MSPointerUp" : "touchend", onTouchEnd, true);
+				document.addEventListener(
+					msPointerEnabled ? "MSPointerCancel" : "touchcancel", onTouchCancel, true);
+				scroller.addEventListener("scroll", onScroll, true);
+			
+				var onOtherEvent = function(e){
+					logLine("got other event " + e);
+				};
+				if(msPointerEnabled){
+					// No, we get none
+					document.addEventListener("msgesturestart", onOtherEvent, true);
+					document.addEventListener("dragend", onOtherEvent, true);
+					scroller.addEventListener("msgesturestart", onOtherEvent, true);
+					scroller.addEventListener("dragend", onOtherEvent, true);
+				}
+			
+				document.getElementById("clearButton").onclick = clearMsg;
+				document.getElementById("showCountersButton").onclick = showCounters;
+				document.getElementById("initCountersButton").onclick = initCounters;
+			}
+			
+			var logAllEvents = false;
+			if(logAllEvents){
+				var ev = '', out = [];
+				for (ev in window) {
+					if (/^on/.test(ev)) { 
+						out[out.length] = ev;
+					}
+				}
+				logLine(out.join(', '));
+				logLine("===");
+				ev = '', out = [];
+				for (ev in window) {
+					if (/^scroll/.test(ev)) { 
+						out[out.length] = ev;
+					}
+				}
+				logLine(out.join(', '));
+			}
+		};
+		
+		/*
+		if (navigator.userAgent.match(/IEMobile\/10\.0/)) {
+  			var msViewportStyle = document.createElement("style");
+  			msViewportStyle.appendChild(
+  				document.createTextNode(
+					"@-ms-viewport{width:auto !important}"
+			));
+			document.getElementsByTagName("head")[0].
+				appendChild(msViewportStyle);
+		}
+		*/
+	</script>
+</head>
+<body>
+	<textarea id="msgArea" readonly></textarea>
+	<br/>
+	<button id="clearButton">Clear</button>
+	<button id="showCountersButton">Show</button>
+	<button id="initCountersButton">Init</button>
+	<br/>
+	<div id="topContainer">
+		<div id="scroller"></div>
+	</div>
+</body>
+</html>
