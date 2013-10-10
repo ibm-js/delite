@@ -48,9 +48,7 @@ define([
 		//		or removes the attribute, depending on whether the
 		//		value is defined or not.
 		return function(val){
-			this.runAfterRender(function(){
-				domAttr[val ? "set" : "remove"](this, attr, val);
-			});
+			domAttr[val ? "set" : "remove"](this, attr, val);
 			this._set(attr, val);
 		};
 	}
@@ -83,24 +81,18 @@ define([
 			switch(command.type){
 				case "innerText":
 					return function(value){
-						this.runAfterRender(function(){
-							mapNode(this).innerHTML = "";
-							mapNode(this).appendChild(this.ownerDocument.createTextNode(value));
-						});
+						mapNode(this).innerHTML = "";
+						mapNode(this).appendChild(this.ownerDocument.createTextNode(value));
 						this._set(attr, value);
 					};
 				case "innerHTML":
 					return function(value){
-						this.runAfterRender(function(){
-							mapNode(this).innerHTML = value;
-						});
+						mapNode(this).innerHTML = value;
 						this._set(attr, value);
 					};
 				case "class":
 					return function(value){
-						this.runAfterRender(function(){
-							domClass.replace(mapNode(this), value, this[attr]);
-						});
+						domClass.replace(mapNode(this), value, this[attr]);
 						this._set(attr, value);
 					};
 				default:
@@ -115,17 +107,15 @@ define([
 						if(typeof value == "function"){ // functions execute in the context of the widget
 							value = lang.hitch(this, value);
 						}
-						this.runAfterRender(function(){
-							// TODO: this if/else doesn't make sense now because widgets are DOMNodes
-							if(mapNode(this).tagName){
-								// Normal case, mapping to a DOMNode.  Note that modern browsers will have a mapNode(this).setAttribute()
-								// method, but for consistency we still call domAttr().  For 2.0 change to set property?
-								domAttr.set(mapNode(this), attrName, value);
-							}else{
-								// mapping to a sub-widget
-								mapNode(this)[attrName] = value;
-							}
-						});
+						// TODO: this if/else doesn't make sense now because widgets are DOMNodes
+						if(mapNode(this).tagName){
+							// Normal case, mapping to a DOMNode.  Note that modern browsers will have a mapNode(this).setAttribute()
+							// method, but for consistency we still call domAttr().  For 2.0 change to set property?
+							domAttr.set(mapNode(this), attrName, value);
+						}else{
+							// mapping to a sub-widget
+							mapNode(this)[attrName] = value;
+						}
 						this._set(attr, value);
 					};
 			}
@@ -163,7 +153,7 @@ define([
 		// summary:
 		//		Base class for all widgets.
 		//
-		//		Provides stubs for widget lifecycle methods for subclasses to extend, like postMixInProperties(), buildRendering(),
+		//		Provides stubs for widget lifecycle methods for subclasses to extend, like  buildRendering(),
 		//		postCreate(), startup(), and destroy(), and also public API methods like watch().
 		//
 		//		Widgets can provide custom setters/getters for widget attributes, which are called automatically by set(name, value).
@@ -269,7 +259,7 @@ define([
 			// summary:
 			//		Kick off the life-cycle of a widget
 			// description:
-			//		Create calls a number of widget methods (postMixInProperties, buildRendering, postCreate,
+			//		Create calls a number of widget methods (buildRendering, postCreate,
 			//		etc.), some of which of you'll want to override. See http://dojotoolkit.org/reference-guide/dui/_WidgetBase.html
 			//		for a discussion of the widget creation lifecycle.
 			//
@@ -282,37 +272,8 @@ define([
 			// tags:
 			//		private
 
-			// Setup queue of actions to perform after the rendering has completed.  Used by runAfterRendering(),
-			// which is used by custom setters.
-			this._afterRender = new Deferred();
-
-			// extract parameters like onMouseMove that should be converted to on() calls
-			this._toConnect = {};
-			var params = this.params || {};
-			for(var name in params){
-				if(!(name in this) && /^on[A-Z]/.test(name)){
-					this._toConnect[name.substring(2).toLowerCase()] = params[name];
-					delete params[name];
-				}
-			}
-
-			// Mix in our passed parameters, thus calling custom setters.
-			// Also, handle parameters that were specified declaratively on the widget DOMNode.
-			// Note that Stateful won't do this because its constructor isn't called.
-			this.mapAttributes();
-			if(this.params){
-				this.mix(this.params);
-			}
-
-			this.postMixInProperties();
-
-			// Generate an id for the widget if one wasn't specified, or it was specified as id: undefined.
-			// Do this before buildRendering() because it might expect the id to be there.
-			// TODO: this will be problematic for form widgets that want to put the id on the nested <input>
-			if(!this.id){
-				this.id = getUniqueId(this.tag);
-			}
-			this.setAttribute("widgetId", this.id);	// needed by findWidgets(), getEnclosingWidget(), etc.
+			// Get parameters that were specified declaratively on the widget DOMNode.
+			var params = this.mapAttributes();
 
 			// The document and <body> node this widget is associated with
 			this.ownerDocument = this.ownerDocument || (this.srcNodeRef ? this.srcNodeRef.ownerDocument : document);
@@ -320,7 +281,6 @@ define([
 
 			// Render the widget
 			this.buildRendering();
-			this._afterRender.resolve(true);
 
 			this.postCreate();
 
@@ -330,10 +290,14 @@ define([
 			if(this.hasAttribute("data-dojo-id")){
 				window[this.getAttribute("data-dojo-id")] = this;
 			}
+
+			// Now that creation has finished, apply parameters that were specified declaratively.
+			// This is consistent with the timing that parameters are applied for programmatic creation.
+			this.mapAttributes();
 		},
 
 		/**
-		 * Map declaratively specified attributes to widget properties
+		 * Get declaratively specified attributes to widget properties
 		 */
 		mapAttributes: function() {
 			function stringToObject(value) {
@@ -350,8 +314,8 @@ define([
 				return obj;
 			}
 
-			var pcm = this._constructor._propCaseMap;
-			var idx = 0, attr;
+			var pcm = this._constructor._propCaseMap,
+				idx = 0, props = {};
 			while(attr = this.attributes[idx++]){
 				var name = attr.name;	// note: will be lower case
 				if(name in pcm){
@@ -359,39 +323,30 @@ define([
 					var value = attr.value;
 					switch (typeof this[name]) {
 						case 'string':
-							this[name] = value;
+							props[name] = value;
 							break;
 						case 'number':
-							this[name] = value - 0;
+							props[name] = value - 0;
 							break;
 						case 'boolean':
-							this[name] = value !== 'false';
+							props[name] = value !== 'false';
 							break;
 						case 'object':
-							if (this[name] instanceof Array) {
-								this[name] = value ? value.split(/\s+/) : [];
+							if (props[name] instanceof Array) {
+								props[name] = value ? value.split(/\s+/) : [];
 							}
 							else {
-								this[name] = stringToObject(value);
+								props[name] = stringToObject(value);
 							}
 							break;
 						case 'function':
 							/* jshint evil:true */
-							this[name] = lang.getObject(value, false) || new Function(value);
+							props[name] = lang.getObject(value, false) || new Function(value);
 							break;
 					}
 				}
 			}
-		},
-
-		postMixInProperties: function(){
-			// summary:
-			//		Called after the parameters to the widget have been read-in,
-			//		but before the widget template is instantiated. Especially
-			//		useful to set properties that are referenced in the widget
-			//		template.
-			// tags:
-			//		protected
+			return props;
 		},
 
 		buildRendering: dcl.after(function(){
@@ -400,6 +355,7 @@ define([
 			//		Most widgets will leverage dui/handlebars! to implement this method.
 			// tags:
 			//		protected
+
 
 			// baseClass is a single class name or occasionally a space-separated list of names.
 			// Add those classes to the DOMNode.  If RTL mode then also add with Rtl suffix.
@@ -424,14 +380,6 @@ define([
 			//		node dimensions or placement.
 			// tags:
 			//		protected
-
-			// perform connection from this to user specified handlers (ex: onMouseMove)
-			// TODO: this will work for custom events like onDragStart but for names that have meaning
-			// to plain DOMNodes, like onMouseMove, maybe a handler is already set up, and this duplicates??
-			for(var name in this._toConnect){
-				this.on(name, this._toConnect[name]);
-			}
-			delete this._toConnect;
 		},
 
 		startup: function(){
@@ -448,6 +396,14 @@ define([
 			if(this._started){
 				return;
 			}
+
+			// Generate an id for the widget if one wasn't specified, or it was specified as id: undefined.
+			// Do this before buildRendering() because it might expect the id to be there.
+			// TODO: this will be problematic for form widgets that want to put the id on the nested <input>
+			if(!this.id){
+				this.id = getUniqueId(this.tag);
+			}
+			this.setAttribute("widgetId", this.id);	// needed by findWidgets(), getEnclosingWidget(), etc.
 
 			// TODO: Maybe startup() should call enteredViewCallback.
 
@@ -717,10 +673,6 @@ define([
 			};
 		},
 
-		runAfterRender: function(callback){
-			this._afterRender.then(lang.hitch(this, callback));
-		},
-
 		// Utility functions previously in registry.js
 
 		findWidgets: function(root){
@@ -803,7 +755,6 @@ define([
 	}
 
 	// Setup automatic chaining for lifecycle methods, except for buildRendering()
-	dcl.chainAfter(_WidgetBase, "postMixInProperties");
 	dcl.chainAfter(_WidgetBase, "postCreate");
 	dcl.chainAfter(_WidgetBase, "startup");
 	dcl.chainBefore(_WidgetBase, "destroy");

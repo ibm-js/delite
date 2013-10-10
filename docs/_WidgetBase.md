@@ -6,31 +6,39 @@ and code to read widget parameters specified as DOMNode attributes.
 
 ## Lifecycle
 
-The startup lifecycle of a widget that extends `dui/_WidgetBase` is:
+Declarative creation:
 
-1. create element: If it doesn't already exist, custom tag (ex: `<dui-slider>`) is created.
-2. upgrade element: Custom tag is upgraded to have all methods and properties of the widget.
-3. mixin props: Parameters specified declaratively (ex: `<dui-slider max=10>`) or programatically
+1. Element upgraded to have all methods and properties of the widget class.
+2. buildRendering() callback executed.   Note though that the root node already exists.
+3. postCreate() callback.
+4. Parameters specified as DOMNode attributes (ex: `<dui-slider max=10>`) are mixed into the widget, thus calling
+      custom setters.
+5. startup() callback.
+
+Programmatic creation is:
+
+1. Element created with widget tag name (ex: `<dui-slider>`), and
+   upgraded to have all methods and properties of the widget class.
+2. buildRendering() callback executed.   Note though that the root node already exists.
+3. postCreate() callback.
+4. Parameters specified programatically
    (ex: `new MyWidget({title: "..."})`) are mixed into the widget, thus calling
    custom setters.
-4. postMixInProperties() callback.
-5. buildRendering() callback executed.   Note though that the root node already exists.
-6. postCreate() callback.
-7. startup() callback.
+5. startup() callback.
 
-Note that if widget was created programatically, the app must manually call `startup()`
+`startup()` will be called automatically in the declarative case, but
+if the widget was created programatically, the app must manually call `startup()`
 on the widget or its ancestor after inserting the widget into the document.
 
-As mentioned above, there are currently five lifecycle methods which can be extended on the widget:
+As mentioned above, there are currently four lifecycle methods which can be extended on the widget:
 
-1. postMixInProperties()
-2. buildRendering()
-3. postCreate()
-4. startup()
-5. destroy()
+1. buildRendering()
+2. postCreate()
+3. startup()
+4. destroy()
 
 Note that all of these methods except `buildRendering()` are automatically chained,
-so you don't need to worry about setting up code to call the superclasses' methods w/the same names.
+so you don't need to worry about setting up code to call the superclasses' methods.
 
 
 ## Placement
@@ -104,16 +112,13 @@ arguments:
 
 ## Custom setters
 
-Note that currently custom setters may be called before the DOM exists.
-More precisely, they may be called when only the widget's root node exists.
-Therefore, it's often useful to use the `runAfterRender()` helper:
+Note that currently custom setters need to call this._set() to announce
+that the value has changed (for any callbacks registered via watch()):
 
 ```js
 _setLabelAttr: function(val){
 	this._set("label", val);	// to notify listeners
-	this.runAfterRender(function(){
-		this.label.textContent = val;	// update the DOM
-	}
+	this.label.textContent = val;	// update the DOM
 }
 ```
 
