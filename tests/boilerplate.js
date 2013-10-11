@@ -20,10 +20,10 @@ var dir = "",
 	testMode = null;
 
 dojoConfig = {
-	async: true,
-	isDebug: true,
-	locale: "en-us",
-	has: {}
+		async: true,
+		isDebug: true,
+		locale: "en-us",
+		has: {}
 };
 
 // Parse the URL, get parameters
