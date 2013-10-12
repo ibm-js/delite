@@ -279,6 +279,8 @@ define([
 			this.ownerDocument = this.ownerDocument || (this.srcNodeRef ? this.srcNodeRef.ownerDocument : document);
 			this.ownerDocumentBody = win.body(this.ownerDocument);
 
+			this.preCreate();
+
 			// Render the widget
 			this.buildRendering();
 
@@ -347,6 +349,13 @@ define([
 				}
 			}
 			return props;
+		},
+
+		preCreate: function(){
+			// summary:
+			//		Processing before buildRendering()
+			// tags:
+			//		protected
 		},
 
 		buildRendering: dcl.after(function(){
@@ -755,6 +764,7 @@ define([
 	}
 
 	// Setup automatic chaining for lifecycle methods, except for buildRendering()
+	dcl.chainAfter(_WidgetBase, "preCreate");
 	dcl.chainAfter(_WidgetBase, "postCreate");
 	dcl.chainAfter(_WidgetBase, "startup");
 	dcl.chainBefore(_WidgetBase, "destroy");
