@@ -250,7 +250,7 @@ define([
 						// convert parameters like onMouseMove to on() calls
 						node.on(name.substring(2).toLowerCase(), params[name]);
 					}else{
-						this[name] = params[name];
+						node[name] = params[name];
 					}
 				}
 
