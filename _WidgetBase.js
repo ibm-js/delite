@@ -293,7 +293,7 @@ define([
 
 			// Now that creation has finished, apply parameters that were specified declaratively.
 			// This is consistent with the timing that parameters are applied for programmatic creation.
-			this.mapAttributes();
+			dcl.mix(this, params);
 		},
 
 		/**

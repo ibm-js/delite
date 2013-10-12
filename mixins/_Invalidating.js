@@ -19,7 +19,10 @@ define(["dcl/dcl", "dojo/_base/lang", "../_WidgetBase"],
 		//		invalidateRendering to modify this flag. 
 		invalidRendering: false,
 
-		createdCallback: dcl.after(function(){
+		// Listen for any changes to properties after the widget has been rendered,
+		// including when declarative properties (ex: iconClass=xyz) are applied at
+		// end of _WidgetBase.createdCallback()
+		buildRendering: dcl.after(function(){
 			// tags:
 			//		protected
 			if(this._invalidatingProperties){
@@ -48,7 +51,7 @@ define(["dcl/dcl", "dojo/_base/lang", "../_WidgetBase"],
 		},
 		invalidateRendering: function(name){
 			// summary:
-			//		Invalidating the rendering for the next executation frame.
+			//		Invalidating the rendering for the next execution frame.
 			// tags:
 			//		protected
 			if(!this.invalidatedProperties[name]){
