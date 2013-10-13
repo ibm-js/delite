@@ -32,7 +32,7 @@ Programmatic creation is:
 if the widget was created programatically, the app must manually call `startup()`
 on the widget or its ancestor after inserting the widget into the document.
 
-As mentioned above, there are currently four lifecycle methods which can be extended on the widget:
+As mentioned above, there are currently five lifecycle methods which can be extended on the widget:
 
 1. preCreate()
 2. buildRendering()
