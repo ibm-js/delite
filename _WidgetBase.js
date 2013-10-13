@@ -407,12 +407,11 @@ define([
 			}
 
 			// Generate an id for the widget if one wasn't specified, or it was specified as id: undefined.
-			// Do this before buildRendering() because it might expect the id to be there.
+			// Used by focus.js etc.
 			// TODO: this will be problematic for form widgets that want to put the id on the nested <input>
 			if(!this.id){
 				this.id = getUniqueId(this.tag);
 			}
-			this.setAttribute("widgetId", this.id);	// needed by findWidgets(), getEnclosingWidget(), etc.
 
 			// TODO: Maybe startup() should call enteredViewCallback.
 
@@ -461,9 +460,7 @@ define([
 				delete this.bgIframe;
 			}
 
-			if(preserveDom){
-				domAttr.remove(this, "widgetId");
-			}else{
+			if(!preserveDom){
 				domConstruct.destroy(this);
 			}
 		},
@@ -695,7 +692,7 @@ define([
 
 			function getChildrenHelper(root){
 				for(var node = root.firstChild; node; node = node.nextSibling){
-					if(node.nodeType == 1 && node.hasAttribute("widgetId")){
+					if(node.nodeType == 1 && node.buildRendering){
 						outAry.push(node);
 					}else{
 						getChildrenHelper(node);
@@ -712,7 +709,7 @@ define([
 			//		Returns the widget whose DOM tree contains the specified DOMNode, or null if
 			//		the node is not contained within the DOM tree of any widget
 			do{
-				if(node.nodeType == 1 && node.hasAttribute("widgetId")){
+				if(node.nodeType == 1 && node.buildRendering){
 					return node;
 				}
 			}while(node = node.parentNode);
