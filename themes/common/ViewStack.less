@@ -1,0 +1,36 @@
+@ANIMATION_DURATION: .3s;
+@ANIMATION_STYLE:  ease-in-out;
+
+.duiViewStack {
+  box-sizing: border-box !important;
+  overflow-x: hidden !important;
+  position: relative !important;
+}
+
+.duiViewStack div{
+  position: absolute !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.mblSlideAnim {
+  -moz-transition: -moz-transform @ANIMATION_DURATION @ANIMATION_STYLE;
+  -webkit-transition: -webkit-transform @ANIMATION_DURATION @ANIMATION_STYLE;
+  transition: transform @ANIMATION_DURATION @ANIMATION_STYLE;
+}
+
+.leftTranslated{
+  -webkit-transform: translate3d(-100%, 0px, 0px);
+  transform: translate3d(-100%, 0px, 0px);
+}
+.rightTranslated{
+  -webkit-transform: translate3d(100%, 0px, 0px);
+  transform: translate3d(100%, 0px, 0px);
+}
+
+.notTranslated{
+  -webkit-transform: translate3d(0px, 0px, 0px);
+  transform: translate3d(0px, 0px, 0px);
+}
+
