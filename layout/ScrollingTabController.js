@@ -17,12 +17,12 @@ define([
 	"../dui/Menu",
 	"../dui/MenuItem",
 	"../form/Button",
-	"../_HasDropDown",
+	"../HasDropDown",
 	"dojo/NodeList-dom", // NodeList.style
 	"../a11yclick"	// template uses ondijitclick (not for keyboard support, but for responsive touch support)
 ], function(declare, domClass, domGeometry, domStyle, fx, lang, on, query, has,
 	registry, tabControllerTemplate, buttonTemplate, TabController, layoutUtils, _WidgetsInTemplateMixin,
-	Menu, MenuItem, Button, _HasDropDown){
+	Menu, MenuItem, Button, HasDropDown){
 
 	// module:
 	//		dui/layout/ScrollingTabController
@@ -234,7 +234,7 @@ define([
 			}
 		},
 
-		onSelectChild: function(/*dui/_WidgetBase*/ page){
+		onSelectChild: function(/*dui/Widget*/ page){
 			// summary:
 			//		Smoothly scrolls to a tab when it is selected.
 
@@ -444,7 +444,7 @@ define([
 	declare("dui.layout._ScrollingTabControllerButton", [Button, ScrollingTabControllerButtonMixin]);
 
 	// Class used in template
-	declare("dui.layout._ScrollingTabControllerMenuButton", [Button, _HasDropDown, ScrollingTabControllerButtonMixin], {
+	declare("dui.layout._ScrollingTabControllerMenuButton", [Button, HasDropDown, ScrollingTabControllerButtonMixin], {
 		// id of the TabContainer itself
 		containerId: "",
 

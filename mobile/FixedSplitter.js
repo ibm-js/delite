@@ -3,9 +3,9 @@ define([
 	"dojo/_base/window",
 	"dojo/dom-class",
 	"dojo/dom-geometry",
-	"dui/_Contained",
-	"dui/_Container",
-	"dui/_WidgetBase",
+	"../Contained",
+	"../Container",
+	"../Widget",
 	"dojo/has"
 ], function(declare, win, domClass, domGeometry, Contained, Container, WidgetBase, has){
 

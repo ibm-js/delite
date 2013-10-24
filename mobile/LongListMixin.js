@@ -233,14 +233,13 @@ define([
 			}
 		},
 		
-		// The rest of the methods are overrides of _Container and _WidgetBase.
+		// The rest of the methods are overrides of Container and Widget.
 		// We must override them because children are not all added to the DOM tree
 		// under the list node, only a subset of them will really be in the DOM,
 		// but we still want the list to look as if all children were there.
 
 		addChild : function(/* dui._Widget */widget, /* int? */insertIndex){
-			// summary: Overrides dui._Container
-			if(this._items){
+			// summary: Overrides dui._Container			if(this._items){
 				if( typeof insertIndex == "number"){
 					this._items.splice(insertIndex, 0, widget);
 				}else{
@@ -253,8 +252,7 @@ define([
 		},
 
 		removeChild : function(/* Widget|int */widget){
-			// summary: Overrides dui._Container
-			if(this._items){
+			// summary: Overrides dui._CContainer		if(this._items){
 				this._items.splice(typeof widget == "number" ? widget : this._items.indexOf(widget), 1);
 				this._childrenChanged();
 			}else{
@@ -263,7 +261,7 @@ define([
 		},
 
 		getChildren : function(){
-			// summary: Overrides dui._WidgetBase
+			// summary: Overrides dui.Widget
 			if(this._items){
 				return this._items.slice(0);
 			}else{

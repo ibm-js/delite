@@ -1,19 +1,13 @@
 define([
 	"dcl/dcl",
-	"dojo/_base/declare",
-	"dojo/dom-attr", // domAttr.set
-	"dojo/dom-style", // domStyle.get
-	"dojo/_base/lang", // lang.hitch lang.isArray
-	"dojo/mouse", // mouse.isLeft
-	"dojo/on",
-	"dojo/sniff", // has("webkit")
-	"dojo/window" // winUtils.scrollIntoView
-], function (dcl, domAttr, domStyle, lang, mouse, on, has, winUtils) {
+	"dojo/window", // winUtils.scrollIntoView
+	"./Widget"
+], function (dcl, winUtils, Widget) {
 
 	// module:
-	//		dui/_FormWidgetMixin
+	//		dui/FormWidget
 
-	return dcl(null, {
+	return dcl(Widget, {
 		// summary:
 		//		Mixin for widgets that extend HTMLElement, but conceptually correspond
 		//		to native HTML elements such as `<checkbox>` or `<button>`,
@@ -22,7 +16,7 @@ define([
 		// description:
 		//		Represents a single HTML element.
 		//		All these widgets should have these attributes just like native HTML input elements.
-		//		You can set them during widget construction or afterwards, via `dui/_WidgetBase.set()`.
+		//		You can set them during widget construction or afterwards, via `dui/Widget.set()`.
 		//
 		//		They also share some common methods.
 
@@ -68,7 +62,7 @@ define([
 		 Otherwise, we can't setup custom setters for DOMNode properties like "disabled" because then we can't control
 		 the domnode's disabled property.
 
-		 // Override _WidgetBase mapping id to this.domNode, needs to be on focusNode so <label> etc.
+		 // Override Widget mapping id to this.domNode, needs to be on focusNode so <label> etc.
 		 // works with screen reader
 		 _setIdAttr: "focusNode",
 

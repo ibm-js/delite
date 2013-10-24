@@ -7,17 +7,17 @@ define([
 	"dojo/on",
 	"dojo/sniff", // has("ie")
 	"./_FormSelectWidget",
-	"../_HasDropDown",
+	"../HasDropDown",
 	"../dui/DropDownMenu",
 	"../dui/MenuItem",
 	"../dui/MenuSeparator",
 	"../dui/Tooltip",
-	"../_KeyNavMixin",
+	"../KeyNav",
 	"../registry", // registry.byNode
 	"dojo/text!./templates/Select.html",
 	"dojo/i18n!./nls/validate"
 ], function(declare, domAttr, domClass, domGeometry, lang, on, has,
-			_FormSelectWidget, _HasDropDown, DropDownMenu, MenuItem, MenuSeparator, Tooltip, _KeyNavMixin, registry,
+			_FormSelectWidget, HasDropDown, DropDownMenu, MenuItem, MenuSeparator, Tooltip, _KeyNavMixin, registry,
 			template, nlsValidate){
 
 	// module:
@@ -70,7 +70,7 @@ define([
 		}
 	});
 
-	var Select = declare("dui.form.Select" + (has("dojo-bidi") ? "_NoBidi" : ""), [_FormSelectWidget, _HasDropDown, _KeyNavMixin], {
+	var Select = declare("dui.form.Select" + (has("dojo-bidi") ? "_NoBidi" : ""), [_FormSelectWidget, HasDropDown, KeyNav], {
 		// summary:
 		//		This is a "styleable" select box - it is basically a DropDownButton which
 		//		can take a `<select>` as its input.
@@ -178,7 +178,7 @@ define([
 			}
 		},
 
-		focusChild: function(/*dui/_WidgetBase*/ widget){
+		focusChild: function(/*dui/Widget*/ widget){
 			// summary:
 			//		Sets the value to the given option, used during search by letter.
 			// widget:
@@ -217,7 +217,7 @@ define([
 			return node && node.getParent() == this.dropDown;
 		},
 
-		onKeyboardSearch: function(/*dui/_WidgetBase*/ item, /*Event*/ evt, /*String*/ searchString, /*Number*/ numMatches){
+		onKeyboardSearch: function(/*dui/Widget*/ item, /*Event*/ evt, /*String*/ searchString, /*Number*/ numMatches){
 			// summary:
 			//		When a key is pressed that matches a child item,
 			//		this method is called so that a widget can take appropriate action is necessary.

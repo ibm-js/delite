@@ -7,8 +7,8 @@ define([
 	"dojo/on",
 	"dojo/topic",
 	"dui/registry",
-	"dui/_Contained",
-	"dui/_WidgetBase"
+	"../Contained",
+	"../Widget"
 ], function(declare, lang, dom, domClass, domConstruct, on, topic, registry, Contained, WidgetBase){
 
 	// module:

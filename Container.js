@@ -1,11 +1,11 @@
 define([
 	"dcl/dcl",
 	"dojo/dom-construct", // domConstruct.place
-	"./_WidgetBase"
-], function (dcl, domConstruct, _WidgetBase) {
+	"./Widget"
+], function (dcl, domConstruct, Widget) {
 
 	// module:
-	//		dui/_Container
+	//		dui/Container
 
 	return dcl(null, {
 		// summary:
@@ -21,7 +21,7 @@ define([
 			}
 		}),
 
-		addChild: function (/*dui/_WidgetBase|DOMNode*/ widget, /*int?*/ insertIndex) {
+		addChild: function (/*dui/Widget|DOMNode*/ widget, /*int?*/ insertIndex) {
 			// summary:
 			//		Makes the given widget or DOM node a child of this widget.
 			// description:
@@ -33,7 +33,7 @@ define([
 			// In the future consider stripping those nodes on construction, either in the parser or this widget code.
 			var refNode = this.containerNode;
 			if (insertIndex > 0) {
-				// Old-school way to get nth child; dojo.query would be easier but _Container was weened from dojo.query
+				// Old-school way to get nth child; dojo.query would be easier but Container was weened from dojo.query
 				// in #10087 to minimize download size.  Not sure if that's still and issue with new smaller dojo/query.
 				refNode = refNode.firstChild;
 				while (insertIndex > 0) {
@@ -57,7 +57,7 @@ define([
 			// start it now.  Make sure to do this after widget has been
 			// inserted into the DOM tree, so it can see that it's being controlled by me,
 			// so it doesn't try to size itself.
-			if (this._started && !widget._started && dcl.isInstanceOf(widget, _WidgetBase)) {
+			if (this._started && !widget._started && dcl.isInstanceOf(widget, Widget)) {
 				widget.startup();
 			}
 		},
@@ -86,7 +86,7 @@ define([
 			return this.getChildren().length > 0;	// Boolean
 		},
 
-		getIndexOfChild: function (/*dui/_WidgetBase*/ child) {
+		getIndexOfChild: function (/*dui/Widget*/ child) {
 			// summary:
 			//		Gets the index of the child in this container or -1 if not found
 			return this.getChildren().indexOf(child);	// int
