@@ -2,9 +2,6 @@ define(function(){ return '\
 .duiStarRating.duiStarRatingHovered {\
   opacity: 0.5;\
 }\
-.duiStarRating {\
-  -ms-touch-action: none;\
-}\
 .duiStarRatingStarIcon {\
   height: 40px;\
   width: 40px;\
