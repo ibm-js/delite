@@ -341,7 +341,11 @@ define([
 				case "function":
 					/* jshint evil:true */
 					props[name] = lang.getObject(value, false) || new Function(value);
+					break;
+				default:
+					return;
 				}
+				delete widget[name]; // make sure custom setters fire
 			}
 
 			while ((attr = this.attributes[idx++])) {

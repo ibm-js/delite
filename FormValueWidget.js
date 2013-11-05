@@ -18,26 +18,30 @@ define([
 		//		After an onBlur event, onChange fires if the serialized widget value has changed from value
 		//		at the time of onFocus.
 
+		// intermediateChanges: Boolean
+		//		Fires onChange for each value change or only on demand
+		intermediateChanges: false,
+
 		// readOnly: Boolean
 		//		Should this widget respond to user input?
 		//		In markup, this is specified as "readOnly".
 		//		Similar to disabled except readOnly form values are submitted.
 		readOnly: false,
-
-		// intermediateChanges: Boolean
-		//		Fires onChange for each value change or only on demand
-		intermediateChanges: false,
-
-		_setReadOnlyAttr: function (/*Boolean*/ value) {
-			domAttr.set(this.focusNode, "readOnly", value);
-			this._set("readOnly", value);
+		_setReadOnlyAttr: function (/*Boolean*/ isReadOnly) {
+			this._set("readOnly", isReadOnly);
+			if (this.valueNode && this.valueNode !== this) {
+				this.valueNode.readOnly = isReadOnly; // inform screen reader
+			}
+			if (!isReadOnly) {
+				this.removeAttribute("readonly");
+			}
 		},
 
 		// previousOnChangeValue: anything
 		//		The last value fired to onChange.
 		previousOnChangeValue: undefined,
 
-		onChange: function (/*===== newValue =====*/) {
+		onchange: function (/*===== newValue =====*/) {
 			// summary:
 			//		Callback when this widget's value is changed.
 			// tags:
@@ -71,6 +75,7 @@ define([
 			//		onChange is only called form priorityChange=true events.
 			// tags:
 			//		private
+
 			this._pendingOnChange = this._pendingOnChange
 				|| (typeof newValue !== typeof this.previousOnChangeValue)
 				|| (this.compare(newValue, this.previousOnChangeValue) !== 0);
@@ -85,7 +90,7 @@ define([
 				this._onChangeHandle = this.defer(
 					function () {
 						this._onChangeHandle = null;
-						this.onChange(newValue);
+						this.onchange(newValue);
 					}
 				); // try to collapse multiple onChange's fired faster than can be processed
 			}
