@@ -1,6 +1,6 @@
 define([
 	"./register",
-	"./_WidgetBase",
+	"./Widget",
 	"dojo/_base/lang",
 	"dojo/dom",
 	"dojo/dom-geometry",
@@ -9,9 +9,9 @@ define([
 	"dijit/registry"
 
 
-], function(register, _WidgetBase, lang, dom, domGeom, domClass, domConstruct, registry){
+], function(register, Widget, lang, dom, domGeom, domClass, domConstruct, registry){
 
-	return register("dui-view-stack", [HTMLDivElement, _WidgetBase], {
+	return register("dui-view-stack", [HTMLDivElement, Widget], {
 		// summary:
 		//		ViewStack container widget.
 		//
