@@ -1,32 +1,20 @@
 define([
 	"./register",
 	"./Widget",
-	"./DisplayContainer",
-	"./Invalidating",
+	"./mixins/Invalidating",
 	"dojo/dom-class",
-	"./themes/load!BasicLayout"
-], function (register, Widget, DisplayContainer, Invalidating, domClass) {
-	return register("d-basic-layout", [HTMLElement, Widget, DisplayContainer, Invalidating], {
-
-		baseClass: "duiBasicLayout",
-		direction: "horizontal",
-
-		preCreate: function () {
-			this.addInvalidatingProperties("direction");
-		},
-
-		refreshRendering: function () {
-			if (this.direction === "horizontal") {
-				domClass.add(this, "mblHBasicLayout");
-				domClass.remove(tjhis, "mblVBasicLayout");
-			} else {
-				domClass.add(this, "mblVBasicLayout");
-				domClass.remove(this, "mblHBasicLayout");
+	"./themes/load!BasicLayout"],
+	function(register, Widget, Invalidating, domClass){
+		return register("dui-basic-layout", [HTMLDivElement, Widget, Invalidating], {
+			baseClass: "mblBasicLayout",
+			direction: "horizontal",
+			buildRendering: function(){
+if(this.direction == "horizontal"){
+					domClass.add(this, "mblHBasicLayout");
+				}else{
+					domClass.add(this, "mblVBasicLayout");
+				}
 			}
-		},
-
-		buildRendering: function () {
-			this.invalidateRendering();
-		}
-	});
-});
+		});
+	}
+)

@@ -6,10 +6,9 @@ define([
 	"dojo/dom-geometry",
 	"dojo/dom-class",
 	"dojo/dom-construct",
-	"dijit/registry"
-
-
-], function(register, Widget, lang, dom, domGeom, domClass, domConstruct, registry){
+	"dijit/registry",
+	"./themes/load!ViewStack"],
+	function(register, Widget, lang, dom, domGeom, domClass, domConstruct, registry){
 
 	return register("dui-view-stack", [HTMLDivElement, Widget], {
 		// summary:

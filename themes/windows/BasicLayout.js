@@ -31,7 +31,6 @@ define(function(){ return '\
   -webkit-box-orient: vertical;\
   -moz-box-orient: vertical;\
   -ms-box-orient: vertical;\
-  flex-direction: column;\
 }\
 .fill {\
   -webkit-box-flex: 1;\
