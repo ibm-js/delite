@@ -1,16 +1,16 @@
 define([
-	"dcl/dcl",
 	"./register",
 	"./Widget",
-	"./Container",
 	"dojo/_base/lang",
 	"dojo/dom",
 	"dojo/dom-geometry",
 	"dojo/dom-class",
+	"dojo/dom-construct",
+	"dijit/registry",
 	"./themes/load!ViewStack"],
-	function(dcl, register, Widget, Container, lang, dom, domGeom, domClass){
-	return register("d-view-stack", [HTMLElement, Widget, Container], {
+	function(register, Widget, lang, dom, domGeom, domClass, domConstruct, registry){
 
+	return register("dui-view-stack", [HTMLDivElement, Widget], {
 		// summary:
 		//		ViewStack container widget.
 		//
@@ -23,12 +23,12 @@ define([
 		//		See ViewStack.css for default values.
 
 		// example:
-		//	|	<d-view-stack id="vs">
+		//	|	<div is="dui/ViewStack" id="vs">
 		//	|		<div id="childA">...</div>
 		//	|		<div id="childB">...</div>
 		//	|		<div id="childC">...</div>
-		//	|	</d-view-stack>
-		//	|	<d-button onclick="vs.show(childB, {transition: 'slide', direction: 'start'})">...</d-button>
+		//	|	</div>
+		//	|	<button is="dui-button" onclick="vs.show(childB, {transition: 'slide', direction: 'start'})">...</div>
 
 		baseClass: "duiViewStack",
 
@@ -59,6 +59,7 @@ define([
 		show: function(/* HTMLDivElement */ node, props){
 			//		Shows a children of the ViewStack. The parameter 'props' is optional and is
 			//		{transition:'slide', direction:'end'} by default.
+
 			if(!this._visibleChild){
 				this._visibleChild = this.children[0];
 			}
@@ -92,11 +93,20 @@ define([
 			}
 		},
 
-		addChild: dcl.superCall(function(sup){
-			return function (/*dui/Widget|DOMNode*/ widget, /*int?*/ insertIndex) {
-				sup.apply(this, arguments);
-				this._setVisibility(widget, false);
-		}}),
+		// TODO: Rely on _Container.addChild
+		addChild: function(/* HTMLDivElement */ node){
+			if(node){
+				domConstruct.place(node, this);
+				this._setVisibility(node, false);
+			}
+		},
+
+		// TODO: Rely on _Container.removeChild
+		removeChild: function(/* HTMLDivElement */ node){
+			if(node){
+				domConstruct.destroy(node);
+			}
+		},
 
 		buildRendering: function(){
 			for(var i=1; i < this.children.length; i++){
@@ -107,29 +117,29 @@ define([
 		_visibleChild: null,
 
 		_enableAnimation: function (node){
-			domClass.add(node, "duiViewStackSlideAnim");
+			domClass.add(node, "mblSlideAnim");
 		},
 
 		_disableAnimation: function (node){
-			domClass.remove(node, "duiViewStackSlideAnim");
+			domClass.remove(node, "mblSlideAnim");
 		},
 
 		_notTranslated: function(node){
-			domClass.add(node, "duiViewStackNotTranslated");
-			domClass.remove(node, "duiViewStackLeftTranslated");
-			domClass.remove(node, "duiViewStackRightTranslated");
+			domClass.add(node, "notTranslated");
+			domClass.remove(node, "leftTranslated");
+			domClass.remove(node, "rightTranslated");
 		},
 
 		_leftTranslated: function(node){
-			domClass.add(node, "duiViewStackLeftTranslated");
-			domClass.remove(node, "duiViewStackNotTranslated");
-			domClass.remove(node, "duiViewStackRightTranslated");
+			domClass.add(node, "leftTranslated");
+			domClass.remove(node, "notTranslated");
+			domClass.remove(node, "rightTranslated");
 		},
 
 		_rightTranslated: function(node){
-			domClass.add(node, "duiViewStackRightTranslated");
-			domClass.remove(node, "duiViewStackNotTranslated");
-			domClass.remove(node, "duiViewStackLeftTranslated");
+			domClass.add(node, "rightTranslated");
+			domClass.remove(node, "notTranslated");
+			domClass.remove(node, "leftTranslated");
 		},
 
 		_setAfterTransitionHandlers: function(node){
@@ -144,28 +154,25 @@ define([
 
 
 		_setVisibility: function(node, val){
-
-
-			if(val){
-				node.style.visibility = "visible";
-				node.style.display = "";
-			}else{
-				node.style.visibility = "hidden";
-				node.style.display = "none";
-			}
+			node.style.visibility = val ? "visible" : "hidden";
+			node.style.display = val ? "" : "none";
 		},
 
 		_afterTransitionHandle: function(event){
 			var node = event.target;
 
-			if(domClass.contains(node, "duiViewStackLeftTranslated") || domClass.contains(node, "duiViewStackRightTranslated")){
-				this._setVisibility(node, false);
-			}
-			domClass.remove(node, "duiViewStackRightTranslated");
-			domClass.remove(node, "duiViewStackLeftTranslated");
-			domClass.remove(node, "duiViewStackNotTranslated");
-
-			domClass.remove(node, "duiViewStackSlideAnim");
+			// ##########################
+			// OPTIMISATION: let translated element in place after transition
+			// For next transitions, if the element is already at the correct place, we avoid an extra rendering pass.
+			// TODO: Check compatibility with all actual devices
+			//if(domClass.contains(node, "leftTranslated") || domClass.contains(node, "rightTranslated")){
+			//	this._setVisibility(node, false);
+			//}
+			//domClass.remove(node, "rightTranslated");
+			//domClass.remove(node, "leftTranslated");
+			//domClass.remove(node, "notTranslated");
+			// ##########################
+			domClass.remove(node, "mblSlideAnim");
 			this._removeAfterTransitionHandlers(node);
 		}
 	});
