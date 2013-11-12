@@ -156,17 +156,13 @@ define([
 		_afterTransitionHandle: function(event){
 			var node = event.target;
 
-			// ##########################
-			// OPTIMISATION: let translated element in place after transition
-			// For next transitions, if the element is already at the correct place, we avoid an extra rendering pass.
-			// TODO: Check compatibility with all actual devices
-			//if(domClass.contains(node, "leftTranslated") || domClass.contains(node, "rightTranslated")){
-			//	this._setVisibility(node, false);
-			//}
-			//domClass.remove(node, "rightTranslated");
-			//domClass.remove(node, "leftTranslated");
-			//domClass.remove(node, "notTranslated");
-			// ##########################
+			if(domClass.contains(node, "leftTranslated") || domClass.contains(node, "rightTranslated")){
+				this._setVisibility(node, false);
+			}
+			domClass.remove(node, "rightTranslated");
+			domClass.remove(node, "leftTranslated");
+			domClass.remove(node, "notTranslated");
+
 			domClass.remove(node, "mblSlideAnim");
 			this._removeAfterTransitionHandlers(node);
 		}
