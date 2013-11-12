@@ -107,29 +107,29 @@ define([
 		_visibleChild: null,
 
 		_enableAnimation: function (node){
-			domClass.add(node, "mblSlideAnim");
+			domClass.add(node, "duiViewStackSlideAnim");
 		},
 
 		_disableAnimation: function (node){
-			domClass.remove(node, "mblSlideAnim");
+			domClass.remove(node, "duiViewStackSlideAnim");
 		},
 
 		_notTranslated: function(node){
-			domClass.add(node, "notTranslated");
-			domClass.remove(node, "leftTranslated");
-			domClass.remove(node, "rightTranslated");
+			domClass.add(node, "duiViewStackNotTranslated");
+			domClass.remove(node, "duiViewStackLeftTranslated");
+			domClass.remove(node, "duiViewStackRightTranslated");
 		},
 
 		_leftTranslated: function(node){
-			domClass.add(node, "leftTranslated");
-			domClass.remove(node, "notTranslated");
-			domClass.remove(node, "rightTranslated");
+			domClass.add(node, "duiViewStackLeftTranslated");
+			domClass.remove(node, "duiViewStackNotTranslated");
+			domClass.remove(node, "duiViewStackRightTranslated");
 		},
 
 		_rightTranslated: function(node){
-			domClass.add(node, "rightTranslated");
-			domClass.remove(node, "notTranslated");
-			domClass.remove(node, "leftTranslated");
+			domClass.add(node, "duiViewStackRightTranslated");
+			domClass.remove(node, "duiViewStackNotTranslated");
+			domClass.remove(node, "duiViewStackLeftTranslated");
 		},
 
 		_setAfterTransitionHandlers: function(node){
@@ -156,14 +156,14 @@ define([
 		_afterTransitionHandle: function(event){
 			var node = event.target;
 
-			if(domClass.contains(node, "leftTranslated") || domClass.contains(node, "rightTranslated")){
+			if(domClass.contains(node, "duiViewStackLeftTranslated") || domClass.contains(node, "duiViewStackRightTranslated")){
 				this._setVisibility(node, false);
 			}
-			domClass.remove(node, "rightTranslated");
-			domClass.remove(node, "leftTranslated");
-			domClass.remove(node, "notTranslated");
+			domClass.remove(node, "duiViewStackRightTranslated");
+			domClass.remove(node, "duiViewStackLeftTranslated");
+			domClass.remove(node, "duiViewStackNotTranslated");
 
-			domClass.remove(node, "mblSlideAnim");
+			domClass.remove(node, "duiViewStackSlideAnim");
 			this._removeAfterTransitionHandlers(node);
 		}
 	});
