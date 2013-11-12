@@ -1,16 +1,17 @@
 define([
+	"dcl/dcl",
 	"./register",
 	"./Widget",
+	"./Container",
 	"dojo/_base/lang",
 	"dojo/dom",
 	"dojo/dom-geometry",
 	"dojo/dom-class",
-	"dojo/dom-construct",
-	"dijit/registry",
+	"dcl/inherited",
 	"./themes/load!ViewStack"],
-	function(register, Widget, lang, dom, domGeom, domClass, domConstruct, registry){
+	function(dcl, register, Widget, Container, lang, dom, domGeom, domClass){
 
-	return register("dui-view-stack", [HTMLDivElement, Widget], {
+	return register("dui-view-stack", [HTMLDivElement, Widget, Container], {
 		// summary:
 		//		ViewStack container widget.
 		//
@@ -59,7 +60,6 @@ define([
 		show: function(/* HTMLDivElement */ node, props){
 			//		Shows a children of the ViewStack. The parameter 'props' is optional and is
 			//		{transition:'slide', direction:'end'} by default.
-
 			if(!this._visibleChild){
 				this._visibleChild = this.children[0];
 			}
@@ -93,19 +93,9 @@ define([
 			}
 		},
 
-		// TODO: Rely on _Container.addChild
-		addChild: function(/* HTMLDivElement */ node){
-			if(node){
-				domConstruct.place(node, this);
-				this._setVisibility(node, false);
-			}
-		},
-
-		// TODO: Rely on _Container.removeChild
-		removeChild: function(/* HTMLDivElement */ node){
-			if(node){
-				domConstruct.destroy(node);
-			}
+		addChild: function (/*dui/Widget|DOMNode*/ widget, /*int?*/ insertIndex) {
+			this.inherited(arguments);
+			this._setVisibility(widget, false);
 		},
 
 		buildRendering: function(){
@@ -154,8 +144,13 @@ define([
 
 
 		_setVisibility: function(node, val){
-			node.style.visibility = val ? "visible" : "hidden";
-			node.style.display = val ? "" : "none";
+			if(val){
+				node.style.visibility = "visible";
+				node.style.display = "";
+			}else{
+				node.style.visibility = "hidden";
+				node.style.display = "none";
+			}
 		},
 
 		_afterTransitionHandle: function(event){

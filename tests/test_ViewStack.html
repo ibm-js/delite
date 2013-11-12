@@ -7,7 +7,7 @@
 	<title>View Stack</title>
 
 	<script type="text/javascript" src="../mobile/deviceTheme.js"></script>
-	<link rel="stylesheet" href="../themes/common/ViewStack.css">
+
 
 	<!-- For testing purposes.  Real applications should load the AMD loader directly -->
 	<script type="text/javascript" src="./boilerplate.js"></script>
@@ -24,10 +24,10 @@
 		], function(mobile, parser, Pane, ViewStack, Button, register){
 			register.parse();
 			createWidget = function (){
-				var p = new Pane();
-				p.domNode.innerHTML = "EEE";
-				p.domNode.style.backgroundColor = "orangered";
-				vs.addChild(p);
+				var p = document.createElement("div");
+				p.innerHTML = "EEE";
+				p.style.backgroundColor = "orangered";
+				vs.addChild(p, "last");
 				vs.show(p);
 			};
 		});
@@ -45,7 +45,7 @@
 <body style="visibility:hidden; margin:2em;">
 
 <button is="dui-button" onclick="vs.show(ccc, {transition: 'slide', direction: 'start'})">Show CCC</button>
-<button is="dui-button" onclick="vs.removeChild(bbb)">Remove BBB</button>
+<button is="dui-button" onclick="vs.removeChild(bbb); vs.show(aaa)">Remove BBB</button>
 <button is="dui-button" onclick="vs.addChild(aaa2)">Add AAA2</button>
 <button is="dui-button" onclick="createWidget()">Create EEE</button>
 <button is="dui-button" onclick="vs.showPrevious({direction: 'start'})">Previous</button>
