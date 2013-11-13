@@ -6,22 +6,16 @@
 	<meta name="apple-mobile-web-app-capable" content="yes"/>
 	<title>View Stack</title>
 
-	<script type="text/javascript" src="../mobile/deviceTheme.js"></script>
-
-
 	<!-- For testing purposes.  Real applications should load the AMD loader directly -->
 	<script type="text/javascript" src="./boilerplate.js"></script>
 
 	<script type="text/javascript">
 		require([
-			"dojox/mobile",
-			"dojox/mobile/parser",
-			"dojox/mobile/Pane",
 			"dui/ViewStack",
 			"dui/Button",
 			"dui/register",
 			"dojo/domReady!"
-		], function(mobile, parser, Pane, ViewStack, Button, register){
+		], function(ViewStack, Button, register){
 			register.parse();
 			createWidget = function (){
 				var p = document.createElement("div");
@@ -42,7 +36,7 @@
 		}
 	</style>
 </head>
-<body style="visibility:hidden; margin:2em;">
+<body style="margin:2em;">
 
 <button is="dui-button" onclick="vs.show(ccc, {transition: 'slide', direction: 'start'})">Show CCC</button>
 <button is="dui-button" onclick="vs.removeChild(bbb); vs.show(aaa)">Remove BBB</button>
@@ -89,6 +83,7 @@
 		<button is="dui-button" onclick="vs.show(ccc,{direction:'end'})">CCC right</button>
 	</div>
 </div>
+
 
 <div style="display: none">
 	<div style="background-color: darkolivegreen;" id="aaa2">

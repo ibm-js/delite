@@ -1,15 +1,16 @@
 define([
 	"./register",
 	"./Widget",
+	"./Container",
 	"dojo/_base/lang",
 	"dojo/dom-class",
 	"dojo/_base/window",
 	"dojo/touch",
 	"dojo/on",
 	"./themes/load!SidePane"],
-	function(register, Widget, lang, domClass, win, touch, on){
+	function(register, Widget, Container, lang, domClass, win, touch, on){
 
-		return register("dui-side-pane", [HTMLDivElement, Widget], {
+		return register("dui-side-pane", [HTMLDivElement, Widget, Container], {
 			// summary:
 			//		A container displayed on the side of the screen. It can be displayed on top of the page (mode=overlay) or
 			//		can push the content of the page (mode=push or mode=reveal).
