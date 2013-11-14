@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+	<meta name="viewport"
+		  content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no"/>
+	<meta name="apple-mobile-web-app-capable" content="yes"/>
+	<title>Mobile Application</title>
+
+	<link rel="stylesheet" href="app.css">
+	<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+	<script src="//ajax.googleapis.com/ajax/libs/dojo/1.9.1/dojo/dojo.js"
+			data-dojo-config="async: true, parseOnLoad: false, packages: [
+						{name: 'dui', location: '/dui'},
+						{name: 'dcl', location: '/dcl'}]">
+	</script>
+
+
+	<script type="text/javascript">
+		require([
+			"dui/register",
+			"dui/ViewStack",
+			"dui/SidePane",
+			"dui/BasicLayout",
+			"dojo/domReady!"
+		], function(register){
+			register.parse();
+		});
+	</script>
+</head>
+<body>
+<!-- A SidePane for the left menu -->
+<div is="dui-side-pane" data-dojo-props="mode:'reveal', position:'start'" data-dojo-id="leftPane">
+	<div is="dui-basic-layout" data-dojo-props="direction:'vertical'" class="width100 height100">
+		<div is="dui-basic-layout" data-dojo-props="direction:'horizontal'" class="pageHeader">
+			<div><button onclick="leftPane.close()"><i class="icon-chevron-sign-left"></i></button></div>
+			<div class="fill titleStyle">Menu</div>
+			<div><button onclick="leftStack.show('settings', {direction:'start'})"><i class="icon-cog"></i></button></div>
+		</div>
+		<div is="widgets/ViewStack" data-dojo-id="leftStack" class="width100 fill" style="background-color: white">
+			<div is="dui-basic-layout" data-dojo-props="direction:'vertical'" id="menu" is="dojox/mobile/Pane">
+				<li class="mblListItem" onClick="vs.show('aaa')">AAA</li>
+				<li class="mblListItem" onClick="vs.show('bbb')">BBB</li>
+				<li class="mblListItem" onClick="vs.show('ccc')">CCC</li>
+				<li class="mblListItem" onClick="vs.show('ddd')">DDD</li>
+			</div>
+
+			<div is="dui-basic-layout" data-dojo-props="direction:'horizontal'" id="settings" is="dojox/mobile/Pane">
+				<button class="fill" onclick="leftStack.show('menu', {direction:'end'})"><i class="icon-reply" style="color: black"></i>Back</button>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+<!-- Main application -->
+<div is="dui-basic-layout" data-dojo-props="direction:'vertical'" class=" width100 height100">
+	<!-- Header -->
+	<div is="dui-basic-layout" data-dojo-props="direction:'horizontal'" class=" width100 pageHeader">
+		<div><button onclick="leftPane.open()"><i class="icon-reorder"></i></button></div>
+		<div class="fill titleStyle">Mobile App</div>
+		<div><button><i class="icon-unlock"></i></button></div>
+	</div>
+	<!-- Main content (ViewStack) -->
+	<div is="dui-view-stack" data-dojo-id="vs" class="width100 fill">
+		<div style="background-color: white;" id="aaa" is="dojox/mobile/Pane">
+			AAA
+		</div>
+		<div style="background-color: white;" id="bbb" is="dojox/mobile/Pane">
+			<!-- Test with a ScrollableView -->
+			<div>
+				<div is="dui-basic-layout" data-dojo-props="direction:'vertical'">
+					<li style="min-height:3em;" class="mblListItem" onClick="vs.show('aaa')">AAA</li>
+					<li style="min-height:3em;" class="mblListItem" onClick="vs.show('bbb')">BBB</li>
+					<li style="min-height:3em;" class="mblListItem" onClick="vs.show('ccc')">CCC</li>
+					<li style="min-height:3em;" class="mblListItem" onClick="vs.show('ddd')">DDD</li>
+					<li style="min-height:3em;" class="mblListItem" onClick="vs.show('aaa')">AAA</li>
+					<li style="min-height:3em;" class="mblListItem" onClick="vs.show('bbb')">BBB</li>
+					<li style="min-height:3em;" class="mblListItem" onClick="vs.show('ccc')">CCC</li>
+					<li style="min-height:3em;" class="mblListItem" onClick="vs.show('ddd')">DDD</li>
+					<li style="min-height:3em;" class="mblListItem" onClick="vs.show('aaa')">AAA</li>
+					<li style="min-height:3em;" class="mblListItem" onClick="vs.show('bbb')">BBB</li>
+					<li style="min-height:3em;" class="mblListItem" onClick="vs.show('ccc')">CCC</li>
+					<li style="min-height:3em;" class="mblListItem" onClick="vs.show('ddd')">DDD</li>
+					<li style="min-height:3em;" class="mblListItem" onClick="vs.show('aaa')">AAA</li>
+					<li style="min-height:3em;" class="mblListItem" onClick="vs.show('bbb')">BBB</li>
+					<li style="min-height:3em;" class="mblListItem" onClick="vs.show('ccc')">CCC</li>
+					<li style="min-height:3em;" class="mblListItem" onClick="vs.show('ddd')">DDD</li>
+					<li style="min-height:3em;" class="mblListItem" onClick="vs.show('aaa')">AAA</li>
+					<li style="min-height:3em;" class="mblListItem" onClick="vs.show('bbb')">BBB</li>
+					<li style="min-height:3em;" class="mblListItem" onClick="vs.show('ccc')">CCC</li>
+					<li style="min-height:3em;" class="mblListItem" onClick="vs.show('ddd')">DDD</li>
+				</div>
+			</div>
+		</div>
+		<div style="background-color: powderblue;" id='ccc' is="dojox/mobile/Pane">
+			CCC
+		</div>
+		<div style="background-color: oldlace;" id="ddd" is="dojox/mobile/Pane">
+			DDD
+		</div>
+	</div>
+	<!-- Footer -->
+	<div is="dui-basic-layout" data-dojo-props="direction:'horizontal'" class="pageFooter">
+		<div class="fill"><button onclick="vs.show('aaa')"><i class="icon-comment"></i></button></div>
+		<div class="fill"><button onclick="vs.show('bbb')"><i class="icon-list"></i></button></div>
+		<div class="fill"><button onclick="vs.show('ccc')"><i class="icon-shopping-cart"></i></button></div>
+		<div class="fill"><button onclick="vs.show('ddd')"><i class="icon-trash"></i></button></div>
+	</div>
+</div>
+
+</body>
+</html>

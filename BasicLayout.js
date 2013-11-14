@@ -9,7 +9,8 @@ define([
 			baseClass: "mblBasicLayout",
 			direction: "horizontal",
 			buildRendering: function(){
-if(this.direction == "horizontal"){
+				debugger;
+				if(this.direction == "horizontal"){
 					domClass.add(this, "mblHBasicLayout");
 				}else{
 					domClass.add(this, "mblVBasicLayout");

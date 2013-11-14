@@ -1,0 +1,68 @@
+/* Global style */
+* {
+	box-sizing: border-box;
+}
+
+html, body {
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+/* App style */
+.pageHeader, .pageFooter{
+	background-color: #1AA1E1;
+	color: white;
+}
+
+.pageHeader {
+	border-bottom: 2px solid black;
+	padding-top: 0.3em;
+	padding-bottom: 0.3em;
+}
+
+.pageFooter {
+	border-top: 2px solid black;
+	padding-top: 0.3em;
+	padding-bottom: 0.3em;
+}
+
+button{
+	border: none;
+	background: none;
+}
+
+.buttonStyle {
+	height: 55px;
+	line-height: 55px;
+	font-size: 1.5em;
+	text-align: center;
+	vertical-align: middle;
+
+}
+
+.titleStyle{
+	font-size: 1.5em;
+	text-align: center;
+	padding-top: 0.2em;
+
+	/* One line title with ellipsis if needed */
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow-x: hidden;
+}
+
+
+i[class*="icon"]{
+	font-size: 2em;
+	color: white;
+	padding: 0 0.3em 0 0.3em;
+}
+
+i[class*="icon"]:active{
+	color: gold;
+}
+
+.scrollableText {
+	overflow: auto;
+}
