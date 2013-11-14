@@ -1,7 +1,6 @@
 /* Global style */
 * {
 	box-sizing: border-box;
-	font-family: sans-serif;
 }
 
 html, body {
@@ -28,9 +27,6 @@ html, body {
 	padding-bottom: 0.3em;
 }
 
-.pageFooter > div {
-	text-align: center;
-}
 button{
 	border: none;
 	background: none;
@@ -69,21 +65,4 @@ i[class*="icon"]:active{
 
 .scrollableText {
 	overflow: auto;
-}
-
-ul {
-	padding: 0;
-	margin: 0;
-}
-
-.listItem {
-	padding: 0 0.5em;
-	height: 2em;
-	list-style-type: none;
-	line-height: 2em;
-	-webkit-tap-highlight-color: rgba(255, 255, 255, 0);
-	border-bottom: 1px solid #222222;
-
-	font-size: 2em;
-
 }
