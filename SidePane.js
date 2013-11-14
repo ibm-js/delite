@@ -1,4 +1,5 @@
 define([
+	"dcl/dcl",
 	"./register",
 	"./Widget",
 	"./Container",
@@ -8,9 +9,10 @@ define([
 	"dojo/touch",
 	"dojo/on",
 	"./themes/load!SidePane"],
-	function(register, Widget, Container, lang, domClass, win, touch, on){
+	function(dcl, register, Widget, Container, lang, domClass, win, touch, on){
 
-		return register("dui-side-pane", [HTMLDivElement, Widget, Container], {
+		var SidePane = dcl([Widget, Container], {
+
 			// summary:
 			//		A container displayed on the side of the screen. It can be displayed on top of the page (mode=overlay) or
 			//		can push the content of the page (mode=push or mode=reveal).
@@ -28,8 +30,8 @@ define([
 			baseClass: "mblSidePane",
 
 			// mode: String
-			//		Can be "overlay", "reveal" or "push".
-			mode: "overlay",
+			//		Can be "overlay", "reveal" or "push". Default is "push".
+			mode: "push",
 
 			// position: String
 			//		Can be "start" or "end". If set to "start", the panel is displayed on the left side in left-to-right mode.
@@ -80,15 +82,20 @@ define([
 			_originY: NaN,
 			_cssClasses: {},
 
+			_getPosition: function(){
+				return this.getAttribute("position") || "start"
+			},
+			_getMode: function(){
+				return this.getAttribute("mode") || "push"
+			},
+
 			_setPositionAttr: function(value){
 				this.style.display = "none";
-				this.position = value;
 				this.buildRendering();
 			},
 
 			_setModeAttr: function(value){
 				this.style.display = "none";
-				this.mode = value;
 				this.buildRendering();
 			},
 
@@ -114,7 +121,7 @@ define([
 			buildRendering: function(){
 
 				this._cleanCSS();
-				this._addClass(this, "mblSidePane" + this._capitalize(this.position));
+				this._addClass(this, "mblSidePane" + this._capitalize(this._getPosition()));
 
 				if(this.inheritViewBg){
 					this._addClass(this, "mblBackground");
@@ -128,10 +135,10 @@ define([
 				this._visible = true;
 				this._changeClass(this, "VisiblePane", "HiddenPane");
 				this._changeClass(this, "mblSidePaneVisiblePane", "mblSidePaneHiddenPane");
-				if(this.mode == "push" || this.mode == "reveal"){
+				if(this._getMode() == "push" || this._getMode() == "reveal"){
 					var nextElement = this._findPushedElement(this);
 					if(nextElement){
-						var addedClass = "mblSidePane" + this._capitalize(this.position) + "PushHiddenPage";
+						var addedClass = "mblSidePane" + this._capitalize(this._getPosition()) + "PushHiddenPage";
 						this._changeClass(nextElement, addedClass, addedClass.replace("Hidden", "Visible"));
 					}
 				}
@@ -143,10 +150,10 @@ define([
 				this._removeClass(win.doc.body, "noSelect");
 				this._changeClass(this, "HiddenPane", "VisiblePane");
 				this._changeClass(this, "mblSidePaneHiddenPane", "mblSidePaneVisiblePane");
-				if(this.mode == "push" || this.mode == "reveal"){
+				if(this._getMode() == "push" || this._getMode() == "reveal"){
 					var nextElement = this._findPushedElement(this);
 					if(nextElement){
-						var removedClass = "mblSidePane" + this._capitalize(this.position) + "PushHiddenPage";
+						var removedClass = "mblSidePane" + this._capitalize(this._getPosition()) + "PushHiddenPage";
 						this._changeClass(nextElement, removedClass.replace("Hidden", "Visible"), removedClass);
 					}
 				}
@@ -160,8 +167,8 @@ define([
 					this.style.display = "";
 				}
 
-				if(this._visible || (this.position == "start" && !this._visible && this._originX <= 10) ||
-					(this.position == "end" && !this._visible && this._originX >= win.doc.width - 10)){
+				if(this._visible || (this._getPosition() == "start" && !this._visible && this._originX <= 10) ||
+					(this._getPosition() == "end" && !this._visible && this._originX >= win.doc.width - 10)){
 					this._makingVisible = !this._visible;
 					this._pressHandle.remove();
 					this._moveHandle = on(win.doc, touch.move, lang.hitch(this, this._touchMove));
@@ -177,7 +184,7 @@ define([
 				}else{
 					var pos = event.pageX;
 
-					if(this.position == "start"){
+					if(this._getPosition() == "start"){
 						if(this.swipeOpening && !this._visible && (pos - this._originX) > 10){
 							this.open();
 						}else if(this._visible){
@@ -237,7 +244,7 @@ define([
 					// Already a mobile class
 					return suffix;
 				}else{
-					return "mblSidePane" + this._capitalize(this.position) + this._capitalize(this.mode) + suffix;
+					return "mblSidePane" + this._capitalize(this._getPosition()) + this._capitalize(this._getMode()) + suffix;
 				}
 			},
 
@@ -304,5 +311,8 @@ define([
 					this._releaseHandle.remove();
 				}
 			}
-		})});
+		});
+		return register("d-side-pane", [HTMLElement, SidePane])
+
+	});
 
