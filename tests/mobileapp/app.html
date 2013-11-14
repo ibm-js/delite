@@ -30,7 +30,7 @@
 </head>
 <body>
 <!-- A SidePane for the left menu -->
-<d-side-pane mode="reveal" position="start" id="leftPane">
+<d-side-pane mode="push" position="start" id="leftPane">
 	<d-basic-layout direction="vertical" class="width100 height100">
 		<d-basic-layout direction="horizontal" class="pageHeader">
 			<div><button onclick="leftPane.close()"><i class="icon-chevron-sign-left"></i></button></div>
@@ -39,10 +39,10 @@
 		</d-basic-layout>
 		<d-view-stack id="leftStack" class="width100 fill" style="background-color: white">
 			<d-basic-layout direction="vertical" id="menu">
-				<li class="mblListItem" onClick="vs.show('aaa')">AAA</li>
-				<li class="mblListItem" onClick="vs.show('bbb')">BBB</li>
-				<li class="mblListItem" onClick="vs.show('ccc')">CCC</li>
-				<li class="mblListItem" onClick="vs.show('ddd')">DDD</li>
+				<li class="mblListItem" onClick="vs.show(aaa)">AAA</li>
+				<li class="mblListItem" onClick="vs.show(bbb)">BBB</li>
+				<li class="mblListItem" onClick="vs.show(ccc)">CCC</li>
+				<li class="mblListItem" onClick="vs.show(ddd)">DDD</li>
 			</d-basic-layout>
 
 			<d-basic-layout direction="horizontal" id="settings">
@@ -69,27 +69,27 @@
 			<!-- Test with a ScrollableView -->
 			<div>
 				<d-basic-layout direction="vertical">
-					<li style="min-height:3em;" class="mblListItem" onClick="vs.show('aaa')">AAA</li>
-					<li style="min-height:3em;" class="mblListItem" onClick="vs.show('bbb')">BBB</li>
-					<li style="min-height:3em;" class="mblListItem" onClick="vs.show('ccc')">CCC</li>
-					<li style="min-height:3em;" class="mblListItem" onClick="vs.show('ddd')">DDD</li>
-					<li style="min-height:3em;" class="mblListItem" onClick="vs.show('aaa')">AAA</li>
-					<li style="min-height:3em;" class="mblListItem" onClick="vs.show('bbb')">BBB</li>
-					<li style="min-height:3em;" class="mblListItem" onClick="vs.show('ccc')">CCC</li>
-					<li style="min-height:3em;" class="mblListItem" onClick="vs.show('ddd')">DDD</li>
-					<li style="min-height:3em;" class="mblListItem" onClick="vs.show('aaa')">AAA</li>
-					<li style="min-height:3em;" class="mblListItem" onClick="vs.show('bbb')">BBB</li>
-					<li style="min-height:3em;" class="mblListItem" onClick="vs.show('ccc')">CCC</li>
-					<li style="min-height:3em;" class="mblListItem" onClick="vs.show('ddd')">DDD</li>
-					<li style="min-height:3em;" class="mblListItem" onClick="vs.show('aaa')">AAA</li>
-					<li style="min-height:3em;" class="mblListItem" onClick="vs.show('bbb')">BBB</li>
-					<li style="min-height:3em;" class="mblListItem" onClick="vs.show('ccc')">CCC</li>
-					<li style="min-height:3em;" class="mblListItem" onClick="vs.show('ddd')">DDD</li>
-					<li style="min-height:3em;" class="mblListItem" onClick="vs.show('aaa')">AAA</li>
-					<li style="min-height:3em;" class="mblListItem" onClick="vs.show('bbb')">BBB</li>
-					<li style="min-height:3em;" class="mblListItem" onClick="vs.show('ccc')">CCC</li>
-					<li style="min-height:3em;" class="mblListItem" onClick="vs.show('ddd')">DDD</li>
-				</div>
+					<li style="min-height:3em;" class="mblListItem" onClick="vs.show(aaa)">AAA</li>
+					<li style="min-height:3em;" class="mblListItem" onClick="vs.show(bbb)">BBB</li>
+					<li style="min-height:3em;" class="mblListItem" onClick="vs.show(ccc)">CCC</li>
+					<li style="min-height:3em;" class="mblListItem" onClick="vs.show(ddd)">DDD</li>
+					<li style="min-height:3em;" class="mblListItem" onClick="vs.show(aaa)">AAA</li>
+					<li style="min-height:3em;" class="mblListItem" onClick="vs.show(bbb)">BBB</li>
+					<li style="min-height:3em;" class="mblListItem" onClick="vs.show(ccc)">CCC</li>
+					<li style="min-height:3em;" class="mblListItem" onClick="vs.show(ddd)">DDD</li>
+					<li style="min-height:3em;" class="mblListItem" onClick="vs.show(aaa)">AAA</li>
+					<li style="min-height:3em;" class="mblListItem" onClick="vs.show(bbb)">BBB</li>
+					<li style="min-height:3em;" class="mblListItem" onClick="vs.show(ccc)">CCC</li>
+					<li style="min-height:3em;" class="mblListItem" onClick="vs.show(ddd)">DDD</li>
+					<li style="min-height:3em;" class="mblListItem" onClick="vs.show(aaa)">AAA</li>
+					<li style="min-height:3em;" class="mblListItem" onClick="vs.show(bbb)">BBB</li>
+					<li style="min-height:3em;" class="mblListItem" onClick="vs.show(ccc)">CCC</li>
+					<li style="min-height:3em;" class="mblListItem" onClick="vs.show(ddd)">DDD</li>
+					<li style="min-height:3em;" class="mblListItem" onClick="vs.show(aaa)">AAA</li>
+					<li style="min-height:3em;" class="mblListItem" onClick="vs.show(bbb)">BBB</li>
+					<li style="min-height:3em;" class="mblListItem" onClick="vs.show(ccc)">CCC</li>
+					<li style="min-height:3em;" class="mblListItem" onClick="vs.show(ddd)">DDD</li>
+				</d-basic-layout>
 			</div>
 		</div>
 		<div style="background-color: powderblue;" id='ccc' is="dojox/mobile/Pane">
@@ -101,10 +101,10 @@
 	</d-view-stack>
 	<!-- Footer -->
 	<d-basic-layout direction="horizontal" class="pageFooter">
-		<div class="fill"><button onclick="vs.show('aaa')"><i class="icon-comment"></i></button></div>
-		<div class="fill"><button onclick="vs.show('bbb')"><i class="icon-list"></i></button></div>
-		<div class="fill"><button onclick="vs.show('ccc')"><i class="icon-shopping-cart"></i></button></div>
-		<div class="fill"><button onclick="vs.show('ddd')"><i class="icon-trash"></i></button></div>
+		<div class="fill"><button onclick="vs.show(aaa)"><i class="icon-comment"></i></button></div>
+		<div class="fill"><button onclick="vs.show(bbb)"><i class="icon-list"></i></button></div>
+		<div class="fill"><button onclick="vs.show(ccc)"><i class="icon-shopping-cart"></i></button></div>
+		<div class="fill"><button onclick="vs.show(ddd)"><i class="icon-trash"></i></button></div>
 	</d-basic-layout>
 </d-basic-layout>
 
