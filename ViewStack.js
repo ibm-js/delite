@@ -144,6 +144,8 @@ define([
 
 
 		_setVisibility: function(node, val){
+
+
 			if(val){
 				node.style.visibility = "visible";
 				node.style.display = "";

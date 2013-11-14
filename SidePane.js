@@ -82,20 +82,17 @@ define([
 			_originY: NaN,
 			_cssClasses: {},
 
-			_getPosition: function(){
-				return this.getAttribute("position") || "start"
-			},
-			_getMode: function(){
-				return this.getAttribute("mode") || "push"
-			},
-
 			_setPositionAttr: function(value){
+				this._set("position", value);
 				this.style.display = "none";
+
 				this.buildRendering();
 			},
 
 			_setModeAttr: function(value){
+				this._set("mode", value);
 				this.style.display = "none";
+
 				this.buildRendering();
 			},
 
@@ -121,7 +118,7 @@ define([
 			buildRendering: function(){
 
 				this._cleanCSS();
-				this._addClass(this, "mblSidePane" + this._capitalize(this._getPosition()));
+				this._addClass(this, "mblSidePane" + this._capitalize(this.position));
 
 				if(this.inheritViewBg){
 					this._addClass(this, "mblBackground");
@@ -135,10 +132,10 @@ define([
 				this._visible = true;
 				this._changeClass(this, "VisiblePane", "HiddenPane");
 				this._changeClass(this, "mblSidePaneVisiblePane", "mblSidePaneHiddenPane");
-				if(this._getMode() == "push" || this._getMode() == "reveal"){
+				if(this.mode == "push" || this.mode == "reveal"){
 					var nextElement = this._findPushedElement(this);
 					if(nextElement){
-						var addedClass = "mblSidePane" + this._capitalize(this._getPosition()) + "PushHiddenPage";
+						var addedClass = "mblSidePane" + this._capitalize(this.position) + "PushHiddenPage";
 						this._changeClass(nextElement, addedClass, addedClass.replace("Hidden", "Visible"));
 					}
 				}
@@ -150,10 +147,10 @@ define([
 				this._removeClass(win.doc.body, "noSelect");
 				this._changeClass(this, "HiddenPane", "VisiblePane");
 				this._changeClass(this, "mblSidePaneHiddenPane", "mblSidePaneVisiblePane");
-				if(this._getMode() == "push" || this._getMode() == "reveal"){
+				if(this.mode == "push" || this.mode == "reveal"){
 					var nextElement = this._findPushedElement(this);
 					if(nextElement){
-						var removedClass = "mblSidePane" + this._capitalize(this._getPosition()) + "PushHiddenPage";
+						var removedClass = "mblSidePane" + this._capitalize(this.position) + "PushHiddenPage";
 						this._changeClass(nextElement, removedClass.replace("Hidden", "Visible"), removedClass);
 					}
 				}
@@ -167,8 +164,8 @@ define([
 					this.style.display = "";
 				}
 
-				if(this._visible || (this._getPosition() == "start" && !this._visible && this._originX <= 10) ||
-					(this._getPosition() == "end" && !this._visible && this._originX >= win.doc.width - 10)){
+				if(this._visible || (this.position == "start" && !this._visible && this._originX <= 10) ||
+					(this.position == "end" && !this._visible && this._originX >= win.doc.width - 10)){
 					this._makingVisible = !this._visible;
 					this._pressHandle.remove();
 					this._moveHandle = on(win.doc, touch.move, lang.hitch(this, this._touchMove));
@@ -184,7 +181,7 @@ define([
 				}else{
 					var pos = event.pageX;
 
-					if(this._getPosition() == "start"){
+					if(this.position == "start"){
 						if(this.swipeOpening && !this._visible && (pos - this._originX) > 10){
 							this.open();
 						}else if(this._visible){
@@ -244,7 +241,7 @@ define([
 					// Already a mobile class
 					return suffix;
 				}else{
-					return "mblSidePane" + this._capitalize(this._getPosition()) + this._capitalize(this._getMode()) + suffix;
+					return "mblSidePane" + this._capitalize(this.position) + this._capitalize(this.mode) + suffix;
 				}
 			},
 
