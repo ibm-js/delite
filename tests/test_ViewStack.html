@@ -17,6 +17,7 @@
 			"dojo/domReady!"
 		], function(ViewStack, Button, register){
 			register.parse();
+
 			createWidget = function (){
 				var p = document.createElement("div");
 				p.innerHTML = "EEE";
@@ -29,71 +30,66 @@
 
 
 	</script>
-	<style>
-		div > button {
-			display: block;
-			width: 100%;
-		}
-	</style>
+
 </head>
 <body style="margin:2em;">
 
-<button is="dui-button" onclick="vs.show(ccc, {transition: 'slide', direction: 'start'})">Show CCC</button>
-<button is="dui-button" onclick="vs.removeChild(bbb); vs.show(aaa)">Remove BBB</button>
-<button is="dui-button" onclick="vs.addChild(aaa2)">Add AAA2</button>
-<button is="dui-button" onclick="createWidget()">Create EEE</button>
-<button is="dui-button" onclick="vs.showPrevious({direction: 'start'})">Previous</button>
-<button is="dui-button" onclick="vs.showNext()">Next</button>
+<button is="d-button" onclick="vs.show(ccc, {transition: 'slide', direction: 'start'})">Show CCC</button>
+<button is="d-button" onclick="vs.removeChild(bbb); vs.show(aaa)">Remove BBB</button>
+<button is="d-button" onclick="vs.addChild(aaa2)">Add AAA2</button>
+<button is="d-button" onclick="createWidget()">Create EEE</button>
+<button is="d-button" onclick="vs.showPrevious({direction: 'start'})">Previous</button>
+<button is="d-button" onclick="vs.showNext()">Next</button>
 <br>
-<div data-dojo-id="vs" is="dui-view-stack" style="display:inline-block; width:50%; height: 300px; border: 2px solid gold">
+<d-view-stack id="vs" style="display:inline-block; width:50%; height: 300px; border: 2px solid gold">
 	<div style="background-color: honeydew;" id="aaa">
 		AAA
-		<button is="dui-button" onclick="vs.show(bbb,{direction:'start'})">BBB left</button>
-		<button is="dui-button" onclick="vs.show(ccc,{direction:'start'})">CCC left</button>
-		<button is="dui-button" onclick="vs.show(ddd,{direction:'start'})">DDD left</button>
-		<button is="dui-button" onclick="vs.show(bbb,{direction:'end'})">BBB right</button>
-		<button is="dui-button" onclick="vs.show(ccc,{direction:'end'})">CCC right</button>
-		<button is="dui-button" onclick="vs.show(ddd,{direction:'end'})">DDD right</button>
+		<button is="d-button" onclick="vs.show(bbb,{direction:'start'})">BBB left</button>
+		<button is="d-button" onclick="vs.show(ccc,{direction:'start'})">CCC left</button>
+		<button is="d-button" onclick="vs.show(ddd,{direction:'start'})">DDD left</button>
+		<button is="d-button" onclick="vs.show(bbb,{direction:'end'})">BBB right</button>
+		<button is="d-button" onclick="vs.show(ccc,{direction:'end'})">CCC right</button>
+		<button is="d-button" onclick="vs.show(ddd,{direction:'end'})">DDD right</button>
 	</div>
 	<div style="background-color: whitesmoke;" id="bbb">
 		BBB
-		<button is="dui-button" onclick="vs.show(aaa,{direction:'start'})">AAA left</button>
-		<button is="dui-button" onclick="vs.show(ccc,{direction:'start'})">CCC left</button>
-		<button is="dui-button" onclick="vs.show(ddd,{direction:'start'})">DDD left</button>
-		<button is="dui-button" onclick="vs.show(aaa,{direction:'end'})">AAA right</button>
-		<button is="dui-button" onclick="vs.show(ccc,{direction:'end'})">CCC right</button>
-		<button is="dui-button" onclick="vs.show(ddd,{direction:'end'})">DDD right</button>
+		<button is="d-button" onclick="vs.show(aaa,{direction:'start'})">AAA left</button>
+		<button is="d-button" onclick="vs.show(ccc,{direction:'start'})">CCC left</button>
+		<button is="d-button" onclick="vs.show(ddd,{direction:'start'})">DDD left</button>
+		<button is="d-button" onclick="vs.show(aaa,{direction:'end'})">AAA right</button>
+		<button is="d-button" onclick="vs.show(ccc,{direction:'end'})">CCC right</button>
+		<button is="d-button" onclick="vs.show(ddd,{direction:'end'})">DDD right</button>
 	</div>
 	<div style="background-color: powderblue;" id=ccc>
 		CCC
-		<button is="dui-button" onclick="vs.show(aaa,{direction:'start'})">AAA left</button>
-		<button is="dui-button" onclick="vs.show(bbb,{direction:'start'})">BBB left</button>
-		<button is="dui-button" onclick="vs.show(ddd,{direction:'start'})">DDD left</button>
-		<button is="dui-button" onclick="vs.show(aaa,{direction:'end'})">AAA right</button>
-		<button is="dui-button" onclick="vs.show(bbb,{direction:'end'})">BBB right</button>
-		<button is="dui-button" onclick="vs.show(ddd,{direction:'end'})">DDD right</button>
+		<button is="d-button" onclick="vs.show(aaa,{direction:'start'})">AAA left</button>
+		<button is="d-button" onclick="vs.show(bbb,{direction:'start'})">BBB left</button>
+		<button is="d-button" onclick="vs.show(ddd,{direction:'start'})">DDD left</button>
+		<button is="d-button" onclick="vs.show(aaa,{direction:'end'})">AAA right</button>
+		<button is="d-button" onclick="vs.show(bbb,{direction:'end'})">BBB right</button>
+		<button is="d-button" onclick="vs.show(ddd,{direction:'end'})">DDD right</button>
 	</div>
 	<div style="background-color: oldlace;" id="ddd">
 		DDD
-		<button is="dui-button" onclick="vs.show(aaa,{direction:'start'})">AAA left</button>
-		<button is="dui-button" onclick="vs.show(bbb,{direction:'start'})">BBB left</button>
-		<button is="dui-button" onclick="vs.show(ccc,{direction:'start'})">CCC left</button>
-		<button is="dui-button" onclick="vs.show(aaa,{direction:'end'})">AAA right</button>
-		<button is="dui-button" onclick="vs.show(bbb,{direction:'end'})">BBB right</button>
-		<button is="dui-button" onclick="vs.show(ccc,{direction:'end'})">CCC right</button>
+		<button is="d-button" onclick="vs.show(aaa,{direction:'start'})">AAA left</button>
+		<button is="d-button" onclick="vs.show(bbb,{direction:'start'})">BBB left</button>
+		<button is="d-button" onclick="vs.show(ccc,{direction:'start'})">CCC left</button>
+		<button is="d-button" onclick="vs.show(aaa,{direction:'end'})">AAA right</button>
+		<button is="d-button" onclick="vs.show(bbb,{direction:'end'})">BBB right</button>
+		<button is="d-button" onclick="vs.show(ccc,{direction:'end'})">CCC right</button>
 	</div>
-</div>
+</d-view-stack>
 
 
 <div style="display: none">
 	<div style="background-color: darkolivegreen;" id="aaa2">
 		AAA 2
-		<button is="dui-button" onclick="vs.show('aaa',{direction:'start'})">AAA left</button>
-		<button is="dui-button" onclick="vs.show('ccc',{direction:'start'})">CCC left</button>
-		<button is="dui-button" onclick="vs.show('ddd',{direction:'start'})">DDD left</button>
-		<button is="dui-button" onclick="vs.show('aaa',{direction:'end'})">AAA right</button>
-		<button is="dui-button" onclick="vs.show('ccc',{direction:'end'})">CCC right</button>
-		<button is="dui-button" onclick="vs.show('ddd',{direction:'end'})">DDD right</button>
+		<button is="d-button" onclick="vs.show('aaa',{direction:'start'})">AAA left</button>
+		<button is="d-button" onclick="vs.show('ccc',{direction:'start'})">CCC left</button>
+		<button is="d-button" onclick="vs.show('ddd',{direction:'start'})">DDD left</button>
+		<button is="d-button" onclick="vs.show('aaa',{direction:'end'})">AAA right</button>
+		<button is="d-button" onclick="vs.show('ccc',{direction:'end'})">CCC right</button>
+		<button is="d-button" onclick="vs.show('ddd',{direction:'end'})">DDD right</button>
 	</div>
 </div>
 

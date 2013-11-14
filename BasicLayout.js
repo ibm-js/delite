@@ -1,21 +1,22 @@
 define([
+	"dcl/dcl",
 	"./register",
 	"./Widget",
 	"./Container",
 	"dojo/dom-class",
 	"./themes/load!BasicLayout"],
-	function(register, Widget, Container, domClass){
-		return register("dui-basic-layout", [HTMLDivElement, Widget, Container], {
+	function(dcl, register, Widget, Container, domClass){
+		var BasicLayout = dcl([Widget, Container], {
+
 			baseClass: "mblBasicLayout",
-			direction: "horizontal",
+
 			buildRendering: function(){
-				debugger;
-				if(this.direction == "horizontal"){
+				if(this.getAttribute("direction") == "horizontal"){
 					domClass.add(this, "mblHBasicLayout");
 				}else{
 					domClass.add(this, "mblVBasicLayout");
 				}
 			}
 		});
-	}
-)
+		return register("d-basic-layout", [HTMLElement, BasicLayout]);
+	})

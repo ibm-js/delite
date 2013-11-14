@@ -10,8 +10,8 @@ define([
 	"dcl/inherited",
 	"./themes/load!ViewStack"],
 	function(dcl, register, Widget, Container, lang, dom, domGeom, domClass){
+	var ViewStack = dcl([Widget, Container], {
 
-	return register("dui-view-stack", [HTMLDivElement, Widget, Container], {
 		// summary:
 		//		ViewStack container widget.
 		//
@@ -24,12 +24,12 @@ define([
 		//		See ViewStack.css for default values.
 
 		// example:
-		//	|	<div is="dui/ViewStack" id="vs">
+		//	|	<d-view-stack id="vs">
 		//	|		<div id="childA">...</div>
 		//	|		<div id="childB">...</div>
 		//	|		<div id="childC">...</div>
-		//	|	</div>
-		//	|	<button is="dui-button" onclick="vs.show(childB, {transition: 'slide', direction: 'start'})">...</div>
+		//	|	</d-view-stack>
+		//	|	<d-button onclick="vs.show(childB, {transition: 'slide', direction: 'start'})">...</d-button>
 
 		baseClass: "duiViewStack",
 
@@ -167,5 +167,6 @@ define([
 			this._removeAfterTransitionHandlers(node);
 		}
 	});
+	return register("d-view-stack", [HTMLElement, ViewStack]);
 });
 
