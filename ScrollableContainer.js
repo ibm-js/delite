@@ -48,6 +48,11 @@ define([
 		// afterwards. The default one? Or should we store the initial value such that
 		// we can restore it? Needs more thinking.
 		
+		// TODO: to be tested if it's worth setting the overflow:scroll on this.containerNode
+		// versus setting it directly on this. The later would allow the user to install 
+		// listeners for "scroll" events directly on the widget. Otherwise, we'd need to expose
+		// an API to hide the existence of the internal containerNode. 
+
 		getCurrentScroll: function () {
 			// summary:
 			//		Returns the current amount of scroll, as an object with x and y properties
