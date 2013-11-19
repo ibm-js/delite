@@ -1,17 +1,17 @@
 define([
-	"dcl/dcl",
 	"./register",
 	"./Widget",
 	"./Container",
+	"./Contained",
 	"dojo/_base/lang",
 	"dojo/dom-class",
 	"dojo/_base/window",
 	"dojo/touch",
 	"dojo/on",
 	"./themes/load!SidePane"],
-	function(dcl, register, Widget, Container, lang, domClass, win, touch, on){
+	function(register, Widget, Container, Contained, lang, domClass, win, touch, on){
 
-		var SidePane = dcl([Widget, Container], {
+		return register("d-side-pane", [HTMLElement, Widget, Container, Contained], {
 
 			// summary:
 			//		A container displayed on the side of the screen. It can be displayed on top of the page (mode=overlay) or
@@ -133,7 +133,7 @@ define([
 				this._changeClass(this, "VisiblePane", "HiddenPane");
 				this._changeClass(this, "mblSidePaneVisiblePane", "mblSidePaneHiddenPane");
 				if(this.mode == "push" || this.mode == "reveal"){
-					var nextElement = this._findPushedElement(this);
+					var nextElement = this.getNextSibling();
 					if(nextElement){
 						var addedClass = "mblSidePane" + this._capitalize(this.position) + "PushHiddenPage";
 						this._changeClass(nextElement, addedClass, addedClass.replace("Hidden", "Visible"));
@@ -148,7 +148,7 @@ define([
 				this._changeClass(this, "HiddenPane", "VisiblePane");
 				this._changeClass(this, "mblSidePaneHiddenPane", "mblSidePaneVisiblePane");
 				if(this.mode == "push" || this.mode == "reveal"){
-					var nextElement = this._findPushedElement(this);
+					var nextElement = this.getNextSibling();
 					if(nextElement){
 						var removedClass = "mblSidePane" + this._capitalize(this.position) + "PushHiddenPage";
 						this._changeClass(nextElement, removedClass.replace("Hidden", "Visible"), removedClass);
@@ -281,16 +281,6 @@ define([
 				this._cssClasses = {};
 			},
 
-			_findPushedElement: function(domElt){
-				var siblings = domElt.parentElement.children;
-				for (var i = 0; i < siblings.length; i++){
-					if(siblings[i].nodeType == 1 && !domClass.contains(siblings[i], "mblSidePane")){
-						return siblings[i];
-					}
-				}
-				return null;
-			},
-
 			_capitalize: function(str){
 				return str[0].toUpperCase() + str.substring(1);
 			},
@@ -309,7 +299,5 @@ define([
 				}
 			}
 		});
-		return register("d-side-pane", [HTMLElement, SidePane])
-		//TODO: https://github.com/dmandrioli/sidepane/commit/bd1b75a04f711d03610ff90d78db9fe3991ed071#diff-3301805e69083cd2cdbdff83e89ddd3e
 	});
 
