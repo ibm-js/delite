@@ -10,6 +10,11 @@ define([
 	"dojo/on",
 	"./themes/load!SidePane"],
 	function(register, Widget, Container, Contained, lang, domClass, win, touch, on){
+		var _capitalize = function(str){
+			return str[0].toUpperCase() + str.substring(1);
+		};
+		var _cssMap = {start:{push:"StartPush", overlay:"StartOverlay", reveal:"startReveal"},
+			end:{push:"EndPush", overlay:"EndOverlay", reveal:"EndReveal"}};
 
 		return register("d-side-pane", [HTMLElement, Widget, Container, Contained], {
 
@@ -118,7 +123,7 @@ define([
 			buildRendering: function(){
 
 				this._cleanCSS();
-				this._addClass(this, "mblSidePane" + this._capitalize(this.position));
+				this._addClass(this, "mblSidePane" + _capitalize(this.position));
 
 				if(this.inheritViewBg){
 					this._addClass(this, "mblBackground");
@@ -135,7 +140,7 @@ define([
 				if(this.mode == "push" || this.mode == "reveal"){
 					var nextElement = this.getNextSibling();
 					if(nextElement){
-						var addedClass = "mblSidePane" + this._capitalize(this.position) + "PushHiddenPage";
+						var addedClass = "mblSidePane" + _capitalize(this.position) + "PushHiddenPage";
 						this._changeClass(nextElement, addedClass, addedClass.replace("Hidden", "Visible"));
 					}
 				}
@@ -150,7 +155,7 @@ define([
 				if(this.mode == "push" || this.mode == "reveal"){
 					var nextElement = this.getNextSibling();
 					if(nextElement){
-						var removedClass = "mblSidePane" + this._capitalize(this.position) + "PushHiddenPage";
+						var removedClass = "mblSidePane" + _capitalize(this.position) + "PushHiddenPage";
 						this._changeClass(nextElement, removedClass.replace("Hidden", "Visible"), removedClass);
 					}
 				}
@@ -241,7 +246,7 @@ define([
 					// Already a mobile class
 					return suffix;
 				}else{
-					return "mblSidePane" + this._capitalize(this.position) + this._capitalize(this.mode) + suffix;
+					return "mblSidePane" + _cssMap[this.position][this.mode] + suffix;
 				}
 			},
 
@@ -280,11 +285,6 @@ define([
 				}
 				this._cssClasses = {};
 			},
-
-			_capitalize: function(str){
-				return str[0].toUpperCase() + str.substring(1);
-			},
-
 			destroy: function(){
 				this._cleanCSS();
 
