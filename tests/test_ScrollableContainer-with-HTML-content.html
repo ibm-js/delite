@@ -12,18 +12,27 @@
 	<script type="text/javascript" src="./boilerplate.js"></script>
 
 	<script type="text/javascript">
+		var scrollTo;
 		require([
 			"dui/register",
 			"dui/ScrollableContainer",
+			"dui/Button",
 			"dui/themes/load!FlexboxLayout", // Temporary, awaiting for Flexbox-based layout containers
 			"dojo/domReady!"
 		], function (register) {
 			register.parse();
+			scrollBy = function() {
+				var scrollableContainer = document.getElementById("scrollContainer");
+				var to = scrollableContainer.getCurrentScroll();
+				to.x += 100;
+				to.y += 100;
+				scrollableContainer.scrollTo(to, 1000);
+			};
 		});
 	</script>
 
 	<style>
-	html,body{
+	html, body{
 		height: 100%;
 		overflow: hidden;
 	}
@@ -41,6 +50,7 @@
 		border-bottom-color: #89898C;
 		background-color: #ACACAF;
 		line-height: 0px;
+		width: 500px;
 	}
 	.list1 li:nth-child(even){
 		background-color: #97979B;
@@ -60,10 +70,14 @@
 </head>
 <body>
 	<div class="vBox top">
-		<d-scrollable-container id="categ" 
+		<!-- Button to test the programmatic scroll API of ScrollContainer -->
+		<button is="d-button" onclick="scrollBy();" value="T1465Val">
+			Programmatic scroll: scrollBy({x: 100, y: 100})
+		</button>
+		<d-scrollable-container id="scrollContainer" scrollDirection="vh"
 			class="scrollContainer">
 			<ul class="list1" id="categ1">
-				<li>Featured</li>
+				<li>Featured - this is a long list, such that you can get horizontal scroll</li>
 				<li>Categories</li>
 				<li>Top 25</li>
 				<li>Search</li>
