@@ -310,6 +310,6 @@ define([
 			}
 		});
 		return register("d-side-pane", [HTMLElement, SidePane])
-
+		//TODO: https://github.com/dmandrioli/sidepane/commit/bd1b75a04f711d03610ff90d78db9fe3991ed071#diff-3301805e69083cd2cdbdff83e89ddd3e
 	});
 
