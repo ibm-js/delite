@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" 
+		content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no"/>
+	<meta name="apple-mobile-web-app-capable" content="yes"/>
+	<title>ScrollableContainer demo</title>
+
+<!-- The demo has temporary content, awaiting for more widgets to be available -->
+
+	<script type="text/javascript" src="./boilerplate.js"></script>
+
+	<script type="text/javascript">
+		require([
+			"dui/register",
+			"dui/ScrollableContainer",
+			"dui/themes/load!FlexboxLayout", // Temporary, awaiting for Flexbox-based layout containers
+			"dojo/domReady!"
+		], function (register) {
+			register.parse();
+		});
+	</script>
+
+	<style>
+	html,body{
+		height: 100%;
+		overflow: hidden;
+	}
+	.top{
+		width: 100%;
+		height: 100%;
+	}
+	.scrollContainer{
+		height: 100%
+	}
+	.list1 li{
+		border-style: solid;
+		border-width: 1px 0px 1px 0px;
+		border-top-color: #BABABC;
+		border-bottom-color: #89898C;
+		background-color: #ACACAF;
+		line-height: 0px;
+	}
+	.list1 li:nth-child(even){
+		background-color: #97979B;
+	}
+	#categ1 {
+		font-size: 18px;
+	}
+	#categ1 li{
+		line-height: 70px;
+	}
+	p {
+		font-family: Helvetica;
+		font-size: 12px;
+	}
+	
+	</style>
+</head>
+<body>
+	<div class="vBox top">
+		<d-scrollable-container id="categ" 
+			class="scrollContainer">
+			<ul class="list1" id="categ1">
+				<li>Featured</li>
+				<li>Categories</li>
+				<li>Top 25</li>
+				<li>Search</li>
+				<li>Updates</li>
+				<li>Featured</li>
+				<li>Categories</li>
+				<li>Top 25</li>
+				<li>Search</li>
+				<li>Updates</li>
+				<li>Featured</li>
+				<li>Categories</li>
+				<li>Top 25</li>
+				<li>Search</li>
+				<li>Updates</li>
+				<li>Featured</li>
+				<li>Categories</li>
+				<li>Top 25</li>
+				<li>Search</li>
+				<li>Updates</li>
+				<li>Featured</li>
+				<li>Categories</li>
+				<li>Top 25</li>
+				<li>Search</li>
+				<li>Updates</li>
+				<li>Featured</li>
+				<li>Categories</li>
+				<li>Top 25</li>
+				<li>Search</li>
+				<li>Updates</li>
+				<li>Featured</li>
+				<li>Categories</li>
+				<li>Top 25</li>
+				<li>Search</li>
+				<li>Updates</li>
+				<li>Featured</li>
+				<li>Categories</li>
+				<li>Top 25</li>
+				<li>Search</li>
+				<li>Updates</li>
+				<li>Featured</li>
+				<li>Categories</li>
+				<li>Top 25</li>
+				<li>Search</li>
+				<li>Updates</li>
+				<li>Featured</li>
+				<li>Categories</li>
+				<li>Top 25</li>
+				<li>Search</li>
+				<li>Updates</li>
+				<li>Featured</li>
+				<li>Categories</li>
+				<li>Top 25</li>
+				<li>Search</li>
+				<li>Updates</li>
+				<li>Featured</li>
+				<li>Categories</li>
+				<li>Top 25</li>
+				<li>Search</li>
+				<li>Updates</li>
+				<li>Featured</li>
+				<li>Categories</li>
+				<li>Top 25</li>
+				<li>Search</li>
+				<li>Updates</li>
+			</ul>
+		</d-scrollable-container>
+	</div>
+</body>
+</html>

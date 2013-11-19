@@ -1,17 +1,20 @@
 define([
-	"dojo/_base/declare",
+	"dcl/dcl",
 	"dojo/dom",
 	"dojo/dom-style",
 	"dojo/_base/fx",
 	"dojo/fx/easing",
-	"dui/mobile/Container",
+	// "./mobile/Container",
+	"./register",
+	"./Widget",
+	"./Container",
 	"./themes/load!ScrollableContainer"
-], function(declare, dom, domStyle, baseFx, easing, Container){
+], function(dcl, dom, domStyle, baseFx, easing, register, Widget, Container){
 
 	// module:
 	//		dui/ScrollableContainer
 
-	return declare("dui.ScrollableContainer", [Container], {
+	var ScrollableContainer = dcl([Widget, Container], {
 		// summary:
 		//		A container widget with scrolling capabilities.
 		// description:
@@ -26,16 +29,15 @@ define([
 		baseClass: "duiScrollableContainer",
 		
 		buildRendering: function(){
-			this.inherited(arguments);
-
+			this.containerNode = this;
 			dom.setSelectable(this.containerNode, false);
 			
 			if(this.scrollDir.indexOf("v") != -1){ 
-				domStyle.set(this.domNode, "overflowY", "scroll"); // or "auto"... 
+				domStyle.set(this.containerNode, "overflowY", "scroll"); 
 			} 
 			if(this.scrollDir.indexOf("h") != -1 || 
 				this.scrollDir.indexOf("f") != -1){ 
-				domStyle.set(this.domNode, "overflowX", "scroll"); // or "auto"... 
+				domStyle.set(this.containerNode, "overflowX", "scroll"); 
 			} 
 		},
 		
@@ -52,9 +54,7 @@ define([
 			// in addition to vertical scroll, we will transform the "to" argument into 
 			// an object with x and/or y properties.
 			var self = this;
-			var domNode = self.domNode;
-			// TODO: change the semantic of duration from sec to ms
-			duration *= 1000; // convert sec to ms
+			var domNode = this.containerNode;
 			if(duration <= 0){ // shortcut
 				domNode.scrollTop = y;
 				return;
@@ -84,4 +84,6 @@ define([
 			animation(to).play();
 		}
 	});
+	
+	return register("d-scrollable-container", [HTMLElement, ScrollableContainer]);
 });

@@ -7,6 +7,8 @@
 	<meta name="apple-mobile-web-app-capable" content="yes"/>
 	<title>ScrollableContainer demo</title>
 
+<!-- outdated content, since mobile widgets are not yet migrated -->
+
 	<script type="text/javascript" src="../mobile/deviceTheme.js"></script>
 	<script type="text/javascript" src="../../dojo/dojo.js"
 		data-dojo-config="async: true, parseOnLoad: false"></script>
@@ -14,22 +16,21 @@
 	<script type="text/javascript">
 		require([
 			"dojo/parser",
-			"dui/registry",
 			"dui/mobile/ListItem",
 			"dui/ScrollableContainer",
 			"dui/mobile/TabBar",
 			"dui/themes/load!FlexboxLayout", // Temporary, awaiting for Flexbox-based layout containers
 			"dojo/domReady!"
-		], function(parser, registry, ListItem){
+		], function(parser, ListItem){
 			parser.parse().then(function(){
-				var w = registry.byId("list1");
+				var w = document.getElementById("list1");
 				var item;
 				var i;
 				for(i = 1; i <= 300; i++){
 					item = new ListItem({label:"Category "+i, variableHeight: true});
 					w.addChild(item);
 				}
-				w = registry.byId("list2");
+				w = document.getElementById("list2");
 				for(i = 1; i <= 300; i++){
 					item = new ListItem({label:"Category "+i, variableHeight: true});
 					w.addChild(item);
