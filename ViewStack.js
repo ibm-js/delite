@@ -7,10 +7,9 @@ define([
 	"dojo/dom",
 	"dojo/dom-geometry",
 	"dojo/dom-class",
-	"dcl/inherited",
 	"./themes/load!ViewStack"],
 	function(dcl, register, Widget, Container, lang, dom, domGeom, domClass){
-	var ViewStack = dcl([Widget, Container], {
+	return register("d-view-stack", [HTMLElement, Widget, Container], {
 
 		// summary:
 		//		ViewStack container widget.
@@ -93,10 +92,11 @@ define([
 			}
 		},
 
-		addChild: function (/*dui/Widget|DOMNode*/ widget, /*int?*/ insertIndex) {
-			this.inherited(arguments);
-			this._setVisibility(widget, false);
-		},
+		addChild: dcl.superCall(function(sup){
+			return function (/*dui/Widget|DOMNode*/ widget, /*int?*/ insertIndex) {
+				sup.apply(widget, insertIndex);
+				this._setVisibility(widget, false);
+		}}),
 
 		buildRendering: function(){
 			for(var i=1; i < this.children.length; i++){
@@ -169,6 +169,5 @@ define([
 			this._removeAfterTransitionHandlers(node);
 		}
 	});
-	return register("d-view-stack", [HTMLElement, ViewStack]);
 });
 
