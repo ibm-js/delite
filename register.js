@@ -377,10 +377,21 @@ define([
 
 	}
 
+	/**
+	* Reset internal registry metadata and upgrade selectors.
+	* This is typically only needed when running unit tests and there's no sandboxing e.g. creating multiple
+	* custom elements with the same name.
+	*/
+	function clear() {
+		selectors = [];
+		registry = {};
+	}
+
 	// Setup return value as register() method, with other methods hung off it.
 	register.upgrade = upgrade;
 	register.createElement = createElement;
 	register.parse = parse;
+	register.clear = clear;
 
 	// Add helpers from dcl for declaring classes.
 	register.dcl = dcl;
