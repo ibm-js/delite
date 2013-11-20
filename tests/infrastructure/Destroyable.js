@@ -48,7 +48,7 @@ define([
         }
     });
     registerSuite({
-        name: "Destroyable tests",
+        name: "Destroyable",
         setup: function () {
             container = document.createElement("div");
             document.body.appendChild(container);
@@ -93,7 +93,6 @@ define([
         },
         teardown : function () {
             container.parentNode = null;
-            // TODO: Since intern doesn't have sandboxing, need some way to clear all the registered widgets
         }
     });
 });

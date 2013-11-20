@@ -163,7 +163,7 @@ define([
 		},
 		teardown : function () {
 			container.parentNode = null;
-			// TODO: Since intern doesn't have sandboxing, need some way to clear all the registered widgets
+			register.clear();
 		}
 	});
 });
