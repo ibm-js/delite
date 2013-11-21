@@ -124,7 +124,7 @@ define([
 
 				this._cleanCSS();
 				this._addClass(this, "mblSidePane" + _capitalize(this.position));
-
+				this.parentNode.style.overflow = "hidden";
 				if(this.inheritViewBg){
 					this._addClass(this, "mblBackground");
 				}
