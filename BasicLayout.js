@@ -6,7 +6,7 @@ define([
 	"dojo/dom-class",
 	"./themes/load!BasicLayout"],
 	function(register, Widget, Container, Invalidating, domClass){
-		return register("d-basic-layout", [Widget, Container, Invalidating], {
+		return register("d-basic-layout", [HTMLElement, Widget, Container, Invalidating], {
 
 			baseClass: "mblBasicLayout",
 			direction: "horizontal",
