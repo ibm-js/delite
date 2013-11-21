@@ -39,10 +39,12 @@
 		</d-basic-layout>
 		<d-view-stack id="leftStack" class="width100 fill" style="background-color: white">
 			<d-basic-layout direction="vertical" id="menu">
-				<li class="mblListItem" onClick="vs.show(aaa)">AAA</li>
-				<li class="mblListItem" onClick="vs.show(bbb)">BBB</li>
-				<li class="mblListItem" onClick="vs.show(ccc)">CCC</li>
-				<li class="mblListItem" onClick="vs.show(ddd)">DDD</li>
+				<ul>
+					<li class="mblListItem" onClick="vs.show(aaa)">AAA</li>
+					<li class="mblListItem" onClick="vs.show(bbb)">BBB</li>
+					<li class="mblListItem" onClick="vs.show(ccc)">CCC</li>
+					<li class="mblListItem" onClick="vs.show(ddd)">DDD</li>
+				</ul>
 			</d-basic-layout>
 
 			<d-basic-layout direction="horizontal" id="settings">
@@ -69,26 +71,48 @@
 			<!-- Test with a ScrollableView -->
 			<div>
 				<d-basic-layout direction="vertical">
-					<li style="min-height:3em;" class="mblListItem" onClick="vs.show(aaa)">AAA</li>
-					<li style="min-height:3em;" class="mblListItem" onClick="vs.show(bbb)">BBB</li>
-					<li style="min-height:3em;" class="mblListItem" onClick="vs.show(ccc)">CCC</li>
-					<li style="min-height:3em;" class="mblListItem" onClick="vs.show(ddd)">DDD</li>
-					<li style="min-height:3em;" class="mblListItem" onClick="vs.show(aaa)">AAA</li>
-					<li style="min-height:3em;" class="mblListItem" onClick="vs.show(bbb)">BBB</li>
-					<li style="min-height:3em;" class="mblListItem" onClick="vs.show(ccc)">CCC</li>
-					<li style="min-height:3em;" class="mblListItem" onClick="vs.show(ddd)">DDD</li>
-					<li style="min-height:3em;" class="mblListItem" onClick="vs.show(aaa)">AAA</li>
-					<li style="min-height:3em;" class="mblListItem" onClick="vs.show(bbb)">BBB</li>
-					<li style="min-height:3em;" class="mblListItem" onClick="vs.show(ccc)">CCC</li>
-					<li style="min-height:3em;" class="mblListItem" onClick="vs.show(ddd)">DDD</li>
-					<li style="min-height:3em;" class="mblListItem" onClick="vs.show(aaa)">AAA</li>
-					<li style="min-height:3em;" class="mblListItem" onClick="vs.show(bbb)">BBB</li>
-					<li style="min-height:3em;" class="mblListItem" onClick="vs.show(ccc)">CCC</li>
-					<li style="min-height:3em;" class="mblListItem" onClick="vs.show(ddd)">DDD</li>
-					<li style="min-height:3em;" class="mblListItem" onClick="vs.show(aaa)">AAA</li>
-					<li style="min-height:3em;" class="mblListItem" onClick="vs.show(bbb)">BBB</li>
-					<li style="min-height:3em;" class="mblListItem" onClick="vs.show(ccc)">CCC</li>
-					<li style="min-height:3em;" class="mblListItem" onClick="vs.show(ddd)">DDD</li>
+					<ul>
+						<li style="min-height:3em;" class="mblListItem" onClick="vs.show(aaa)">AAA</li>
+						<li style="min-height:3em;" class="mblListItem" onClick="vs.show(bbb)">BBB</li>
+						<li style="min-height:3em;" class="mblListItem" onClick="vs.show(ccc)">CCC</li>
+						<li style="min-height:3em;" class="mblListItem" onClick="vs.show(ddd)">DDD</li>
+						<li style="min-height:3em;" class="mblListItem" onClick="vs.show(aaa)">AAA</li>
+						<li style="min-height:3em;" class="mblListItem" onClick="vs.show(bbb)">BBB</li>
+						<li style="min-height:3em;" class="mblListItem" onClick="vs.show(ccc)">CCC</li>
+						<li style="min-height:3em;" class="mblListItem" onClick="vs.show(ddd)">DDD</li>
+						<li style="min-height:3em;" class="mblListItem" onClick="vs.show(aaa)">AAA</li>
+						<li style="min-height:3em;" class="mblListItem" onClick="vs.show(bbb)">BBB</li>
+						<li style="min-height:3em;" class="mblListItem" onClick="vs.show(ccc)">CCC</li>
+						<li style="min-height:3em;" class="mblListItem" onClick="vs.show(ddd)">DDD</li>
+						<li style="min-height:3em;" class="mblListItem" onClick="vs.show(aaa)">AAA</li>
+						<li style="min-height:3em;" class="mblListItem" onClick="vs.show(bbb)">BBB</li>
+						<li style="min-height:3em;" class="mblListItem" onClick="vs.show(ccc)">CCC</li>
+						<li style="min-height:3em;" class="mblListItem" onClick="vs.show(ddd)">DDD</li>
+						<li style="min-height:3em;" class="mblListItem" onClick="vs.show(aaa)">AAA</li>
+						<li style="min-height:3em;" class="mblListItem" onClick="vs.show(bbb)">BBB</li>
+						<li style="min-height:3em;" class="mblListItem" onClick="vs.show(ccc)">CCC</li>
+						<li style="min-height:3em;" class="mblListItem" onClick="vs.show(ddd)">DDD</li>
+						<li style="min-height:3em;" class="mblListItem" onClick="vs.show(aaa)">AAA</li>
+						<li style="min-height:3em;" class="mblListItem" onClick="vs.show(bbb)">BBB</li>
+						<li style="min-height:3em;" class="mblListItem" onClick="vs.show(ccc)">CCC</li>
+						<li style="min-height:3em;" class="mblListItem" onClick="vs.show(ddd)">DDD</li>
+						<li style="min-height:3em;" class="mblListItem" onClick="vs.show(aaa)">AAA</li>
+						<li style="min-height:3em;" class="mblListItem" onClick="vs.show(bbb)">BBB</li>
+						<li style="min-height:3em;" class="mblListItem" onClick="vs.show(ccc)">CCC</li>
+						<li style="min-height:3em;" class="mblListItem" onClick="vs.show(ddd)">DDD</li>
+						<li style="min-height:3em;" class="mblListItem" onClick="vs.show(aaa)">AAA</li>
+						<li style="min-height:3em;" class="mblListItem" onClick="vs.show(bbb)">BBB</li>
+						<li style="min-height:3em;" class="mblListItem" onClick="vs.show(ccc)">CCC</li>
+						<li style="min-height:3em;" class="mblListItem" onClick="vs.show(ddd)">DDD</li>
+						<li style="min-height:3em;" class="mblListItem" onClick="vs.show(aaa)">AAA</li>
+						<li style="min-height:3em;" class="mblListItem" onClick="vs.show(bbb)">BBB</li>
+						<li style="min-height:3em;" class="mblListItem" onClick="vs.show(ccc)">CCC</li>
+						<li style="min-height:3em;" class="mblListItem" onClick="vs.show(ddd)">DDD</li>
+						<li style="min-height:3em;" class="mblListItem" onClick="vs.show(aaa)">AAA</li>
+						<li style="min-height:3em;" class="mblListItem" onClick="vs.show(bbb)">BBB</li>
+						<li style="min-height:3em;" class="mblListItem" onClick="vs.show(ccc)">CCC</li>
+						<li style="min-height:3em;" class="mblListItem" onClick="vs.show(ddd)">DDD</li>
+					</ul>
 				</d-basic-layout>
 			</div>
 		</div>
