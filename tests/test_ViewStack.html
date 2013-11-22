@@ -41,7 +41,7 @@
 <button is="d-button" onclick="vs.showPrevious({direction: 'start'})">Previous</button>
 <button is="d-button" onclick="vs.showNext()">Next</button>
 <br>
-<d-view-stack id="vs" style="display:inline-block; width:50%; height: 300px; border: 2px solid gold">
+<div is="d-view-stack" id="vs" style="display:inline-block; width:50%; height: 300px; border: 2px solid gold">
 	<div style="background-color: honeydew;" id="aaa">
 		AAA
 		<button is="d-button" onclick="vs.show(bbb,{direction:'start'})">BBB left</button>
@@ -78,7 +78,7 @@
 		<button is="d-button" onclick="vs.show(bbb,{direction:'end'})">BBB right</button>
 		<button is="d-button" onclick="vs.show(ccc,{direction:'end'})">CCC right</button>
 	</div>
-</d-view-stack>
+</div>
 
 
 <div style="display: none">

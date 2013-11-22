@@ -37,7 +37,7 @@
 			<div class="fill titleStyle">Menu</div>
 			<div><button onclick="leftStack.show('settings', {direction:'start'})"><i class="icon-cog"></i></button></div>
 		</d-basic-layout>
-		<d-view-stack id="leftStack" class="width100 fill" style="background-color: white">
+		<div is="d-view-stack" id="leftStack" class="width100 fill" style="background-color: white">
 			<d-basic-layout direction="vertical" id="menu">
 				<ul>
 					<li class="mblListItem" onClick="vs.show(aaa)">AAA</li>
@@ -50,7 +50,7 @@
 			<d-basic-layout direction="horizontal" id="settings">
 				<button class="fill" onclick="leftStack.show('menu', {direction:'end'})"><i class="icon-reply" style="color: black"></i>Back</button>
 			</d-basic-layout>
-		</d-view-stack>
+		</div>
 	</d-basic-layout>
 </d-side-pane>
 
@@ -63,7 +63,7 @@
 		<div><button><i class="icon-unlock"></i></button></div>
 	</d-basic-layout>
 	<!-- Main content (ViewStack) -->
-	<d-view-stack id="vs" class="width100 fill">
+	<div is="d-view-stack" id="vs" class="width100 fill">
 		<div style="background-color: white;" id="aaa">
 			AAA
 		</div>
@@ -122,7 +122,7 @@
 		<div style="background-color: oldlace;" id="ddd">
 			DDD
 		</div>
-	</d-view-stack>
+	</div>
 	<!-- Footer -->
 	<d-basic-layout direction="horizontal" class="pageFooter">
 		<div class="fill"><button onclick="vs.show(aaa)"><i class="icon-comment"></i></button></div>
