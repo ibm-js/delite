@@ -9,7 +9,7 @@ define([
 	"dojo/dom-class",
 	"./themes/load!ViewStack"],
 	function(dcl, register, Widget, Container, lang, dom, domGeom, domClass){
-	return register("d-view-stack", [HTMLElement, Widget, Container], {
+	return register("d-view-stack", [HTMLDivElement, Widget, Container], {
 
 		// summary:
 		//		ViewStack container widget.
@@ -94,7 +94,7 @@ define([
 
 		addChild: dcl.superCall(function(sup){
 			return function (/*dui/Widget|DOMNode*/ widget, /*int?*/ insertIndex) {
-				sup.apply(widget, insertIndex);
+				sup.apply(this, arguments);
 				this._setVisibility(widget, false);
 		}}),
 
