@@ -38,7 +38,7 @@
 			<div><button onclick="leftStack.show(settings, {direction:'start'})"><i class="icon-cog"></i></button></div>
 		</d-basic-layout>
 
-		<div is="d-view-stack" id="leftStack" class="width100 fill" style="background-color: white">
+		<d-view-stack id="leftStack" class="width100 fill" style="background-color: white">
 			<div id="menu">
 				<d-basic-layout direction="vertical">
 					<ul>
@@ -52,7 +52,7 @@
 			<div id="settings" style="text-align: center">
 				<button onclick="leftStack.show(menu, {direction:'end'})"><i class="icon-reply" style="color: black"></i>Back</button>
 			</div>
-		</div>
+		</d-view-stack>
 	</d-basic-layout>
 </d-side-pane>
 
