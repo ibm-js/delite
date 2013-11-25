@@ -35,21 +35,23 @@
 		<d-basic-layout direction="horizontal" class="pageHeader">
 			<div><button onclick="leftPane.close()"><i class="icon-chevron-sign-left"></i></button></div>
 			<div class="fill titleStyle">Menu</div>
-			<div><button onclick="leftStack.show('settings', {direction:'start'})"><i class="icon-cog"></i></button></div>
+			<div><button onclick="leftStack.show(settings, {direction:'start'})"><i class="icon-cog"></i></button></div>
 		</d-basic-layout>
-		<div is="d-view-stack" id="leftStack" class="width100 fill" style="background-color: white">
-			<d-basic-layout direction="vertical" id="menu">
-				<ul>
-					<li class="listItem" onClick="vs.show(aaa)">AAA</li>
-					<li class="listItem" onClick="vs.show(bbb)">BBB</li>
-					<li class="listItem" onClick="vs.show(ccc)">CCC</li>
-					<li class="listItem" onClick="vs.show(ddd)">DDD</li>
-				</ul>
-			</d-basic-layout>
 
-			<d-basic-layout direction="horizontal" id="settings">
-				<button class="fill" onclick="leftStack.show('menu', {direction:'end'})"><i class="icon-reply" style="color: black"></i>Back</button>
-			</d-basic-layout>
+		<div is="d-view-stack" id="leftStack" class="width100 fill" style="background-color: white">
+			<div id="menu">
+				<d-basic-layout direction="vertical">
+					<ul>
+						<li class="listItem" onClick="vs.show(aaa)">AAA</li>
+						<li class="listItem" onClick="vs.show(bbb)">BBB</li>
+						<li class="listItem" onClick="vs.show(ccc)">CCC</li>
+						<li class="listItem" onClick="vs.show(ddd)">DDD</li>
+					</ul>
+				</d-basic-layout>
+			</div>
+			<div id="settings" style="text-align: center">
+				<button onclick="leftStack.show(menu, {direction:'end'})"><i class="icon-reply" style="color: black"></i>Back</button>
+			</div>
 		</div>
 	</d-basic-layout>
 </d-side-pane>
