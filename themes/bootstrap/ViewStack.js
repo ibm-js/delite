@@ -4,6 +4,9 @@ define(function(){ return '\
   overflow-x: hidden !important;\
   position: relative !important;\
 }\
+.duiBasicLayout > .duiViewStack {\
+  display: block !important;\
+}\
 .duiViewStack div {\
   position: absolute !important;\
   box-sizing: border-box !important;\
