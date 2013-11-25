@@ -65,7 +65,7 @@
 		<div><button><i class="icon-unlock"></i></button></div>
 	</d-basic-layout>
 	<!-- Main content (ViewStack) -->
-	<div is="d-view-stack" id="vs" class="width100 fill">
+	<d-view-stack is="d-view-stack" id="vs" class="width100 fill">
 		<div style="background-color: white;" id="aaa">
 			AAA
 		</div>
@@ -74,7 +74,7 @@
 			<div>
 				<d-basic-layout direction="vertical">
 					<ul>
-						<li class="listItem" onClick="vs.show(aaa)">AAA</li>
+						<li class="listItem" onClick="vs.show(aaa)"><button>AAA</button></li>
 						<li class="listItem" onClick="vs.show(bbb)">BBB</li>
 						<li class="listItem" onClick="vs.show(ccc)">CCC</li>
 						<li class="listItem" onClick="vs.show(ddd)">DDD</li>
@@ -124,7 +124,7 @@
 		<div style="background-color: oldlace;" id="ddd">
 			DDD
 		</div>
-	</div>
+	</d-view-stack>
 	<!-- Footer -->
 	<d-basic-layout direction="horizontal" class="pageFooter">
 		<div class="fill"><button onclick="vs.show(aaa)"><i class="icon-comment"></i></button></div>
