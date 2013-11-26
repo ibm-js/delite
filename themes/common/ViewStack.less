@@ -4,6 +4,7 @@
 .duiViewStack {
   box-sizing: border-box !important;
   overflow-x: hidden !important;
+  overflow-y: hidden;
   position: relative !important;
 }
 
@@ -11,7 +12,7 @@
   display: block !important; // Needed for IE10
 }
 
-.duiViewStack div{
+.duiViewStack > * {
   position: absolute !important;
   box-sizing: border-box !important;
   width: 100% !important;
