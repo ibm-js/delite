@@ -6,28 +6,50 @@
 @m_columns: 4;
 @l_columns: 5;
 ////////////////////////////////////////////////////////////////
+.duiMultiColumns{
+  overflow: hidden;
+}
+
+.duiMultiColumns > .duiBasicLayout {
+//  height: 100%;
+}
 
 @media screen and (max-width: @break1) {
-  .duiMultiColumns{
-	.cc(@s_columns);
+  .duiMultiColumns > .duiBasicLayout{
+	.adaptWidth(@s_columns);
   }
+  .genTranslations(@columns_count - @s_columns + 1);
 }
 
 @media screen and (min-width: @break1) and (max-width: @break2) {
-  .duiMultiColumns {
-	.cc(@m_columns);
+  .duiMultiColumns > .duiBasicLayout {
+	.adaptWidth(@m_columns);
   }
+  .genTranslations(@columns_count - @m_columns + 1);
 }
 
 @media screen and (min-width: @break2) {
-  .duiMultiColumns {
-	.cc(@l_columns);
+  .duiMultiColumns > .duiBasicLayout {
+	.adaptWidth(@l_columns);
   }
+  .genTranslations(@columns_count - @l_columns + 1);
 }
 
-.cc(@i){
+.adaptWidth(@i){
   @tmp: (100*(@columns_count)/@i);
   width: ~"@{tmp}%";
+}
+
+.genTranslations(@count){
+  @i: 1;
+  .while (@i) when (@i =< @count) {
+	.duiMultiColumns > .duiBasicLayout.pos@{i}{
+	  @val: -100 * @i / @columns_count;
+	  .translateX(@val);
+	}
+	.while(@i+1);
+  }
+  .while(@i);
 }
 
 //.gen(){
@@ -41,3 +63,13 @@
 //  }
 //  .while(@i);
 //}
+//.translateX(v){
+//
+//}
+
+.translateX(@v){
+  @val: ~"@{v}%";
+  -webkit-transform: translate3d(@val, 0px, 0px);
+  transform: translate3d(@val, 0px, 0px);
+
+}
