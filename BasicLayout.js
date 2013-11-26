@@ -2,7 +2,7 @@ define([
 	"./register",
 	"./Widget",
 	"./Container",
-	"./mixins/Invalidating",
+	"./Invalidating",
 	"dojo/dom-class",
 	"./themes/load!BasicLayout"],
 	function(register, Widget, Container, Invalidating, domClass){
