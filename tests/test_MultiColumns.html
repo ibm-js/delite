@@ -4,11 +4,17 @@
 	<meta name="viewport"
 		  content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no"/>
 	<meta name="apple-mobile-web-app-capable" content="yes"/>
-	<title>View Stack</title>
+	<title>Multi Columns</title>
 
 	<!-- For testing purposes.  Real applications should load the AMD loader directly -->
 	<script type="text/javascript" src="./boilerplate.js"></script>
-
+	<style>
+		html, body{
+			margin: 0;
+			padding: 0;
+			height: 100%;
+		}
+	</style>
 	<script type="text/javascript">
 		require([
 			"dui/MultiColumns",
@@ -33,54 +39,43 @@
 
 </head>
 <body>
-<d-multi-columns id="mc">
-	<div style="background-color: honeydew;" id="aaa">
-		AAA
-		<button is="d-button" onclick="vs.show(bbb,{direction:'start'})">BBB left</button>
-		<button is="d-button" onclick="vs.show(ccc,{direction:'start'})">CCC left</button>
-		<button is="d-button" onclick="vs.show(ddd,{direction:'start'})">DDD left</button>
-		<button is="d-button" onclick="vs.show(bbb,{direction:'end'})">BBB right</button>
-		<button is="d-button" onclick="vs.show(ccc,{direction:'end'})">CCC right</button>
-		<button is="d-button" onclick="vs.show(ddd,{direction:'end'})">DDD right</button>
-	</div>
-	<div style="background-color: whitesmoke;" id="bbb">
-		BBB
-		<button is="d-button" onclick="vs.show(aaa,{direction:'start'})">AAA left</button>
-		<button is="d-button" onclick="vs.show(ccc,{direction:'start'})">CCC left</button>
-		<button is="d-button" onclick="vs.show(ddd,{direction:'start'})">DDD left</button>
-		<button is="d-button" onclick="vs.show(aaa,{direction:'end'})">AAA right</button>
-		<button is="d-button" onclick="vs.show(ccc,{direction:'end'})">CCC right</button>
-		<button is="d-button" onclick="vs.show(ddd,{direction:'end'})">DDD right</button>
-	</div>
-	<div style="background-color: powderblue;" id=ccc>
-		CCC
-		<button is="d-button" onclick="vs.show(aaa,{direction:'start'})">AAA left</button>
-		<button is="d-button" onclick="vs.show(bbb,{direction:'start'})">BBB left</button>
-		<button is="d-button" onclick="vs.show(ddd,{direction:'start'})">DDD left</button>
-		<button is="d-button" onclick="vs.show(aaa,{direction:'end'})">AAA right</button>
-		<button is="d-button" onclick="vs.show(bbb,{direction:'end'})">BBB right</button>
-		<button is="d-button" onclick="vs.show(ddd,{direction:'end'})">DDD right</button>
-	</div>
-	<div style="background-color: oldlace;" id="ddd">
-		DDD
-		<button is="d-button" onclick="vs.show(aaa,{direction:'start'})">AAA left</button>
-		<button is="d-button" onclick="vs.show(bbb,{direction:'start'})">BBB left</button>
-		<button is="d-button" onclick="vs.show(ccc,{direction:'start'})">CCC left</button>
-		<button is="d-button" onclick="vs.show(aaa,{direction:'end'})">AAA right</button>
-		<button is="d-button" onclick="vs.show(bbb,{direction:'end'})">BBB right</button>
-		<button is="d-button" onclick="vs.show(ccc,{direction:'end'})">CCC right</button>
-	</div>
-	<div style="background-color: #7a9de9;" id="eee">
-		EEE
-		<button is="d-button" onclick="vs.show(aaa,{direction:'start'})">AAA left</button>
-		<button is="d-button" onclick="vs.show(bbb,{direction:'start'})">BBB left</button>
-		<button is="d-button" onclick="vs.show(ccc,{direction:'start'})">CCC left</button>
-		<button is="d-button" onclick="vs.show(aaa,{direction:'end'})">AAA right</button>
-		<button is="d-button" onclick="vs.show(bbb,{direction:'end'})">BBB right</button>
-		<button is="d-button" onclick="vs.show(ccc,{direction:'end'})">CCC right</button>
-	</div>
+<d-basic-layout direction="vertical" class="height100 width100">
+	<d-multi-columns id="mc" class="fill">
+		<div style="background-color: honeydew;" id="aaa">
+			AAA
+		</div>
+		<div style="background-color: whitesmoke;" id="bbb">
+			BBB
+		</div>
+		<div style="background-color: powderblue;" id=ccc>
+			CCC
+		</div>
+		<div style="background-color: oldlace;" id="ddd">
+			DDD
+		</div>
+		<div style="background-color: #7a9de9;" id="eee">
+			EEE
+		</div>
+	</d-multi-columns>
+	<d-multi-columns id="mc2" class="fill">
 
-</d-multi-columns>
+		<div style="background-color: #7a9de9;" id="eee2">
+			EEE
+		</div>
+		<div style="background-color: oldlace;" id="ddd2">
+			DDD
+		</div>
+		<div style="background-color: powderblue;" id=ccc2>
+			CCC
+		</div>
+		<div style="background-color: whitesmoke;" id="bbb2">
+			BBB
+		</div>
+		<div style="background-color: honeydew;" id="aaa2">
+			AAA
+		</div>
+	</d-multi-columns>
 
+</d-basic-layout>
 </body>
 </html>
