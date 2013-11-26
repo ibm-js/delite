@@ -32,18 +32,18 @@
 	</script>
 
 	<style>
-	html, body{
+	html, body {
 		height: 100%;
 		overflow: hidden;
 	}
-	.top{
+	.top {
 		width: 100%;
 		height: 100%;
 	}
-	.scrollContainer{
+	.scrollContainer {
 		height: 100%
 	}
-	.list1 li{
+	.list1 li {
 		border-style: solid;
 		border-width: 1px 0px 1px 0px;
 		border-top-color: #BABABC;
@@ -52,20 +52,19 @@
 		line-height: 0px;
 		width: 500px;
 	}
-	.list1 li:nth-child(even){
+	.list1 li:nth-child(even) {
 		background-color: #97979B;
 	}
 	#categ1 {
 		font-size: 18px;
 	}
-	#categ1 li{
+	#categ1 li {
 		line-height: 70px;
 	}
 	p {
 		font-family: Helvetica;
 		font-size: 12px;
 	}
-	
 	</style>
 </head>
 <body>
@@ -74,7 +73,7 @@
 		<button is="d-button" onclick="scrollBy();" value="T1465Val">
 			Programmatic scroll: scrollBy({x: 100, y: 100})
 		</button>
-		<d-scrollable-container id="scrollContainer" scrollDirection="vh"
+		<d-scrollable-container id="scrollContainer" scrollDirection="both"
 			class="scrollContainer">
 			<ul class="list1" id="categ1">
 				<li>Featured - this is a long list, such that you can get horizontal scroll</li>
