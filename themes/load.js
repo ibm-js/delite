@@ -37,25 +37,14 @@ define([
 		}
 	}
 
-	function getPaths(/*String*/ logicalPath, /*String[]*/ ary) {
+	function getPaths(/*String*/ logicalPath) {
 		// summary:
-		//		Given a logical path, add the paths of the CSS files that need to be loaded into ary.
+		//		Given a logical path, return comma separated list of actual paths of the CSS files.
 		//		The files to be loaded will vary depending on the theme.
 		//		For example, if logicalPath == "./foo/bar", it will load "./foo/ios/bar" and "./foo/ios/bar_rtl".
 
-		logicalPath.replace(/(.*\/)([^/\.]+)(.css|)/, function(
-				all,
-				logicalDir,		// path to directory containing themes subdirs (ios/ etc.)
-				fnameBase,		// name of file w/out .css suffix or _rtl
-				suffix			// .css if we are loading a text file, or "" if loading a javascript file
-				){
-			var firstPart = logicalDir + theme + "/" + fnameBase;	// the actual dir + base of file name
-
-			ary.push(firstPart + suffix);
-			if (has("dojo-bidi")) {
-				ary.push(firstPart + "_rtl" + suffix);
-			}
-		});
+		return logicalPath.replace(/^(.*\/)([^/\.]+)(.css|)$/,
+			has("dojo-bidi") ? "$1" + theme + "/$2$3, $1" + theme + "/$2_rtl$3" : "$1" + theme + "/$2$3");
 	}
 
 	return {
@@ -106,16 +95,12 @@ define([
 			//		Callback function which will be called when the loading finishes
 			//		and the stylesheet has been inserted.
 
-
-			// Convert list of logicalPaths (ex: common,Button) into arguments to CSS plugin
+			// Convert list of logical paths into list of actual paths
 			// ex: ios/common, ios/common_rtl, ios/Button, ios/Button_rtl
-			var actualPaths = [];
-			logicalPaths.split(/, */).forEach(function (logicalPath) {
-				getPaths(logicalPath, actualPaths);
-			});
+			var actualPaths = logicalPaths.split(/, */).map(getPaths).join(",");
 
 			// Make single call to css! plugin to load resources in order specified
-			req([ "../css!" + actualPaths.join(",") ], function () {
+			req([ "../css!" + actualPaths ], function () {
 				onload(arguments);
 			});
 		}
