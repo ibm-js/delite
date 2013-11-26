@@ -2,7 +2,7 @@ define([
 	"./register",
 	"./CssState",
 	"./handlebars!./templates/ExampleWidget.html",
-	"./themes/load!ExampleWidget"	// inserts the CSS for this widget for page's theme
+	"./themes/load!./themes/ExampleWidget"	// inserts the CSS for this widget for page's theme
 ], function (register, CssState, renderer) {
 
 	return register("d-example", [HTMLElement, CssState], {

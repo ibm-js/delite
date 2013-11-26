@@ -7,7 +7,7 @@ define([
 	"./Widget",
 	"./Invalidating",
 	"dojo/has!dojo-bidi?./bidi/Button",
-	"./themes/load!common,Button"		// common for duiInline etc., Button for duiButton etc.
+	"./themes/load!./themes/common,./themes/Button"		// common for duiInline etc., Button for duiButton etc.
 ], function (dcl, has, lang, domConstruct, register, Widget, Invalidating, BidiButton) {
 
 	var Button = dcl([Widget, Invalidating], {

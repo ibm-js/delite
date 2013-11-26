@@ -19,9 +19,6 @@ define([
 		//		The matching is performed in the array order, and stops after the
 		//		first match.
 
-		// Note that the windows theme is never used unless the app explicitly requests it.
-		// That's so websites on desktop machines look the same regardless of what browser is used.
-
 		[/Holodark|Android/, "holodark"],
 		[/BlackBerry|BB10/, "blackberry"],
 		[/iPhone|iPad/, "ios"],
@@ -40,53 +37,69 @@ define([
 		}
 	}
 
-	function getPaths(/*String*/ widget, /*String[]*/ ary) {
+	function getPaths(/*String*/ logicalPath, /*String[]*/ ary) {
 		// summary:
-		//		Given a widget, add the paths of the CSS files that need to be loaded for that widget into ary.
+		//		Given a logical path, add the paths of the CSS files that need to be loaded into ary.
 		//		The files to be loaded will vary depending on the theme.
+		//		For example, if logicalPath == "./foo/bar", it will load "./foo/ios/bar" and "./foo/ios/bar_rtl".
 
-		var base = widget.replace(/\.css$/, ""),
-			suffix = /\.css$/.test(widget) ? ".css" : "",
-			path = "./" + theme + "/" + base;
+		logicalPath.replace(/(.*\/)([^/\.]+)(.css|)/, function(
+				all,
+				logicalDir,		// path to directory containing themes subdirs (ios/ etc.)
+				fnameBase,		// name of file w/out .css suffix or _rtl
+				suffix			// .css if we are loading a text file, or "" if loading a javascript file
+				){
+			var firstPart = logicalDir + theme + "/" + fnameBase;	// the actual dir + base of file name
 
-		ary.push(path + suffix);
-		if (has("dojo-bidi")) {
-			ary.push(path + "_rtl" + suffix);
-		}
+			ary.push(firstPart + suffix);
+			if (has("dojo-bidi")) {
+				ary.push(firstPart + "_rtl" + suffix);
+			}
+		});
 	}
 
 	return {
 		// summary:
-		//		CSS loading plugin for the widgets with themes in this directory.
-		//		Loads the CSS file(s) for the specified widget for the current theme.
+		//		Loads the specified CSS file(s) for the current theme and page direction.
 		//
-		//		For example, on an iPhone, load!common,Button will load (in the following order):
+		//		For example, on an iPhone with an RTL locale, load!./themes/common,./Button/Button
+		//		will load (in the following order):
 		//
 		//			- dui/themes/ios/common.css
 		//			- dui/themes/ios/common_rtl.css
-		//			- dui/themes/ios/Button.css
-		//			- dui/themes/ios/Button_rtl.css.
+		//			- dui/Button/ios/Button.css
+		//			- dui/Button/ios/Button_rtl.css.
+		//
+		//		In other words, the paths supplied to the plugin are "logical paths" that are expanded
+		//		according to the page's theme and direction.
 		//
 		//		You can also pass an additional URL parameter string
 		//		theme={theme widget} to force a specific theme through the browser
 		//		URL input. The available theme ids are bootstrap, holodark (theme introduced in Android 3.0),
-		//		blackberry, custom, and windows (from Windows 8). The theme names are case-sensitive. If the given
-		//		widget does not match, the bootstrap theme is used.
+		//		blackberry, and bootstrap. The theme names are case-sensitive. If the given
+		//		theme does not match, the bootstrap theme is used.
 		//
 		//	|	http://your.server.com/yourapp.html // automatic detection
-		//	|	http://your.server.com/yourapp.html?theme=android // forces Android theme
 		//	|	http://your.server.com/yourapp.html?theme=holodark // forces Holodark theme
 		//	|	http://your.server.com/yourapp.html?theme=blackberry // forces Blackberry theme
-		//	|	http://your.server.com/yourapp.html?theme=custom // forces Custom theme
 		//	|	http://your.server.com/yourapp.html?theme=ios // forces iPhone theme
 		//
 		//		You can also specify a particular user agent through the ua=... URL parameter.
 
-		load: function (widgets, require, onload) {
+		normalize: function(logicalPaths, normalize){
 			// summary:
-			//		Load and install the specified CSS files for the given widget, then call onload().
-			// widget: String
-			//		Name of the widget.
+			//		Convert relative paths to absolute ones.   By default only the first path (in the comma
+			//		separated list) is converted.
+
+			return logicalPaths.split(/, */).map(normalize).join(",");
+		},
+
+		load: function (logicalPaths, require, onload) {
+			// summary:
+			//		Load and install the specified CSS files for the given logicalPaths, then call onload().
+			// logicalPaths: String
+			//		Comma separated list of simplified paths.  They will be expanded to include the theme
+			//		name, and to load the RTL versions of files too.
 			// require: Function
 			//		AMD's require() method
 			// onload: Function
@@ -94,15 +107,15 @@ define([
 			//		and the stylesheet has been inserted.
 
 
-			// Convert list of widgets (ex: common,Button) into arguments to CSS plugin
+			// Convert list of logicalPaths (ex: common,Button) into arguments to CSS plugin
 			// ex: ios/common, ios/common_rtl, ios/Button, ios/Button_rtl
-			var paths = [];
-			widgets.split(/, */).forEach(function (widget) {
-				getPaths(widget, paths);
+			var actualPaths = [];
+			logicalPaths.split(/, */).forEach(function (logicalPath) {
+				getPaths(logicalPath, actualPaths);
 			});
 
 			// Make single call to css! plugin to load resources in order specified
-			req([ "../css!" + paths.join(",") ], function () {
+			req([ "../css!" + actualPaths.join(",") ], function () {
 				onload(arguments);
 			});
 		}
