@@ -1,0 +1,43 @@
+// Public variables
+@break1: 501px;
+@break2: 801px;
+@columns_count: 5;
+@s_columns: 1;
+@m_columns: 4;
+@l_columns: 5;
+////////////////////////////////////////////////////////////////
+
+@media screen and (max-width: @break1) {
+  .duiMultiColumns{
+	.cc(@s_columns);
+  }
+}
+
+@media screen and (min-width: @break1) and (max-width: @break2) {
+  .duiMultiColumns {
+	.cc(@m_columns);
+  }
+}
+
+@media screen and (min-width: @break2) {
+  .duiMultiColumns {
+	.cc(@l_columns);
+  }
+}
+
+.cc(@i){
+  @tmp: (100*(@columns_count)/@i);
+  width: ~"@{tmp}%";
+}
+
+//.gen(){
+//  @i: 1;
+//  .while (@i) when (@i =< @columns_count) {
+//	.col@{i} {
+//	  @tmp: (100*(@columns_count)/@i);
+//	  width: ~"@{tmp}%";
+//	}
+//	.while(@i+1);
+//  }
+//  .while(@i);
+//}
