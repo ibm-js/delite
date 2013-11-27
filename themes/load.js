@@ -37,30 +37,15 @@ define([
 		}
 	}
 
-	function getPaths(/*String*/ logicalPath) {
-		// summary:
-		//		Given a logical path, return comma separated list of actual paths of the CSS files.
-		//		The files to be loaded will vary depending on the theme.
-		//		For example, if logicalPath == "./foo/bar", it will load "./foo/ios/bar" and "./foo/ios/bar_rtl".
-
-		return logicalPath.replace(/^(.*\/)([^/\.]+)(.css|)$/,
-			has("dojo-bidi") ? "$1" + theme + "/$2$3, $1" + theme + "/$2_rtl$3" : "$1" + theme + "/$2$3");
-	}
-
 	return {
 		// summary:
-		//		Loads the specified CSS file(s) for the current theme and page direction.
+		//		Loads the specified CSS file(s), substituting {{theme}} with the theme for the current page.
 		//
-		//		For example, on an iPhone with an RTL locale, load!./themes/common,./Button/Button
+		//		For example, on an iPhone load!./css/{{theme}}/common,./Button/{{theme}}/Button
 		//		will load (in the following order):
 		//
-		//			- dui/themes/ios/common.css
-		//			- dui/themes/ios/common_rtl.css
-		//			- dui/Button/ios/Button.css
-		//			- dui/Button/ios/Button_rtl.css.
-		//
-		//		In other words, the paths supplied to the plugin are "logical paths" that are expanded
-		//		according to the page's theme and direction.
+		//			- ./css/ios/common
+		//			- ./Button/ios/Button
 		//
 		//		You can also pass an additional URL parameter string
 		//		theme={theme widget} to force a specific theme through the browser
@@ -87,8 +72,8 @@ define([
 			// summary:
 			//		Load and install the specified CSS files for the given logicalPaths, then call onload().
 			// logicalPaths: String
-			//		Comma separated list of simplified paths.  They will be expanded to include the theme
-			//		name, and to load the RTL versions of files too.
+			//		Comma separated list of simplified paths.  They will be expanded to convert {{theme}} to
+			//		the current theme.
 			// require: Function
 			//		AMD's require() method
 			// onload: Function
@@ -96,8 +81,8 @@ define([
 			//		and the stylesheet has been inserted.
 
 			// Convert list of logical paths into list of actual paths
-			// ex: ios/common, ios/common_rtl, ios/Button, ios/Button_rtl
-			var actualPaths = logicalPaths.split(/, */).map(getPaths).join(",");
+			// ex: Button/css/{{theme}}/Button --> Button/css/ios/Button
+			var actualPaths = logicalPaths.replace(/{{theme}}/g, theme);
 
 			// Make single call to css! plugin to load resources in order specified
 			req([ "../css!" + actualPaths ], function () {

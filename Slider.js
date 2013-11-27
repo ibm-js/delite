@@ -13,7 +13,7 @@ define([
 	"dojo/on",
 	"./register",
 	"./FormValueWidget",
-	"./themes/load!./themes/common,./themes/Slider"	// common for duiInline etc., Slider for duiSlider etc.
+	"./themes/load!./themes/{{theme}}/common,./themes/{{theme}}/Slider"	// common for duiInline etc., Slider for duiSlider etc.
 ], function (connect, lang, win, has, query, domClass, domConstruct, domGeometry, domStyle,
 		keys, touch, on, register, FormValueWidget) {
 
