@@ -4,5 +4,7 @@ define([
 	"./register",
 	"./Widget-attr",
 	"./handlebars",
-	"./Widget-lifecycle"
+	"./Widget-lifecycle",
+	"./Widget-placeAt",
+	"./Widget-utility"
 ]);
