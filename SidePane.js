@@ -68,7 +68,7 @@ define(
 					// The dom node has to be visible to be animated. If it's not visible, postpone the opening to
 					//		enable animation.
 					this.style.display = "";
-					setTimeout(lang.hitch(this, this._openImpl, 0));
+					setTimeout(lang.hitch(this, this._openImpl), 0);
 				} else {
 					this._openImpl();
 				}
