@@ -44,39 +44,39 @@
 <d-view-stack id="vs" style="display:inline-block; width:50%; height: 300px; border: 2px solid gold">
 	<div style="background-color: honeydew;" id="aaa">
 		AAA
-		<button is="d-button" onclick="vs.show(bbb,{direction:'start'})">BBB left</button>
-		<button is="d-button" onclick="vs.show(ccc,{direction:'start'})">CCC left</button>
-		<button is="d-button" onclick="vs.show(ddd,{direction:'start'})">DDD left</button>
-		<button is="d-button" onclick="vs.show(bbb,{direction:'end'})">BBB right</button>
-		<button is="d-button" onclick="vs.show(ccc,{direction:'end'})">CCC right</button>
-		<button is="d-button" onclick="vs.show(ddd,{direction:'end'})">DDD right</button>
+		<button is="d-button" onclick="vs.show(bbb,{reverse:true})">BBB left</button>
+		<button is="d-button" onclick="vs.show(ccc,{reverse:true})">CCC left</button>
+		<button is="d-button" onclick="vs.show(ddd,{reverse:true})">DDD left</button>
+		<button is="d-button" onclick="vs.show(bbb,{reverse:false})">BBB right</button>
+		<button is="d-button" onclick="vs.show(ccc,{reverse:false})">CCC right</button>
+		<button is="d-button" onclick="vs.show(ddd,{reverse:false})">DDD right</button>
 	</div>
 	<div style="background-color: whitesmoke;" id="bbb">
 		BBB
-		<button is="d-button" onclick="vs.show(aaa,{direction:'start'})">AAA left</button>
-		<button is="d-button" onclick="vs.show(ccc,{direction:'start'})">CCC left</button>
-		<button is="d-button" onclick="vs.show(ddd,{direction:'start'})">DDD left</button>
-		<button is="d-button" onclick="vs.show(aaa,{direction:'end'})">AAA right</button>
-		<button is="d-button" onclick="vs.show(ccc,{direction:'end'})">CCC right</button>
-		<button is="d-button" onclick="vs.show(ddd,{direction:'end'})">DDD right</button>
+		<button is="d-button" onclick="vs.show(aaa,{reverse:true})">AAA left</button>
+		<button is="d-button" onclick="vs.show(ccc,{reverse:true})">CCC left</button>
+		<button is="d-button" onclick="vs.show(ddd,{reverse:true})">DDD left</button>
+		<button is="d-button" onclick="vs.show(aaa,{reverse:false})">AAA right</button>
+		<button is="d-button" onclick="vs.show(ccc,{reverse:false})">CCC right</button>
+		<button is="d-button" onclick="vs.show(ddd,{reverse:false})">DDD right</button>
 	</div>
 	<div style="background-color: powderblue;" id=ccc>
 		CCC
-		<button is="d-button" onclick="vs.show(aaa,{direction:'start'})">AAA left</button>
-		<button is="d-button" onclick="vs.show(bbb,{direction:'start'})">BBB left</button>
-		<button is="d-button" onclick="vs.show(ddd,{direction:'start'})">DDD left</button>
-		<button is="d-button" onclick="vs.show(aaa,{direction:'end'})">AAA right</button>
-		<button is="d-button" onclick="vs.show(bbb,{direction:'end'})">BBB right</button>
-		<button is="d-button" onclick="vs.show(ddd,{direction:'end'})">DDD right</button>
+		<button is="d-button" onclick="vs.show(aaa,{reverse:true})">AAA left</button>
+		<button is="d-button" onclick="vs.show(bbb,{reverse:true})">BBB left</button>
+		<button is="d-button" onclick="vs.show(ddd,{reverse:true})">DDD left</button>
+		<button is="d-button" onclick="vs.show(aaa,{reverse:false})">AAA right</button>
+		<button is="d-button" onclick="vs.show(bbb,{reverse:false})">BBB right</button>
+		<button is="d-button" onclick="vs.show(ddd,{reverse:false})">DDD right</button>
 	</div>
 	<div style="background-color: oldlace;" id="ddd">
 		DDD
-		<button is="d-button" onclick="vs.show(aaa,{direction:'start'})">AAA left</button>
-		<button is="d-button" onclick="vs.show(bbb,{direction:'start'})">BBB left</button>
-		<button is="d-button" onclick="vs.show(ccc,{direction:'start'})">CCC left</button>
-		<button is="d-button" onclick="vs.show(aaa,{direction:'end'})">AAA right</button>
-		<button is="d-button" onclick="vs.show(bbb,{direction:'end'})">BBB right</button>
-		<button is="d-button" onclick="vs.show(ccc,{direction:'end'})">CCC right</button>
+		<button is="d-button" onclick="vs.show(aaa,{reverse:true})">AAA left</button>
+		<button is="d-button" onclick="vs.show(bbb,{reverse:true})">BBB left</button>
+		<button is="d-button" onclick="vs.show(ccc,{reverse:true})">CCC left</button>
+		<button is="d-button" onclick="vs.show(aaa,{reverse:false})">AAA right</button>
+		<button is="d-button" onclick="vs.show(bbb,{reverse:false})">BBB right</button>
+		<button is="d-button" onclick="vs.show(ccc,{reverse:false})">CCC right</button>
 	</div>
 </d-view-stack>
 
@@ -84,12 +84,12 @@
 <div style="display: none">
 	<div style="background-color: darkolivegreen;" id="aaa2">
 		AAA 2
-		<button is="d-button" onclick="vs.show('aaa',{direction:'start'})">AAA left</button>
-		<button is="d-button" onclick="vs.show('ccc',{direction:'start'})">CCC left</button>
-		<button is="d-button" onclick="vs.show('ddd',{direction:'start'})">DDD left</button>
-		<button is="d-button" onclick="vs.show('aaa',{direction:'end'})">AAA right</button>
-		<button is="d-button" onclick="vs.show('ccc',{direction:'end'})">CCC right</button>
-		<button is="d-button" onclick="vs.show('ddd',{direction:'end'})">DDD right</button>
+		<button is="d-button" onclick="vs.show('aaa',{reverse:true})">AAA left</button>
+		<button is="d-button" onclick="vs.show('ccc',{reverse:true})">CCC left</button>
+		<button is="d-button" onclick="vs.show('ddd',{reverse:true})">DDD left</button>
+		<button is="d-button" onclick="vs.show('aaa',{reverse:false})">AAA right</button>
+		<button is="d-button" onclick="vs.show('ccc',{reverse:false})">CCC right</button>
+		<button is="d-button" onclick="vs.show('ddd',{reverse:false})">DDD right</button>
 	</div>
 </div>
 

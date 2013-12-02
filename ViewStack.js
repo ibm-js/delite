@@ -3,13 +3,19 @@ define(
 		"./register",
 		"./Widget",
 		"./Container",
+		"./Invalidating",
 		"dojo/_base/lang",
 		"dojo/dom",
 		"dojo/dom-geometry",
 		"dojo/dom-class",
-		"./themes/load!./themes/{{theme}}/ViewStack"],
-	function (dcl, register, Widget, Container, lang, dom, domGeom, domClass) {
-		return register("d-view-stack", [HTMLElement, Widget, Container], {
+		"./themes/load!./themes/{{theme}}/ViewStack",
+		"./themes/load!./themes/common/transitions/slide",
+		"./themes/load!./themes/common/transitions/reveal",
+		"./themes/load!./themes/common/transitions/flip",
+		"./themes/load!./themes/common/transitions/revealv",
+		"./themes/load!./themes/common/transitions/scaleIn"],
+	function (dcl, register, Widget, Container, Invalidating, lang, dom, domGeom, domClass) {
+		return register("d-view-stack", [HTMLElement, Widget, Container, Invalidating], {
 
 			// summary:
 			//		ViewStack container widget.
@@ -28,9 +34,12 @@ define(
 			//	|		<div id="childB">...</div>
 			//	|		<div id="childC">...</div>
 			//	|	</d-view-stack>
-			//	|	<d-button onclick="vs.show(childB, {transition: 'slide', direction: 'start'})">...</d-button>
+			//	|	<d-button onclick="vs.show(childB, {transition: 'slide', reverse: true})">...</d-button>
 
 			baseClass: "duiViewStack",
+
+			transition: "scaleIn",
+			reverse: false,
 
 			// TODO: Is this method really useful ?
 			showNext: function (props) {
@@ -58,7 +67,7 @@ define(
 
 			show: function (/* HTMLDivElement */ node, props) {
 				//		Shows a children of the ViewStack. The parameter 'props' is optional and is
-				//		{transition:'slide', direction:'end'} by default.
+				//		{transition: 'slide', reverse: false} by default.
 				if (!this._visibleChild) {
 					this._visibleChild = this.children[0];
 				}
@@ -67,28 +76,42 @@ define(
 
 					if (node && origin !== node) {
 						if (!props) {
-							props = {transition: "slide", direction: "end"};
+							props = {transition: this.transition, reverse: this.reverse};
 						}
-						if (!props.transition || props.transition === "slide") {
-							this._setVisibility(node, true);
-
-							this._setAfterTransitionHandlers(origin);
-							this._setAfterTransitionHandlers(node);
-
-							this._disableAnimation(node);
-							props.direction === "start" ? this._leftTranslated(node) : this._rightTranslated(node);
-
-							setTimeout(lang.hitch(this, function () {
-								this._enableAnimation(node);
-								this._enableAnimation(origin);
-								props.direction ===
-									"start" ? this._rightTranslated(origin) : this._leftTranslated(origin);
-								this._notTranslated(node);
-
-							}), 0);
-							this._visibleChild = node;
-
+						if (!props.transition) {
+							props.transition = this.transition;
 						}
+						this._setVisibility(node, true);
+						this._setAfterTransitionHandlers(origin, props);
+						this._setAfterTransitionHandlers(node, props);
+						domClass.add(origin, this._transitionClass(props.transition));
+						domClass.add(node, this._transitionClass(props.transition));
+						this._disableAnimation(node);
+						if (props.reverse === true) {
+							this._rightTranslated(node);
+							domClass.add(origin, "duiReverse");
+							domClass.add(node, "duiReverse");
+						} else {
+							this._rightTranslated(node);
+						}
+						setTimeout(lang.hitch(this, function () {
+							this._enableAnimation(node);
+							this._enableAnimation(origin);
+
+							if (props.reverse === true) {
+								this._leftTranslated(origin);
+								domClass.add(origin, "duiReverse");
+								domClass.add(node, "duiReverse");
+
+							} else {
+								this._leftTranslated(origin);
+							}
+							this._notTranslated(node);
+
+						}), 20);
+						this._visibleChild = node;
+
+
 					}
 				}
 			},
@@ -109,37 +132,40 @@ define(
 			_visibleChild: null,
 
 			_enableAnimation: function (node) {
-				domClass.add(node, "duiViewStackSlideAnim");
+//				domClass.add(node, "duiReveal");
+				domClass.add(node, "duiTransition");
 			},
 
 			_disableAnimation: function (node) {
-				domClass.remove(node, "duiViewStackSlideAnim");
+//				domClass.add(node, "duiReveal");
+				domClass.remove(node, "duiTransition");
+
 			},
 
 			_notTranslated: function (node) {
-				domClass.add(node, "duiViewStackNotTranslated");
-				domClass.remove(node, "duiViewStackLeftTranslated");
-				domClass.remove(node, "duiViewStackRightTranslated");
+				domClass.add(node, "duiIn");
+				domClass.remove(node, "duiOut");
+				domClass.remove(node, "duiReverse");
 			},
 
 			_leftTranslated: function (node) {
-				domClass.add(node, "duiViewStackLeftTranslated");
-				domClass.remove(node, "duiViewStackNotTranslated");
-				domClass.remove(node, "duiViewStackRightTranslated");
+				domClass.add(node, "duiOut");
+				domClass.remove(node, "duiReverse");
+				domClass.remove(node, "duiIn");
 			},
 
 			_rightTranslated: function (node) {
-				domClass.add(node, "duiViewStackRightTranslated");
-				domClass.remove(node, "duiViewStackNotTranslated");
-				domClass.remove(node, "duiViewStackLeftTranslated");
+				domClass.add(node, "duiIn");
+				domClass.remove(node, "duiReverse");
+				domClass.remove(node, "duiOut");
 			},
 
 			_transitionEndHandlers: [],
 
-			_setAfterTransitionHandlers: function (node) {
+			_setAfterTransitionHandlers: function (node, props) {
 
 				var handle = lang.hitch(this, this._afterTransitionHandle);
-				this._transitionEndHandlers.push({node: node, handle: handle});
+				this._transitionEndHandlers.push({node: node, handle: handle, props: props});
 				node.addEventListener("webkitTransitionEnd", handle);
 				node.addEventListener("transitionend", handle); // IE10 + FF
 
@@ -157,6 +183,10 @@ define(
 				}
 			},
 
+			_transitionClass: function (s) {
+				return "dui" + s.charAt(0).toUpperCase() + s.substring(1);
+			},
+
 			_afterTransitionHandle: function () {
 				var item;
 				// The first "transition end" event reset everything.
@@ -166,14 +196,17 @@ define(
 				for (var i = 0; i < this._transitionEndHandlers.length; i++) {
 					item = this._transitionEndHandlers[i];
 
-					if (domClass.contains(item.node, "duiViewStackLeftTranslated")
+					if (domClass.contains(item.node, "duiOut")
 						|| domClass.contains(item.node, "duiViewStackRightTranslated")) {
 						this._setVisibility(item.node, false);
 					}
-					domClass.remove(item.node, "duiViewStackRightTranslated");
-					domClass.remove(item.node, "duiViewStackLeftTranslated");
-					domClass.remove(item.node, "duiViewStackNotTranslated");
-					domClass.remove(item.node, "duiViewStackSlideAnim");
+
+					domClass.remove(item.node, "duiIn");
+					domClass.remove(item.node, "duiOut");
+					domClass.remove(item.node, "duiReverse");
+					domClass.remove(item.node, this._transitionClass(item.props.transition));
+					domClass.remove(item.node, "duiTransition");
+
 
 					item.node.removeEventListener("webkitTransitionEnd", item.handle);
 					item.node.removeEventListener("transitionend", item.handle);
