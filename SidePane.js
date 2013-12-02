@@ -8,7 +8,7 @@ define(
 	"dojo/_base/window",
 	"dojo/touch",
 	"dojo/on",
-	"./themes/load!SidePane"],
+	"./themes/load!./themes/{{theme}}/SidePane"],
 	function (register, Widget, Container, Contained, lang, domClass, win, touch, on) {
 		var _capitalize = function (str) {
 			return str[0].toUpperCase() + str.substring(1);

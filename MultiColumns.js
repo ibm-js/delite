@@ -11,7 +11,7 @@ define([
 	"dojo/dom-geometry",
 	"dojo/dom-class",
 	"dojo/dom-construct",
-	"./themes/load!MultiColumns"],
+	"./themes/load!./themes/{{theme}}/MultiColumns"],
 	function(dcl, query, register, Widget, Container, Invalidating, BasicLayout, lang, dom, domGeom, domClass, domConstruct){
 		return register("d-multi-columns", [HTMLElement, Widget, Container, Invalidating], {
 			baseClass: "duiMultiColumns",

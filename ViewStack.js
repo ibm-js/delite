@@ -7,7 +7,7 @@ define(
 		"dojo/dom",
 		"dojo/dom-geometry",
 		"dojo/dom-class",
-		"./themes/load!ViewStack"],
+		"./themes/load!./themes/{{theme}}/ViewStack"],
 	function (dcl, register, Widget, Container, lang, dom, domGeom, domClass) {
 		return register("d-view-stack", [HTMLElement, Widget, Container], {
 

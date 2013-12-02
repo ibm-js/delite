@@ -4,7 +4,7 @@ define([
 	"./DisplayContainer",
 	"./Invalidating",
 	"dojo/dom-class",
-	"./themes/load!BasicLayout"
+	"./themes/load!./themes/{{theme}}/BasicLayout"
 ], function (register, Widget, DisplayContainer, Invalidating, domClass) {
 	return register("d-basic-layout", [HTMLElement, Widget, DisplayContainer, Invalidating], {
 
@@ -18,7 +18,7 @@ define([
 		refreshRendering: function () {
 			if (this.direction === "horizontal") {
 				domClass.add(this, "mblHBasicLayout");
-				domClass.remove(tjhis, "mblVBasicLayout");
+				domClass.remove(this, "mblVBasicLayout");
 			} else {
 				domClass.add(this, "mblVBasicLayout");
 				domClass.remove(this, "mblHBasicLayout");
