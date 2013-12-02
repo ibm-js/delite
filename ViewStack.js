@@ -1,13 +1,13 @@
 define(
 	["dcl/dcl",
-	"./register",
-	"./Widget",
-	"./Container",
-	"dojo/_base/lang",
-	"dojo/dom",
-	"dojo/dom-geometry",
-	"dojo/dom-class",
-	"./themes/load!ViewStack"],
+		"./register",
+		"./Widget",
+		"./Container",
+		"dojo/_base/lang",
+		"dojo/dom",
+		"dojo/dom-geometry",
+		"dojo/dom-class",
+		"./themes/load!ViewStack"],
 	function (dcl, register, Widget, Container, lang, dom, domGeom, domClass) {
 		return register("d-view-stack", [HTMLElement, Widget, Container], {
 
@@ -134,16 +134,16 @@ define(
 				domClass.remove(node, "duiViewStackLeftTranslated");
 			},
 
+			_transitionEndHandlers: [],
+
 			_setAfterTransitionHandlers: function (node) {
-				node.addEventListener("webkitTransitionEnd", lang.hitch(this, this._afterTransitionHandle));
-				node.addEventListener("transitionend", lang.hitch(this, this._afterTransitionHandle)); // IE10 + FF
-			},
 
-			_removeAfterTransitionHandlers: function (node) {
-				node.removeEventListener("webkitTransitionEnd", lang.hitch(this, this._afterTransitionHandle));
-				node.removeEventListener("transitionend", lang.hitch(this, this._afterTransitionHandle)); // IE10 + FF
-			},
+				var handle = lang.hitch(this, this._afterTransitionHandle);
+				this._transitionEndHandlers.push({node: node, handle: handle});
+				node.addEventListener("webkitTransitionEnd", handle);
+				node.addEventListener("transitionend", handle); // IE10 + FF
 
+			},
 
 			_setVisibility: function (node, val) {
 
@@ -157,19 +157,28 @@ define(
 				}
 			},
 
-			_afterTransitionHandle: function (event) {
-				var node = event.target;
+			_afterTransitionHandle: function () {
+				var item;
+				// The first "transition end" event reset everything.
+				// This is to ensure keeping a valid state because FF does not fire some transitionend events.
+				// However, FF drop some transitions randomly but never if the DOM inspector is opened !!!
 
-				if (domClass.contains(node, "duiViewStackLeftTranslated")
-					|| domClass.contains(node, "duiViewStackRightTranslated")) {
-					this._setVisibility(node, false);
+				for (var i = 0; i < this._transitionEndHandlers.length; i++) {
+					item = this._transitionEndHandlers[i];
+
+					if (domClass.contains(item.node, "duiViewStackLeftTranslated")
+						|| domClass.contains(item.node, "duiViewStackRightTranslated")) {
+						this._setVisibility(item.node, false);
+					}
+					domClass.remove(item.node, "duiViewStackRightTranslated");
+					domClass.remove(item.node, "duiViewStackLeftTranslated");
+					domClass.remove(item.node, "duiViewStackNotTranslated");
+					domClass.remove(item.node, "duiViewStackSlideAnim");
+
+					item.node.removeEventListener("webkitTransitionEnd", item.handle);
+					item.node.removeEventListener("transitionend", item.handle);
 				}
-				domClass.remove(node, "duiViewStackRightTranslated");
-				domClass.remove(node, "duiViewStackLeftTranslated");
-				domClass.remove(node, "duiViewStackNotTranslated");
-
-				domClass.remove(node, "duiViewStackSlideAnim");
-				this._removeAfterTransitionHandlers(node);
+				this._transitionEndHandlers.length = 0;
 			}
 		});
 	});
