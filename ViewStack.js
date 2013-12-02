@@ -75,8 +75,8 @@ define(
 			},
 
 			refreshRendering: function () {
-				for (var o in this.transitionTiming){
-					if (sniff(o) && this._timing < this.transitionTiming[o]){
+				for (var o in this.transitionTiming) {
+					if (sniff(o) && this._timing < this.transitionTiming[o]) {
 						this._timing = this.transitionTiming[o];
 					}
 				}
@@ -127,7 +127,7 @@ define(
 						domClass.add(node, transitionClass(props.transition));
 						domClass.remove(node, "duiTransition");
 						domClass.add(node, "duiIn");
-						if (props.reverse === true) {
+						if (props.reverse) {
 							domClass.add(origin, "duiReverse");
 							domClass.add(node, "duiReverse");
 						}
@@ -136,7 +136,7 @@ define(
 							domClass.add(node, "duiTransition");
 							domClass.add(origin, "duiTransition");
 							domClass.add(origin, "duiOut");
-							if (props.reverse === true) {
+							if (props.reverse) {
 								domClass.add(origin, "duiReverse");
 								domClass.add(node, "duiReverse");
 							}
