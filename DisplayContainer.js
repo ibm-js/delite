@@ -1,4 +1,4 @@
-define(["dcl/dcl", "dojo/_base/lang", "dojo/Deferred", "dojo/when", "./Container", "./hasLoad!delite-ViewController"],
+define(["dcl/dcl", "dojo/_base/lang", "dojo/Deferred", "dojo/when", "./Container", "./hasLoad!delite-DisplayController"],
 	function (dcl, lang, Deferred, when, Container) {
 	return dcl(Container, {
 		// summary:

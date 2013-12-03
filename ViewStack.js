@@ -2,8 +2,10 @@ define(
 	["dcl/dcl",
 		"./register",
 		"dojo/sniff",
+		"dojo/on",
+		"dojo/Deferred",
 		"./Widget",
-		"./Container",
+		"./DisplayContainer",
 		"./Invalidating",
 		"dojo/_base/lang",
 		"dojo/dom",
@@ -15,7 +17,7 @@ define(
 		"./themes/load!./themes/common/transitions/flip",
 		"./themes/load!./themes/common/transitions/revealv",
 		"./themes/load!./themes/common/transitions/scaleIn"],
-	function (dcl, register, sniff, Widget, Container, Invalidating, lang, dom, domGeom, domClass) {
+	function (dcl, register, sniff, on, Deferred, Widget, DisplayContainer, Invalidating, lang, dom, domGeom, domClass) {
 		function setVisibility(node, val) {
 			if (val) {
 				node.style.visibility = "visible";
@@ -30,7 +32,7 @@ define(
 			return "dui" + s.charAt(0).toUpperCase() + s.substring(1);
 		}
 
-		return register("d-view-stack", [HTMLElement, Widget, Container, Invalidating], {
+		return register("d-view-stack", [HTMLElement, Widget, DisplayContainer, Invalidating], {
 
 			// summary:
 			//		ViewStack container widget.
@@ -104,6 +106,35 @@ define(
 				}
 			},
 
+			performDisplay: function (event) {
+				var origin = this._visibleChild;
+				var dest = document.getElementById(event.dest);
+				var deferred = new Deferred();
+				setVisibility(dest, true);
+				this._setAfterTransitionHandlers(origin, event);
+				this._setAfterTransitionHandlers(dest, event, deferred);
+				domClass.add(origin, transitionClass(event.transition));
+				domClass.add(dest, transitionClass(event.transition));
+				domClass.remove(dest, "duiTransition");
+				domClass.add(dest, "duiIn");
+				if (event.reverse) {
+					domClass.add(origin, "duiReverse");
+					domClass.add(dest, "duiReverse");
+				}
+				this.defer(function () {
+					domClass.add(dest, "duiTransition");
+					domClass.add(origin, "duiTransition");
+					domClass.add(origin, "duiOut");
+					if (event.reverse) {
+						domClass.add(origin, "duiReverse");
+						domClass.add(dest, "duiReverse");
+					}
+					domClass.add(dest, "duiIn");
+				}, this._timing);
+				this._visibleChild = dest;
+				return deferred;
+			},
+
 			show: function (/* HTMLDivElement */ node, props) {
 				//		Shows a children of the ViewStack. The parameter 'props' is optional and is
 				//		{transition: 'slide', reverse: false} by default.
@@ -112,7 +143,6 @@ define(
 				}
 				var origin = this._visibleChild;
 				if (origin) {
-
 					if (node && origin !== node) {
 						if (!props) {
 							props = {transition: this.transition, reverse: this.reverse};
@@ -120,30 +150,13 @@ define(
 						if (!props.transition) {
 							props.transition = this.transition;
 						}
-						setVisibility(node, true);
-						this._setAfterTransitionHandlers(origin, props);
-						this._setAfterTransitionHandlers(node, props);
-						domClass.add(origin, transitionClass(props.transition));
-						domClass.add(node, transitionClass(props.transition));
-						domClass.remove(node, "duiTransition");
-						domClass.add(node, "duiIn");
-						if (props.reverse) {
-							domClass.add(origin, "duiReverse");
-							domClass.add(node, "duiReverse");
-						}
-//
-						this.defer(function () {
-							domClass.add(node, "duiTransition");
-							domClass.add(origin, "duiTransition");
-							domClass.add(origin, "duiOut");
-							if (props.reverse) {
-								domClass.add(origin, "duiReverse");
-								domClass.add(node, "duiReverse");
-							}
-							domClass.add(node, "duiIn");
-
-						}, this._timing);
-						this._visibleChild = node;
+						dcl.mix(props, {
+							dest: node.id,
+							transitionDeferred: new Deferred(),
+							bubbles: true,
+							cancelable: true
+						});
+						on.emit(document, "delite-display", props);
 					}
 				}
 			},
@@ -155,9 +168,9 @@ define(
 				};
 			}),
 
-			_setAfterTransitionHandlers: function (node, props) {
+			_setAfterTransitionHandlers: function (node, event, deferred) {
 				var handle = lang.hitch(this, this._afterTransitionHandle);
-				this._transitionEndHandlers.push({node: node, handle: handle, props: props});
+				this._transitionEndHandlers.push({node: node, handle: handle, props: event, deferred: deferred});
 				node.addEventListener("webkitTransitionEnd", handle);
 				node.addEventListener("transitionend", handle); // IE10 + FF
 			},
@@ -178,6 +191,9 @@ define(
 						item.node.removeEventListener("webkitTransitionEnd", item.handle);
 						item.node.removeEventListener("transitionend", item.handle);
 						this._transitionEndHandlers.splice(i, 1);
+						if (item.props.deferred) {
+							item.props.deferred.resolve();
+						}
 						break;
 					}
 				}
