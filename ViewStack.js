@@ -15,12 +15,19 @@ define(
 		"dui/css!./themes/common/transitions/flip"],
 	function (dcl, has, on, Deferred, lang, domGeometry, domClass, register, Widget, DisplayContainer) {
 		function setVisibility(node, val) {
-			if (val) {
-				node.style.visibility = "visible";
-				node.style.display = "";
-			} else {
-				node.style.visibility = "hidden";
-				node.style.display = "none";
+			if (node) {
+				if (val) {
+					node.style.visibility = "visible";
+					node.style.display = "";
+				} else {
+					node.style.visibility = "hidden";
+					node.style.display = "none";
+				}
+			}
+		}
+		function setReverse(node) {
+			if (node) {
+				domClass.add(node, "duiReverse");
 			}
 		}
 
@@ -100,26 +107,40 @@ define(
 				var dest = document.getElementById(event.dest);
 				var deferred = new Deferred();
 				setVisibility(dest, true);
-				this._setAfterTransitionHandlers(origin, event);
-				this._setAfterTransitionHandlers(dest, event, deferred);
-				domClass.add(origin, transitionClass(event.transition));
-				domClass.add(dest, transitionClass(event.transition));
-				domClass.remove(dest, "duiTransition");
-				domClass.add(dest, "duiIn");
-				if (event.reverse) {
-					domClass.add(origin, "duiReverse");
-					domClass.add(dest, "duiReverse");
-				}
-				this.defer(function () {
-					domClass.add(dest, "duiTransition");
-					domClass.add(origin, "duiTransition");
-					domClass.add(origin, "duiOut");
-					if (event.reverse) {
-						domClass.add(origin, "duiReverse");
-						domClass.add(dest, "duiReverse");
+				if (event.transition) {
+					if (origin) {
+						this._setAfterTransitionHandlers(origin, event);
+						domClass.add(origin, transitionClass(event.transition));
 					}
-					domClass.add(dest, "duiIn");
-				}, this._timing);
+					if (dest) {
+						this._setAfterTransitionHandlers(dest, event, deferred);
+						domClass.add(dest, transitionClass(event.transition));
+						domClass.remove(dest, "duiTransition");
+						domClass.add(dest, "duiIn");
+					}
+					if (event.reverse) {
+						setReverse(origin);
+						setReverse(dest);
+					}
+					this.defer(function () {
+						if (dest) {
+							domClass.add(dest, "duiTransition");
+						}
+						if (origin) {
+							domClass.add(origin, "duiTransition");
+							domClass.add(origin, "duiOut");
+						}
+						if (event.reverse) {
+							setReverse(origin);
+							setReverse(dest);
+						}
+						if (dest) {
+							domClass.add(dest, "duiIn");
+						}
+					}, this._timing);
+				} else {
+					deferred.resolve();
+				}
 				this._visibleChild = dest;
 				return deferred;
 			},
@@ -145,7 +166,6 @@ define(
 							bubbles: true,
 							cancelable: true
 						});
-
 						on.emit(document, "delite-display", props);
 					}
 				}
