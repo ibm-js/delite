@@ -9,7 +9,7 @@ define([
 	"./Widget",
 	"./Container",
 	"./Invalidating",
-	"./themes/load!ScrollableContainer"
+	"./themes/load!./themes/{{theme}}/ScrollableContainer"
 ], function (dcl, dom, domStyle, on, baseFx, easing, register, Widget, Container, Invalidating) {
 
 	// module:

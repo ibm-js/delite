@@ -13,19 +13,26 @@
 
 	<script type="text/javascript">
 		require([
-			"dui/BasicLayout",
+			"dui/LinearLayout",
 			"dui/register",
 			"dojo/domReady!"
-		], function(BasicLayout, register){
+		], function(LinearLayout, register){
 			register.parse();
 		});
 	</script>
+	<style>
+		html, body {
+			height: 100%;
+			margin: 0;
+			padding: 0;
+		}
+	</style>
 </head>
 <body>
-	<d-basic-layout>
+	<d-linear-layout style="height: 100%">
 		<div style="background-color: red" class="fill">Dojo</div>
 		<div style="background-color: blue">Dojo</div>
 		<div style="background-color: #ffff00">Dojo</div>
-	</d-basic-layout>
+	</d-linear-layout>
 </body>
 </html>

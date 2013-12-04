@@ -1,12 +1,12 @@
 define(function(){ return '\
-.mblHBasicLayout {\
+.duiHLinearLayout {\
   display: -webkit-box;\
   display: -moz-box;\
   display: -ms-flexbox;\
   display: -webkit-flex;\
   display: flex;\
 }\
-.mblVBasicLayout {\
+.duiVLinearLayout {\
   display: -webkit-box;\
   display: -moz-box;\
   display: -ms-flexbox;\

@@ -18,7 +18,7 @@
 			"dui/register",
 			"dui/ViewStack",
 			"dui/SidePane",
-			"dui/BasicLayout",
+			"dui/LinearLayout",
 			"dojo/domReady!"
 		], function(register){
 			register.parse();
@@ -28,39 +28,39 @@
 <body>
 <!-- A SidePane for the left menu -->
 <d-side-pane mode="push" position="start" id="leftPane">
-	<d-basic-layout direction="vertical" class="width100 height100">
-		<d-basic-layout direction="horizontal" class="pageHeader">
+	<d-linear-layout direction="vertical" class="width100 height100">
+		<d-linear-layout vertical="false" class="pageHeader">
 			<div><button onclick="leftPane.close()"><i class="icon-chevron-sign-left"></i></button></div>
 			<div class="fill titleStyle">Menu</div>
 			<div><button onclick="leftStack.show(settings, {direction:'start'})"><i class="icon-cog"></i></button></div>
-		</d-basic-layout>
+		</d-linear-layout>
 
 		<d-view-stack id="leftStack" class="width100 fill" style="background-color: white">
 			<div id="menu">
-				<d-basic-layout direction="vertical">
+				<d-linear-layout direction="vertical">
 					<ul>
 						<li class="listItem" onClick="vs.show(aaa)">AAA</li>
 						<li class="listItem" onClick="vs.show(bbb)">BBB</li>
 						<li class="listItem" onClick="vs.show(ccc)">CCC</li>
 						<li class="listItem" onClick="vs.show(ddd)">DDD</li>
 					</ul>
-				</d-basic-layout>
+				</d-linear-layout>
 			</div>
 			<div id="settings" style="text-align: center">
 				<button onclick="leftStack.show(menu, {direction:'end'})"><i class="icon-reply" style="color: black"></i>Back</button>
 			</div>
 		</d-view-stack>
-	</d-basic-layout>
+	</d-linear-layout>
 </d-side-pane>
 
 <!-- Main application -->
-<d-basic-layout direction="vertical" class=" width100 height100">
+<d-linear-layout direction="vertical" class=" width100 height100">
 	<!-- Header -->
-	<d-basic-layout direction="horizontal" class=" width100 pageHeader">
+	<d-linear-layout vertical="false" class=" width100 pageHeader">
 		<div><button onclick="leftPane.open()"><i class="icon-reorder"></i></button></div>
 		<div class="fill titleStyle">Mobile App</div>
 		<div><button><i class="icon-unlock"></i></button></div>
-	</d-basic-layout>
+	</d-linear-layout>
 	<!-- Main content (ViewStack) -->
 	<d-view-stack is="d-view-stack" id="vs" class="width100 fill">
 		<div style="background-color: white;" id="aaa">
@@ -69,7 +69,7 @@
 		<div style="background-color: white;" id="bbb">
 			<!-- Test with a ScrollableView -->
 			<div>
-				<d-basic-layout direction="vertical">
+				<d-linear-layout direction="vertical">
 					<ul>
 						<li class="listItem" onClick="vs.show(aaa)"><button>AAA</button></li>
 						<li class="listItem" onClick="vs.show(bbb)">BBB</li>
@@ -112,7 +112,7 @@
 						<li class="listItem" onClick="vs.show(ccc)">CCC</li>
 						<li class="listItem" onClick="vs.show(ddd)">DDD</li>
 					</ul>
-				</d-basic-layout>
+				</d-linear-layout>
 			</div>
 		</div>
 		<div style="background-color: powderblue;" id='ccc'>
@@ -123,13 +123,13 @@
 		</div>
 	</d-view-stack>
 	<!-- Footer -->
-	<d-basic-layout direction="horizontal" class="pageFooter">
+	<d-linear-layout vertical="false" class="pageFooter">
 		<div class="fill"><button onclick="vs.show(aaa)"><i class="icon-comment"></i></button></div>
 		<div class="fill"><button onclick="vs.show(bbb)"><i class="icon-list"></i></button></div>
 		<div class="fill"><button onclick="vs.show(ccc)"><i class="icon-shopping-cart"></i></button></div>
 		<div class="fill"><button onclick="vs.show(ddd)"><i class="icon-trash"></i></button></div>
-	</d-basic-layout>
-</d-basic-layout>
+	</d-linear-layout>
+</d-linear-layout>
 
 </body>
 </html>

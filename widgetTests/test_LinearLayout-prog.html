@@ -14,20 +14,20 @@
 
 	<script type="text/javascript">
 		require([
-			"dui/BasicLayout",
+			"dui/LinearLayout",
 			"dui/register",
 			"dojo/dom-class",
 			"dojo/dom-construct",
 			"dojo/domReady!"
-		], function(BasicLayout, register, domClass, domConstruct){
+		], function(LinearLayout, register, domClass, domConstruct){
 			register.parse();
 			var split = function(bl, cpt){
 				cpt--;
 				if (cpt==0){
 					return;
 				}
-				var bl1 = new BasicLayout();
-				var bl2 = new BasicLayout();
+				var bl1 = new LinearLayout();
+				var bl2 = new LinearLayout();
 				bl1.style.backgroundColor = "rgb(" + parseInt(Math.random()*255) + "," + parseInt(Math.random()*255) + "," + parseInt(Math.random()*255) + ")";
 				bl2.style.backgroundColor = "rgb(" + parseInt(Math.random()*255) + "," + parseInt(Math.random()*255) + "," + parseInt(Math.random()*255) + ")";
 				domClass.add(bl1, "fill");
@@ -40,7 +40,7 @@
 				content.innerHTML = "B";
 				domConstruct.place(content, bl2, "last");
 				domClass.add(content, "fill");
-				bl1.direction = bl2.direction = bl.direction == "horizontal" ? "vertical" : "horizontal";
+				bl1.vertical = bl2.vertical = !bl.vertical;
 				bl.addChild(bl1);
 				bl.addChild(bl2);
 				split(bl1, cpt);
@@ -51,8 +51,8 @@
 	</script>
 </head>
 <body>
-<d-basic-layout id="bl" class="width100 height100">
+<d-linear-layout id="bl" class="width100 height100">
 
-</d-basic-layout>
+</d-linear-layout>
 </body>
 </html>
