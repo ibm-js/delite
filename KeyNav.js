@@ -247,7 +247,6 @@ define([
 
 				// mark that the new node is the currently selected one
 				child.tabIndex = this.tabIndex;
-				console.log(child);
 				this.focusedChild = child;
 			}
 		},
