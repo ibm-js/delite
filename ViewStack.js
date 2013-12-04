@@ -1,23 +1,19 @@
 define(
 	["dcl/dcl",
-		"./register",
 		"dojo/sniff",
 		"dojo/on",
 		"dojo/Deferred",
-		"./Widget",
-		"./DisplayContainer",
-		"./Invalidating",
 		"dojo/_base/lang",
-		"dojo/dom",
 		"dojo/dom-geometry",
 		"dojo/dom-class",
+		"./register",
+		"./Widget",
+		"./DisplayContainer",
 		"./themes/load!./themes/{{theme}}/ViewStack",
-		"./themes/load!./themes/common/transitions/slide",
-		"./themes/load!./themes/common/transitions/reveal",
-		"./themes/load!./themes/common/transitions/flip",
-		"./themes/load!./themes/common/transitions/revealv",
-		"./themes/load!./themes/common/transitions/scaleIn"],
-	function (dcl, register, sniff, on, Deferred, Widget, DisplayContainer, Invalidating, lang, dom, domGeom, domClass) {
+		"dui/css!./themes/common/transitions/slide",
+		"dui/css!./themes/common/transitions/reveal",
+		"dui/css!./themes/common/transitions/flip"],
+	function (dcl, has, on, Deferred, lang, domGeometry, domClass, register, Widget, DisplayContainer) {
 		function setVisibility(node, val) {
 			if (val) {
 				node.style.visibility = "visible";
@@ -32,7 +28,7 @@ define(
 			return "dui" + s.charAt(0).toUpperCase() + s.substring(1);
 		}
 
-		return register("d-view-stack", [HTMLElement, Widget, DisplayContainer, Invalidating], {
+		return register("d-view-stack", [HTMLElement, Widget, DisplayContainer], {
 
 			// summary:
 			//		ViewStack container widget.
@@ -59,27 +55,20 @@ define(
 
 			reverse: false,
 
-			transitionTiming: {default: 0, ios: 20, android: 100, mozilla: 100},
+			_transitionTiming: {default: 0, chrome: 20, ios: 20, android: 100, mozilla: 100},
 
 			_timing: 0,
 			_visibleChild: null,
 			_transitionEndHandlers: [],
 
-			preCreate: function () {
-				this.addInvalidatingProperties("transitionTiming");
-			},
-
 			buildRendering: function () {
 				for (var i = 1; i < this.children.length; i++) {
 					setVisibility(this.children[i], false);
 				}
-				this.invalidateRendering();
-			},
-
-			refreshRendering: function () {
-				for (var o in this.transitionTiming) {
-					if (sniff(o) && this._timing < this.transitionTiming[o]) {
-						this._timing = this.transitionTiming[o];
+				this._timing = 0;
+				for (var o in this._transitionTiming) {
+					if (has(o) && this._timing < this._transitionTiming[o]) {
+						this._timing = this._transitionTiming[o];
 					}
 				}
 			},
@@ -156,6 +145,7 @@ define(
 							bubbles: true,
 							cancelable: true
 						});
+
 						on.emit(document, "delite-display", props);
 					}
 				}
