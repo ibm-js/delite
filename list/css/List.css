@@ -1,0 +1,263 @@
+/***********************************************************************/
+/* TODO: MOVE MANDATORY STYLES IN CLASSES 'NOT EDITABLE' BY END USER ? */ 
+/***********************************************************************/
+
+/********************************/
+/* iOS theme for all Lists      */
+/*                              */
+/* IMPORTANT: a cell MUST       */
+/* have the same height (inc.   */
+/* borders) whatever its index  */
+/* in the list !                */
+/********************************/
+
+.duiListEntryLabel {
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-weight: bold;
+  height: 43px;
+  line-height: 43px;
+}
+
+.duiListEntryRightText {
+  position: relative;
+  float: right;
+  line-height: normal;
+  margin-right: 4px;
+  font-weight: bold;
+  color: #324f85;
+  margin-top: 12px;
+}
+
+.duiListEntryIcon {
+  position: relative;
+  float: left;
+  line-height: normal;
+  margin-top: 7px;
+  margin-bottom: -7px;
+  margin-right: 11px;
+  vertical-align: top;
+}
+
+.duiListEntryRightIcon,
+.duiListEntryRightIcon2 {
+  position: relative;
+  float: right;
+  line-height: normal;
+  margin-top: 7px;
+  margin-bottom: -7px;
+}
+
+/*******************************/
+/* iOS theme for RoundRectList */
+/*                             */
+/* IMPORTANT: a cell MUST      */
+/* have the same height (inc.  */
+/* borders) whatever its index */
+/* in the list !               */
+/*******************************/
+
+.duiRoundRectList-loading{
+	padding-top: 50px;
+	text-align: center;
+}
+.duiRoundRectList-loading:after{
+	content: 'Loading...';
+	font-size: large;
+	font-style: italic;
+	color: gray;
+}
+
+.duiRoundRectList {
+	position: relative; /* needed for moving list items in editable mode */
+     margin: 0 9px !important;
+	-webkit-transform: translate3d(0,0,0);
+	transform: translate3d(0,0,0);
+  	overflow: hidden;
+  	padding: 0;
+  	background-color: #ffffff;
+  	border: 1px solid #adaaad;
+  	border-radius: 8px;
+  	background-color: #ffffff;
+}
+
+.duiRoundRectList-loadingPanel {
+	position: absolute;
+    color: grey;
+    font-size: xx-large;
+    font-style: italic;
+    text-align: center;
+    background-color: #c5ccd3;
+	cursor: wait;
+}
+
+.duiRoundRectList-container > *:first-child {
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.duiRoundRectList-container > *:last-child {
+  border-bottom-width: 0;
+  padding-bottom: 1px; /* to compensate the fact that the bottom width is 0 instead of 1 */
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.duiRoundRectList-entry {
+  overflow: hidden;
+  /* for focus frame */
+  padding: 0 8px;
+  list-style-type: none;
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+  border-bottom: 1px solid #adaaad;
+  background-color: #ffffff;
+}
+
+.duiRoundRectList-selectedEntry {
+  color: #ffffff;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#048bf4), to(#005ce5));
+  background-image: linear-gradient(to bottom, #048bf4 0%, #005ce5 100%);
+}
+
+.duiRoundRectList-category {
+  position: relative;
+  margin: 0;
+  padding: 0 10px;
+  overflow: hidden;
+  font-family: Helvetica;
+  font-size: 16px;
+  font-weight: bold;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  height: 22px;
+  border-top: 1px solid #a4b0b9;
+  border-bottom: 1px solid #979da3;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#8f9ea9), to(#b7c0c7));
+  background-image: linear-gradient(to bottom, #8f9ea9 0%, #b7c0c7 100%);
+  color: white;
+  line-height: 22px;
+  text-shadow: rgba(0, 0, 0, 0.6) 0 -1px 0;
+}
+
+.duiRoundRectList-loaderNode{
+    padding: 0 8px;
+	color: blue;
+	cursor: pointer;
+	height: 43px;
+	line-height: 43px;
+  	background-color: #ffffff;
+  	border-bottom: 1px solid #adaaad;
+}
+
+.duiRoundRectList-loaderNodeLoading{
+    padding: 0 8px;
+	color: gray;
+	cursor: wait;
+	height: 43px;
+	line-height: 43px;
+  	background-color: #ffffff;
+	border-bottom: 1px solid #adaaad;
+}
+
+/********************************/
+/* iOS theme for EdgeToEdgeList */
+/*                              */
+/* IMPORTANT: a cell MUST       */
+/* have the same height (inc.   */
+/* borders) whatever its index  */
+/* in the list !                */
+/********************************/
+
+.duiEdgeToEdgeList-loading{
+	padding-top: 50px;
+	text-align: center;
+}
+.duiEdgeToEdgeList-loading:after{
+	content: 'Loading...';
+	font-size: large;
+	font-style: italic;
+	color: gray;
+}
+
+.duiEdgeToEdgeList {
+	position: relative; /* needed for moving list items in editable mode */
+	-webkit-transform: translate3d(0,0,0);
+	transform: translate3d(0,0,0);
+  	overflow: hidden;
+  	padding: 0;
+  	margin: 0 !important;
+  	background-color: #ffffff;
+}
+
+.duiEdgeToEdgeList-loadingPanel {
+	position: absolute;
+    color: grey;
+    font-size: xx-large;
+    font-style: italic;
+    text-align: center;
+    background-color: #c5ccd3;
+	cursor: wait;
+}
+
+.duiEdgeToEdgeList-container > *:last-child {
+  border-bottom-width: 0;
+  padding-bottom: 1px; /* to compensate the fact that the bottom width is 0 instead of 1 */
+}
+
+.duiEdgeToEdgeList-entry {
+  overflow: hidden;
+  /* for focus frame */
+  padding: 0 8px;
+  list-style-type: none;
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+  border-bottom: 1px solid #adaaad;
+  background-color: #ffffff;
+}
+
+.duiEdgeToEdgeList-selectedEntry {
+  color: #ffffff;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#048bf4), to(#005ce5));
+  background-image: linear-gradient(to bottom, #048bf4 0%, #005ce5 100%);
+}
+
+.duiEdgeToEdgeList-category {
+  position: relative;
+  margin: 0;
+  padding: 0 10px;
+  overflow: hidden;
+  font-family: Helvetica;
+  font-size: 16px;
+  font-weight: bold;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  height: 22px;
+  border-top: 1px solid #a4b0b9;
+  border-bottom: 1px solid #979da3;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#8f9ea9), to(#b7c0c7));
+  background-image: linear-gradient(to bottom, #8f9ea9 0%, #b7c0c7 100%);
+  color: white;
+  line-height: 22px;
+  text-shadow: rgba(0, 0, 0, 0.6) 0 -1px 0;
+}
+
+.duiEdgeToEdgeList-loaderNode{
+    padding: 0 8px;
+	color: blue;
+	cursor: pointer;
+	height: 43px;
+	line-height: 43px;
+  	background-color: #ffffff;
+  	border-bottom: 1px solid #adaaad;
+}
+
+.duiEdgeToEdgeList-loaderNodeLoading{
+    padding: 0 8px;
+	color: gray;
+	cursor: wait;
+	height: 43px;
+	line-height: 43px;
+  	background-color: #ffffff;
+  	border-bottom: 1px solid #adaaad;
+}

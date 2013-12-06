@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no"/>
+	<meta name="apple-mobile-web-app-capable" content="yes"/>
+	<title>Lists for dojo 2</title>
+
+	<link rel="stylesheet" type="text/css" href="../css/List.css">
+	<link rel="stylesheet" type="text/css" href="../css/NativeScrollable.css">
+	<link rel="stylesheet" type="text/css" href="../css/Editable.css">
+	<!--  following needed by Editable -->
+	<link rel="stylesheet" type="text/css" href="../../mobile/themes/common/domButtons/DomButtonRedCircleMinus.css">
+	<link rel="stylesheet" type="text/css" href="../../mobile/themes/common/domButtons/DomButtonGrayKnob.css">
+	<script type="text/javascript" src="../../../../dojo/dojo.js"
+		data-dojo-config="packages: [{name: 'dojox', location:'../dui'}, {name: 'dijit', location:'../dui'}], async: true, parseOnLoad: true"></script>
+
+	<script type="text/javascript">
+		require([
+		    "dui/register",
+		    "dojo/_base/lang",
+		    "dojo/domReady",
+			"dojo/on",
+			"dui/List",
+			"dui/list/mixins/NativeScrollable",
+			"dui/list/mixins/Editable",
+			"dui/list/mixins/StoreModel",
+			"dojo/dom",
+			"dojo/request",
+			"dojo/store/util/QueryResults"
+		], function(register, lang, domReady, on, List, Scrollable, Editable, StoreModel, dom, request, QueryResults){
+			domReady(function () {
+				document.body.dojoClick = false; // this is to avoid https://bugs.dojotoolkit.org/ticket/17578
+			});
+			// List mixins
+			var StoreList = register("d-slist", [List, StoreModel], {});
+			var EditableStoreList = register("d-eslist", [List, Editable, StoreModel], {});
+			var ScrollableStoreList = register("d-sslist", [List, StoreModel, Scrollable], {});
+			var ScrollableEditableStoreList = register("d-seslist", [List, StoreModel, Scrollable, Editable], {});
+			// List model
+			var useIcon, useRightText, useRightIcon, useRightIcon2;
+			var entriesStore = {
+					entriesCount: 2000,
+					query: function(query, options){
+						var promise = request.get('./data.txt').then(lang.hitch(this,
+							function(response){
+								var i;
+								var category;
+								var start = options ? (options.start ? options.start : 0) : 0;;
+								var count = options && options.count;
+								var entries = [];
+								for(i=start; i < this.entriesCount; i++){
+									if (count && ((i - start) >= count)) {
+										break;
+									} else {
+										category = 'category ' + Math.floor(i / 10);
+										entries[i - start] = {category: category,
+															  label: 'this is list entry ' + i,
+															  icon: useIcon ? '../../mobile/tests/images/i-icon-' + (i % 10 + 1) + '.png' : null,
+															  rightText: useRightText ? 'right text ' + i : null,
+															  rightIcon: useRightIcon ? '../../mobile/tests/images/a-icon-1.png' : null,
+															  rightIcon2: useRightIcon2 ? '../../mobile/tests/images/b-icon-' + (i % 8 + 1) + '.png' : null}; 
+									}
+								}
+								return entries;
+							}
+						));
+						return new QueryResults(promise);
+					}	
+			};
+			// List
+			var list = null;
+			// Builder
+			var buildList = function(event){
+				if(list){
+					list.destroy();
+				}
+				var listParams = {
+					domNode: dom.byId("listNode"),
+					selectionMode: 	dom.byId("selectionMode").value,
+					pageLength: parseInt(dom.byId("pageLength").value),
+					maxPages: parseInt(dom.byId("maxPages").value),
+					height: parseInt(dom.byId("height").value) + "px",
+					baseClass: dom.byId("listStyle").value,
+					autoLoad: dom.byId("autoLoad").value,
+					useMaskingPanel: dom.byId("useMaskingPanel").value
+				}
+				var editable = dom.byId("editable").value;
+				var editButton = dom.byId("editButton");
+				if(dom.byId("useCategory").value){
+					listParams.categoryAttribute = "category";
+				};
+				if(dom.byId("renderIcon").value){
+					useIcon = true;
+				}else{
+					useIcon = false;
+				};
+				if(dom.byId("renderRightText").value){
+					useRightText = true;
+				}else{
+					useRightText = false;
+				};
+				if(dom.byId("renderRightIcon").value){
+					useRightIcon = true;
+				}else{
+					useRightIcon = false;
+				};
+				if(dom.byId("renderRightIcon2").value){
+					useRightIcon2 = true;
+				}else{
+					useRightIcon2 = false;
+				};
+				entriesStore.entriesCount = parseInt(dom.byId("entriesCount").value);
+				if(dom.byId("scrollable").value){
+					if(editable){
+						list = new ScrollableEditableStoreList(listParams);
+					}else{
+						list = new ScrollableStoreList(listParams);
+					}
+				}else{
+					if(editable){
+						list = new EditableStoreList(listParams);
+					}else{
+						list = new StoreList(listParams);
+					}
+				}
+				list.store = entriesStore;
+				list.placeAt(dom.byId("list"));
+				list.startup();
+				if(editable){
+					editButton.innerHTML = list.deleteable ? "Stop editing" : "Edit";
+					editButton.style.display = "";
+					editButton.onclick = function () {
+						list.deleteable = !list.deleteable;
+						editButton.innerHTML = list.deleteable ? "Stop editing" : "Edit";
+					}
+				}else{
+					editButton.style.display = "none";
+				}
+			}
+			var handler = on(dom.byId("buildButton"), 'click', lang.hitch(this, buildList));
+		});
+	</script>
+	<style>
+		html {
+			width: 100%;
+			margin: 0;
+			padding: 0;
+		}
+		
+		body {
+			font-family: Helvetica;
+			font-size: 17px;
+			background-color: #c5ccd3;
+		}
+		::-webkit-scrollbar {
+		    width: 12px;
+		  //  display: none;
+		}
+		::-webkit-scrollbar-track {
+		    background-color: #eaeaea;
+		    border-left: 1px solid #ccc;
+		}
+ 		::-webkit-scrollbar-thumb {
+		    background-color: #ccc;
+		}
+		::-webkit-scrollbar-thumb:hover {
+			background-color: #aaa;
+		}		
+	</style>
+</head>
+<body>
+	<div id="listBuilder">
+		<h1>List builder</h1>
+		<p>Select the attributes of the list and then click the Build button to create it.</p>
+		<label for="scrollable">Scrollable:</label>
+		<select id="scrollable">
+			<option value="true">Yes</option>
+			<option value="">No</option>
+		</select>
+		<label for="height">Height in px:</label>
+		<input id="height" type="number" value="200"></input>
+		<label for="listStyle">Style:</label>
+		<select id="listStyle">
+			<option value="duiRoundRectList">Round rect</option>
+			<option value="duiEdgeToEdgeList">Edge to edge</option>
+		</select>
+		<br>
+		<label for="editable">Editable:</label>
+		<select id="editable">
+			<option value="">No</option>
+			<option value="true">Yes</option>
+		</select>
+		<br>
+		<label for="renderIcon">Render icon:</label>
+		<select id="renderIcon">
+			<option value="true">Yes</option>
+			<option value="">No</option>
+		</select>
+		<label for="renderRightText">, right text:</label>
+		<select id="renderRightText">
+			<option value="true">Yes</option>
+			<option value="">No</option>
+		</select>
+		<label for="renderRightIcon">, right icon:</label>
+		<select id="renderRightIcon">
+			<option value="true">Yes</option>
+			<option value="">No</option>
+		</select>
+		<label for="renderRightIcon2">, right icon 2:</label>
+		<select id="renderRightIcon2">
+			<option value="true">Yes</option>
+			<option value="">No</option>
+		</select>
+		<br>
+		<label for="entriesCount">Nb of entries:</label>
+		<input id="entriesCount" type="number" value="500"></input>
+		<br>
+		<label for="useCategory">Categorized entries:</label>
+		<select id="useCategory">
+			<option value="">No</option>
+			<option value="true">Yes</option>
+		</select>
+		<br>
+		<label for="selectionMode">Selection mode:</label>
+		<select id="selectionMode">
+			<option value="none">none</option>
+			<option value="single">single</option>
+			<option value="multiple">multiple</option>
+		</select>
+		<br>
+		<label for="pageLength">Page length:</label>
+		<input id="pageLength" type="number" value="20"></input>
+		<br>
+		<label for="maxPages">Max nb of pages:</label>
+		<input id="maxPages" type="number" value="2"></input>
+		<br>
+		<label for="useMaskingPanel">Mask on page update:</label>
+		<select id="useMaskingPanel">
+			<option value="">No</option>
+			<option value="true">Yes</option>
+		</select>
+		<br>
+		<label for="autoLoad">Auto load:</label>
+		<select id="autoLoad">
+			<option value="">No</option>
+			<option value="true">Yes</option>
+		</select>
+		<br>
+		<button id="buildButton">Build</button>
+	</div>
+	<p>
+	<button id="editButton" style='display: none; margin-bottom: 15px;' disabled="disabled";></button>
+	<br>
+	<div id="list"></div>
+	<div style="height: 50px;"></div>
+</body>
+</html>

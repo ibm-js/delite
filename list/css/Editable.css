@@ -1,0 +1,81 @@
+.duiListEntryLeftEdit{
+	color: red;
+	padding-top: 6px;
+	padding-right: 8px;
+}
+.duiEntryNode{
+    -webkit-box-flex: 1;
+    -moz-box-flex: 1;
+    -webkit-flex: 1;
+    -ms-flex: 1;
+	flex: 1;
+}
+.duiListEntryRightEdit{
+	color: grey;
+	padding-top: 6px;
+	padding-left: 8px;
+}
+.duiListEntryDragged {
+  position: absolute;
+  border: 1px solid gray;
+  opacity: 0.5;
+  -webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+  border-radius: 0px !important;
+  -moz-border-radius: 0px !important;
+}
+.duiListDropAreaAfter {
+	border-bottom-width: 3px !important;
+	border-bottom-style: dotted;
+	border-bottom-color: #a4b0b9;
+}
+.duiListDropAreaBefore {
+	border-top-width: 3px !important;
+	border-top-style: dotted;
+	border-top-color: #a4b0b9;
+}
+.duiRoundRectList-entry{
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+}
+.duiRoundRectList-deleteButton {
+	position: relative;
+	height: 29px;
+	line-height: 29px;
+	padding: 0px 8px;
+	color: white;
+	font-family: Helvetica;
+	font-size: 13px;
+	font-weight: bold;
+	border: 1px outset #9cacc0;
+	border-radius: 5px;
+	background: -webkit-gradient(linear, left top, left bottom, from(#d3656d), to(#bc1320), color-stop(0.5, #c9404b), color-stop(0.5, #bc1421));
+	background-color: #c9404b;
+	text-align: center;
+	cursor: pointer;
+}
+.duiEdgeToEdgeList-entry{
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+}
+.duiEdgeToEdgeList-deleteButton {
+	position: relative;
+	height: 29px;
+	line-height: 29px;
+	padding: 0px 8px;
+	color: white;
+	font-family: Helvetica;
+	font-size: 13px;
+	font-weight: bold;
+	border: 1px outset #9cacc0;
+	border-radius: 5px;
+	background: -webkit-gradient(linear, left top, left bottom, from(#d3656d), to(#bc1320), color-stop(0.5, #c9404b), color-stop(0.5, #bc1421));
+	background-color: #c9404b;
+	text-align: center;
+}
