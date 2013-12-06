@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no"/>
+	<meta name="apple-mobile-web-app-capable" content="yes"/>
+	<title>Lists for dojo 2 (version that use widgets as renderers)</title>
+
+	<link rel="stylesheet" type="text/css" href="../css/List.css">
+	<link rel="stylesheet" type="text/css" href="../css/NativeScrollable.css">
+	<script type="text/javascript" src="../../deviceTheme.js"></script>
+	<script type="text/javascript" src="../../../../dojo/dojo.js"
+		data-dojo-config="packages: [{name: 'dojox', location:'../dui'}, {name: 'dijit', location:'../dui'}], async: true, parseOnLoad: true"></script>
+
+	<script type="text/javascript">
+		require([
+			"dojo/_base/declare",
+			"dojo/_base/lang",
+			"dojo/_base/array",
+			"dojo/parser",
+			"dui/registry",
+			"dojo/on",
+			"dui/List",
+			"dui/list/mixins/NativeScrollable",
+			"dui/list/mixins/StoreModel",
+			"dojo/dom",
+			"dojo/dom-construct",
+			"dojo/dom-class",
+			"dojo/request",
+			"dojo/when",
+			"dojo/store/util/QueryResults",
+	        "dui/list/AbstractEntryRenderer",
+	        "dui/_TemplatedMixin",
+	        "dui/list/DefaultEntryRenderer",
+	        "dojox/mobile/common"
+		], function(declare, lang, array, parser, registry, on, List, Scrollable, StoreModel, dom, domConstruct, domClass, request, when, QueryResults, _EntryRendererBase, _TemplateMixin){
+			
+			list2Model = [];
+			for (var i = 1; i < 5000; i++){
+				list2Model.push({label: 'list entry ' + i});
+			};
+
+			var categorizedEntriesStore = {
+					query: function(query, options){
+						var promise = request.get('./data.txt').then(
+							function(response){
+								var i;
+								var category;
+								var start = options ? (options.start ? options.start : 0) : 0;;
+								var count = options && options.count;
+								var entries = [];
+								for(i=start; i < 2000; i++){
+									if (count && ((i - start) >= count)) {
+										break;
+									} else {
+										category = 'category ' + Math.floor(i / 10);
+										entries[i - start] = {category: category, label: 'this is list entry ' + i}; 
+									}
+								}
+								return entries;
+							}
+						);
+						return new QueryResults(promise);
+					}	
+				};
+
+			////////////////////////////////////////////////////
+			// Demo 9: list that supports single selection
+			////////////////////////////////////////////////////
+
+			var list9 = new declare([List, Scrollable])({height: 200, cellPages: 2, entries: list2Model, selectionMode: 'single'}, 'list9');
+			list9.startup();
+			var updateList9Console = function(){
+				var selectedEntries = list9.get('selectedItems');
+				var i = 0;
+				for(i; i < selectedEntries.length; i++){
+					selectedEntries[i] = list2Model[selectedEntries[i]].label;
+				}
+				if(selectedEntries.length){
+	 				dom.byId('list9Console').innerHTML = 'Selected entry: ' + selectedEntries;
+				}else{
+	 				dom.byId('list9Console').innerHTML = 'Selected entry: none';
+				}
+			};
+ 			list9.on('entryDeselected', updateList9Console);
+ 			list9.on('entrySelected', updateList9Console);
+
+			////////////////////////////////////////////////////
+			// Demo 10: list that supports multiple selection
+			////////////////////////////////////////////////////
+
+			var list10 = new declare([List, Scrollable])({height: 200, cellPages: 2, entries: list2Model, selectionMode: 'multiple'}, 'list10');
+			list10.startup();
+			var updateList10Console = function(){
+				var selectedEntries = list10.get('selectedItems');
+				var i = 0;
+				for(i; i < selectedEntries.length; i++){
+					selectedEntries[i] = ' ' + list2Model[selectedEntries[i]].label;
+				}
+				if(selectedEntries.length){
+	 				dom.byId('list10Console').innerHTML = 'Selected entries: ' + selectedEntries;
+				}else{
+	 				dom.byId('list10Console').innerHTML = 'Selected entries: none';
+				}
+			};
+ 			list10.on('entryDeselected', updateList10Console);
+ 			list10.on('entrySelected', updateList10Console);
+ 			
+			////////////////////////////////////////////////////
+			// Demo 11: categorized list that supports single selection
+			////////////////////////////////////////////////////
+
+			var list11 = new declare([List, Scrollable, StoreModel])({id: 'list11', height: 200, cellPages: 2, store: categorizedEntriesStore, query: '', categoryAttribute: 'category', selectionMode: 'single'}, 'list11');
+			list11.startup();
+			var updateList11Console = function(){
+				var selectedEntries = list11.get('selectedItems');
+				if(selectedEntries.length){
+	 				dom.byId('list11Console').innerHTML = 'Selected entry: ' + selectedEntries[0];
+				}else{
+	 				dom.byId('list11Console').innerHTML = 'Selected entry: none';
+				}
+			};
+ 			list11.on('entryDeselected', updateList11Console);
+ 			list11.on('entrySelected', updateList11Console);
+
+ });
+	</script>
+	
+	<style type="text/css">
+
+		/* Styles for the demo page */
+
+		.pbDescription{
+			font-style: italic;
+		}
+
+		/* Catalog list entries */
+
+ 		.entryContainer{
+			padding: 8px 8px 8px 8px;
+		}
+
+		.entryHeader{
+			cursor: pointer;
+		}
+
+		.entryTitle{
+			font-weight: bold;
+			font-size: large;
+			position: relative;
+			padding-left: 10px;
+			top: -18px;
+		}
+
+		.entryLabel{
+			font-size: large;
+			padding-left: 15px;
+		}
+
+		.entryDetails{
+		}
+
+		.entryDescription{
+			font-style: italic;
+		}
+
+		.hidden{
+			display: none;
+		}
+
+		/* Fruits and vegetables */
+		
+		.fruitEntry{
+			color: red;
+			font-size: xx-large;
+		}
+		
+		.vegetableEntry{
+			color: green;
+			font-size: xx-large;
+		}
+
+	</style>
+</head>
+<body style="visibility:hidden;">
+
+	<h2>Available list demos</h2>
+	<p>
+		The following demos are available on the page:
+		<ul>
+			<li><a href="#l10">Demo 10:</a> a list that supports multiple selection</li>
+			<li><a href="#l11">Demo 11:</a> a categorized list that supports single selection</li>
+		</ul>
+	<p>
+
+	<!-- list that supports single selection -->
+	<a id="l9"></a>
+	<h2>Demo 9: list that supports single selection</h2>
+	<span id="list9Console">Selected entry: none</span>
+	<div id="list9"></div>
+
+	<!-- list that supports multiple selection -->
+	<a id="l10"></a>
+	<h2>Demo 10: list that supports multiple selection</h2>
+	<span id="list10Console">Selected entries: none</span>
+	<div id="list10"></div>
+
+	<!-- categorized list that supports single selection -->
+	<a id="l11"></a>
+	<h2>Demo 11: categorized list that supports single selection</h2>
+	<span id="list11Console">Selected entry: none</span>
+	<div id="list11"></div>
+	
+	<p>
+</body>
+</html>

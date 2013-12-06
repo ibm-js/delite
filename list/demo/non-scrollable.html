@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no"/>
+	<meta name="apple-mobile-web-app-capable" content="yes"/>
+	<title>Lists for dojo 2</title>
+
+	<link rel="stylesheet" type="text/css" href="../css/List.css">
+	<link rel="stylesheet" type="text/css" href="../css/Editable.css">
+	<!--  following needed by Editable -->
+	<link rel="stylesheet" type="text/css" href="../../mobile/themes/common/domButtons/DomButtonRedCircleMinus.css">
+	<link rel="stylesheet" type="text/css" href="../../mobile/themes/common/domButtons/DomButtonGrayKnob.css">
+	<script type="text/javascript" src="../../../../dojo/dojo.js"
+		data-dojo-config="packages: [{name: 'dojox', location:'../dui'}, {name: 'dijit', location:'../dui'}], async: true, parseOnLoad: true"></script>
+
+	<script type="text/javascript">
+		var entries = 
+		require([
+		    "dui/register",
+			"dui/List",
+			"dui/list/mixins/Editable"
+		], function(register, List, Editable){
+			var i = 0, entries = [];
+			for (; i < 30; i++) {
+				entries.push({category: 'category ' + Math.floor(i / 10),
+							  label: 'ENTRY ' + i,
+							  icon: '../../mobile/tests/images/i-icon-' + (i % 10 + 1) + '.png',
+							  rightText: 'right text ' + i,
+							  rightIcon: '../../mobile/tests/images/a-icon-1.png',
+							  rightIcon2: '../../mobile/tests/images/b-icon-' + (i % 8 + 1) + '.png'});
+			}
+			register.parse();
+			var list4 = new List({id:"list4", entries: [{label: 'entry 1'},{label: 'entry 2'}]}).placeAt("list4container");
+			list4.startup();
+			var EditableList = register("d-editable-list", [List, Editable], {});
+			var list5 = new EditableList({id:"list5", entries: entries, selectionMode: "single"}).placeAt("list5container");
+			list5.startup();
+			var list6 = new EditableList({id:"list6", categoryAttribute: "category", entries: entries, selectionMode: "single"}).placeAt("list6container");
+			list6.startup();			
+		});
+	</script>
+	<style>
+		html {
+			width: 100%;
+			margin: 0;
+			padding: 0;
+		}
+		
+		body {
+			font-family: Helvetica;
+			font-size: 17px;
+			background-color: #c5ccd3;
+		}
+	</style>
+</head>
+<body>
+<!--  	<d-list t id="list1" entries='[]; alert("security failure");'></d-list>
+ -->
+ 	<input type="text">
+ 	<br>
+ 	<br>
+ 	<h1>Markup list with 5 entries declared as a JSON array in the markup</h1>
+	<d-list id="list2" entries='[{label: "list entry 1"},
+					  {label: "list entry 2"},
+					  {label: "list entry 3"},
+					  {label: "list entry 4"},
+					  {label: "list entry 5"}]'></d-list>
+	<br>
+ 	<h1>Markup list with 10 entries declared as markup, and selectionMode set to "multiple"</h1>
+	<d-list id="list3" selectionMode="multiple">
+		<d-list-entry entry="{label: 'list entry 1', rightText: 'right text 1'}"></d-list-entry>
+		<d-list-entry entry="{label: 'list entry 2', rightText: 'right text 2'}"></d-list-entry>
+		<d-list-entry entry="{label: 'list entry 3', rightText: 'right text 3'}"></d-list-entry>
+		<d-list-entry entry="{label: 'list entry 4', rightText: 'right text 4'}"></d-list-entry>
+		<d-list-entry entry="{label: 'list entry 5', rightText: 'right text 5'}"></d-list-entry>
+		<d-list-entry entry="{label: 'list entry 6', rightText: 'right text 6'}"></d-list-entry>
+		<d-list-entry entry="{label: 'list entry 7', rightText: 'right text 7'}"></d-list-entry>
+		<d-list-entry entry="{label: 'list entry 8', rightText: 'right text 8'}"></d-list-entry>
+		<d-list-entry entry="{label: 'list entry 9', rightText: 'right text 9'}"></d-list-entry>
+		<d-list-entry entry="{label: 'list entry 10', rightText: 'right text 10'}"></d-list-entry>
+	</d-list>
+	<br>
+	<h1>Programmatic list with 2 entries declared as a JSON array</h1>
+	<div id="list4container"></div>
+	<br>
+	<h1>Programmatic editable list with 30 categorized entries declared as an array object. List is categorized, with single selection enabled</h1>
+	<div id="list5container"></div>
+	<br>
+	<h1>Programmatic editable list with 30 categorized entries declared as an array object. List is not categorized, with single selection enabled</h1>
+	<div id="list6container"></div>
+	<br>
+</body>
+</html>

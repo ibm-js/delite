@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no"/>
+	<meta name="apple-mobile-web-app-capable" content="yes"/>
+	<title>Lists for dojo 2 (version that use widgets as renderers)</title>
+
+	<link rel="stylesheet" type="text/css" href="../css/List.css">
+	<link rel="stylesheet" type="text/css" href="../css/NativeScrollable.css">
+	<script type="text/javascript" src="../../../../dojo/dojo.js"
+		data-dojo-config="packages: [{name: 'dojox', location:'../dui'}, {name: 'dijit', location:'../dui'}], async: true, parseOnLoad: true"></script>
+
+	<script type="text/javascript">
+		require([
+			"dui/register",
+			"dui/List",
+			"dui/list/mixins/NativeScrollable",
+			"dui/list/mixins/StoreModel",
+			"dojo/dom-class",
+	        "dui/list/AbstractEntryRenderer",
+	        "dui/_TemplatedMixin",
+	        "dojox/mobile/common"
+		], function(register, List, Scrollable, StoreModel, domClass, _EntryRendererBase, _TemplatedMixin){
+			
+ 			// the model that contains the list entries from the catalog
+			var catalogModel = [];
+			for (var i = 1; i < 100; i++){
+				catalogModel.push({img: 'http://g-ecx.images-amazon.com/images/G/02/uk-dvd/images/warner/hbo-logo-small._SS50_V198464807_.jpg', title: 'The Sopraninos episode ' + i, description: 'Tonyno is really really depressed, at least for the ' + i + 'st time...'});
+			};
+			// Custom renderer for the catalog entries
+			var catalogController = {
+				cart: {}, // the cart in which user push catalog entries to buy
+				detailed: {} // store information about catalog entries that are selected to display details
+			};
+			var CatalogEntryRenderer = declare([_EntryRendererBase, _TemplatedMixin], {
+				catalogController: catalogController,
+				templateString: '<div><div class="entryContainer" data-dojo-attach-event="onclick: toggleDetail"><div class="entryHeader"><img height="50px" class="entryIcon" data-dojo-attach-point="image"><span class="entryTitle" data-dojo-attach-point="title"></span></div><div data-dojo-attach-point="entryDetail" class="entryDetails hidden"><span class="entryDescription" data-dojo-attach-point="description"></span><a class="" href="javascript:;" data-dojo-attach-point="addToCartLink" data-dojo-attach-event="onclick: addToCart">Add to Cart</a></div></div></div>',
+				// redefine setter for entryIndex
+				_setEntryIndexAttr: function(value){
+					this.inherited(arguments);
+					this._updateDetailRendering();
+					this._updateAddToCartLinkRendering();
+				},
+				// redefine setter for entry
+				_setEntryAttr: function(value){
+					this.inherited(arguments);
+					var img = value ? (value.img ? value.img : '') : '';
+					var title = value ? (value.title ? value.title : '') : '';
+					var description = value ? (value.description ? value.description : '') : '';
+					var that = this;
+					this.image.setAttribute('src', img);
+					this.title.innerHTML = title;
+					this.description.innerHTML = description;
+				},
+				toggleDetail: function(event){
+					if(this.catalogController.detailed[this.entryIndex]){
+						delete this.catalogController.detailed[this.entryIndex];
+					}else{
+						this.catalogController.detailed[this.entryIndex] = true;
+					}
+					this._updateDetailRendering();
+				},
+				addToCart: function(event){
+					event.stopPropagation();
+					alert('Item ' + JSON.stringify(catalogModel[this.entryIndex]) + ' has been added to your cart.');
+					this.catalogController.cart[this.entryIndex] = true;
+					this._updateAddToCartLinkRendering();
+				},
+				_updateDetailRendering: function(){
+					var updated = false;
+					if(this.catalogController.detailed[this.entryIndex]){
+						if(domClass.contains(this.entryDetail, 'hidden')){
+							domClass.remove(this.entryDetail, 'hidden');
+							updated = true;
+						}
+					}else{
+						if(!domClass.contains(this.entryDetail, 'hidden')){
+							domClass.add(this.entryDetail, 'hidden');
+							updated = true;
+						}
+					}
+					if(updated){
+						this.invalidateHeight();
+					}
+				},
+				_updateAddToCartLinkRendering: function(){
+					if(this.catalogController.cart[this.entryIndex]){
+						domClass.add(this.addToCartLink, 'hidden');
+					}else{
+						domClass.remove(this.addToCartLink, 'hidden');
+					}
+				}
+			});
+			// create a list widget for the catalog, using the custom entries renderer
+			var ScrollableList = register("d-slist", [List, Scrollable]);
+			var list3 = new ScrollableList({id: 'list3', height: 600, entries: catalogModel, entriesRenderer: CatalogEntryRenderer}, 'list3');
+			// startup the list
+			list3.startup();
+
+ });
+	</script>
+	
+	<style type="text/css">
+
+		/* Styles for the demo page */
+
+		.pbDescription{
+			font-style: italic;
+		}
+
+		/* Catalog list entries */
+
+ 		.entryContainer{
+			padding: 8px 8px 8px 8px;
+		}
+
+		.entryHeader{
+			cursor: pointer;
+		}
+
+		.entryTitle{
+			font-weight: bold;
+			font-size: large;
+			position: relative;
+			padding-left: 10px;
+			top: -18px;
+		}
+
+		.entryLabel{
+			font-size: large;
+			padding-left: 15px;
+		}
+
+		.entryDetails{
+		}
+
+		.entryDescription{
+			font-style: italic;
+		}
+
+		.hidden{
+			display: none;
+		}
+
+		/* Fruits and vegetables */
+		
+		.fruitEntry{
+			color: red;
+			font-size: xx-large;
+		}
+		
+		.vegetableEntry{
+			color: green;
+			font-size: xx-large;
+		}
+
+	</style>
+</head>
+<body style="visibility:hidden;">
+
+	<h2 style="margin-left: 12px;">Shopping catalog</h2>
+	<div id="list3"></div>
+	
+</body>
+</html>
