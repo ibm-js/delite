@@ -51,9 +51,14 @@ define([
 		//		(ex: "> *") then the implementing class must require dojo/query.
 		childSelector: null,
 
+		// _initialTabIndex: String
+        //		initial tab index of the container before focusing its first child
+        //		and setting it to "-1".
+        _initialTabIndex: null,
+
 		postCreate: function () {
 			// Set tabIndex on root node
-			domAttr.set(this.domNode, "tabIndex", this.tabIndex);
+			domAttr.set(this, "tabIndex", this.tabIndex);
 
 			if (!this._keyNavCodes) {
 				var keyCodes = this._keyNavCodes = {};
@@ -201,6 +206,7 @@ define([
 			// When the container gets focus by being tabbed into, or a descendant gets focus by being clicked,
 			// set the container's tabIndex to -1 (don't remove as that breaks Safari 4) so that tab or shift-tab
 			// will go to the fields after/before the container, rather than the container itself
+			this._initialTabIndex = this.tabIndex;
 			domAttr.set(this, "tabIndex", "-1");
 		}),
 
@@ -212,12 +218,11 @@ define([
 
 			// TODO: for 2.0 consider changing this to blur whenever the container blurs, to be truthful that there is
 			// no focused child at that time.
-
-			domAttr.set(this, "tabIndex", this.tabIndex);
+			domAttr.set(this, "tabIndex", this._initialTabIndex);
 			if (this.focusedChild) {
 				this.focusedChild.tabIndex = "-1";
 				this.lastFocusedChild = this.focusedChild;
-				this._set("focusedChild", null);
+				this.focusedChild = null;
 			}
 		}),
 
@@ -237,7 +242,7 @@ define([
 
 				// mark that the new node is the currently selected one
 				child.tabIndex = this.tabIndex;
-				this._set("focusedChild", child);
+				this.focusedChild = child;
 			}
 		},
 
