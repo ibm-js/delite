@@ -1,5 +1,4 @@
-define(
-	["dcl/dcl",
+define(["dcl/dcl",
 		"dojo/sniff",
 		"dojo/on",
 		"dojo/Deferred",
@@ -102,9 +101,9 @@ define(
 				}
 			},
 
-			performDisplay: function (event) {
+			performDisplay: function (widget, event) {
 				var origin = this._visibleChild;
-				var dest = document.getElementById(event.dest);
+				var dest = widget;
 				var deferred = new Deferred();
 				setVisibility(dest, true);
 				if (event.transition) {
@@ -139,6 +138,7 @@ define(
 						}
 					}, this._timing);
 				} else {
+					setVisibility(origin, false);
 					deferred.resolve();
 				}
 				this._visibleChild = dest;
@@ -161,7 +161,7 @@ define(
 							props.transition = this.transition;
 						}
 						dcl.mix(props, {
-							dest: node.id,
+							dest: node,
 							transitionDeferred: new Deferred(),
 							bubbles: true,
 							cancelable: true

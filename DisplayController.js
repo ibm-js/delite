@@ -12,16 +12,19 @@ define([], function () {
 	};
 	var displayHandler = function (event) {
 		if (event.target === document) {
-			var destElement = document.getElementById(event.dest);
+			// we work either by id or by node
+			var destElement = typeof event.dest === "string" ? document.getElementById(event.dest) : event.dest;
 			var destContainer = getDisplayContainer(destElement);
 			destContainer.emit("delite-display", event);
 		}
 	};
 
 	var loadHandler = function (event) {
-		// TODO implement simple view loading like in dojox/mobile or let dojox/app always handle complex cases or
+		// TODO implement simple view loading like in dojox/mobile or let dapp always handle complex cases or
 		// provide alternate DisplayController as separated projects
-		event.loadDeferred.resolve(null);
+		event.loadDeferred.resolve({
+			child: typeof event.dest === "string" ? document.getElementById(event.dest) : event.dest
+		});
 	};
 
 	document.addEventListener("delite-display-load", loadHandler);

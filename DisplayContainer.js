@@ -1,4 +1,4 @@
-define(["dcl/dcl", "dojo/_base/lang", "dojo/Deferred", "dojo/when", "./Container", "./hasLoad!delite-DisplayController"],
+define(["dcl/dcl", "dojo/_base/lang", "dojo/Deferred", "dojo/when", "./Container", "./DisplayController"],
 	function (dcl, lang, Deferred, when, Container) {
 	return dcl(Container, {
 		// summary:
@@ -21,13 +21,13 @@ define(["dcl/dcl", "dojo/_base/lang", "dojo/Deferred", "dojo/when", "./Container
 				// we are on the target and we have not been prevented, let's proceed
 				if (!event.hide) {
 					event.loadDeferred = new Deferred();
-					event.loadDeferred.then(lang.hitch(this, function (view) {
-						// if view is not null this means we loaded a new view (div), add it
-						if (view != null) {
-							this.addChild(view.child, view.index);
+					event.loadDeferred.then(lang.hitch(this, function (value) {
+						// if view is not already a child this means we loaded a new view (div), add it
+						if (this.getIndexOfChild(value.child) === -1) {
+							this.addChild(value.child, value.index);
 						}
-						when(this.performDisplay(event), function () {
-							event.transitionDeferred.resolve();
+						when(this.performDisplay(value.child, event), function () {
+							event.transitionDeferred.resolve(value);
 						});
 					}));
 					this.emit("delite-display-load", event);
@@ -35,14 +35,16 @@ define(["dcl/dcl", "dojo/_base/lang", "dojo/Deferred", "dojo/when", "./Container
 			}
 		},
 
-		performDisplay: function (/*jshint unused: vars*/event) {
+		performDisplay: function (/*jshint unused: vars*/widget, event) {
 			// summary:
 			//		This method must perform the display and possible transition effect. It is meant to be
-			//		implemented by subclasses.
+			//		specialized by subclasses.
 			// returns:
 			//		A promise that will be resolved when the display & transition effect will have been performed.
 			// tags:
 			//		protected
+			widget.style.visibility = "visible";
+			widget.style.display = "";
 			return true;
 		}
 	});
