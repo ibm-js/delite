@@ -13,7 +13,7 @@ define(
 		var _capitalize = function (str) {
 			return str[0].toUpperCase() + str.substring(1);
 		};
-		var _cssMap = {start: {push: "StartPush", overlay: "StartOverlay", reveal: "startReveal"},
+		var _cssMap = {start: {push: "StartPush", overlay: "StartOverlay", reveal: "StartReveal"},
 			end: {push: "EndPush", overlay: "EndOverlay", reveal: "EndReveal"}};
 
 		return register("d-side-pane", [HTMLElement, Widget, Container, Contained], {
@@ -46,11 +46,6 @@ define(
 			//		Can be "start" or "end". If set to "start", the panel is displayed on the
 			//		left side in left-to-right mode.
 			position: "start",
-
-			// inheritViewBg: Boolean
-			//		If true, the "mblBackground" CSS class is added to the panel to reuse the background
-			//		of the mobile theme used.
-			inheritViewBg: true,
 
 			// swipeOpening: Boolean
 			//		Enables the swipe opening of the pane.
@@ -133,9 +128,6 @@ define(
 				this._cleanCSS();
 				this._addClass(this, "mblSidePane" + _capitalize(this.position));
 				this.parentNode.style.overflow = "hidden";
-				if (this.inheritViewBg) {
-					this._addClass(this, "mblBackground");
-				}
 				this.close();
 				this._resetInteractions();
 			},

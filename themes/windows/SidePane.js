@@ -19,6 +19,7 @@ define(function(){ return '\
   top: 0;\
   box-sizing: border-box;\
   position: fixed;\
+  background-color: white;\
   -moz-transition: -moz-transform 0.3s ease-in-out;\
   -webkit-transition: -webkit-transform 0.3s ease-in-out;\
   -ms-transition: -mstransform 0.3s ease-in-out;\
