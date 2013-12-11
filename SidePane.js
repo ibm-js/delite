@@ -10,10 +10,10 @@ define(
 	"dojo/on",
 	"./themes/load!./themes/{{theme}}/SidePane"],
 	function (register, Widget, Container, Contained, lang, domClass, win, touch, on) {
-		var _capitalize = function (str) {
+		var capitalize = function (str) {
 			return str[0].toUpperCase() + str.substring(1);
 		};
-		var _cssMap = {start: {push: "StartPush", overlay: "StartOverlay", reveal: "StartReveal"},
+		var cssMap = {start: {push: "StartPush", overlay: "StartOverlay", reveal: "StartReveal"},
 			end: {push: "EndPush", overlay: "EndOverlay", reveal: "EndReveal"}};
 
 		return register("d-side-pane", [HTMLElement, Widget, Container, Contained], {
@@ -126,7 +126,7 @@ define(
 			buildRendering: function () {
 
 				this._cleanCSS();
-				this._addClass(this, "mblSidePane" + _capitalize(this.position));
+				this._addClass(this, "mblSidePane" + capitalize(this.position));
 				this.parentNode.style.overflow = "hidden";
 				this.close();
 				this._resetInteractions();
@@ -140,7 +140,7 @@ define(
 				if (this.mode === "push" || this.mode === "reveal") {
 					var nextElement = this.getNextSibling();
 					if (nextElement) {
-						var addedClass = "mblSidePane" + _capitalize(this.position) + "PushHiddenPage";
+						var addedClass = "mblSidePane" + capitalize(this.position) + "PushHiddenPage";
 						this._changeClass(nextElement, addedClass, addedClass.replace("Hidden", "Visible"));
 					}
 				}
@@ -155,7 +155,7 @@ define(
 				if (this.mode === "push" || this.mode === "reveal") {
 					var nextElement = this.getNextSibling();
 					if (nextElement) {
-						var removedClass = "mblSidePane" + _capitalize(this.position) + "PushHiddenPage";
+						var removedClass = "mblSidePane" + capitalize(this.position) + "PushHiddenPage";
 						this._changeClass(nextElement, removedClass.replace("Hidden", "Visible"), removedClass);
 					}
 				}
@@ -246,7 +246,7 @@ define(
 					// Already a mobile class
 					return suffix;
 				} else {
-					return "mblSidePane" + _cssMap[this.position][this.mode] + suffix;
+					return "mblSidePane" + cssMap[this.position][this.mode] + suffix;
 				}
 			},
 
