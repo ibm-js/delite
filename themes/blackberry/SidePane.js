@@ -1,5 +1,5 @@
 define(function(){ return '\
-.mblSidePane {\
+.d-side-pane {\
   width: 15em;\
   height: 100%;\
   top: 0;\

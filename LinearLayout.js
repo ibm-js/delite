@@ -8,7 +8,7 @@ define([
 ], function (register, Widget, DisplayContainer, Invalidating, domClass) {
 	return register("d-linear-layout", [HTMLElement, Widget, DisplayContainer, Invalidating], {
 
-		baseClass: "duiLinearLayout",
+		baseClass: "d-linear-layout",
 		vertical: true,
 
 		preCreate: function () {

@@ -55,7 +55,7 @@ define(["dcl/dcl",
 			//	|	</d-view-stack>
 			//	|	<d-button onclick="vs.show(childB, {transition: 'reveal', reverse: true})">...</d-button>
 
-			baseClass: "duiViewStack",
+			baseClass: "d-view-stack",
 
 			transition: "slide",
 

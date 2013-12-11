@@ -13,7 +13,7 @@ define(function(){ return '\
   background-size: 27px 27px;\
   background-repeat: no-repeat;\
 }\
-.mblSidePane {\
+.d-side-pane {\
   width: 15em;\
   height: 100%;\
   top: 0;\

@@ -30,7 +30,7 @@ define([
 				}
 				console.log("refresh");
 
-				query(".duiMultiColumns > .duiLinearLayout > *").forEach(function(node, index, arr){
+				query(".duiMultiColumns > .d-linear-layout > *").forEach(function(node, index, arr){
 					domClass.add(node, "fill");
 				});
 

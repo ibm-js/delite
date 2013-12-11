@@ -36,7 +36,7 @@ define(
 
 			// baseClass: String
 			//		The name of the CSS class of this widget.
-			baseClass: "mblSidePane",
+			baseClass: "d-side-pane",
 
 			// mode: String
 			//		Can be "overlay", "reveal" or "push". Default is "push".

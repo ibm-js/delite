@@ -1,14 +1,14 @@
 define(function(){ return '\
-.duiViewStack {\
+.d-view-stack {\
   box-sizing: border-box !important;\
   overflow-x: hidden !important;\
   overflow-y: hidden;\
   position: relative !important;\
 }\
-.duiBasicLayout > .duiViewStack {\
+.duiBasicLayout > .d-view-stack {\
   display: block !important;\
 }\
-.duiViewStack > * {\
+.d-view-stack > * {\
   position: absolute !important;\
   box-sizing: border-box !important;\
   width: 100% !important;\
