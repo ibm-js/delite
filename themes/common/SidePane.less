@@ -24,7 +24,7 @@
   .animateTransform()
 }
 
-.noSelect{
+.-d-side-pane-no-select{
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
@@ -33,33 +33,33 @@
   user-select: none;
 }
 
-.mblSidePaneStart{
+.-d-side-pane-start{
   left: 0;
   border-right: solid black 1px;
 }
 
-.mblSidePaneEnd{
+.-d-side-pane-end{
   right: 0;
   border-left: solid black 1px;
 }
 
 // PUSH/OVERLAY Start position
-.mblSidePaneStartPushHiddenPane, .mblSidePaneStartOverlayHiddenPane{
+.-d-side-pane-start-push-hidden-pane, .-d-side-pane-start-overlay-hidden-pane{
   .translate(-@PANEL_WIDTH);
 }
 
-.mblSidePaneStartPushVisiblePane, .mblSidePaneStartOverlayVisiblePane{
+.-d-side-pane-start-push-visible-pane, .-d-side-pane-start-overlay-visible-pane{
   display: "";
   .translate(0px);
 }
 
 // PUSH/OVERLAY & End Position
-.mblSidePaneEndPushHiddenPane, .mblSidePaneEndOverlayHiddenPane{
+.-d-side-pane-end-push-hidden-pane, .-d-side-pane-end-overlay-hidden-pane{
   right: 0;
   .translate(@PANEL_WIDTH);
 }
 
-.mblSidePaneEndPushVisiblePane, .mblSidePaneEndOverlayVisiblePane{
+.-d-side-pane-end-push-visible-pane, .-d-side-pane-end-overlay-visible-pane{
   display: "";
   right: 0;
   .translate(0px);
@@ -67,25 +67,25 @@
 
 // Used by REVEAL and PUSH
 
-.mblSidePaneStartPushHiddenPage{
+.-d-side-pane-start-push-hidden-page{
   .translate(@PANEL_WIDTH);
   .animateTransform();
 }
 
-.mblSidePaneStartPushVisiblePage{
+.-d-side-pane-start-push-visible-page{
   .translate(0px);
   .animateTransform();
 }
 
-.mblSidePaneEndPushHiddenPage{
+.-d-side-pane-end-push-hidden-page{
   .translate(-@PANEL_WIDTH);
   .animateTransform();
 }
-.mblSidePaneEndPushVisiblePage{
+.-d-side-pane-end-push-visible-page{
   .translate(0px);
   .animateTransform();
 }
 
-.mblSidePaneEndRevealVisiblePane, .mblSidePaneEndRevealHiddenPane {
+.-d-side-pane-end-reveal-visible-pane, .-d-side-pane-end-reveal-hidden-pane {
   right: 0;
 }

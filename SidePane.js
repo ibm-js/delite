@@ -10,11 +10,8 @@ define(
 	"dojo/on",
 	"./themes/load!./themes/{{theme}}/SidePane"],
 	function (register, Widget, Container, Contained, lang, domClass, win, touch, on) {
-		var capitalize = function (str) {
-			return str[0].toUpperCase() + str.substring(1);
-		};
-		var cssMap = {start: {push: "StartPush", overlay: "StartOverlay", reveal: "StartReveal"},
-			end: {push: "EndPush", overlay: "EndOverlay", reveal: "EndReveal"}};
+		var cssMap = {start: {push: "start-push", overlay: "start-overlay", reveal: "start-reveal"},
+			end: {push: "end-push", overlay: "end-overlay", reveal: "end-reveal"}};
 
 		return register("d-side-pane", [HTMLElement, Widget, Container, Contained], {
 
@@ -49,11 +46,11 @@ define(
 
 			// swipeOpening: Boolean
 			//		Enables the swipe opening of the pane.
-			swipeOpening: true,
+			swipeOpening: false,
 
 			// swipeClosing: Boolean
 			//		Enables the swipe closing of the pane.
-			swipeClosing: true,
+			swipeClosing: false,
 
 			open: function () {
 				// summary:
@@ -126,7 +123,7 @@ define(
 			buildRendering: function () {
 
 				this._cleanCSS();
-				this._addClass(this, "mblSidePane" + capitalize(this.position));
+				this._addClass(this, "-d-side-pane-" + this.position);
 				this.parentNode.style.overflow = "hidden";
 				this.close();
 				this._resetInteractions();
@@ -135,13 +132,13 @@ define(
 			_openImpl: function () {
 
 				this._visible = true;
-				this._changeClass(this, "VisiblePane", "HiddenPane");
-				this._changeClass(this, "mblSidePaneVisiblePane", "mblSidePaneHiddenPane");
+				this._changeClass(this, "-visible-pane", "-hidden-pane");
+				this._changeClass(this, "-d-side-pane-visible-pane", "-d-side-pane-hidden-pane");
 				if (this.mode === "push" || this.mode === "reveal") {
 					var nextElement = this.getNextSibling();
 					if (nextElement) {
-						var addedClass = "mblSidePane" + capitalize(this.position) + "PushHiddenPage";
-						this._changeClass(nextElement, addedClass, addedClass.replace("Hidden", "Visible"));
+						var addedClass = "-d-side-pane-" + this.position + "-push-hidden-page";
+						this._changeClass(nextElement, addedClass, addedClass.replace("-hidden", "-visible"));
 					}
 				}
 			},
@@ -149,14 +146,14 @@ define(
 			_hideImpl: function () {
 				this._visible = false;
 				this._makingVisible = false;
-				this._removeClass(win.doc.body, "noSelect");
-				this._changeClass(this, "HiddenPane", "VisiblePane");
-				this._changeClass(this, "mblSidePaneHiddenPane", "mblSidePaneVisiblePane");
+				this._removeClass(win.doc.body, "-d-side-pane-no-select");
+				this._changeClass(this, "-hidden-pane", "-visible-pane");
+				this._changeClass(this, "-d-side-pane-hidden-pane", "-d-side-pane-visible-pane");
 				if (this.mode === "push" || this.mode === "reveal") {
 					var nextElement = this.getNextSibling();
 					if (nextElement) {
-						var removedClass = "mblSidePane" + capitalize(this.position) + "PushHiddenPage";
-						this._changeClass(nextElement, removedClass.replace("Hidden", "Visible"), removedClass);
+						var removedClass = "-d-side-pane-" + this.position + "-push-hidden-page";
+						this._changeClass(nextElement, removedClass.replace("-hidden", "-visible"), removedClass);
 					}
 				}
 			},
@@ -176,7 +173,7 @@ define(
 					this._moveHandle = on(win.doc, touch.move, lang.hitch(this, this._touchMove));
 					this._releaseHandle = on(win.doc, touch.release, lang.hitch(this, this._touchRelease));
 
-					this._addClass(win.doc.body, "noSelect");
+					this._addClass(win.doc.body, "-d-side-pane-no-select");
 				}
 			},
 
@@ -217,7 +214,7 @@ define(
 
 			_touchRelease: function () {
 				this._makingVisible = false;
-				this._removeClass(win.doc.body, "noSelect");
+				this._removeClass(win.doc.body, "-d-side-pane-no-select");
 				this._resetInteractions();
 			},
 
@@ -242,11 +239,12 @@ define(
 			},
 
 			_cssClassGen: function (suffix) {
-				if (suffix.indexOf("mbl") === 0) {
+				
+				if (suffix.indexOf("-d-side-pane") === 0) {
 					// Already a mobile class
 					return suffix;
 				} else {
-					return "mblSidePane" + cssMap[this.position][this.mode] + suffix;
+					return "-d-side-pane-" + cssMap[this.position][this.mode] + suffix;
 				}
 			},
 
