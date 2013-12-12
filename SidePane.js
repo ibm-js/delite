@@ -1,19 +1,23 @@
 define(
 	["./register",
-	"./Widget",
-	"./Container",
-	"./Contained",
-	"dojo/_base/lang",
-	"dojo/dom-class",
-	"dojo/_base/window",
-	"dojo/touch",
-	"dojo/on",
-	"./themes/load!./themes/{{theme}}/SidePane"],
-	function (register, Widget, Container, Contained, lang, domClass, win, touch, on) {
+		"./Widget",
+		"./Container",
+		"./Contained",
+		"./Invalidating",
+		"dojo/_base/lang",
+		"dojo/dom-class",
+		"dojo/_base/window",
+		"dojo/touch",
+		"dojo/on",
+		"dojo/sniff",
+		"./themes/load!./themes/{{theme}}/SidePane"],
+	function (register, Widget, Container, Contained, Invalidating, lang, domClass, win, touch, on, has) {
 		var cssMap = {start: {push: "start-push", overlay: "start-overlay", reveal: "start-reveal"},
 			end: {push: "end-push", overlay: "end-overlay", reveal: "end-reveal"}};
-
-		return register("d-side-pane", [HTMLElement, Widget, Container, Contained], {
+		var prefix = function (v) {
+			return "-d-side-pane-" + v;
+		}
+		return register("d-side-pane", [HTMLElement, Widget, Container, Contained, Invalidating], {
 
 			// summary:
 			//		A container displayed on the side of the screen. It can be displayed on top of the page
@@ -52,6 +56,10 @@ define(
 			//		Enables the swipe closing of the pane.
 			swipeClosing: false,
 
+			_transitionTiming: {default: 0, chrome: 50, ios: 20, android: 100, mozilla: 100},
+
+			_timing: 0,
+
 			open: function () {
 				// summary:
 				//		Open the panel.
@@ -60,7 +68,7 @@ define(
 					// The dom node has to be visible to be animated. If it's not visible, postpone the opening to
 					//		enable animation.
 					this.style.display = "";
-					setTimeout(lang.hitch(this, this._openImpl), 0);
+					setTimeout(lang.hitch(this, this._openImpl), this._timing);
 				} else {
 					this._openImpl();
 				}
@@ -75,14 +83,13 @@ define(
 				//		Close the panel.
 				this._hideImpl();
 
-
 				//TODO: Too early regarding current livecycle
 				//var opts = {bubbles: true, cancelable: true, detail: this};
 				// on.emit(this,"hideStart", opts);
 			},
 
 			_visible: false,
-			_makingVisible: false,
+			_opening: false,
 			_originX: NaN,
 			_originY: NaN,
 			_cssClasses: {},
@@ -90,14 +97,6 @@ define(
 			_setPositionAttr: function (value) {
 				this._set("position", value);
 				this.style.display = "none";
-
-				this.buildRendering();
-			},
-
-			_setModeAttr: function (value) {
-				this._set("mode", value);
-				this.style.display = "none";
-
 				this.buildRendering();
 			},
 
@@ -120,40 +119,91 @@ define(
 				this.style.display = "none";
 			},
 
-			buildRendering: function () {
-
-				this._cleanCSS();
-				this._addClass(this, "-d-side-pane-" + this.position);
-				this.parentNode.style.overflow = "hidden";
-				this.close();
-				this._resetInteractions();
+			preCreate: function () {
+				this.addInvalidatingProperties("position", "mode");
 			},
 
-			_openImpl: function () {
+			buildRendering: function () {
+				console.log("build");
+//				this._cleanCSS();
+				this.parentNode.style.overflow = "hidden";
+				this._resetInteractions();
+				this.invalidateRendering();
+			},
 
-				this._visible = true;
-				this._changeClass(this, "-visible-pane", "-hidden-pane");
-				this._changeClass(this, "-d-side-pane-visible-pane", "-d-side-pane-hidden-pane");
-				if (this.mode === "push" || this.mode === "reveal") {
-					var nextElement = this.getNextSibling();
-					if (nextElement) {
-						var addedClass = "-d-side-pane-" + this.position + "-push-hidden-page";
-						this._changeClass(nextElement, addedClass, addedClass.replace("-hidden", "-visible"));
+			_firstRendering: true,
+
+			refreshRendering: function (props) {
+				var fullRefresh = this._firstRendering || Object.getOwnPropertyNames(props).length === 0;
+				this._firstRendering = false;
+				if (fullRefresh || props.mode) {
+					domClass.remove(this, prefix("push"));
+					domClass.remove(this, prefix("overlay"));
+					domClass.remove(this, prefix("reveal"));
+					domClass.add(this, prefix(this.mode));
+					if (this.mode === "overlay") {
+						this.style["z-index"] = 1;
+					}
+					else if (this.mode === "reveal") {
+						this.style["z-index"] = -1;
+					}
+				}
+				if (fullRefresh || props.position) {
+					domClass.remove(this, prefix("start"));
+					domClass.remove(this, prefix("end"));
+					domClass.add(this, prefix(this.position));
+				}
+				if (fullRefresh) {
+					if (this._visible) {
+						domClass.remove(this, prefix("hidden"));
+						domClass.add(this, prefix("visible"));
+					} else {
+						domClass.remove(this, prefix("visible"));
+						domClass.add(this, prefix("hidden"));
+					}
+				}
+				if (this._timing === 0) {
+					for (var o in this._transitionTiming) {
+						if (has(o) && this._timing < this._transitionTiming[o]) {
+							this._timing = this._transitionTiming[o];
+						}
+					}
+				}
+			},
+			_openImpl: function () {
+				if (!this._visible) {
+					this._visible = true;
+					domClass.remove(this, prefix("hidden"));
+					domClass.add(this, prefix("visible"));
+					if (this.mode === "push" || this.mode === "reveal") {
+						var nextElement = this.getNextSibling();
+						if (nextElement) {
+							domClass.remove(nextElement, prefix("nottranslated"));
+							domClass.remove(nextElement, prefix("start"));
+							domClass.remove(nextElement, prefix("end"));
+							domClass.add(nextElement, prefix(this.position));
+							domClass.add(nextElement, prefix("translated"));
+						}
 					}
 				}
 			},
 
 			_hideImpl: function () {
-				this._visible = false;
-				this._makingVisible = false;
-				this._removeClass(win.doc.body, "-d-side-pane-no-select");
-				this._changeClass(this, "-hidden-pane", "-visible-pane");
-				this._changeClass(this, "-d-side-pane-hidden-pane", "-d-side-pane-visible-pane");
-				if (this.mode === "push" || this.mode === "reveal") {
-					var nextElement = this.getNextSibling();
-					if (nextElement) {
-						var removedClass = "-d-side-pane-" + this.position + "-push-hidden-page";
-						this._changeClass(nextElement, removedClass.replace("-hidden", "-visible"), removedClass);
+				if (this._visible) {
+					this._visible = false;
+					this._opening = false;
+					domClass.remove(win.doc.body, prefix("no-select"));
+					domClass.remove(this, prefix("visible"));
+					domClass.add(this, prefix("hidden"));
+					if (this.mode === "push" || this.mode === "reveal") {
+						var nextElement = this.getNextSibling();
+						if (nextElement) {
+							domClass.remove(nextElement, prefix("translated"));
+							domClass.remove(nextElement, prefix("start"));
+							domClass.remove(nextElement, prefix("end"));
+							domClass.add(nextElement, prefix(this.position));
+							domClass.add(nextElement, prefix("nottranslated"));
+						}
 					}
 				}
 			},
@@ -168,7 +218,7 @@ define(
 
 				if (this._visible || (this.position === "start" && !this._visible && this._originX <= 10) ||
 					(this.position === "end" && !this._visible && this._originX >= win.doc.width - 10)) {
-					this._makingVisible = !this._visible;
+					this._opening = !this._visible;
 					this._pressHandle.remove();
 					this._moveHandle = on(win.doc, touch.move, lang.hitch(this, this._touchMove));
 					this._releaseHandle = on(win.doc, touch.release, lang.hitch(this, this._touchRelease));
@@ -178,7 +228,7 @@ define(
 			},
 
 			_touchMove: function (event) {
-				if (!this._makingVisible && Math.abs(event.pageY - this._originY) > 10) {
+				if (!this._opening && Math.abs(event.pageY - this._originY) > 10) {
 					this._resetInteractions();
 				} else {
 					var pos = event.pageX;
@@ -213,7 +263,7 @@ define(
 			},
 
 			_touchRelease: function () {
-				this._makingVisible = false;
+				this._opening = false;
 				this._removeClass(win.doc.body, "-d-side-pane-no-select");
 				this._resetInteractions();
 			},
@@ -239,7 +289,7 @@ define(
 			},
 
 			_cssClassGen: function (suffix) {
-				
+
 				if (suffix.indexOf("-d-side-pane") === 0) {
 					// Already a mobile class
 					return suffix;
