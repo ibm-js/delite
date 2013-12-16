@@ -62,13 +62,9 @@ define(
 			//		Enable/Disable open/hide animations.
 			animate: true,
 
-			// swipeOpening: Boolean
-			//		Enables the swipe opening of the pane.
-			swipeOpening: false,
-
 			// swipeClosing: Boolean
 			//		Enables the swipe closing of the pane.
-			swipeClosing: false,
+			swipeClosing: true,
 
 			_transitionTiming: {default: 0, chrome: 50, ios: 20, android: 100, mozilla: 100},
 			_timing: 0,
@@ -138,16 +134,6 @@ define(
 					}
 					break;
 				}
-			},
-
-			_setSwipeClosingAttr: function (value) {
-				this.swipeClosing = value;
-				this._resetInteractions();
-			},
-
-			_setSwipeOpeningAttr: function (value) {
-				this.swipeOpening = value;
-				this._resetInteractions();
 			},
 
 			postCreate: function () {
@@ -237,6 +223,7 @@ define(
 					}, this._timing);
 				}
 			},
+
 			_openImpl: function () {
 				if (!this._visible) {
 					this._visible = true;
@@ -280,10 +267,6 @@ define(
 				this._originX = event.pageX;
 				this._originY = event.pageY;
 
-				if (this.style.display === "none") {
-					setVisibility(this, true);
-				}
-
 				if (this._visible || (this.position === "start" && !this._visible && this._originX <= 10) ||
 					(this.position === "end" && !this._visible && this._originX >= win.doc.width - 10)) {
 					this._opening = !this._visible;
@@ -291,7 +274,7 @@ define(
 					this._moveHandle = on(win.doc, touch.move, lang.hitch(this, this._touchMove));
 					this._releaseHandle = on(win.doc, touch.release, lang.hitch(this, this._touchRelease));
 
-					this._addClass(win.doc.body, "-d-side-pane-no-select");
+					domClass.add(win.doc.body, "-d-side-pane-no-select");
 				}
 			},
 
@@ -302,9 +285,7 @@ define(
 					var pos = event.pageX;
 
 					if (this.position === "start") {
-						if (this.swipeOpening && !this._visible && (pos - this._originX) > 10) {
-							this.open();
-						} else if (this._visible) {
+						if (this._visible) {
 							if (this._originX < pos) {
 								this._originX = pos;
 							}
@@ -315,9 +296,7 @@ define(
 							}
 						}
 					} else {
-						if (this.swipeOpening && !this._visible && (this._originX - pos) > 10) {
-							this.open();
-						} else if (this._visible) {
+						if (this._visible) {
 							if (this._originX > pos) {
 								this._originX = pos;
 							}
@@ -332,7 +311,7 @@ define(
 
 			_touchRelease: function () {
 				this._opening = false;
-				this._removeClass(win.doc.body, "-d-side-pane-no-select");
+				domClass.remove(win.doc.body, "-d-side-pane-no-select");
 				this._resetInteractions();
 			},
 
@@ -348,7 +327,7 @@ define(
 				}
 				var elt = this._visible ? this : win.doc;
 
-				if (this.style.display === "none" || this.swipeOpening || this.swipeClosing) {
+				if (this.style.display === "none" || this.swipeClosing) {
 					this._pressHandle = on(elt, touch.press, lang.hitch(this, this._touchPress));
 				}
 
