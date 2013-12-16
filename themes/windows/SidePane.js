@@ -20,6 +20,8 @@ define(function(){ return '\
   box-sizing: border-box;\
   position: fixed;\
   background-color: white;\
+}\
+.-d-side-pane-animate {\
   -moz-transition: -moz-transform 0.3s ease-in-out;\
   -webkit-transition: -webkit-transform 0.3s ease-in-out;\
   -ms-transition: -mstransform 0.3s ease-in-out;\
@@ -68,34 +70,18 @@ define(function(){ return '\
 .-d-side-pane-start.-d-side-pane-translated {\
   -webkit-transform: translate3d(15em, 0px, 0px);\
   transform: translate3d(15em, 0px, 0px);\
-  -moz-transition: -moz-transform 0.3s ease-in-out;\
-  -webkit-transition: -webkit-transform 0.3s ease-in-out;\
-  -ms-transition: -mstransform 0.3s ease-in-out;\
-  transition: transform 0.3s ease-in-out;\
 }\
 .-d-side-pane-start.-d-side-pane-nottranslated {\
   -webkit-transform: translate3d(0px, 0px, 0px);\
   transform: translate3d(0px, 0px, 0px);\
-  -moz-transition: -moz-transform 0.3s ease-in-out;\
-  -webkit-transition: -webkit-transform 0.3s ease-in-out;\
-  -ms-transition: -mstransform 0.3s ease-in-out;\
-  transition: transform 0.3s ease-in-out;\
 }\
 .-d-side-pane-end.-d-side-pane-translated {\
   -webkit-transform: translate3d(-15em, 0px, 0px);\
   transform: translate3d(-15em, 0px, 0px);\
-  -moz-transition: -moz-transform 0.3s ease-in-out;\
-  -webkit-transition: -webkit-transform 0.3s ease-in-out;\
-  -ms-transition: -mstransform 0.3s ease-in-out;\
-  transition: transform 0.3s ease-in-out;\
 }\
 .-d-side-pane-end.-d-side-pane-nottranslated {\
   -webkit-transform: translate3d(0px, 0px, 0px);\
   transform: translate3d(0px, 0px, 0px);\
-  -moz-transition: -moz-transform 0.3s ease-in-out;\
-  -webkit-transition: -webkit-transform 0.3s ease-in-out;\
-  -ms-transition: -mstransform 0.3s ease-in-out;\
-  transition: transform 0.3s ease-in-out;\
 }\
 .-d-side-pane-end.-d-side-pane-reveal.-d-side-pane-visible,\
 .-d-side-pane.-d-side-pane-end-reveal.-d-side-pane-hidden {\

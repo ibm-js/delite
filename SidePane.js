@@ -12,11 +12,9 @@ define(
 		"dojo/sniff",
 		"./themes/load!./themes/{{theme}}/SidePane"],
 	function (register, Widget, Container, Contained, Invalidating, lang, domClass, win, touch, on, has) {
-		var cssMap = {start: {push: "start-push", overlay: "start-overlay", reveal: "start-reveal"},
-			end: {push: "end-push", overlay: "end-overlay", reveal: "end-reveal"}};
 		var prefix = function (v) {
 			return "-d-side-pane-" + v;
-		}
+		};
 		return register("d-side-pane", [HTMLElement, Widget, Container, Contained, Invalidating], {
 
 			// summary:
@@ -48,6 +46,10 @@ define(
 			//		left side in left-to-right mode.
 			position: "start",
 
+			// animate: Boolean
+			//		Enable/Disable open/hide animations.
+			animate: true,
+
 			// swipeOpening: Boolean
 			//		Enables the swipe opening of the pane.
 			swipeOpening: false,
@@ -63,7 +65,13 @@ define(
 			open: function () {
 				// summary:
 				//		Open the panel.
-
+				if (this.animate) {
+					domClass.add(this, prefix("animate"));
+					var nextElement = this.getNextSibling();
+					if (nextElement) {
+						domClass.add(nextElement, prefix("animate"));
+					}
+				}
 				if (this.style.display === "none") {
 					// The dom node has to be visible to be animated. If it's not visible, postpone the opening to
 					//		enable animation.
@@ -94,12 +102,6 @@ define(
 			_originY: NaN,
 			_cssClasses: {},
 
-			_setPositionAttr: function (value) {
-				this._set("position", value);
-				this.style.display = "none";
-				this.buildRendering();
-			},
-
 			_getStateAttr: function () {
 				return this._visible ? "open" : "close";
 			},
@@ -115,7 +117,6 @@ define(
 			},
 
 			postCreate: function () {
-
 				this.style.display = "none";
 			},
 
@@ -124,8 +125,6 @@ define(
 			},
 
 			buildRendering: function () {
-				console.log("build");
-//				this._cleanCSS();
 				this.parentNode.style.overflow = "hidden";
 				this._resetInteractions();
 				this.invalidateRendering();
@@ -134,24 +133,49 @@ define(
 			_firstRendering: true,
 
 			refreshRendering: function (props) {
+
 				var fullRefresh = this._firstRendering || Object.getOwnPropertyNames(props).length === 0;
 				this._firstRendering = false;
+
+				var nextElement = this.getNextSibling();
+
+				if (this.animate) {
+					domClass.remove(this, prefix("animate"));
+					if (nextElement) {
+						domClass.remove(nextElement, prefix("animate"));
+					}
+				}
+
 				if (fullRefresh || props.mode) {
 					domClass.remove(this, prefix("push"));
 					domClass.remove(this, prefix("overlay"));
 					domClass.remove(this, prefix("reveal"));
 					domClass.add(this, prefix(this.mode));
+
 					if (this.mode === "overlay") {
 						this.style["z-index"] = 1;
 					}
 					else if (this.mode === "reveal") {
 						this.style["z-index"] = -1;
 					}
+
+					if (nextElement && this._visible) {
+						if (this.mode === "overlay") {
+							domClass.remove(nextElement, prefix("translated"));
+						} else {
+							domClass.add(nextElement, prefix("translated"));
+						}
+					}
 				}
 				if (fullRefresh || props.position) {
 					domClass.remove(this, prefix("start"));
 					domClass.remove(this, prefix("end"));
 					domClass.add(this, prefix(this.position));
+					if (nextElement && this._visible) {
+						domClass.remove(nextElement, prefix("start"));
+						domClass.remove(nextElement, prefix("end"));
+						domClass.add(nextElement, prefix(this.position));
+					}
 				}
 				if (fullRefresh) {
 					if (this._visible) {
@@ -168,6 +192,15 @@ define(
 							this._timing = this._transitionTiming[o];
 						}
 					}
+
+				}
+				if (this.animate) {
+					this.defer(function () {
+						domClass.add(this, prefix("animate"));
+						if (nextElement) {
+							domClass.add(nextElement, prefix("animate"));
+						}
+					}, this._timing);
 				}
 			},
 			_openImpl: function () {
@@ -175,6 +208,7 @@ define(
 					this._visible = true;
 					domClass.remove(this, prefix("hidden"));
 					domClass.add(this, prefix("visible"));
+
 					if (this.mode === "push" || this.mode === "reveal") {
 						var nextElement = this.getNextSibling();
 						if (nextElement) {
@@ -288,51 +322,6 @@ define(
 				this._originY = NaN;
 			},
 
-			_cssClassGen: function (suffix) {
-
-				if (suffix.indexOf("-d-side-pane") === 0) {
-					// Already a mobile class
-					return suffix;
-				} else {
-					return "-d-side-pane-" + cssMap[this.position][this.mode] + suffix;
-				}
-			},
-
-			_addClass: function (node, suffix) {
-				var cls = this._cssClassGen(suffix);
-				domClass.add(node, cls);
-				if (this._cssClasses[cls]) {
-					this._cssClasses[cls].push(node);
-				} else {
-					this._cssClasses[cls] = [node];
-				}
-			},
-			_removeClass: function (node, suffix) {
-				var cls = this._cssClassGen(suffix);
-				domClass.remove(node, cls);
-				if (this._cssClasses[cls]) {
-					var i = this._cssClasses[cls].indexOf(node);
-					if (i !== -1) {
-						this._cssClasses[cls].splice(i, 1);
-					}
-				} else {
-					this._cssClasses[cls] = [node];
-				}
-			},
-
-			_changeClass: function (node, toAdd, toRemove) {
-				this._addClass(node, toAdd);
-				this._removeClass(node, toRemove);
-			},
-
-			_cleanCSS: function () {
-				for (var cls in this._cssClasses) {
-					for (var i = 0; i < this._cssClasses[cls].length; i++) {
-						this._removeClass(this._cssClasses[cls][i], cls);
-					}
-				}
-				this._cssClasses = {};
-			},
 			destroy: function () {
 				this._cleanCSS();
 
