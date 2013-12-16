@@ -325,10 +325,10 @@ define(
 				if (this._pressHandle) {
 					this._pressHandle.remove();
 				}
-				var elt = this._visible ? this : win.doc;
 
-				if (this.style.display === "none" || this.swipeClosing) {
-					this._pressHandle = on(elt, touch.press, lang.hitch(this, this._touchPress));
+
+				if (this.swipeClosing) {
+					this._pressHandle = on(this, touch.press, lang.hitch(this, this._touchPress));
 				}
 
 				this._originX = NaN;
