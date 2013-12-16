@@ -5,11 +5,11 @@ define(function(){ return '\
   overflow-y: hidden;\
   position: relative !important;\
 }\
-.duiBasicLayout > .d-view-stack {\
+.d-basic-layout > .d-view-stack {\
   display: block !important;\
 }\
 .d-view-stack > * {\
-  position: absolute !important;\
+  position: absolute;\
   box-sizing: border-box !important;\
   width: 100% !important;\
   height: 100% !important;\
