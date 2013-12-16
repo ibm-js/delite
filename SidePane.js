@@ -12,9 +12,21 @@ define(
 		"dojo/sniff",
 		"./themes/load!./themes/{{theme}}/SidePane"],
 	function (register, Widget, Container, Contained, Invalidating, lang, domClass, win, touch, on, has) {
-		var prefix = function (v) {
+		function prefix(v) {
 			return "-d-side-pane-" + v;
-		};
+		}
+		function setVisibility(node, val) {
+			if (node) {
+				if (val) {
+					node.style.visibility = "visible";
+					node.style.display = "";
+				} else {
+					node.style.visibility = "hidden";
+					node.style.display = "none";
+				}
+			}
+		}
+
 		return register("d-side-pane", [HTMLElement, Widget, Container, Contained, Invalidating], {
 
 			// summary:
@@ -59,51 +71,73 @@ define(
 			swipeClosing: false,
 
 			_transitionTiming: {default: 0, chrome: 50, ios: 20, android: 100, mozilla: 100},
-
 			_timing: 0,
-
-			open: function () {
-				// summary:
-				//		Open the panel.
-				if (this.animate) {
-					domClass.add(this, prefix("animate"));
-					var nextElement = this.getNextSibling();
-					if (nextElement) {
-						domClass.add(nextElement, prefix("animate"));
-					}
-				}
-				if (this.style.display === "none") {
-					// The dom node has to be visible to be animated. If it's not visible, postpone the opening to
-					//		enable animation.
-					this.style.display = "";
-					setTimeout(lang.hitch(this, this._openImpl), this._timing);
-				} else {
-					this._openImpl();
-				}
-
-				var opts = {bubbles: true, cancelable: true, detail: this};
-				on.emit(this, "showStart", opts);
-
-			},
-
-			close: function () {
-				// summary:
-				//		Close the panel.
-				this._hideImpl();
-
-				//TODO: Too early regarding current livecycle
-				//var opts = {bubbles: true, cancelable: true, detail: this};
-				// on.emit(this,"hideStart", opts);
-			},
-
 			_visible: false,
 			_opening: false,
 			_originX: NaN,
 			_originY: NaN,
 			_cssClasses: {},
+			_transitionEndHandlers: [],
 
-			_getStateAttr: function () {
-				return this._visible ? "open" : "close";
+			open: function () {
+				// summary:
+				//		Open the panel.
+				var nextElement;
+				if (this.animate) {
+					domClass.add(this, prefix("animate"));
+					nextElement = this.getNextSibling();
+					if (nextElement) {
+						domClass.add(nextElement, prefix("animate"));
+					}
+				}
+				setVisibility(this, true);
+				if (this.mode === "reveal") {
+					nextElement = this.getNextSibling();
+					if (nextElement) {
+						this._setAfterTransitionHandlers(nextElement, {node: nextElement});
+					}
+				} else {
+					this._setAfterTransitionHandlers(this, {node: this});
+				}
+				this.defer(this._openImpl, this._timing);
+			},
+
+			close: function () {
+				// summary:
+				//		Close the panel.
+				if (this.mode === "reveal") {
+					var nextElement = this.getNextSibling();
+					if (nextElement) {
+						this._setAfterTransitionHandlers(nextElement, {node: nextElement});
+					}
+				} else {
+					this._setAfterTransitionHandlers(this, {node: this});
+				}
+				this._hideImpl();
+			},
+
+			_setAfterTransitionHandlers: function (node, event, deferred) {
+				var handle = lang.hitch(this, this._afterTransitionHandle);
+				this._transitionEndHandlers.push({node: node, handle: handle, props: event, deferred: deferred});
+				node.addEventListener("webkitTransitionEnd", handle);
+				node.addEventListener("transitionend", handle); // IE10 + FF
+			},
+
+			_afterTransitionHandle: function (/*jshint unused: vars */ event) {
+				var item;
+				for (var i = 0; i < this._transitionEndHandlers.length; i++) {
+					item = this._transitionEndHandlers[i];
+					if (!this._visible) {
+						setVisibility(this, false);
+					}
+					item.node.removeEventListener("webkitTransitionEnd", item.handle);
+					item.node.removeEventListener("transitionend", item.handle);
+					this._transitionEndHandlers.splice(i, 1);
+					if (item.props.deferred) {
+						item.props.deferred.resolve();
+					}
+					break;
+				}
 			},
 
 			_setSwipeClosingAttr: function (value) {
@@ -117,7 +151,7 @@ define(
 			},
 
 			postCreate: function () {
-				this.style.display = "none";
+				setVisibility(this, false);
 			},
 
 			preCreate: function () {
@@ -247,7 +281,7 @@ define(
 				this._originY = event.pageY;
 
 				if (this.style.display === "none") {
-					this.style.display = "";
+					setVisibility(this, true);
 				}
 
 				if (this._visible || (this.position === "start" && !this._visible && this._originX <= 10) ||
