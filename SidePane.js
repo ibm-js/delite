@@ -19,8 +19,10 @@ define(
 			if (node) {
 				if (val) {
 					node.style.visibility = "visible";
+					node.style.display = "";
 				} else {
 					node.style.visibility = "hidden";
+					node.style.display = "none";
 				}
 			}
 		}
