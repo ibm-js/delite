@@ -15,5 +15,12 @@ define([
 	"./Stateful",
 	"./Selection",
 	"./StoreMap",
-	"./Store"
+	"./Store",
+	"./LinearLayout1",
+	"./LinearLayout2",
+	"./LinearLayout3",
+	"./LinearLayout4",
+	"./SidePane-push",
+	"./SidePane-reveal",
+	"./SidePane-overlay"
 ]);
