@@ -22,5 +22,6 @@ define([
 	"./LinearLayout4",
 	"./SidePane-push",
 	"./SidePane-reveal",
-	"./SidePane-overlay"
+	"./SidePane-overlay",
+	"./ViewStack"
 ]);
