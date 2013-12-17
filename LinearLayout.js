@@ -1,11 +1,11 @@
 define([
+	"dojo/dom-class",
 	"./register",
 	"./Widget",
 	"./DisplayContainer",
 	"./Invalidating",
-	"dojo/dom-class",
 	"./themes/load!./themes/{{theme}}/LinearLayout"
-], function (register, Widget, DisplayContainer, Invalidating, domClass) {
+], function (domClass, register, Widget, DisplayContainer, Invalidating) {
 	return register("d-linear-layout", [HTMLElement, Widget, DisplayContainer, Invalidating], {
 
 		baseClass: "d-linear-layout",

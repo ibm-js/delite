@@ -1,17 +1,17 @@
-define(
-	["./register",
-		"./Widget",
-		"./Container",
-		"./Contained",
-		"./Invalidating",
-		"dojo/_base/lang",
-		"dojo/dom-class",
-		"dojo/_base/window",
-		"dojo/touch",
-		"dojo/on",
-		"dojo/sniff",
-		"./themes/load!./themes/{{theme}}/SidePane"],
-	function (register, Widget, Container, Contained, Invalidating, lang, domClass, win, touch, on, has) {
+define([
+	"dojo/_base/lang",
+	"dojo/dom-class",
+	"dojo/_base/window",
+	"dojo/touch",
+	"dojo/on",
+	"dojo/sniff",
+	"./register",
+	"./Widget",
+	"./Container",
+	"./Contained",
+	"./Invalidating",
+	"./themes/load!./themes/{{theme}}/SidePane"],
+	function (lang, domClass, win, touch, on, has, register, Widget, Container, Contained, Invalidating) {
 		function prefix(v) {
 			return "-d-side-pane-" + v;
 		}
