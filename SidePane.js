@@ -1,8 +1,8 @@
 define([
+	"pointer/events",
 	"dojo/_base/lang",
 	"dojo/dom-class",
 	"dojo/_base/window",
-	"dojo/touch",
 	"dojo/on",
 	"dojo/sniff",
 	"./register",
@@ -11,7 +11,7 @@ define([
 	"./Contained",
 	"./Invalidating",
 	"./themes/load!./themes/{{theme}}/SidePane"],
-	function (lang, domClass, win, touch, on, has, register, Widget, Container, Contained, Invalidating) {
+	function (pointer, lang, domClass, win, on, has, register, Widget, Container, Contained, Invalidating) {
 		function prefix(v) {
 			return "-d-side-pane-" + v;
 		}
@@ -161,6 +161,7 @@ define([
 			buildRendering: function () {
 
 				this.parentNode.style.overflow = "hidden";
+				this.setAttribute("data-touch-action", "none");
 				this._resetInteractions();
 				this.invalidateRendering();
 			},
@@ -295,8 +296,8 @@ define([
 					(this.position === "end" && !this._visible && this._originX >= win.doc.width - 10)) {
 					this._opening = !this._visible;
 					this._pressHandle.remove();
-					this._moveHandle = on(win.doc, touch.move, lang.hitch(this, this._touchMove));
-					this._releaseHandle = on(win.doc, touch.release, lang.hitch(this, this._touchRelease));
+					this._moveHandle = on(this, "pointermove", lang.hitch(this, this._touchMove));
+					this._releaseHandle = on(this, "pointerup", lang.hitch(this, this._touchRelease));
 
 					domClass.add(win.doc.body, "-d-side-pane-no-select");
 				}
@@ -351,7 +352,7 @@ define([
 				}
 
 				if (this.swipeClosing) {
-					this._pressHandle = on(this, touch.press, lang.hitch(this, this._touchPress));
+					this._pressHandle = on(this, "pointerdown", lang.hitch(this, this._touchPress));
 				}
 
 				this._originX = NaN;
