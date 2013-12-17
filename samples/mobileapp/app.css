@@ -62,3 +62,6 @@ li:active {
 	background-color: #007fea ;
 }
 
+.page {
+	border-left: 1px solid #000000;
+}
