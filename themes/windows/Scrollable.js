@@ -13,7 +13,9 @@ define(function(){ return '\
   background-size: 27px 27px;\
   background-repeat: no-repeat;\
 }\
-.d-scrollable-container {\
-  /* empty for now */\
+.d-scrollable {\
+  -webkit-overflow-scrolling: touch;\
+  /* enable hardware accelaration */\
+  -webkit-transform: translate3d(0, 0, 0);\
 }\
 '; } );

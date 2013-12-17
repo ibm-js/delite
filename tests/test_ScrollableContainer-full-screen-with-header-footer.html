@@ -7,113 +7,125 @@
 	<meta name="apple-mobile-web-app-capable" content="yes"/>
 	<title>ScrollableContainer demo</title>
 
-<!-- outdated content, since mobile widgets are not yet migrated -->
-
-	<script type="text/javascript" src="../mobile/deviceTheme.js"></script>
-	<script type="text/javascript" src="../../dojo/dojo.js"
-		data-dojo-config="async: true, parseOnLoad: false"></script>
+	<link rel="stylesheet" href="../themes/defaultapp.css">
+	
+	<!-- For testing purposes.  Real applications should load the AMD loader directly -->
+	<script type="text/javascript" src="./boilerplate.js"></script>
 
 	<script type="text/javascript">
 		require([
-			"dojo/parser",
-			"dui/mobile/ListItem",
+			"dui/register",
 			"dui/ScrollableContainer",
-			"dui/mobile/TabBar",
-			"dui/themes/load!FlexboxLayout", // Temporary, awaiting for Flexbox-based layout containers
+			"dui/LinearLayout",
 			"dojo/domReady!"
-		], function(parser, ListItem){
-			parser.parse().then(function(){
-				var w = document.getElementById("categ1");
-				for(var i = 1; i <= 300; i++){
-					var item = new ListItem({label:"Category "+i, variableHeight: true});
-					w.addChild(item);
-				}
-			});
+		], function(register, ListItem){
+			register.parse();
 		});
 	</script>
 
 	<style>
-	html,body{
+	html, body{
 		height: 100%;
-		overflow: hidden;
+		margin: 0;
+		padding: 0;
 	}
-	.top{
-		width: 100%;
-		height: 100%;
+	ul {
+		padding: 0;
+		margin: 0;
 	}
-	.scrollContainer{
-		height: 100%
+	li {
+		padding: 0 0.5em;
+		height: 2em;
+		list-style-type: none;
+		line-height: 2em;
+		-webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+		border-bottom: 1px solid #222222;
+		font-size: 2em;
+		cursor: pointer;
 	}
-	.list1 li{
-		border-style: solid;
-		border-width: 1px 0px 1px 0px;
-		border-top-color: #BABABC;
-		border-bottom-color: #89898C;
-		background-color: #ACACAF;
-		line-height: 0px;
+	li:hover {
+		background-color: #61C6EB;
 	}
-	.list1 li:nth-child(even){
-		background-color: #97979B;
+	li:active {
+		background-color: #007fea;
 	}
-	#categ1 {
-		font-size: 18px;
-	}
-	#categ1 li{
-		line-height: 70px;
-	}
-	p {
-		font-family: Helvetica;
-		font-size: 12px;
-	}
-	
-	.iphone_theme .duiTabBarSegmentedControl .duiTabBarButtonIconArea {
-		display: none;
-	}
-	
-	
 	</style>
 </head>
-<body style="visibility:hidden;">
-	<div class="vBox top">
-		<ul data-dojo-type="dui/mobile/TabBar" 
-			data-dojo-props="barType: {'iphone_theme': 'segmentedControl','*':'tallTab'}">
-			<li data-dojo-type="dui/mobile/TabBarButton" 
-				data-dojo-props='icon1:"../mobile/tests/images/tab-icon-16.png", 
-					icon2:"../mobile/tests/images/tab-icon-16h.png",
-					selected:true'>New</li>
-			<li data-dojo-type="dui/mobile/TabBarButton" 
-				data-dojo-props='icon1:"../mobile/tests/images/tab-icon-15.png", 
-					icon2:"../mobile/tests/images/tab-icon-15h.png"'>What's Hot</li>
-			<li data-dojo-type="dui/mobile/TabBarButton" 
-				data-dojo-props='icon1:"../mobile/tests/images/tab-icon-10.png", 
-					icon2:"../mobile/tests/images/tab-icon-10h.png"'>Genius</li>
-		</ul>
+<body>
+	<d-linear-layout style="height: 100%">
+		<div style="background-color: blue">Header</div>
 		
-		<div id="categ" data-dojo-type="dui/ScrollableContainer"
-			class="scrollContainer">
-			<ul data-dojo-type="dui/mobile/EdgeToEdgeList" class="list1" id="categ1">
+		<d-scrollable-container style="background-color: green" class="fill">
+			<ul>
+				<li>Featured - this is a long item, such that you can test horizontal scroll</li>
+				<li>Categories</li>
+				<li>Top 25</li>
+				<li>Search</li>
+				<li>Updates</li>
+				<li>Featured</li>
+				<li>Categories</li>
+				<li>Top 25</li>
+				<li>Search</li>
+				<li>Updates</li>
+				<li>Featured</li>
+				<li>Categories</li>
+				<li>Top 25</li>
+				<li>Search</li>
+				<li>Updates</li>
+				<li>Featured</li>
+				<li>Categories</li>
+				<li>Top 25</li>
+				<li>Search</li>
+				<li>Updates</li>
+				<li>Featured</li>
+				<li>Categories</li>
+				<li>Top 25</li>
+				<li>Search</li>
+				<li>Updates</li>
+				<li>Featured</li>
+				<li>Categories</li>
+				<li>Top 25</li>
+				<li>Search</li>
+				<li>Updates</li>
+				<li>Featured</li>
+				<li>Categories</li>
+				<li>Top 25</li>
+				<li>Search</li>
+				<li>Updates</li>
+				<li>Featured</li>
+				<li>Categories</li>
+				<li>Top 25</li>
+				<li>Search</li>
+				<li>Updates</li>
+				<li>Featured</li>
+				<li>Categories</li>
+				<li>Top 25</li>
+				<li>Search</li>
+				<li>Updates</li>
+				<li>Featured</li>
+				<li>Categories</li>
+				<li>Top 25</li>
+				<li>Search</li>
+				<li>Updates</li>
+				<li>Featured</li>
+				<li>Categories</li>
+				<li>Top 25</li>
+				<li>Search</li>
+				<li>Updates</li>
+				<li>Featured</li>
+				<li>Categories</li>
+				<li>Top 25</li>
+				<li>Search</li>
+				<li>Updates</li>
+				<li>Featured</li>
+				<li>Categories</li>
+				<li>Top 25</li>
+				<li>Search</li>
+				<li>Updates</li>
 			</ul>
-		</div>
-
-		<ul data-dojo-type="dui/mobile/TabBar" 
-			style="border-bottom: none;">
-			<li data-dojo-type="dui/mobile/TabBarButton" 
-				data-dojo-props='icon1:"../mobile/tests/images/tab-icon-16.png", 
-					icon2:"../mobile/tests/images/tab-icon-16h.png", 
-					selected:true'>Featured</li>
-			<li data-dojo-type="dui/mobile/TabBarButton" 
-				data-dojo-props='icon1:"../mobile/tests/images/tab-icon-15.png", 
-					icon2:"../mobile/tests/images/tab-icon-15h.png"'>Categories</li>
-			<li data-dojo-type="dui/mobile/TabBarButton" 
-				data-dojo-props='icon1:"../mobile/tests/images/tab-icon-10.png", 
-					icon2:"../mobile/tests/images/tab-icon-10h.png"'>Top 25</li>
-			<li data-dojo-type="dui/mobile/TabBarButton" 
-				data-dojo-props='icon1:"../mobile/tests/images/tab-icon-11.png", 
-					icon2:"../mobile/tests/images/tab-icon-11h.png"'>Search</li>
-			<li data-dojo-type="dui/mobile/TabBarButton" 
-				data-dojo-props='icon1:"../mobile/tests/images/tab-icon-13.png", 
-					icon2:"../mobile/tests/images/tab-icon-13h.png"'>Updates</li>
-		</ul>
-	</div>
+		</d-scrollable-container>
+		
+		<div style="background-color: yellow">Footer</div>
+	</d-linear-layout>
 </body>
 </html>
