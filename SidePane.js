@@ -19,10 +19,8 @@ define(
 			if (node) {
 				if (val) {
 					node.style.visibility = "visible";
-					node.style.display = "";
 				} else {
 					node.style.visibility = "hidden";
-					node.style.display = "none";
 				}
 			}
 		}
@@ -34,16 +32,13 @@ define(
 			// 		(mode=overlay) or
 			//		can push the content of the page (mode=push or mode=reveal).
 			// description:
-			//		SidePane is an interactive container hidden by default. To open it, swipe the screen from the
-			// border to the center of the page.
-			//		To close it, swipe horizontally the panel in the other direction.
-			//		This widget must be a sibling of html's body element or use the entire screen.
+			//		SidePane is a container hidden by default.
+			//		This widget must be a sibling of html's body element.
 			//		If mode is set to "push" or "reveal", the width of the SidePane can't be changed in the markup
 			//		(15em by default).
-			//		However it can be changed in SidePane.less (@PANE_WIDTH variable) to regenerate SidePane.css.
-			//		In "push" and "reveal" mode, the pushed element is the first sibling of the SidePane which is
-			//		of type element
-			//		(nodeType == 1) and not a SidePane.
+			//		However it can be changed in SidePane.less (@PANE_WIDTH variable).
+			//		In "push" and "reveal" mode, the pushed element is the first sibling of the SidePane which has
+			//		of type element (nodeType == 1) and not a SidePane.
 
 			// baseClass: String
 			//		The name of the CSS class of this widget.
@@ -55,11 +50,11 @@ define(
 
 			// position: String
 			//		Can be "start" or "end". If set to "start", the panel is displayed on the
-			//		left side in left-to-right mode.
+			//		left side in LTR mode.
 			position: "start",
 
 			// animate: Boolean
-			//		Enable/Disable open/hide animations.
+			//		Enable/Disable animations.
 			animate: true,
 
 			// swipeClosing: Boolean
@@ -77,39 +72,54 @@ define(
 
 			open: function () {
 				// summary:
-				//		Open the panel.
+				//		Open the pane.
 				var nextElement;
-				if (this.animate) {
-					domClass.add(this, prefix("animate"));
-					nextElement = this.getNextSibling();
-					if (nextElement) {
-						domClass.add(nextElement, prefix("animate"));
+				if (!this._visible) {
+					if (this.animate) {
+						domClass.add(this, prefix("animate"));
+						nextElement = this.getNextSibling();
+						if (nextElement) {
+							domClass.add(nextElement, prefix("animate"));
+						}
+					}
+
+					if (this.mode === "reveal") {
+						nextElement = this.getNextSibling();
+						if (nextElement) {
+							this._setAfterTransitionHandlers(nextElement, {node: nextElement});
+						}
+					} else {
+						this._setAfterTransitionHandlers(this, {node: this});
+					}
+
+					setVisibility(this, true);
+
+					if (this.animate) {
+						this.defer(this._openImpl, this._timing);
+					} else {
+						this._openImpl();
+						this.defer(this._afterTransitionHandle, this._timing);
 					}
 				}
-				setVisibility(this, true);
-				if (this.mode === "reveal") {
-					nextElement = this.getNextSibling();
-					if (nextElement) {
-						this._setAfterTransitionHandlers(nextElement, {node: nextElement});
-					}
-				} else {
-					this._setAfterTransitionHandlers(this, {node: this});
-				}
-				this.defer(this._openImpl, this._timing);
 			},
 
 			close: function () {
 				// summary:
-				//		Close the panel.
-				if (this.mode === "reveal") {
-					var nextElement = this.getNextSibling();
-					if (nextElement) {
-						this._setAfterTransitionHandlers(nextElement, {node: nextElement});
+				//		Close the pane.
+				if (this._visible) {
+					if (this.mode === "reveal") {
+						var nextElement = this.getNextSibling();
+						if (nextElement) {
+							this._setAfterTransitionHandlers(nextElement, {node: nextElement});
+						}
+					} else {
+						this._setAfterTransitionHandlers(this, {node: this});
 					}
-				} else {
-					this._setAfterTransitionHandlers(this, {node: this});
+					this._hideImpl();
+					if (!this.animate) {
+						this.defer(this._afterTransitionHandle, this._timing);
+					}
 				}
-				this._hideImpl();
 			},
 
 			_setAfterTransitionHandlers: function (node, event, deferred) {
@@ -121,6 +131,8 @@ define(
 
 			_afterTransitionHandle: function (/*jshint unused: vars */ event) {
 				var item;
+				domClass.remove(this, prefix("under"));
+
 				for (var i = 0; i < this._transitionEndHandlers.length; i++) {
 					item = this._transitionEndHandlers[i];
 					if (!this._visible) {
@@ -141,10 +153,11 @@ define(
 			},
 
 			preCreate: function () {
-				this.addInvalidatingProperties("position", "mode");
+				this.addInvalidatingProperties("position", "mode", "animate");
 			},
 
 			buildRendering: function () {
+
 				this.parentNode.style.overflow = "hidden";
 				this._resetInteractions();
 				this.invalidateRendering();
@@ -153,17 +166,15 @@ define(
 			_firstRendering: true,
 
 			refreshRendering: function (props) {
-
 				var fullRefresh = this._firstRendering || Object.getOwnPropertyNames(props).length === 0;
 				this._firstRendering = false;
-
 				var nextElement = this.getNextSibling();
 
-				if (this.animate) {
-					domClass.remove(this, prefix("animate"));
-					if (nextElement) {
-						domClass.remove(nextElement, prefix("animate"));
-					}
+				// Always remove animation during a refresh. Avoid to see moving the pane on mode changes.
+				// Not very reliable on IE11.
+				domClass.remove(this, prefix("animate"));
+				if (nextElement) {
+					domClass.remove(nextElement, prefix("animate"));
 				}
 
 				if (fullRefresh || props.mode) {
@@ -172,13 +183,6 @@ define(
 					domClass.remove(this, prefix("reveal"));
 					domClass.add(this, prefix(this.mode));
 
-					if (this.mode === "overlay") {
-						this.style["z-index"] = 1;
-					}
-					else if (this.mode === "reveal") {
-						this.style["z-index"] = -1;
-					}
-
 					if (nextElement && this._visible) {
 						if (this.mode === "overlay") {
 							domClass.remove(nextElement, prefix("translated"));
@@ -186,7 +190,23 @@ define(
 							domClass.add(nextElement, prefix("translated"));
 						}
 					}
+
+
+					if (this.mode === "reveal" && !this._visible) {
+						// Needed by FF only for the first opening.
+						domClass.remove(this, prefix("ontop"));
+						domClass.add(this, prefix("under"));
+					}
+					else if (this.mode === "overlay") {
+						domClass.remove(this, prefix("under"));
+						domClass.add(this, prefix("ontop"));
+					} else {
+						domClass.remove(this, prefix("under"));
+						domClass.remove(this, prefix("ontop"));
+					}
+
 				}
+
 				if (fullRefresh || props.position) {
 					domClass.remove(this, prefix("start"));
 					domClass.remove(this, prefix("end"));
@@ -214,6 +234,8 @@ define(
 					}
 
 				}
+
+				// Re-enable animation
 				if (this.animate) {
 					this.defer(function () {
 						domClass.add(this, prefix("animate"));
@@ -326,7 +348,6 @@ define(
 					this._pressHandle.remove();
 				}
 
-
 				if (this.swipeClosing) {
 					this._pressHandle = on(this, touch.press, lang.hitch(this, this._touchPress));
 				}
@@ -336,8 +357,6 @@ define(
 			},
 
 			destroy: function () {
-				this._cleanCSS();
-
 				if (this._pressHandle) {
 					this._pressHandle.remove();
 				}
