@@ -16,7 +16,7 @@ define([
 		// summary:
 		//		A mixin which adds scrolling capabilities to a widget.
 		// description:
-		//		TBD.
+		//		TODO
 
 		// scrollDirection: String
 		//		The direction of the interactive scroll. Possible values are:
@@ -114,6 +114,7 @@ define([
 			// summary:
 			//		Returns the current amount of scroll, as an object with x and y properties
 			//		for the horizontal and vertical scroll amount. TODO: improve the doc.
+			// returns: Object
 			return {x: this.scrollLeft, y: this.scrollTop};
 		},
 		
