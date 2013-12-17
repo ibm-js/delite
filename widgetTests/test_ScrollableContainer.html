@@ -12,7 +12,7 @@
 	<link rel="stylesheet" href="../themes/defaultapp.css">
 	
 	<!-- For testing purposes.  Real applications should load the AMD loader directly -->
-	<script type="text/javascript" src="./boilerplate.js"></script>
+	<script type="text/javascript" src="../tests/boilerplate.js"></script>
 
 	<script type="text/javascript">
 		var scrollTo;
@@ -69,7 +69,7 @@
 		});
 	</script>
 
-	<style>
+	<style type="text/css">
 	html, body{
 		height: 100%;
 		margin: 0;
@@ -100,8 +100,8 @@
 <body>
 	<d-linear-layout style="height: 100%">
 		<div>
-			<!-- Button to test the programmatic scroll API of ScrollContainer -->
-			<button is="d-button" onclick="scrollBy();" value="T1465Val">
+			<!-- Button to test the programmatic scroll API of ScrollableContainer -->
+			<button is="d-button" onclick="scrollBy();">
 				Programmatic scroll: scrollBy({x: 100, y: 100})
 			</button>
 		</div>
@@ -110,7 +110,7 @@
 			style="background-color: green" class="fill"
 			onScroll="onScroll();">
 			<ul>
-				<li>Featured - this is a long item, such that you can test horizontal scroll</li>
+				<li>Featured</li>
 				<li>Categories</li>
 				<li>Top 25</li>
 				<li>Search</li>
