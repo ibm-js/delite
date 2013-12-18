@@ -69,7 +69,6 @@ define([
 			_opening: false,
 			_originX: NaN,
 			_originY: NaN,
-			_cssClasses: {},
 			_transitionEndHandlers: [],
 
 			open: function () {
@@ -156,6 +155,14 @@ define([
 
 			preCreate: function () {
 				this.addInvalidatingProperties("position", "mode", "animate");
+				if (this._timing === 0) {
+					for (var o in this._transitionTiming) {
+						if (has(o) && this._timing < this._transitionTiming[o]) {
+							this._timing = this._transitionTiming[o];
+						}
+					}
+				}
+
 			},
 
 			buildRendering: function () {
@@ -228,14 +235,6 @@ define([
 						domClass.remove(this, prefix("visible"));
 						domClass.add(this, prefix("hidden"));
 					}
-				}
-				if (this._timing === 0) {
-					for (var o in this._transitionTiming) {
-						if (has(o) && this._timing < this._transitionTiming[o]) {
-							this._timing = this._transitionTiming[o];
-						}
-					}
-
 				}
 
 				// Re-enable animation
