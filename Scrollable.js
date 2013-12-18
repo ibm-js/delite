@@ -26,29 +26,53 @@ define([
 		//		on the value of scrollDirection.
 		scrollDirection: "vertical",
 		
+		// scrollableNode: [readonly] DomNode
+		//		Designates the descendant of this widget which is made scrollable. 
+		//		The default value is 'null'. If not set, defaults to this widget 
+		//		itself ('this').
+		//		Note that this property can be set only at construction time, as a 
+		//		constructor argument or in markup as a property of the widget into
+		//		which this class is mixed.
+		scrollableNode: null,
+		
 		preCreate: function () {
 			this.addInvalidatingProperties("scrollDirection");
 		},
 
 		refreshRendering: function () {
-			if (this.scrollDirection === "horizontal") {
-				domStyle.set(this, "overflowX", "scroll");
-				domStyle.set(this, "overflowY", ""); // restore the default
-			} else if (this.scrollDirection === "vertical") {
-				domStyle.set(this, "overflowX", ""); // restore the default
-				domStyle.set(this, "overflowY", "scroll");
-			} else if (this.scrollDirection === "both") {
-				domStyle.set(this, "overflowX", "scroll");
-				domStyle.set(this, "overflowY", "scroll");
-			} else if (this.scrollDirection === "none") {
-				domStyle.set(this, "overflowX", ""); // restore the default
-				domStyle.set(this, "overflowY", ""); // restore the default
+			var scrollableNode;
+			var scrollDirection;
+			
+			if (!this.scrollableNode) {
+				this.scrollableNode = this; // If unspecified, defaults to 'this'.
+			}
+			
+			scrollableNode = this.scrollableNode;
+			scrollDirection = this.scrollDirection;
+			
+			if (scrollDirection === "none") {
+				domClass.remove(this.scrollableNode, "d-scrollable");
+			} else {
+				domClass.add(this.scrollableNode, "d-scrollable");
+			}
+			dom.setSelectable(this.scrollableNode, false);
+			
+			if (scrollDirection === "horizontal") {
+				domStyle.set(scrollableNode, "overflowX", "scroll");
+				domStyle.set(scrollableNode, "overflowY", ""); // restore the default
+			} else if (scrollDirection === "vertical") {
+				domStyle.set(scrollableNode, "overflowX", ""); // restore the default
+				domStyle.set(scrollableNode, "overflowY", "scroll");
+			} else if (scrollDirection === "both") {
+				domStyle.set(scrollableNode, "overflowX", "scroll");
+				domStyle.set(scrollableNode, "overflowY", "scroll");
+			} else if (scrollDirection === "none") {
+				domStyle.set(scrollableNode, "overflowX", ""); // restore the default
+				domStyle.set(scrollableNode, "overflowY", ""); // restore the default
 			} // else: do nothing for unsupported values
 		},
 
 		buildRendering: dcl.after(function () {
-			domClass.add(this, "d-scrollable");
-			dom.setSelectable(this, false);
 			this.invalidateRendering();
 		}),
 		
@@ -63,7 +87,7 @@ define([
 			// |	}
 			// | }
 			// returns: Boolean
-			return this.scrollTop === 0;
+			return this.scrollableNode.scrollTop === 0;
 		},
 		
 		isBottomScroll: function () {
@@ -77,8 +101,9 @@ define([
 			// |	}
 			// | }
 			// returns: Boolean
-			var scroller = this;
-			return scroller.offsetHeight + scroller.scrollTop >= scroller.scrollHeight;
+			var scrollableNode = this.scrollableNode;
+			return scrollableNode.offsetHeight + scrollableNode.scrollTop >=
+				scrollableNode.scrollHeight;
 		},
 		
 		isLeftScroll: function () {
@@ -92,7 +117,7 @@ define([
 			// |	}
 			// | }
 			// returns: Boolean
-			return this.scrollLeft === 0;
+			return this.scrollableNode.scrollLeft === 0;
 		},
 		
 		isRightScroll: function () {
@@ -106,8 +131,8 @@ define([
 			// |	}
 			// | }
 			// returns: Boolean
-			var scroller = this;
-			return scroller.offsetWidth + scroller.scrollLeft >= scroller.scrollWidth;
+			var scrollableNode = this.scrollableNode;
+			return scrollableNode.offsetWidth + scrollableNode.scrollLeft >= scrollableNode.scrollWidth;
 		},
 
 		getCurrentScroll: function () {
@@ -129,10 +154,10 @@ define([
 			//		scrolls without animation. 
 			var to = {};
 			if (by.x) {
-				to.x = this.scrollLeft + by.x;
+				to.x = this.scrollableNode.scrollLeft + by.x;
 			}
 			if (by.y) {
-				to.y = this.scrollTop + by.y;
+				to.y = this.scrollableNode.scrollTop + by.y;
 			}
 			this.scrollTo(to, duration);
 		},
@@ -148,18 +173,18 @@ define([
 			//		scrolls without animation. 
 			
 			var self = this;
-			var domNode = this;
+			var scrollableNode = this.scrollableNode;
 			if (!duration || duration <= 0) { // shortcut
 				if (to.x) {
-					domNode.scrollLeft = to.x;
+					scrollableNode.scrollLeft = to.x;
 				}
 				if (to.y) {
-					domNode.scrollTop = to.y;
+					scrollableNode.scrollTop = to.y;
 				}
 			} else {
 				var from = {
-					x: to.x ? domNode.scrollLeft : undefined,
-					y: to.y ? domNode.scrollTop : undefined
+					x: to.x ? scrollableNode.scrollLeft : undefined,
+					y: to.y ? scrollableNode.scrollTop : undefined
 				};
 				var animation = function () {
 					if (self._animation && self._animation.status() === "playing") {
@@ -182,10 +207,10 @@ define([
 						},
 						onAnimate: function (val) {
 							if (val.x) {
-								domNode.scrollLeft = val.x;
+								scrollableNode.scrollLeft = val.x;
 							}
 							if (val.y) {
-								domNode.scrollTop = val.y;
+								scrollableNode.scrollTop = val.y;
 							}
 						},
 						easing: easing.expoInOut, // TODO: IMPROVEME
