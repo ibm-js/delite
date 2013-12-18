@@ -1,18 +1,18 @@
 define(["dcl/dcl",
-		"dojo/sniff",
-		"dojo/on",
-		"dojo/Deferred",
-		"dojo/_base/lang",
-		"dojo/dom-geometry",
-		"dojo/dom-class",
-		"./register",
-		"./Widget",
-		"./DisplayContainer",
-		"./themes/load!./themes/{{theme}}/ViewStack",
-		"dui/css!./themes/common/transitions/slide",
-		"dui/css!./themes/common/transitions/reveal",
-		"dui/css!./themes/common/transitions/flip",
-		"dui/css!./themes/common/transitions/fade"],
+	"dojo/sniff",
+	"dojo/on",
+	"dojo/Deferred",
+	"dojo/_base/lang",
+	"dojo/dom-geometry",
+	"dojo/dom-class",
+	"./register",
+	"./Widget",
+	"./DisplayContainer",
+	"./themes/load!./themes/{{theme}}/ViewStack",
+	"dui/css!./themes/common/transitions/slide",
+	"dui/css!./themes/common/transitions/reveal",
+	"dui/css!./themes/common/transitions/flip",
+	"dui/css!./themes/common/transitions/fade"],
 	function (dcl, has, on, Deferred, lang, domGeometry, domClass, register, Widget, DisplayContainer) {
 		function setVisibility(node, val) {
 			if (node) {
@@ -58,8 +58,15 @@ define(["dcl/dcl",
 
 			baseClass: "d-view-stack",
 
+			// transition: String
+			//		The transition type used if not specified in the second argument of the show method.
+			//		Default value is "slide".
+			//		Transitions type are: "none", "slide", "reveal", "flip", "fade".
 			transition: "slide",
 
+			// reverse: Boolean
+			//		If true, the transition animation is reversed.
+			//		This attribute is supported by "slide" and "reveal" transition types.
 			reverse: false,
 
 			_transitionTiming: {default: 0, chrome: 20, ios: 20, android: 100, mozilla: 100},
@@ -68,11 +75,7 @@ define(["dcl/dcl",
 			_visibleChild: null,
 			_transitionEndHandlers: [],
 
-			buildRendering: function () {
-				for (var i = 1; i < this.children.length; i++) {
-					setVisibility(this.children[i], false);
-				}
-				this._timing = 0;
+			preCreate: function () {
 				for (var o in this._transitionTiming) {
 					if (has(o) && this._timing < this._transitionTiming[o]) {
 						this._timing = this._transitionTiming[o];
@@ -80,7 +83,16 @@ define(["dcl/dcl",
 				}
 			},
 
+			buildRendering: function () {
+				for (var i = 1; i < this.children.length; i++) {
+					setVisibility(this.children[i], false);
+				}
+			},
+
 			showNext: function (props) {
+				//		Shows the next children in the container.
+				//		The current children must implement getNextSlibling method which is available
+				//		in the Contained class.
 				if (!this._visibleChild && this.children.length > 0) {
 					this._visibleChild = this.children[0];
 				}
@@ -92,6 +104,9 @@ define(["dcl/dcl",
 			},
 
 			showPrevious: function (props) {
+				//		Shows the previous children in the container.
+				//		The current children must implement getPreviousSlibling method which is available
+				//		in the Contained class.
 				if (!this._visibleChild && this.children.length > 0) {
 					this._visibleChild = this.children[0];
 				}
@@ -107,7 +122,7 @@ define(["dcl/dcl",
 				var dest = widget;
 				var deferred = new Deferred();
 				setVisibility(dest, true);
-				if (event.transition) {
+				if (event.transition && event.transition !== "none") {
 					if (origin) {
 						this._setAfterTransitionHandlers(origin, event);
 						domClass.add(origin, transitionClass(event.transition));
@@ -146,9 +161,10 @@ define(["dcl/dcl",
 				return deferred;
 			},
 
-			show: function (/* HTMLDivElement */ node, props) {
-				//		Shows a children of the ViewStack. The parameter 'props' is optional and is
-				//		{transition: 'slide', reverse: false} by default.
+			show: function (/* HTMLElement */ node, props) {
+				//		Shows a children of the ViewStack. The parameter 'props' is optional. If not specified,
+				//		its value is {transition: this.transition, reverse: this.reverse}. In other words,
+				//		transition and/or reverse properties are used.
 				if (!this._visibleChild) {
 					this._visibleChild = this.children[0];
 				}
