@@ -294,14 +294,14 @@ define([
 					(this.position === "end" && !this._visible && this._originX >= win.doc.width - 10)) {
 					this._opening = !this._visible;
 					this._pressHandle.remove();
-					this._moveHandle = this.on("pointermove", lang.hitch(this, this._pointerMoveHandle));
-					this._releaseHandle = this.on("pointerup", lang.hitch(this, this._pointerUpHandle));
+					this._moveHandle = this.on("pointermove", lang.hitch(this, this._pointerMoveHandler));
+					this._releaseHandle = this.on("pointerup", lang.hitch(this, this._pointerUpHandler));
 
 					domClass.add(win.doc.body, "-d-side-pane-no-select");
 				}
 			},
 
-			_pointerMoveHandle: function (event) {
+			_pointerMoveHandler: function (event) {
 				if (!this._opening && Math.abs(event.pageY - this._originY) > 10) {
 					this._resetInteractions();
 				} else {
@@ -332,7 +332,7 @@ define([
 				}
 			},
 
-			_pointerUpHandle: function () {
+			_pointerUpHandler: function () {
 				this._opening = false;
 				domClass.remove(win.doc.body, "-d-side-pane-no-select");
 				this._resetInteractions();
