@@ -1,5 +1,5 @@
 define([
-	"pointer/events",
+	"dpointer/events",
 	"dojo/_base/lang",
 	"dojo/dom-class",
 	"dojo/_base/window",
