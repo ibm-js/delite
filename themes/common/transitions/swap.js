@@ -1,27 +1,27 @@
 define(function(){ return '\
-.duiSwap {\
+.-delite-swap {\
   -webkit-animation-duration: 0.6s;\
   animation-duration: 0.6s;\
   -webkit-animation-timing-function: linear;\
   animation-timing-function: linear;\
 }\
-.duiSwap.duiOut {\
-  -webkit-animation-name: duiSwapOut;\
-  animation-name: duiSwapOut;\
+.-delite-swap.-delite-out {\
+  -webkit-animation-name: -delite-swapOut;\
+  animation-name: -delite-swapOut;\
 }\
-.duiSwap.duiIn {\
-  -webkit-animation-name: duiSwapIn;\
-  animation-name: duiSwapIn;\
+.-delite-swap.-delite-in {\
+  -webkit-animation-name: -delite-swapIn;\
+  animation-name: -delite-swapIn;\
 }\
-.duiSwap.duiOut.duiReverse {\
-  -webkit-animation-name: duiSwapOutReverse;\
-  animation-name: duiSwapOutReverse;\
+.-delite-swap.-delite-out.-delite-reverse {\
+  -webkit-animation-name: -delite-swapOutReverse;\
+  animation-name: -delite-swapOutReverse;\
 }\
-.duiSwap.duiIn.duiReverse {\
-  -webkit-animation-name: duiSwapInReverse;\
-  animation-name: duiSwapInReverse;\
+.-delite-swap.-delite-in.-delite-reverse {\
+  -webkit-animation-name: -delite-swapInReverse;\
+  animation-name: -delite-swapInReverse;\
 }\
-@-webkit-keyframes duiSwapOut {\
+@-webkit-keyframes -delite-swapOut {\
   0% {\
     z-index: auto;\
     -webkit-transform: translate3d(0%, 0%, 0px) scale(1);\
@@ -38,7 +38,7 @@ define(function(){ return '\
     opacity: 0;\
   }\
 }\
-@keyframes duiSwapOut {\
+@keyframes -delite-swapOut {\
   0% {\
     z-index: auto;\
     transform: translate3d(0%, 0%, 0px) scale(1);\
@@ -55,7 +55,7 @@ define(function(){ return '\
     opacity: 0;\
   }\
 }\
-@-webkit-keyframes duiSwapIn {\
+@-webkit-keyframes -delite-swapIn {\
   0% {\
     z-index: -100;\
     -webkit-transform: translate3d(-20%, 0%, 0px) scale(0.5);\
@@ -72,7 +72,7 @@ define(function(){ return '\
     opacity: 1;\
   }\
 }\
-@keyframes duiSwapIn {\
+@keyframes -delite-swapIn {\
   0% {\
     z-index: -100;\
     transform: translate3d(-20%, 0%, 0px) scale(0.5);\
@@ -89,7 +89,7 @@ define(function(){ return '\
     opacity: 1;\
   }\
 }\
-@-webkit-keyframes duiSwapOutReverse {\
+@-webkit-keyframes -delite-swapOutReverse {\
   0% {\
     z-index: auto;\
     -webkit-transform: translate3d(0%, 0%, 0px) scale(1);\
@@ -106,7 +106,7 @@ define(function(){ return '\
     opacity: 0;\
   }\
 }\
-@keyframes duiSwapOutReverse {\
+@keyframes -delite-swapOutReverse {\
   0% {\
     z-index: auto;\
     transform: translate3d(0%, 0%, 0px) scale(1);\
@@ -123,7 +123,7 @@ define(function(){ return '\
     opacity: 0;\
   }\
 }\
-@-webkit-keyframes duiSwapInReverse {\
+@-webkit-keyframes -delite-swapInReverse {\
   0% {\
     z-index: -100;\
     -webkit-transform: translate3d(20%, 0%, 0px) scale(0.5);\
@@ -140,7 +140,7 @@ define(function(){ return '\
     opacity: 1;\
   }\
 }\
-@keyframes duiSwapInReverse {\
+@keyframes -delite-swapInReverse {\
   0% {\
     z-index: -100;\
     transform: translate3d(20%, 0%, 0px) scale(0.5);\

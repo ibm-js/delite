@@ -415,12 +415,12 @@ define([
 
 		_toCls: function(s){
 			// convert from transition name to corresponding class name
-			// ex. "slide" -> "duiSlide"
-			return "dui"+s.charAt(0).toUpperCase() + s.substring(1);
+			// ex. "slide" -> "-delite-slide"
+			return "dui"+s;
 		},
 
 		_doTransition: function(fromNode, toNode, transition, transitionDir){
-			var rev = (transitionDir == -1) ? " duiReverse" : "";
+			var rev = (transitionDir == -1) ? " -delite-reverse" : "";
 			toNode.style.display = "";
 			if(!transition || transition == "none"){
 				this.domNode.style.display = "none";
@@ -440,20 +440,20 @@ define([
 					// causes flicker, so wait for a while using setTimeout (via defer)
 					var _this = this;
 					_this.defer(function(){
-						domClass.add(fromNode, s + " duiOut" + rev);
-						domClass.add(toNode, s + " duiIn" + rev);
+						domClass.add(fromNode, s + " -delite-out" + rev);
+						domClass.add(toNode, s + " -delite-in" + rev);
 						domClass.remove(toNode, "duiAndroidWorkaround"); // remove offscreen style
 						_this.defer(function(){
-							domClass.add(fromNode, "duiTransition");
-							domClass.add(toNode, "duiTransition");
+							domClass.add(fromNode, "-delite-transition");
+							domClass.add(toNode, "-delite-transition");
 						}, 30); // 30 = 100 - 70, to make total delay equal to 100ms
 					}, 70); // 70ms is experiential value
 				}else{
-					domClass.add(fromNode, s + " duiOut" + rev);
-					domClass.add(toNode, s + " duiIn" + rev);
+					domClass.add(fromNode, s + " -delite-out" + rev);
+					domClass.add(toNode, s + " -delite-in" + rev);
 					this.defer(function(){
-						domClass.add(fromNode, "duiTransition");
-						domClass.add(toNode, "duiTransition");
+						domClass.add(fromNode, "-delite-transition");
+						domClass.add(toNode, "-delite-transition");
 					}, 100);
 				}
 				// set transform origin
@@ -499,10 +499,10 @@ define([
 				name.indexOf("In") === -1 &&
 				name.indexOf("Shrink") === -1){ return; }
 			var isOut = false;
-			if(domClass.contains(this.domNode, "duiOut")){
+			if(domClass.contains(this.domNode, "-delite-out")){
 				isOut = true;
 				this.domNode.style.display = "none";
-				domClass.remove(this.domNode, [this._toCls(this._detail.transition), "duiIn", "duiOut", "duiReverse"]);
+				domClass.remove(this.domNode, [this._toCls(this._detail.transition), "-delite-in", "-delite-out", "-delite-reverse"]);
 			}else{
 				// Reset the temporary padding
 				this._removeTransitionPaddingTop();

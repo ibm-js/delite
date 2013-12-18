@@ -50,30 +50,30 @@
 	margin-top: 5px;
 }
 
-.alertDialog.duiOut {
+.alertDialog.-delite-out {
 	position: absolute;
 }
 
-.alertDialog.duiIn {
+.alertDialog.-delite-in {
 	position: absolute;
 }
 
-.duiSlidev.duiOut {
+.duiSlidev.-delite-out {
 	-webkit-animation-duration: .4s;
 	-webkit-animation-name: duiSlideOut;
 	-webkit-animation-timing-function: linear;
 	-webkit-transform: translateY(-100%);
 }
-.duiSlidev.duiIn {
+.duiSlidev.-delite-in {
 	-webkit-animation-duration: .4s;
 	-webkit-animation-name: duiSlideIn;
 	-webkit-animation-timing-function: linear;
 	-webkit-transform: translateY(0px);
 }
-.duiSlidev.duiOut.duiReverse {
+.duiSlidev.-delite-out.-delite-reverse {
 	-webkit-animation-name: duiSlideOutReverse;
 }
-.duiSlidev.duiIn.duiReverse {
+.duiSlidev.-delite-in.-delite-reverse {
 	-webkit-animation-name: duiSlideInReverse;
 }
 

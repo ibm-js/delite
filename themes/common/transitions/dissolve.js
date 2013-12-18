@@ -1,21 +1,21 @@
 define(function(){ return '\
-.duiDissolve.duiOut {\
+.-delite-dissolve.-delite-out {\
   -webkit-animation-duration: 1s;\
   animation-duration: 1s;\
-  -webkit-animation-name: duiDissolveOut;\
-  animation-name: duiDissolveOut;\
+  -webkit-animation-name: -delite-dissolveOut;\
+  animation-name: -delite-dissolveOut;\
   -webkit-animation-timing-function: cubic-bezier(0.25, 1, 0.75, 0);\
   animation-timing-function: cubic-bezier(0.25, 1, 0.75, 0);\
 }\
-.duiDissolve.duiIn {\
+.-delite-dissolve.-delite-in {\
   -webkit-animation-duration: 1s;\
   animation-duration: 1s;\
-  -webkit-animation-name: duiDissolveIn;\
-  animation-name: duiDissolveIn;\
+  -webkit-animation-name: -delite-dissolveIn;\
+  animation-name: -delite-dissolveIn;\
   -webkit-animation-timing-function: cubic-bezier(0.25, 1, 0.75, 0);\
   animation-timing-function: cubic-bezier(0.25, 1, 0.75, 0);\
 }\
-@-webkit-keyframes duiDissolveOut {\
+@-webkit-keyframes -delite-dissolve-out {\
   from {\
     opacity: 1;\
   }\
@@ -23,7 +23,7 @@ define(function(){ return '\
     opacity: 0;\
   }\
 }\
-@keyframes duiDissolveOut {\
+@keyframes -delite-dissolve-out {\
   from {\
     opacity: 1;\
   }\
@@ -31,7 +31,7 @@ define(function(){ return '\
     opacity: 0;\
   }\
 }\
-@-webkit-keyframes duiDissolveIn {\
+@-webkit-keyframes -delite-dissolve-in {\
   from {\
     opacity: 0;\
   }\
@@ -39,7 +39,7 @@ define(function(){ return '\
     opacity: 1;\
   }\
 }\
-@keyframes duiDissolveIn {\
+@keyframes -delite-dissolve-in {\
   from {\
     opacity: 0;\
   }\

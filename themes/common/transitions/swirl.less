@@ -1,21 +1,21 @@
 @import "../css3.less";
-.duiSwirl.duiOut {
+.-delite-swirl.-delite-out {
 	.animation-duration(.5s);
-	.animation-name(duiSwirlOut);
+	.animation-name(-delite-swirlOut);
 	.animation-timing-function(ease-in);
 }
-.duiSwirl.duiIn {
+.-delite-swirl.-delite-in {
 	z-index: -100;
 	.animation-duration(.5s);
-	.animation-name(duiSwirlIn);
+	.animation-name(-delite-swirlIn);
 	.animation-timing-function(ease-in);
 }
-.duiSwirl.duiOut.duiReverse {
-	.animation-name(duiSwirlOutReverse);
+.-delite-swirl.-delite-out.-delite-reverse {
+	.animation-name(-delite-swirlOutReverse);
 }
-@-webkit-keyframes duiSwirlOut { .keyframes-transform-from-to-webkit(rotate(0deg) scale(1.0), rotate(-360deg) scale(0.0)); }
-@keyframes         duiSwirlOut { .keyframes-transform-from-to       (rotate(0deg) scale(1.0), rotate(-360deg) scale(0.0)); }
-@-webkit-keyframes duiSwirlOutReverse { .keyframes-transform-from-to-webkit(rotate(0deg) scale(1.0), rotate(360deg) scale(0.0)); }
-@keyframes         duiSwirlOutReverse { .keyframes-transform-from-to       (rotate(0deg) scale(1.0), rotate(360deg) scale(0.0)); }
-@-webkit-keyframes duiSwirlIn { .keyframes-transform-from-to-webkit(scale(1.0), scale(1.0)); }
-@keyframes         duiSwirlIn { .keyframes-transform-from-to       (scale(1.0), scale(1.0)); }
+@-webkit-keyframes -delite-swirlOut { .keyframes-transform-from-to-webkit(rotate(0deg) scale(1.0), rotate(-360deg) scale(0.0)); }
+@keyframes         -delite-swirlOut { .keyframes-transform-from-to       (rotate(0deg) scale(1.0), rotate(-360deg) scale(0.0)); }
+@-webkit-keyframes -delite-swirlOutReverse { .keyframes-transform-from-to-webkit(rotate(0deg) scale(1.0), rotate(360deg) scale(0.0)); }
+@keyframes         -delite-swirlOutReverse { .keyframes-transform-from-to       (rotate(0deg) scale(1.0), rotate(360deg) scale(0.0)); }
+@-webkit-keyframes -delite-swirlIn { .keyframes-transform-from-to-webkit(scale(1.0), scale(1.0)); }
+@keyframes         -delite-swirlIn { .keyframes-transform-from-to       (scale(1.0), scale(1.0)); }

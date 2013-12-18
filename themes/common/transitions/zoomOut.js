@@ -1,26 +1,26 @@
 define(function(){ return '\
-.duiZoomOut.duiOut {\
+.-delite-zoomOut.-delite-out {\
   -webkit-animation-duration: 0.5s;\
   animation-duration: 0.5s;\
-  -webkit-animation-name: duiZoomOutOut;\
-  animation-name: duiZoomOutOut;\
+  -webkit-animation-name: -delite-zoomOutOut;\
+  animation-name: -delite-zoomOutOut;\
   -webkit-animation-timing-function: ease-in;\
   animation-timing-function: ease-in;\
 }\
-.dj_android .duiZoomOut.duiOut {\
-  -webkit-animation-name: duiZoomOutOutAndroid;\
-  animation-name: duiZoomOutOutAndroid;\
+.dj_android .-delite-zoomOut.-delite-out {\
+  -webkit-animation-name: -delite-zoomOutOutAndroid;\
+  animation-name: -delite-zoomOutOutAndroid;\
 }\
-.duiZoomOut.duiIn {\
+.-delite-zoomOut.-delite-in {\
   z-index: -100;\
   -webkit-animation-duration: 0.5s;\
   animation-duration: 0.5s;\
-  -webkit-animation-name: duiZoomOutIn;\
-  animation-name: duiZoomOutIn;\
+  -webkit-animation-name: -delite-zoomOutIn;\
+  animation-name: -delite-zoomOutIn;\
   -webkit-animation-timing-function: ease-in;\
   animation-timing-function: ease-in;\
 }\
-@-webkit-keyframes duiZoomOutOut {\
+@-webkit-keyframes -delite-zoomOutOut {\
   from {\
     -webkit-transform: scale(1);\
     opacity: 1;\
@@ -30,7 +30,7 @@ define(function(){ return '\
     opacity: 0;\
   }\
 }\
-@keyframes duiZoomOutOut {\
+@keyframes -delite-zoomOutOut {\
   from {\
     transform: scale(1);\
     opacity: 1;\
@@ -40,7 +40,7 @@ define(function(){ return '\
     opacity: 0;\
   }\
 }\
-@-webkit-keyframes duiZoomOutOutAndroid {\
+@-webkit-keyframes -delite-zoomOutOutAndroid {\
   from {\
     -webkit-transform: scale(1);\
   }\
@@ -48,7 +48,7 @@ define(function(){ return '\
     -webkit-transform: scale(0);\
   }\
 }\
-@keyframes duiZoomOutOutAndroid {\
+@keyframes -delite-zoomOutOutAndroid {\
   from {\
     transform: scale(1);\
   }\
@@ -56,7 +56,7 @@ define(function(){ return '\
     transform: scale(0);\
   }\
 }\
-@-webkit-keyframes duiZoomOutIn {\
+@-webkit-keyframes -delite-zoomOutIn {\
   from {\
     -webkit-transform: scale(1);\
   }\
@@ -64,7 +64,7 @@ define(function(){ return '\
     -webkit-transform: scale(1);\
   }\
 }\
-@keyframes duiZoomOutIn {\
+@keyframes -delite-zoomOutIn {\
   from {\
     transform: scale(1);\
   }\

@@ -1,5 +1,5 @@
 define(function(){ return '\
-.duiCoverv {\
+.-delite-coverv {\
   -moz-transition-property: none;\
   -webkit-transition-property: none;\
   transition-property: none;\
@@ -7,32 +7,32 @@ define(function(){ return '\
   -webkit-transition-duration: 0s;\
   transition-duration: 0s;\
 }\
-.duiCoverv.duiTransition {\
+.-delite-coverv.-delite-transition {\
   -webkit-transition-property: -webkit-transform;\
   transition-property: transform;\
   -moz-transition-duration: 0.4s;\
   -webkit-transition-duration: 0.4s;\
   transition-duration: 0.4s;\
 }\
-.duiCoverv.duiOut {\
+.-delite-coverv.-delite-out {\
   z-index: -100;\
   -webkit-transform: translate3d(0px, 0%, -1px) !important;\
   transform: translate3d(0px, 0%, -1px) !important;\
 }\
-.duiCoverv.duiIn {\
+.-delite-coverv.-delite-in {\
   -webkit-transform: translate3d(0px, 100%, 0px) !important;\
   transform: translate3d(0px, 100%, 0px) !important;\
 }\
-.duiCoverv.duiIn.duiReverse {\
+.-delite-coverv.-delite-in.-delite-reverse {\
   -webkit-transform: translate3d(0px, -100%, 0px) !important;\
   transform: translate3d(0px, -100%, 0px) !important;\
 }\
-.duiCoverv.duiOut.duiTransition,\
-.duiCoverv.duiIn.duiTransition {\
+.-delite-coverv.-delite-out.-delite-transition,\
+.-delite-coverv.-delite-in.-delite-transition {\
   -webkit-transform: translate3d(0px, 0%, 0px) !important;\
   transform: translate3d(0px, 0%, 0px) !important;\
 }\
-.dj_android.dj_tablet .duiCoverv.duiTransition {\
+.dj_android.dj_tablet .-delite-coverv.-delite-transition {\
   -moz-transition-duration: 0.6s;\
   -webkit-transition-duration: 0.6s;\
   transition-duration: 0.6s;\

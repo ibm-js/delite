@@ -1,26 +1,26 @@
 define(function(){ return '\
-.duiZoomIn.duiOut {\
+.-delite-zoomIn.-delite-out {\
   z-index: -100;\
   -webkit-animation-duration: 0.5s;\
   animation-duration: 0.5s;\
-  -webkit-animation-name: duiZoomInOut;\
-  animation-name: duiZoomInOut;\
+  -webkit-animation-name: -delite-zoomInOut;\
+  animation-name: -delite-zoomInOut;\
   -webkit-animation-timing-function: ease-out;\
   animation-timing-function: ease-out;\
 }\
-.duiZoomIn.duiIn {\
+.-delite-zoomIn.-delite-in {\
   -webkit-animation-duration: 0.5s;\
   animation-duration: 0.5s;\
-  -webkit-animation-name: duiZoomInIn;\
-  animation-name: duiZoomInIn;\
+  -webkit-animation-name: -delite-zoomInIn;\
+  animation-name: -delite-zoomInIn;\
   -webkit-animation-timing-function: ease-out;\
   animation-timing-function: ease-out;\
 }\
-.dj_android .duiZoomIn.duiIn {\
-  -webkit-animation-name: duiZoomInInAndroid;\
-  animation-name: duiZoomInInAndroid;\
+.dj_android .-delite-zoomIn.-delite-in {\
+  -webkit-animation-name: -delite-zoomInInAndroid;\
+  animation-name: -delite-zoomInInAndroid;\
 }\
-@-webkit-keyframes duiZoomInOut {\
+@-webkit-keyframes -delite-zoomInOut {\
   from {\
     -webkit-transform: scale(1);\
   }\
@@ -28,7 +28,7 @@ define(function(){ return '\
     -webkit-transform: scale(1);\
   }\
 }\
-@keyframes duiZoomInOut {\
+@keyframes -delite-zoomInOut {\
   from {\
     transform: scale(1);\
   }\
@@ -36,7 +36,7 @@ define(function(){ return '\
     transform: scale(1);\
   }\
 }\
-@-webkit-keyframes duiZoomInIn {\
+@-webkit-keyframes -delite-zoomInIn {\
   from {\
     -webkit-transform: scale(0);\
     opacity: 0;\
@@ -46,7 +46,7 @@ define(function(){ return '\
     opacity: 1;\
   }\
 }\
-@keyframes duiZoomInIn {\
+@keyframes -delite-zoomInIn {\
   from {\
     transform: scale(0);\
     opacity: 0;\
@@ -56,7 +56,7 @@ define(function(){ return '\
     opacity: 1;\
   }\
 }\
-@-webkit-keyframes duiZoomInInAndroid {\
+@-webkit-keyframes -delite-zoomInInAndroid {\
   from {\
     -webkit-transform: scale(0);\
   }\
@@ -64,7 +64,7 @@ define(function(){ return '\
     -webkit-transform: scale(1);\
   }\
 }\
-@keyframes duiZoomInInAndroid {\
+@keyframes -delite-zoomInInAndroid {\
   from {\
     transform: scale(0);\
   }\

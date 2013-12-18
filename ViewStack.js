@@ -11,7 +11,8 @@ define(["dcl/dcl",
 		"./themes/load!./themes/{{theme}}/ViewStack",
 		"dui/css!./themes/common/transitions/slide",
 		"dui/css!./themes/common/transitions/reveal",
-		"dui/css!./themes/common/transitions/flip"],
+		"dui/css!./themes/common/transitions/flip",
+		"dui/css!./themes/common/transitions/fade"],
 	function (dcl, has, on, Deferred, lang, domGeometry, domClass, register, Widget, DisplayContainer) {
 		function setVisibility(node, val) {
 			if (node) {
@@ -26,12 +27,12 @@ define(["dcl/dcl",
 		}
 		function setReverse(node) {
 			if (node) {
-				domClass.add(node, "duiReverse");
+				domClass.add(node, "-delite-reverse");
 			}
 		}
 
 		function transitionClass(s) {
-			return "dui" + s.charAt(0).toUpperCase() + s.substring(1);
+			return "-delite-" + s;
 		}
 
 		return register("d-view-stack", [HTMLElement, Widget, DisplayContainer], {
@@ -114,8 +115,8 @@ define(["dcl/dcl",
 					if (dest) {
 						this._setAfterTransitionHandlers(dest, event, deferred);
 						domClass.add(dest, transitionClass(event.transition));
-						domClass.remove(dest, "duiTransition");
-						domClass.add(dest, "duiIn");
+						domClass.remove(dest, "-delite-transition");
+						domClass.add(dest, "-delite-in");
 					}
 					if (event.reverse) {
 						setReverse(origin);
@@ -123,18 +124,18 @@ define(["dcl/dcl",
 					}
 					this.defer(function () {
 						if (dest) {
-							domClass.add(dest, "duiTransition");
+							domClass.add(dest, "-delite-transition");
 						}
 						if (origin) {
-							domClass.add(origin, "duiTransition");
-							domClass.add(origin, "duiOut");
+							domClass.add(origin, "-delite-transition");
+							domClass.add(origin, "-delite-out");
 						}
 						if (event.reverse) {
 							setReverse(origin);
 							setReverse(dest);
 						}
 						if (dest) {
-							domClass.add(dest, "duiIn");
+							domClass.add(dest, "-delite-in");
 						}
 					}, this._timing);
 				} else {
@@ -190,14 +191,14 @@ define(["dcl/dcl",
 				for (var i = 0; i < this._transitionEndHandlers.length; i++) {
 					item = this._transitionEndHandlers[i];
 					if (event.target === item.node) {
-						if (domClass.contains(item.node, "duiOut")) {
+						if (domClass.contains(item.node, "-delite-out")) {
 							setVisibility(item.node, false);
 						}
-						domClass.remove(item.node, "duiIn");
-						domClass.remove(item.node, "duiOut");
-						domClass.remove(item.node, "duiReverse");
+						domClass.remove(item.node, "-delite-in");
+						domClass.remove(item.node, "-delite-out");
+						domClass.remove(item.node, "-delite-reverse");
 						domClass.remove(item.node, transitionClass(item.props.transition));
-						domClass.remove(item.node, "duiTransition");
+						domClass.remove(item.node, "-delite-transition");
 						item.node.removeEventListener("webkitTransitionEnd", item.handle);
 						item.node.removeEventListener("transitionend", item.handle);
 						this._transitionEndHandlers.splice(i, 1);
