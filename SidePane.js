@@ -3,7 +3,6 @@ define([
 	"dojo/_base/lang",
 	"dojo/dom-class",
 	"dojo/_base/window",
-	"dojo/on",
 	"dojo/sniff",
 	"./register",
 	"./Widget",
@@ -11,7 +10,7 @@ define([
 	"./Contained",
 	"./Invalidating",
 	"./themes/load!./themes/{{theme}}/SidePane"],
-	function (pointer, lang, domClass, win, on, has, register, Widget, Container, Contained, Invalidating) {
+	function (pointer, lang, domClass, win, has, register, Widget, Container, Contained, Invalidating) {
 		function prefix(v) {
 			return "-d-side-pane-" + v;
 		}
@@ -287,7 +286,7 @@ define([
 				}
 			},
 
-			_touchPress: function (event) {
+			_pointerDownHandler: function (event) {
 				this._originX = event.pageX;
 				this._originY = event.pageY;
 
@@ -295,14 +294,14 @@ define([
 					(this.position === "end" && !this._visible && this._originX >= win.doc.width - 10)) {
 					this._opening = !this._visible;
 					this._pressHandle.remove();
-					this._moveHandle = on(this, "pointermove", lang.hitch(this, this._touchMove));
-					this._releaseHandle = on(this, "pointerup", lang.hitch(this, this._touchRelease));
+					this._moveHandle = this.on("pointermove", lang.hitch(this, this._pointerMoveHandle));
+					this._releaseHandle = this.on("pointerup", lang.hitch(this, this._pointerUpHandle));
 
 					domClass.add(win.doc.body, "-d-side-pane-no-select");
 				}
 			},
 
-			_touchMove: function (event) {
+			_pointerMoveHandle: function (event) {
 				if (!this._opening && Math.abs(event.pageY - this._originY) > 10) {
 					this._resetInteractions();
 				} else {
@@ -333,7 +332,7 @@ define([
 				}
 			},
 
-			_touchRelease: function () {
+			_pointerUpHandle: function () {
 				this._opening = false;
 				domClass.remove(win.doc.body, "-d-side-pane-no-select");
 				this._resetInteractions();
@@ -351,23 +350,11 @@ define([
 				}
 
 				if (this.swipeClosing) {
-					this._pressHandle = on(this, "pointerdown", lang.hitch(this, this._touchPress));
+					this._pressHandle = this.on("pointerdown", lang.hitch(this, this._pointerDownHandler));
 				}
 
 				this._originX = NaN;
 				this._originY = NaN;
-			},
-
-			destroy: function () {
-				if (this._pressHandle) {
-					this._pressHandle.remove();
-				}
-				if (this._moveHandle) {
-					this._moveHandle.remove();
-				}
-				if (this._releaseHandle) {
-					this._releaseHandle.remove();
-				}
 			}
 		});
 	});
