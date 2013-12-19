@@ -33,7 +33,6 @@ define([
 			assert.isTrue(domClass.contains(node, "d-side-pane"));
 			assert.isTrue(domClass.contains(node, "-d-side-pane-push"));
 			assert.isTrue(domClass.contains(node, "-d-side-pane-start"));
-			assert.isTrue(domClass.contains(node, "-d-side-pane-visible"));
 		},
 		teardown: function () {
 			document.body.removeChild(document.body.children[0]);
