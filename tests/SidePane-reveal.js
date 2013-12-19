@@ -12,6 +12,7 @@ define([
 	registerSuite({
 		name: "SidePane Reveal",
 		setup: function () {
+			html = html.replace("../themes", "../../themes");
 			document.body.innerHTML = html;
 			register.parse(document.body);
 			node = document.getElementById("sp");
