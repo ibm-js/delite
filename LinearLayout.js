@@ -17,11 +17,11 @@ define([
 
 		refreshRendering: function () {
 			if (this.vertical) {
-				domClass.add(this, "duiVLinearLayout");
-				domClass.remove(this, "duiHLinearLayout");
+				domClass.add(this, "-delite-v-linear-layout");
+				domClass.remove(this, "-delite-h-linear-layout");
 			} else {
-				domClass.add(this, "duiHLinearLayout");
-				domClass.remove(this, "duiVLinearLayout");
+				domClass.add(this, "-delite-h-linear-layout");
+				domClass.remove(this, "-delite-v-linear-layout");
 			}
 		},
 

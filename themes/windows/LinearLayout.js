@@ -13,14 +13,14 @@ define(function(){ return '\
   background-size: 27px 27px;\
   background-repeat: no-repeat;\
 }\
-d-linear-layout.duiHLinearLayout {\
+d-linear-layout.-delite-h-linear-layout {\
   display: -webkit-box;\
   display: -moz-box;\
   display: -ms-flexbox;\
   display: -webkit-flex;\
   display: flex;\
 }\
-d-linear-layout.duiVLinearLayout {\
+d-linear-layout.-delite-v-linear-layout {\
   display: -webkit-box;\
   display: -moz-box;\
   display: -ms-flexbox;\
