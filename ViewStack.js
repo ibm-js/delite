@@ -43,11 +43,11 @@ define(["dcl/dcl",
 			//		ViewStack displays its first child node by default.
 			//		The methods 'show' is used to change the visible child.
 			//
-			//		Styling constrains: the following CSS attributes must not be changed.
+			//		Styling
+			//		The following CSS attributes must not be changed.
 			// 			- ViewStack node:  position, box-sizing, overflow-x
 			// 			- ViewStack children:  position, box-sizing, width, height
-			//		See ViewStack.css for default values.
-
+			//
 			// example:
 			//	|	<d-view-stack id="vs">
 			//	|		<div id="childA">...</div>
