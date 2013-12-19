@@ -1,9 +1,9 @@
 define(function(){ return '\
 /* RTL CSS for blackberry theme for ExampleWidget. */\
-.duiExampleWidget.duiExampleWidgetRtl {\
+.d-example-widget.d-rtl {\
   text-align: right;\
 }\
-.duiExampleWidget.duiExampleWidgetRtl:before {\
+.d-example-widget.d-rtl:before {\
   content: "(RTL variant) ";\
 }\
 '; } );

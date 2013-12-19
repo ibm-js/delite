@@ -43,17 +43,17 @@ define([
 		//		Specifies if the slider should change its default: ascending <--> descending.
 		flip: false,
 
-		// orientation: [const] String
+		// vertical: [const] Boolean
 		//		The slider direction for ascending values.
-		//		- "H": horizontal (dependent on default left-to-right or right-to-left direction)
-		//		- "V": vertical
-		orientation: "H",
+		//		- false: horizontal (dependent on default left-to-right or right-to-left direction)
+		//		- true: vertical
+		vertical: false,
 
 		preCreate: function () {
 			this._orientationAttrs = {
-				"H": { start: "x", size: "w", pageStart: "pageX", clientStart: "clientX",
+				false: { start: "x", size: "w", pageStart: "pageX", clientStart: "clientX",
 						progressBarStart: "left", progressBarSize: "width" },
-				"V": { start: "y", size: "h", pageStart: "pageY", clientStart: "clientY", progressBarStart: "top",
+				true: { start: "y", size: "h", pageStart: "pageY", clientStart: "clientY", progressBarStart: "top",
 						progressBarSize: "height" }
 			};
 
@@ -64,7 +64,7 @@ define([
 				"name",
 				"flip",
 				"step",
-				"orientation"
+				"vertical"
 			);
 		},
 
@@ -97,15 +97,12 @@ define([
 				}).join(" ");
 			};
 
-			if (props.orientation || props.flip) {
+			if (props.vertical || props.flip) {
 				// add V or H suffix to baseClass for styling purposes
-				var	horizontal = this.orientation !== "V",
-					ltr = horizontal ? this.isLeftToRight() : false,
-					flip = !!this.flip;
 				// _reversed is complicated since you can have flipped right-to-left and vertical is upside down by default
-				this._reversed = !((horizontal && ((ltr && !flip) || (!ltr && flip))) || (!horizontal && flip));
-				this._attrs = this._orientationAttrs[this.orientation];
-				var baseClass = toCSS(this.className, this.orientation);
+				this._reversed = !((!this.vertical && (this.isLeftToRight() !== this.flip)) || (this.vertical && this.flip));
+				this._attrs = this._orientationAttrs[this.vertical];
+				var baseClass = toCSS(this.className, this.vertical ? "V" : "H");
 				domClass.add(this, baseClass);
 				baseClass = this.baseClass + " " + baseClass;
 				domClass.add(this, toCSS(baseClass, this._reversed ? "HtL" : "LtH"));
@@ -118,12 +115,14 @@ define([
 				// pass widget attributes to children
 				var self = this;
 				this.getChildren().forEach(function (obj) {
-					obj.orientation = self.orientation;
+					obj.vertical = self.vertical;
 					obj.reverse = self._reversed;
 				});
 			}
 			if (props.name) {
-				this.valueNode.name = this.name;
+				var name = this.name;
+				this.removeAttribute("name");
+				this.valueNode.setAttribute("name", name); // won't restore after a browser back operation since name changed nodes
 			}
 			if (props.max) {
 				this.focusNode.setAttribute("aria-valuemax", this.max);
@@ -265,8 +264,7 @@ define([
 				keyDown = lang.hitch(this, function (e) {
 					function handleKeys() {
 						var	step = this.step,
-							multiplier = 1,
-							horizontal = this.orientation !== "V";
+							multiplier = 1;
 						switch (e.keyCode) {
 							case keys.HOME:
 								values[handleIdx] = [ this.min, values[0] ][handleIdx];
@@ -279,14 +277,14 @@ define([
 								/* falls through */
 							case keys.LEFT_ARROW:
 								values[handleIdx] = parseFloat(values[handleIdx]) +
-									multiplier * ((this.flip && horizontal) ? step : -step);
+									multiplier * ((this.flip && !this.vertical) ? step : -step);
 								break;
 							case keys.DOWN_ARROW:
 								multiplier = -1;
 								/* falls through */
 							case keys.UP_ARROW:
 								values[handleIdx] = parseFloat(values[handleIdx]) +
-									multiplier * ((!this.flip || horizontal) ? step : -step);
+									multiplier * ((!this.flip || !this.vertical) ? step : -step);
 								break;
 							default:
 								return;
@@ -318,20 +316,26 @@ define([
 
 				point, pixelValue, value,
 				node = this;
-			if (!isNaN(parseFloat(this.valueNode.value))) { // browser back button or value coded on INPUT
-				this.value = this.valueNode.value;
+			if (!isNaN(parseFloat(this.valueNode.value))) { // INPUT value
+				this.value = this.valueNode.value; // set this here in case refreshProperties runs before startup (Chrome)
 			}
 			this.own(
 				on(this, touch.press, beginDrag),
 				on(this, "keydown", keyDown), // for desktop a11y
 				on(this.focusNode, "keyup", keyUp) // fire onChange on desktop
 			);
-			this.invalidateProperty("orientation"); // apply appropriate CSS class names in case the default is used
+			this.invalidateProperty("vertical"); // apply appropriate CSS class names in case the default is used
 			this.invalidateProperty("tabIndex"); // apply default tabIndex in case the default is used
 		},
 
 		startup: function () {
-			this.valueNode.setAttribute("value", this.value); // set the reset value once
+			var valueNodeValue = this.valueNode.value; // setting the DOM attribute can change the element value
+			if (this.valueNode.getAttribute("value") === null) {
+				this.valueNode.setAttribute("value", this.value); // set the reset value
+			}
+			if (!isNaN(parseFloat(valueNodeValue))) { // browser back button or value coded on INPUT
+				this.value = valueNodeValue; // the valueNode value has precedence over the widget markup value
+			}
 			// if the form is reset, then notify the widget to reposition the handles
 			if (this.valueNode.form) {
 				this.own(on(this.valueNode.form, "reset", lang.hitch(this, "defer",

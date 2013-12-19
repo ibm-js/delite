@@ -5,10 +5,15 @@ define([
 	"./Widget-attr",
 	"./handlebars",
 	"./Widget-lifecycle",
-	"./Widget-placeAt", /* breaks dui/themes/load TODO: raise issue */
+	"./Widget-placeAt",
 	"./Widget-utility",
-	"./HasDropDown", /* breaks dui/themes/load */
+	"./HasDropDown",
 	"./CssState",
 	"./Container",
-	"./a11y"
+	"./a11y",
+	"./Widget-on",
+	"./Stateful",
+	"./Selection",
+	"./StoreMap",
+	"./Store"
 ]);
