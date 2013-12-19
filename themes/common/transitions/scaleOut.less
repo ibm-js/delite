@@ -1,21 +1,21 @@
 @import "../css3.less";
-.duiScaleOut.duiOut {
+.-delite-scaleOut.-delite-out {
 	.animation-duration(.5s);
-	.animation-name(duiScaleOutOut);
+	.animation-name(-delite-scaleOutOut);
 	.animation-timing-function(ease-in);
 }
-.dj_android .duiScaleOut.duiOut {
-	.animation-name(duiScaleOutOutAndroid);
+.dj_android .-delite-scaleOut.-delite-out {
+	.animation-name(-delite-scaleOutOutAndroid);
 }
-.duiScaleOut.duiIn {
+.-delite-scaleOut.-delite-in {
 	z-index: -100;
 	.animation-duration(.5s);
-	.animation-name(duiScaleOutIn);
+	.animation-name(-delite-scaleOutIn);
 	.animation-timing-function(ease-in);
 }
-@-webkit-keyframes duiScaleOutOut { .keyframes-transform-opacity-from-to-webkit(scale(1.0), 1, scale(0.0), 0); }
-@keyframes         duiScaleOutOut { .keyframes-transform-opacity-from-to       (scale(1.0), 1, scale(0.0), 0); }
-@-webkit-keyframes duiScaleOutOutAndroid { .keyframes-transform-from-to-webkit(scale(1.0), scale(0.0)); }
-@keyframes         duiScaleOutOutAndroid { .keyframes-transform-from-to       (scale(1.0), scale(0.0)); }
-@-webkit-keyframes duiScaleOutIn { .keyframes-transform-from-to-webkit(scale(1.0), scale(1.0)); }
-@keyframes         duiScaleOutIn { .keyframes-transform-from-to       (scale(1.0), scale(1.0)); }
+@-webkit-keyframes -delite-scaleOutOut { .keyframes-transform-opacity-from-to-webkit(scale(1.0), 1, scale(0.0), 0); }
+@keyframes         -delite-scaleOutOut { .keyframes-transform-opacity-from-to       (scale(1.0), 1, scale(0.0), 0); }
+@-webkit-keyframes -delite-scaleOutOutAndroid { .keyframes-transform-from-to-webkit(scale(1.0), scale(0.0)); }
+@keyframes         -delite-scaleOutOutAndroid { .keyframes-transform-from-to       (scale(1.0), scale(0.0)); }
+@-webkit-keyframes -delite-scaleOutIn { .keyframes-transform-from-to-webkit(scale(1.0), scale(1.0)); }
+@keyframes         -delite-scaleOutIn { .keyframes-transform-from-to       (scale(1.0), scale(1.0)); }

@@ -1,0 +1,98 @@
+<!doctype html>
+<html>
+<head>
+	<meta name="viewport"
+		  content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no"/>
+	<meta name="apple-mobile-web-app-capable" content="yes"/>
+	<title>View Stack</title>
+
+	<!-- For testing purposes.  Real applications should load the AMD loader directly -->
+	<script type="text/javascript" src="../tests/boilerplate.js"></script>
+
+	<script type="text/javascript">
+		require([
+			"dui/ViewStack",
+			"dui/Button",
+			"dui/register",
+			"dojo/domReady!"
+		], function(ViewStack, Button, register){
+			register.parse();
+
+			createWidget = function (){
+				var p = document.createElement("div");
+				p.innerHTML = "EEE";
+				p.style.backgroundColor = "orangered";
+				vs.addChild(p);
+				vs.show(p);
+			};
+		});
+
+
+
+	</script>
+
+</head>
+<body style="margin:2em;">
+
+<button is="d-button" onclick="vs.show(ccc, {transition: 'slide', direction: 'start'})">Show CCC</button>
+<button is="d-button" onclick="vs.removeChild(bbb); vs.show(aaa)">Remove BBB</button>
+<button is="d-button" onclick="vs.addChild(aaa2)">Add AAA2</button>
+<button is="d-button" onclick="createWidget()">Create EEE</button>
+<button is="d-button" onclick="vs.showPrevious({direction: 'start'})">Previous</button>
+<button is="d-button" onclick="vs.showNext()">Next</button>
+<button is="d-button" onclick="vs.transitionTiming = {mozilla: 1200}">Change Timing</button>
+<br>
+<d-view-stack id="vs" style="display:inline-block; width:50%; height: 300px; border: 2px solid gold">
+	<div style="background-color: honeydew;" id="aaa">
+		AAA
+		<button is="d-button" onclick="vs.show(bbb,{reverse:true})">BBB left</button>
+		<button is="d-button" onclick="vs.show(ccc,{reverse:true})">CCC left</button>
+		<button is="d-button" onclick="vs.show(ddd,{reverse:true})">DDD left</button>
+		<button is="d-button" onclick="vs.show(bbb,{reverse:false})">BBB right</button>
+		<button is="d-button" onclick="vs.show(ccc,{reverse:false})">CCC right</button>
+		<button is="d-button" onclick="vs.show(ddd,{reverse:false})">DDD right</button>
+	</div>
+	<div style="background-color: whitesmoke;" id="bbb">
+		BBB
+		<button is="d-button" onclick="vs.show(aaa,{reverse:true})">AAA left</button>
+		<button is="d-button" onclick="vs.show(ccc,{reverse:true})">CCC left</button>
+		<button is="d-button" onclick="vs.show(ddd,{reverse:true})">DDD left</button>
+		<button is="d-button" onclick="vs.show(aaa,{reverse:false})">AAA right</button>
+		<button is="d-button" onclick="vs.show(ccc,{reverse:false})">CCC right</button>
+		<button is="d-button" onclick="vs.show(ddd,{reverse:false})">DDD right</button>
+	</div>
+	<div style="background-color: powderblue;" id=ccc>
+		CCC
+		<button is="d-button" onclick="vs.show(aaa,{reverse:true})">AAA left</button>
+		<button is="d-button" onclick="vs.show(bbb,{reverse:true})">BBB left</button>
+		<button is="d-button" onclick="vs.show(ddd,{reverse:true})">DDD left</button>
+		<button is="d-button" onclick="vs.show(aaa,{reverse:false})">AAA right</button>
+		<button is="d-button" onclick="vs.show(bbb,{reverse:false})">BBB right</button>
+		<button is="d-button" onclick="vs.show(ddd,{reverse:false})">DDD right</button>
+	</div>
+	<div style="background-color: oldlace;" id="ddd">
+		DDD
+		<button is="d-button" onclick="vs.show(aaa,{reverse:true})">AAA left</button>
+		<button is="d-button" onclick="vs.show(bbb,{reverse:true})">BBB left</button>
+		<button is="d-button" onclick="vs.show(ccc,{reverse:true})">CCC left</button>
+		<button is="d-button" onclick="vs.show(aaa,{reverse:false})">AAA right</button>
+		<button is="d-button" onclick="vs.show(bbb,{reverse:false})">BBB right</button>
+		<button is="d-button" onclick="vs.show(ccc,{reverse:false})">CCC right</button>
+	</div>
+</d-view-stack>
+
+
+<div style="display: none">
+	<div style="background-color: darkolivegreen;" id="aaa2">
+		AAA 2
+		<button is="d-button" onclick="vs.show('aaa',{reverse:true})">AAA left</button>
+		<button is="d-button" onclick="vs.show('ccc',{reverse:true})">CCC left</button>
+		<button is="d-button" onclick="vs.show('ddd',{reverse:true})">DDD left</button>
+		<button is="d-button" onclick="vs.show('aaa',{reverse:false})">AAA right</button>
+		<button is="d-button" onclick="vs.show('ccc',{reverse:false})">CCC right</button>
+		<button is="d-button" onclick="vs.show('ddd',{reverse:false})">DDD right</button>
+	</div>
+</div>
+
+</body>
+</html>
