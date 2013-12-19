@@ -21,7 +21,7 @@ define([
 
 		// baseClass: String
 		//		The name of the CSS class of this widget.
-		baseClass: "duiOverlay duiOverlayHidden",
+		baseClass: "-delite-overlay -delite-overlayHidden",
 
 		buildRendering: function(){
 			this.inherited(arguments);
@@ -63,14 +63,14 @@ define([
 				}
 			}
 			var _domNode = this.domNode;
-			domClass.replace(_domNode, ["duiCoverv", "duiIn"], ["duiOverlayHidden", "duiRevealv", "duiOut", "duiReverse", "duiTransition"]);
+			domClass.replace(_domNode, ["-delite-coverv", "-delite-in"], ["-delite-overlayHidden", "-delite-revealv", "-delite-out", "-delite-reverse", "-delite-transition"]);
 			this.defer(function(){
 				var handler = this.own(on(_domNode, css3.name("transitionEnd"), lang.hitch(this, function(){
 					handler.remove();
-					domClass.remove(_domNode, ["duiCoverv", "duiIn", "duiTransition"]);
+					domClass.remove(_domNode, ["-delite-coverv", "-delite-in", "-delite-transition"]);
 					this._reposition();
 				})))[0];
-				domClass.add(_domNode, "duiTransition");
+				domClass.add(_domNode, "-delite-transition");
 			}, 100);
 			var skipReposition = false;
 
@@ -99,16 +99,16 @@ define([
 				this._repositionTimer = null;
 			}
 			if(has("css3-animations")){
-				domClass.replace(_domNode, ["duiRevealv", "duiOut", "duiReverse"], ["duiCoverv", "duiIn", "duiOverlayHidden", "duiTransition"]);
+				domClass.replace(_domNode, ["-delite-revealv", "-delite-out", "-delite-reverse"], ["-delite-coverv", "-delite-in", "duiOverlayHidden", "-delite-transition"]);
 				this.defer(function(){
 					var handler = this.own(on(_domNode, css3.name("transitionEnd"), function(){
 						handler.remove();
-						domClass.replace(_domNode, ["duiOverlayHidden"], ["duiRevealv", "duiOut", "duiReverse", "duiTransition"]);
+						domClass.replace(_domNode, ["duiOverlayHidden"], ["-delite-revealv", "-delite-out", "-delite-reverse", "-delite-transition"]);
 					}))[0];
-					domClass.add(_domNode, "duiTransition");
+					domClass.add(_domNode, "-delite-transition");
 				}, 100);
 			}else{
-				domClass.replace(_domNode, ["duiOverlayHidden"], ["duiCoverv", "duiIn", "duiRevealv", "duiOut", "duiReverse"]);
+				domClass.replace(_domNode, ["duiOverlayHidden"], ["-delite-coverv", "-delite-in", "-delite-revealv", "-delite-out", "-delite-reverse"]);
 			}
 		},
 

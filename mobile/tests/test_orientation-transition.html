@@ -34,14 +34,14 @@
 					}
 					if(dim.h > dim.w && common.currentView != portrait){
 						n = landscape.domNode;
-						t = (domClass.contains(n, "duiIn") || domClass.contains(n, "duiOut")) ? 2000 : 0;
+						t = (domClass.contains(n, "-delite-in") || domClass.contains(n, "-delite-out")) ? 2000 : 0;
 						timer = setTimeout(function(){
 							landscape.performTransition("portrait", 1, "fade");
 							timer = null;
 						}, t);
 					}else if (dim.h <= dim.w && common.currentView != landscape){
 						n = portrait.domNode;
-						t = (domClass.contains(n, "duiIn") || domClass.contains(n, "duiOut")) ? 2000 : 0;
+						t = (domClass.contains(n, "-delite-in") || domClass.contains(n, "-delite-out")) ? 2000 : 0;
 						timer = setTimeout(function(){
 							portrait.performTransition("landscape", 1, "fade");
 							timer = null;

@@ -75,14 +75,14 @@ define([
 			var nextView = this.nextView(this.domNode);
 			if(nextView){
 				nextView.stopAnimation();
-				domClass.add(nextView.domNode, "duiIn");
+				domClass.add(nextView.domNode, "-delite-in");
 				// Temporarily add padding to align with the fromNode while transition
 				nextView.containerNode.style.paddingTop = fromTop + "px";
 			}
 			var prevView = this.previousView(this.domNode);
 			if(prevView){
 				prevView.stopAnimation();
-				domClass.add(prevView.domNode, "duiIn");
+				domClass.add(prevView.domNode, "-delite-in");
 				// Temporarily add padding to align with the fromNode while transition
 				prevView.containerNode.style.paddingTop = fromTop + "px";
 			}
@@ -197,7 +197,7 @@ define([
 			//		When this function is called from scrollable.js, there are
 			//		two visible views, one is the current view, the other is the
 			//		next view. This function returns the current view, not the
-			//		next view, which has the duiIn class.
+			//		next view, which has the -delite-in class.
 			if(!domClass.contains(node, "duiSwapView")){
 				return this.inherited(arguments);
 			}
@@ -206,7 +206,7 @@ define([
 			for(var i = 0; i < nodes.length; i++){
 				var n = nodes[i];
 				if(n.nodeType === 1 && domClass.contains(n, "duiSwapView")
-				    && !domClass.contains(n, "duiIn") && n.style.display !== "none"){
+				    && !domClass.contains(n, "-delite-in") && n.style.display !== "none"){
 					return n;
 				}
 			}
@@ -279,7 +279,7 @@ define([
 				// may appear unexpectedly.
 				this.domNode.parentNode.childNodes.forEach(function(c){
 					if(this.isSwapView(c)){
-						domClass.remove(c, "duiIn");
+						domClass.remove(c, "-delite-in");
 						if(!c._isShowing){
 							c.style.display = "none";
 							c.style[css3.name("transform")] = "";

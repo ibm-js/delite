@@ -1,5 +1,5 @@
 define(function(){ return '\
-.duiFlip {\
+.-delite-flip {\
   -moz-transition-property: none;\
   -webkit-transition-property: none;\
   transition-property: none;\
@@ -7,7 +7,7 @@ define(function(){ return '\
   -webkit-transition-duration: 0s;\
   transition-duration: 0s;\
 }\
-.duiFlip.duiTransition {\
+.-delite-flip.-delite-transition {\
   -moz-transition-property: all;\
   -webkit-transition-property: all;\
   transition-property: all;\
@@ -18,34 +18,34 @@ define(function(){ return '\
   -webkit-transition-timing-function: linear;\
   transition-timing-function: linear;\
 }\
-.duiFlip.duiOut {\
+.-delite-flip.-delite-out {\
   opacity: 1;\
   -webkit-transform: scale(1, 1) skew(0, 0) !important;\
   transform: scale(1, 1) skew(0, 0) !important;\
 }\
-.duiFlip.duiOut.duiTransition {\
+.-delite-flip.-delite-out.-delite-transition {\
   opacity: 0;\
   -webkit-transform: scale(0, 0.8) skew(0, 30deg) !important;\
   transform: scale(0, 0.8) skew(0, 30deg) !important;\
 }\
-.duiFlip.duiIn {\
+.-delite-flip.-delite-in {\
   opacity: 0;\
   -webkit-transform: scale(0, 0.8) skew(0, -30deg) !important;\
   transform: scale(0, 0.8) skew(0, -30deg) !important;\
 }\
-.duiFlip.duiIn.duiTransition {\
+.-delite-flip.-delite-in.-delite-transition {\
   -webkit-transition-delay: 0.2s;\
   transition-delay: 0.2s;\
   opacity: 1;\
   -webkit-transform: scale(1, 1) skew(0, 0) !important;\
   transform: scale(1, 1) skew(0, 0) !important;\
 }\
-.dj_android.dj_tablet .duiFlip.duiTransition {\
+.dj_android.dj_tablet .-delite-flip.-delite-transition {\
   -moz-transition-duration: 0.4s;\
   -webkit-transition-duration: 0.4s;\
   transition-duration: 0.4s;\
 }\
-.dj_android.dj_tablet .duiFlip.duiIn.duiTransition {\
+.dj_android.dj_tablet .-delite-flip.-delite-in.-delite-transition {\
   -webkit-transition-delay: 0.4s;\
   transition-delay: 0.4s;\
 }\

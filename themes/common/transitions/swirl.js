@@ -1,26 +1,26 @@
 define(function(){ return '\
-.duiSwirl.duiOut {\
+.-delite-swirl.-delite-out {\
   -webkit-animation-duration: 0.5s;\
   animation-duration: 0.5s;\
-  -webkit-animation-name: duiSwirlOut;\
-  animation-name: duiSwirlOut;\
+  -webkit-animation-name: -delite-swirlOut;\
+  animation-name: -delite-swirlOut;\
   -webkit-animation-timing-function: ease-in;\
   animation-timing-function: ease-in;\
 }\
-.duiSwirl.duiIn {\
+.-delite-swirl.-delite-in {\
   z-index: -100;\
   -webkit-animation-duration: 0.5s;\
   animation-duration: 0.5s;\
-  -webkit-animation-name: duiSwirlIn;\
-  animation-name: duiSwirlIn;\
+  -webkit-animation-name: -delite-swirlIn;\
+  animation-name: -delite-swirlIn;\
   -webkit-animation-timing-function: ease-in;\
   animation-timing-function: ease-in;\
 }\
-.duiSwirl.duiOut.duiReverse {\
-  -webkit-animation-name: duiSwirlOutReverse;\
-  animation-name: duiSwirlOutReverse;\
+.-delite-swirl.-delite-out.-delite-reverse {\
+  -webkit-animation-name: -delite-swirlOutReverse;\
+  animation-name: -delite-swirlOutReverse;\
 }\
-@-webkit-keyframes duiSwirlOut {\
+@-webkit-keyframes -delite-swirlOut {\
   from {\
     -webkit-transform: rotate(0deg) scale(1);\
   }\
@@ -28,7 +28,7 @@ define(function(){ return '\
     -webkit-transform: rotate(-360deg) scale(0);\
   }\
 }\
-@keyframes duiSwirlOut {\
+@keyframes -delite-swirlOut {\
   from {\
     transform: rotate(0deg) scale(1);\
   }\
@@ -36,7 +36,7 @@ define(function(){ return '\
     transform: rotate(-360deg) scale(0);\
   }\
 }\
-@-webkit-keyframes duiSwirlOutReverse {\
+@-webkit-keyframes -delite-swirlOutReverse {\
   from {\
     -webkit-transform: rotate(0deg) scale(1);\
   }\
@@ -44,7 +44,7 @@ define(function(){ return '\
     -webkit-transform: rotate(360deg) scale(0);\
   }\
 }\
-@keyframes duiSwirlOutReverse {\
+@keyframes -delite-swirlOutReverse {\
   from {\
     transform: rotate(0deg) scale(1);\
   }\
@@ -52,7 +52,7 @@ define(function(){ return '\
     transform: rotate(360deg) scale(0);\
   }\
 }\
-@-webkit-keyframes duiSwirlIn {\
+@-webkit-keyframes -delite-swirlIn {\
   from {\
     -webkit-transform: scale(1);\
   }\
@@ -60,7 +60,7 @@ define(function(){ return '\
     -webkit-transform: scale(1);\
   }\
 }\
-@keyframes duiSwirlIn {\
+@keyframes -delite-swirlIn {\
   from {\
     transform: scale(1);\
   }\

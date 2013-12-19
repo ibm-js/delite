@@ -1,23 +1,23 @@
 define(function(){ return '\
-.duiCube {\
+.-delite-cube {\
   -webkit-animation-duration: 0.8s;\
   animation-duration: 0.8s;\
   -webkit-animation-timing-function: linear;\
   animation-timing-function: linear;\
 }\
-.duiCube.duiOut {\
-  -webkit-animation-name: duiCubeOut;\
-  animation-name: duiCubeOut;\
+.-delite-cube.-delite-out {\
+  -webkit-animation-name: -delite-cube-out;\
+  animation-name: -delite-cube-out;\
   -webkit-transform-origin: 0% 50% !important;\
   transform-origin: 0% 50% !important;\
 }\
-.duiCube.duiIn {\
-  -webkit-animation-name: duiCubeIn;\
-  animation-name: duiCubeIn;\
+.-delite-cube.-delite-in {\
+  -webkit-animation-name: -delite-cube-in;\
+  animation-name: -delite-cube-in;\
   -webkit-transform-origin: 100% 50% !important;\
   transform-origin: 100% 50% !important;\
 }\
-@-webkit-keyframes duiCubeOut {\
+@-webkit-keyframes -delite-cube-out {\
   0% {\
     -webkit-transform: scale(1, 1) skew(0deg, 0deg);\
   }\
@@ -28,7 +28,7 @@ define(function(){ return '\
     -webkit-transform: scale(0, 1) skew(0deg, 0deg);\
   }\
 }\
-@keyframes duiCubeOut {\
+@keyframes -delite-cube-out {\
   0% {\
     transform: scale(1, 1) skew(0deg, 0deg);\
   }\
@@ -39,7 +39,7 @@ define(function(){ return '\
     transform: scale(0, 1) skew(0deg, 0deg);\
   }\
 }\
-@-webkit-keyframes duiCubeIn {\
+@-webkit-keyframes -delite-cube-in {\
   0% {\
     -webkit-transform: scale(0, 1) skew(0deg, 0deg);\
   }\
@@ -50,7 +50,7 @@ define(function(){ return '\
     -webkit-transform: scale(1, 1) skew(0deg, 0deg);\
   }\
 }\
-@keyframes duiCubeIn {\
+@keyframes -delite-cube-in {\
   0% {\
     transform: scale(0, 1) skew(0deg, 0deg);\
   }\
@@ -61,19 +61,19 @@ define(function(){ return '\
     transform: scale(1, 1) skew(0deg, 0deg);\
   }\
 }\
-.duiCube.duiOut.duiReverse {\
-  -webkit-animation-name: duiCubeOutReverse;\
-  animation-name: duiCubeOutReverse;\
+.-delite-cube.-delite-out.-delite-reverse {\
+  -webkit-animation-name: -delite-cube-out-reverse;\
+  animation-name: -delite-cube-out-reverse;\
   -webkit-transform-origin: 100% 50% !important;\
   transform-origin: 100% 50% !important;\
 }\
-.duiCube.duiIn.duiReverse {\
-  -webkit-animation-name: duiCubeInReverse;\
-  animation-name: duiCubeInReverse;\
+.-delite-cube.-delite-in.-delite-reverse {\
+  -webkit-animation-name: -delite-cube-in-reverse;\
+  animation-name: -delite-cube-in-reverse;\
   -webkit-transform-origin: 0% 50% !important;\
   transform-origin: 0% 50% !important;\
 }\
-@-webkit-keyframes duiCubeOutReverse {\
+@-webkit-keyframes -delite-cube-out-reverse {\
   0% {\
     -webkit-transform: scale(1, 1) skew(0deg, 0deg);\
   }\
@@ -84,7 +84,7 @@ define(function(){ return '\
     -webkit-transform: scale(0, 1) skew(0deg, 0deg);\
   }\
 }\
-@keyframes duiCubeOutReverse {\
+@keyframes -delite-cube-out-reverse {\
   0% {\
     transform: scale(1, 1) skew(0deg, 0deg);\
   }\
@@ -95,7 +95,7 @@ define(function(){ return '\
     transform: scale(0, 1) skew(0deg, 0deg);\
   }\
 }\
-@-webkit-keyframes duiCubeInReverse {\
+@-webkit-keyframes -delite-cube-in-reverse {\
   0% {\
     -webkit-transform: scale(0, 1) skew(0deg, 0deg);\
   }\
@@ -106,7 +106,7 @@ define(function(){ return '\
     -webkit-transform: scale(1, 1) skew(0deg, 0deg);\
   }\
 }\
-@keyframes duiCubeInReverse {\
+@keyframes -delite-cube-in-reverse {\
   0% {\
     transform: scale(0, 1) skew(0deg, 0deg);\
   }\
@@ -117,22 +117,22 @@ define(function(){ return '\
     transform: scale(1, 1) skew(0deg, 0deg);\
   }\
 }\
-.dj_ios .duiCube {\
+.dj_ios .-delite-cube {\
   -webkit-transform-style: preserve-3d !important;\
 }\
-.dj_ios .duiCube.duiOut {\
-  -webkit-animation-name: duiCubeOut_iphone;\
-  animation-name: duiCubeOut_iphone;\
+.dj_ios .-delite-cube.-delite-out {\
+  -webkit-animation-name: -delite-cube-out_iphone;\
+  animation-name: -delite-cube-out_iphone;\
   -webkit-transform-origin: 50% 50% !important;\
   transform-origin: 50% 50% !important;\
 }\
-.dj_ios .duiCube.duiIn {\
-  -webkit-animation-name: duiCubeIn_iphone;\
-  animation-name: duiCubeIn_iphone;\
+.dj_ios .-delite-cube.-delite-in {\
+  -webkit-animation-name: -delite-cube-in_iphone;\
+  animation-name: -delite-cube-in_iphone;\
   -webkit-transform-origin: 50% 50% !important;\
   transform-origin: 50% 50% !important;\
 }\
-@-webkit-keyframes duiCubeOut_iphone {\
+@-webkit-keyframes -delite-cube-out_iphone {\
   from {\
     -webkit-transform: scale3d(0.835, 0.835, 0.835) rotateY(0deg) translateZ(160px);\
   }\
@@ -140,7 +140,7 @@ define(function(){ return '\
     -webkit-transform: scale3d(0.835, 0.835, 0.835) rotateY(-90deg) translateZ(160px);\
   }\
 }\
-@keyframes duiCubeOut_iphone {\
+@keyframes -delite-cube-out_iphone {\
   from {\
     transform: scale3d(0.835, 0.835, 0.835) rotateY(0deg) translateZ(160px);\
   }\
@@ -148,7 +148,7 @@ define(function(){ return '\
     transform: scale3d(0.835, 0.835, 0.835) rotateY(-90deg) translateZ(160px);\
   }\
 }\
-@-webkit-keyframes duiCubeIn_iphone {\
+@-webkit-keyframes -delite-cube-in_iphone {\
   from {\
     -webkit-transform: scale3d(0.835, 0.835, 0.835) rotateY(90deg) translateZ(160px);\
   }\
@@ -156,7 +156,7 @@ define(function(){ return '\
     -webkit-transform: scale3d(0.835, 0.835, 0.835) rotateY(0deg) translateZ(160px);\
   }\
 }\
-@keyframes duiCubeIn_iphone {\
+@keyframes -delite-cube-in_iphone {\
   from {\
     transform: scale3d(0.835, 0.835, 0.835) rotateY(90deg) translateZ(160px);\
   }\
@@ -164,19 +164,19 @@ define(function(){ return '\
     transform: scale3d(0.835, 0.835, 0.835) rotateY(0deg) translateZ(160px);\
   }\
 }\
-.dj_ios.dj_landscape .duiCube.duiOut {\
-  -webkit-animation-name: duiCubeOut_iphone_l;\
-  animation-name: duiCubeOut_iphone_l;\
+.dj_ios.dj_landscape .-delite-cube.-delite-out {\
+  -webkit-animation-name: -delite-cube-out_iphone_l;\
+  animation-name: -delite-cube-out_iphone_l;\
   -webkit-transform-origin: 50% 50% !important;\
   transform-origin: 50% 50% !important;\
 }\
-.dj_ios.dj_landscape .duiCube.duiIn {\
-  -webkit-animation-name: duiCubeIn_iphone_l;\
-  animation-name: duiCubeIn_iphone_l;\
+.dj_ios.dj_landscape .-delite-cube.-delite-in {\
+  -webkit-animation-name: -delite-cube-in_iphone_l;\
+  animation-name: -delite-cube-in_iphone_l;\
   -webkit-transform-origin: 50% 50% !important;\
   transform-origin: 50% 50% !important;\
 }\
-@-webkit-keyframes duiCubeOut_iphone_l {\
+@-webkit-keyframes -delite-cube-out_iphone_l {\
   from {\
     -webkit-transform: scale3d(0.77, 0.77, 0.77) rotateY(0deg) translateZ(240px);\
   }\
@@ -184,7 +184,7 @@ define(function(){ return '\
     -webkit-transform: scale3d(0.77, 0.77, 0.77) rotateY(-90deg) translateZ(240px);\
   }\
 }\
-@keyframes duiCubeOut_iphone_l {\
+@keyframes -delite-cube-out_iphone_l {\
   from {\
     transform: scale3d(0.77, 0.77, 0.77) rotateY(0deg) translateZ(240px);\
   }\
@@ -192,7 +192,7 @@ define(function(){ return '\
     transform: scale3d(0.77, 0.77, 0.77) rotateY(-90deg) translateZ(240px);\
   }\
 }\
-@-webkit-keyframes duiCubeIn_iphone_l {\
+@-webkit-keyframes -delite-cube-in_iphone_l {\
   from {\
     -webkit-transform: scale3d(0.77, 0.77, 0.77) rotateY(90deg) translateZ(240px);\
   }\
@@ -200,7 +200,7 @@ define(function(){ return '\
     -webkit-transform: scale3d(0.77, 0.77, 0.77) rotateY(0deg) translateZ(240px);\
   }\
 }\
-@keyframes duiCubeIn_iphone_l {\
+@keyframes -delite-cube-in_iphone_l {\
   from {\
     transform: scale3d(0.77, 0.77, 0.77) rotateY(90deg) translateZ(240px);\
   }\
@@ -208,19 +208,19 @@ define(function(){ return '\
     transform: scale3d(0.77, 0.77, 0.77) rotateY(0deg) translateZ(240px);\
   }\
 }\
-.dj_ios .duiCube.duiOut.duiReverse {\
-  -webkit-animation-name: duiCubeOutReverse_iphone;\
-  animation-name: duiCubeOutReverse_iphone;\
+.dj_ios .-delite-cube.-delite-out.-delite-reverse {\
+  -webkit-animation-name: -delite-cube-out-reverse_iphone;\
+  animation-name: -delite-cube-out-reverse_iphone;\
   -webkit-transform-origin: 50% 50% !important;\
   transform-origin: 50% 50% !important;\
 }\
-.dj_ios .duiCube.duiIn.duiReverse {\
-  -webkit-animation-name: duiCubeInReverse_iphone;\
-  animation-name: duiCubeInReverse_iphone;\
+.dj_ios .-delite-cube.-delite-in.-delite-reverse {\
+  -webkit-animation-name: -delite-cube-in-reverse_iphone;\
+  animation-name: -delite-cube-in-reverse_iphone;\
   -webkit-transform-origin: 50% 50% !important;\
   transform-origin: 50% 50% !important;\
 }\
-@-webkit-keyframes duiCubeOutReverse_iphone {\
+@-webkit-keyframes -delite-cube-out-reverse_iphone {\
   from {\
     -webkit-transform: scale3d(0.835, 0.835, 0.835) rotateY(0deg) translateZ(160px);\
   }\
@@ -228,7 +228,7 @@ define(function(){ return '\
     -webkit-transform: scale3d(0.835, 0.835, 0.835) rotateY(90deg) translateZ(160px);\
   }\
 }\
-@keyframes duiCubeOutReverse_iphone {\
+@keyframes -delite-cube-out-reverse_iphone {\
   from {\
     transform: scale3d(0.835, 0.835, 0.835) rotateY(0deg) translateZ(160px);\
   }\
@@ -236,7 +236,7 @@ define(function(){ return '\
     transform: scale3d(0.835, 0.835, 0.835) rotateY(90deg) translateZ(160px);\
   }\
 }\
-@-webkit-keyframes duiCubeInReverse_iphone {\
+@-webkit-keyframes -delite-cube-in-reverse_iphone {\
   from {\
     -webkit-transform: scale3d(0.835, 0.835, 0.835) rotateY(-90deg) translateZ(160px);\
   }\
@@ -244,7 +244,7 @@ define(function(){ return '\
     -webkit-transform: scale3d(0.835, 0.835, 0.835) rotateY(0deg) translateZ(160px);\
   }\
 }\
-@keyframes duiCubeInReverse_iphone {\
+@keyframes -delite-cube-in-reverse_iphone {\
   from {\
     transform: scale3d(0.835, 0.835, 0.835) rotateY(-90deg) translateZ(160px);\
   }\
@@ -252,19 +252,19 @@ define(function(){ return '\
     transform: scale3d(0.835, 0.835, 0.835) rotateY(0deg) translateZ(160px);\
   }\
 }\
-.dj_ios.dj_landscape .duiCube.duiOut.duiReverse {\
-  -webkit-animation-name: duiCubeOutReverse_iphone_l;\
-  animation-name: duiCubeOutReverse_iphone_l;\
+.dj_ios.dj_landscape .-delite-cube.-delite-out.-delite-reverse {\
+  -webkit-animation-name: -delite-cube-out-reverse_iphone_l;\
+  animation-name: -delite-cube-out-reverse_iphone_l;\
   -webkit-transform-origin: 50% 50% !important;\
   transform-origin: 50% 50% !important;\
 }\
-.dj_ios.dj_landscape .duiCube.duiIn.duiReverse {\
-  -webkit-animation-name: duiCubeInReverse_iphone_l;\
-  animation-name: duiCubeInReverse_iphone_l;\
+.dj_ios.dj_landscape .-delite-cube.-delite-in.-delite-reverse {\
+  -webkit-animation-name: -delite-cube-in-reverse_iphone_l;\
+  animation-name: -delite-cube-in-reverse_iphone_l;\
   -webkit-transform-origin: 50% 50% !important;\
   transform-origin: 50% 50% !important;\
 }\
-@-webkit-keyframes duiCubeOutReverse_iphone_l {\
+@-webkit-keyframes -delite-cube-out-reverse_iphone_l {\
   from {\
     -webkit-transform: scale3d(0.77, 0.77, 0.77) rotateY(0deg) translateZ(240px);\
   }\
@@ -272,7 +272,7 @@ define(function(){ return '\
     -webkit-transform: scale3d(0.77, 0.77, 0.77) rotateY(90deg) translateZ(240px);\
   }\
 }\
-@keyframes duiCubeOutReverse_iphone_l {\
+@keyframes -delite-cube-out-reverse_iphone_l {\
   from {\
     transform: scale3d(0.77, 0.77, 0.77) rotateY(0deg) translateZ(240px);\
   }\
@@ -280,7 +280,7 @@ define(function(){ return '\
     transform: scale3d(0.77, 0.77, 0.77) rotateY(90deg) translateZ(240px);\
   }\
 }\
-@-webkit-keyframes duiCubeInReverse_iphone_l {\
+@-webkit-keyframes -delite-cube-in-reverse_iphone_l {\
   from {\
     -webkit-transform: scale3d(0.77, 0.77, 0.77) rotateY(-90deg) translateZ(240px);\
   }\
@@ -288,7 +288,7 @@ define(function(){ return '\
     -webkit-transform: scale3d(0.77, 0.77, 0.77) rotateY(0deg) translateZ(240px);\
   }\
 }\
-@keyframes duiCubeInReverse_iphone_l {\
+@keyframes -delite-cube-in-reverse_iphone_l {\
   from {\
     transform: scale3d(0.77, 0.77, 0.77) rotateY(-90deg) translateZ(240px);\
   }\
@@ -296,19 +296,19 @@ define(function(){ return '\
     transform: scale3d(0.77, 0.77, 0.77) rotateY(0deg) translateZ(240px);\
   }\
 }\
-.dj_ipad.dj_ios .duiCube.duiOut {\
-  -webkit-animation-name: duiCubeOut_ipad;\
-  animation-name: duiCubeOut_ipad;\
+.dj_ipad.dj_ios .-delite-cube.-delite-out {\
+  -webkit-animation-name: -delite-cube-out_ipad;\
+  animation-name: -delite-cube-out_ipad;\
   -webkit-transform-origin: 50% 50% !important;\
   transform-origin: 50% 50% !important;\
 }\
-.dj_ipad.dj_ios .duiCube.duiIn {\
-  -webkit-animation-name: duiCubeIn_ipad;\
-  animation-name: duiCubeIn_ipad;\
+.dj_ipad.dj_ios .-delite-cube.-delite-in {\
+  -webkit-animation-name: -delite-cube-in_ipad;\
+  animation-name: -delite-cube-in_ipad;\
   -webkit-transform-origin: 50% 50% !important;\
   transform-origin: 50% 50% !important;\
 }\
-@-webkit-keyframes duiCubeOut_ipad {\
+@-webkit-keyframes -delite-cube-out_ipad {\
   from {\
     -webkit-transform: scale3d(0.806, 0.806, 0.806) rotateY(0deg) translateZ(384px);\
   }\
@@ -316,7 +316,7 @@ define(function(){ return '\
     -webkit-transform: scale3d(0.806, 0.806, 0.806) rotateY(-90deg) translateZ(384px);\
   }\
 }\
-@keyframes duiCubeOut_ipad {\
+@keyframes -delite-cube-out_ipad {\
   from {\
     transform: scale3d(0.806, 0.806, 0.806) rotateY(0deg) translateZ(384px);\
   }\
@@ -324,7 +324,7 @@ define(function(){ return '\
     transform: scale3d(0.806, 0.806, 0.806) rotateY(-90deg) translateZ(384px);\
   }\
 }\
-@-webkit-keyframes duiCubeIn_ipad {\
+@-webkit-keyframes -delite-cube-in_ipad {\
   from {\
     -webkit-transform: scale3d(0.806, 0.806, 0.806) rotateY(90deg) translateZ(384px);\
   }\
@@ -332,7 +332,7 @@ define(function(){ return '\
     -webkit-transform: scale3d(0.806, 0.806, 0.806) rotateY(0deg) translateZ(384px);\
   }\
 }\
-@keyframes duiCubeIn_ipad {\
+@keyframes -delite-cube-in_ipad {\
   from {\
     transform: scale3d(0.806, 0.806, 0.806) rotateY(90deg) translateZ(384px);\
   }\
@@ -340,19 +340,19 @@ define(function(){ return '\
     transform: scale3d(0.806, 0.806, 0.806) rotateY(0deg) translateZ(384px);\
   }\
 }\
-.dj_ipad.dj_ios.dj_landscape .duiCube.duiOut {\
-  -webkit-animation-name: duiCubeOut_ipad_l;\
-  animation-name: duiCubeOut_ipad_l;\
+.dj_ipad.dj_ios.dj_landscape .-delite-cube.-delite-out {\
+  -webkit-animation-name: -delite-cube-out_ipad_l;\
+  animation-name: -delite-cube-out_ipad_l;\
   -webkit-transform-origin: 50% 50% !important;\
   transform-origin: 50% 50% !important;\
 }\
-.dj_ipad.dj_ios.dj_landscape .duiCube.duiIn {\
-  -webkit-animation-name: duiCubeIn_ipad_l;\
-  animation-name: duiCubeIn_ipad_l;\
+.dj_ipad.dj_ios.dj_landscape .-delite-cube.-delite-in {\
+  -webkit-animation-name: -delite-cube-in_ipad_l;\
+  animation-name: -delite-cube-in_ipad_l;\
   -webkit-transform-origin: 50% 50% !important;\
   transform-origin: 50% 50% !important;\
 }\
-@-webkit-keyframes duiCubeOut_ipad_l {\
+@-webkit-keyframes -delite-cube-out_ipad_l {\
   from {\
     -webkit-transform: scale3d(0.758, 0.758, 0.758) rotateY(0deg) translateZ(512px);\
   }\
@@ -360,7 +360,7 @@ define(function(){ return '\
     -webkit-transform: scale3d(0.758, 0.758, 0.758) rotateY(-90deg) translateZ(512px);\
   }\
 }\
-@keyframes duiCubeOut_ipad_l {\
+@keyframes -delite-cube-out_ipad_l {\
   from {\
     transform: scale3d(0.758, 0.758, 0.758) rotateY(0deg) translateZ(512px);\
   }\
@@ -368,7 +368,7 @@ define(function(){ return '\
     transform: scale3d(0.758, 0.758, 0.758) rotateY(-90deg) translateZ(512px);\
   }\
 }\
-@-webkit-keyframes duiCubeIn_ipad_l {\
+@-webkit-keyframes -delite-cube-in_ipad_l {\
   from {\
     -webkit-transform: scale3d(0.758, 0.758, 0.758) rotateY(90deg) translateZ(512px);\
   }\
@@ -376,7 +376,7 @@ define(function(){ return '\
     -webkit-transform: scale3d(0.758, 0.758, 0.758) rotateY(0deg) translateZ(512px);\
   }\
 }\
-@keyframes duiCubeIn_ipad_l {\
+@keyframes -delite-cube-in_ipad_l {\
   from {\
     transform: scale3d(0.758, 0.758, 0.758) rotateY(90deg) translateZ(512px);\
   }\
@@ -384,19 +384,19 @@ define(function(){ return '\
     transform: scale3d(0.758, 0.758, 0.758) rotateY(0deg) translateZ(512px);\
   }\
 }\
-.dj_ipad.dj_ios .duiCube.duiOut.duiReverse {\
-  -webkit-animation-name: duiCubeOutReverse_ipad;\
-  animation-name: duiCubeOutReverse_ipad;\
+.dj_ipad.dj_ios .-delite-cube.-delite-out.-delite-reverse {\
+  -webkit-animation-name: -delite-cube-out-reverse_ipad;\
+  animation-name: -delite-cube-out-reverse_ipad;\
   -webkit-transform-origin: 50% 50% !important;\
   transform-origin: 50% 50% !important;\
 }\
-.dj_ipad.dj_ios .duiCube.duiIn.duiReverse {\
-  -webkit-animation-name: duiCubeInReverse_ipad;\
-  animation-name: duiCubeInReverse_ipad;\
+.dj_ipad.dj_ios .-delite-cube.-delite-in.-delite-reverse {\
+  -webkit-animation-name: -delite-cube-in-reverse_ipad;\
+  animation-name: -delite-cube-in-reverse_ipad;\
   -webkit-transform-origin: 50% 50% !important;\
   transform-origin: 50% 50% !important;\
 }\
-@-webkit-keyframes duiCubeOutReverse_ipad {\
+@-webkit-keyframes -delite-cube-out-reverse_ipad {\
   from {\
     -webkit-transform: scale3d(0.806, 0.806, 0.806) rotateY(0deg) translateZ(384px);\
   }\
@@ -404,7 +404,7 @@ define(function(){ return '\
     -webkit-transform: scale3d(0.806, 0.806, 0.806) rotateY(90deg) translateZ(384px);\
   }\
 }\
-@keyframes duiCubeOutReverse_ipad {\
+@keyframes -delite-cube-out-reverse_ipad {\
   from {\
     transform: scale3d(0.806, 0.806, 0.806) rotateY(0deg) translateZ(384px);\
   }\
@@ -412,7 +412,7 @@ define(function(){ return '\
     transform: scale3d(0.806, 0.806, 0.806) rotateY(90deg) translateZ(384px);\
   }\
 }\
-@-webkit-keyframes duiCubeInReverse_ipad {\
+@-webkit-keyframes -delite-cube-in-reverse_ipad {\
   from {\
     -webkit-transform: scale3d(0.806, 0.806, 0.806) rotateY(-90deg) translateZ(384px);\
   }\
@@ -420,7 +420,7 @@ define(function(){ return '\
     -webkit-transform: scale3d(0.806, 0.806, 0.806) rotateY(0deg) translateZ(384px);\
   }\
 }\
-@keyframes duiCubeInReverse_ipad {\
+@keyframes -delite-cube-in-reverse_ipad {\
   from {\
     transform: scale3d(0.806, 0.806, 0.806) rotateY(-90deg) translateZ(384px);\
   }\
@@ -428,19 +428,19 @@ define(function(){ return '\
     transform: scale3d(0.806, 0.806, 0.806) rotateY(0deg) translateZ(384px);\
   }\
 }\
-.dj_ipad.dj_ios.dj_landscape .duiCube.duiOut.duiReverse {\
-  -webkit-animation-name: duiCubeOutReverse_ipad_l;\
-  animation-name: duiCubeOutReverse_ipad_l;\
+.dj_ipad.dj_ios.dj_landscape .-delite-cube.-delite-out.-delite-reverse {\
+  -webkit-animation-name: -delite-cube-out-reverse_ipad_l;\
+  animation-name: -delite-cube-out-reverse_ipad_l;\
   -webkit-transform-origin: 50% 50% !important;\
   transform-origin: 50% 50% !important;\
 }\
-.dj_ipad.dj_ios.dj_landscape .duiCube.duiIn.duiReverse {\
-  -webkit-animation-name: duiCubeInReverse_ipad_l;\
-  animation-name: duiCubeInReverse_ipad_l;\
+.dj_ipad.dj_ios.dj_landscape .-delite-cube.-delite-in.-delite-reverse {\
+  -webkit-animation-name: -delite-cube-in-reverse_ipad_l;\
+  animation-name: -delite-cube-in-reverse_ipad_l;\
   -webkit-transform-origin: 50% 50% !important;\
   transform-origin: 50% 50% !important;\
 }\
-@-webkit-keyframes duiCubeOutReverse_ipad_l {\
+@-webkit-keyframes -delite-cube-out-reverse_ipad_l {\
   from {\
     -webkit-transform: scale3d(0.758, 0.758, 0.758) rotateY(0deg) translateZ(512px);\
   }\
@@ -448,7 +448,7 @@ define(function(){ return '\
     -webkit-transform: scale3d(0.758, 0.758, 0.758) rotateY(90deg) translateZ(512px);\
   }\
 }\
-@keyframes duiCubeOutReverse_ipad_l {\
+@keyframes -delite-cube-out-reverse_ipad_l {\
   from {\
     transform: scale3d(0.758, 0.758, 0.758) rotateY(0deg) translateZ(512px);\
   }\
@@ -456,7 +456,7 @@ define(function(){ return '\
     transform: scale3d(0.758, 0.758, 0.758) rotateY(90deg) translateZ(512px);\
   }\
 }\
-@-webkit-keyframes duiCubeInReverse_ipad_l {\
+@-webkit-keyframes -delite-cube-in-reverse_ipad_l {\
   from {\
     -webkit-transform: scale3d(0.758, 0.758, 0.758) rotateY(-90deg) translateZ(512px);\
   }\
@@ -464,7 +464,7 @@ define(function(){ return '\
     -webkit-transform: scale3d(0.758, 0.758, 0.758) rotateY(0deg) translateZ(512px);\
   }\
 }\
-@keyframes duiCubeInReverse_ipad_l {\
+@keyframes -delite-cube-in-reverse_ipad_l {\
   from {\
     transform: scale3d(0.758, 0.758, 0.758) rotateY(-90deg) translateZ(512px);\
   }\

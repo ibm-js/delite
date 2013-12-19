@@ -1,5 +1,5 @@
 define(function(){ return '\
-.duiFade {\
+.-delite-fade {\
   -moz-transition-property: none;\
   -webkit-transition-property: none;\
   transition-property: none;\
@@ -7,7 +7,7 @@ define(function(){ return '\
   -webkit-transition-duration: 0s;\
   transition-duration: 0s;\
 }\
-.duiFade.duiTransition {\
+.-delite-fade.-delite-transition {\
   -moz-transition-property: opacity;\
   -webkit-transition-property: opacity;\
   transition-property: opacity;\
@@ -15,19 +15,19 @@ define(function(){ return '\
   -webkit-transition-duration: 0.6s;\
   transition-duration: 0.6s;\
 }\
-.duiFade.duiOut {\
+.-delite-fade.-delite-out {\
   opacity: 1;\
 }\
-.duiFade.duiOut.duiTransition {\
+.-delite-fade.-delite-out.-delite-transition {\
   -moz-transition-timing-function: ease-out;\
   -webkit-transition-timing-function: ease-out;\
   transition-timing-function: ease-out;\
   opacity: 0;\
 }\
-.duiFade.duiIn {\
+.-delite-fade.-delite-in {\
   opacity: 0;\
 }\
-.duiFade.duiIn.duiTransition {\
+.-delite-fade.-delite-in.-delite-transition {\
   -moz-transition-timing-function: ease-in;\
   -webkit-transition-timing-function: ease-in;\
   transition-timing-function: ease-in;\
