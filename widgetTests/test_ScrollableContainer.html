@@ -36,13 +36,13 @@
 				if (scrollableContainer.isBottomScroll()) {
 					// scrolled to bottom
 					if (!reachedBottom) { 
-						console.log("scroll-reached-bottom");
+						log("event: scroll-reached-bottom");
 						reachedBottom = true;
 					}
 				} else if (scrollableContainer.isTopScroll()) {
 					// scrolled to top
 					if (!reachedTop) { 
-						console.log("scroll-reached-top");
+						log("event: scroll-reached-top");
 						reachedTop = true;
 					}
 				} else {
@@ -52,19 +52,30 @@
 				if (scrollableContainer.isRightScroll()) {
 					// scrolled to bottoms
 					if (!reachedRight) { 
-						console.log("scroll-reached-right");
+						log("event: scroll-reached-right");
 						reachedRight = true;
 					}
 				} else if (scrollableContainer.isLeftScroll()) {
 					// scrolled to top
 					if (!reachedRight) { 
-						console.log("scroll-reached-left");
+						log("event: scroll-reached-left");
 						reachedLeft = true;
 					}
 				} else {
 					reachedRight = false;
 					reachedLeft = false;
 				}
+			};
+			
+			log = function (str) {
+				var msgArea = document.getElementById("msgArea");
+				msgArea.innerHTML += str + "\n"; 
+				// Automatic scroll such that the last line is visible
+				msgArea.scrollTop = msgArea.scrollHeight;
+			};
+			
+			clearMsgArea = function () {
+				document.getElementById("msgArea").innerHTML = "";
 			};
 		});
 	</script>
@@ -99,13 +110,14 @@
 </head>
 <body>
 	<d-linear-layout style="height: 100%">
-		<div>
+		<d-linear-layout vertical="false">
 			<!-- Button to test the programmatic scroll API of ScrollableContainer -->
 			<button is="d-button" onclick="scrollBy();">
 				Programmatic scroll: scrollBy({x: 100, y: 100})
 			</button>
-		</div>
-		
+			<textarea id="msgArea" readonly class="fill"></textarea>
+			<button is="d-button" onclick="clearMsgArea();">Clear</button>
+		</d-linear-layout>
 		<d-scrollable-container id="scrollContainer" scrollDirection="both" 
 			style="background-color: green" class="fill"
 			onScroll="onScroll();">
