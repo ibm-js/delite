@@ -4,7 +4,8 @@ define([
 	"dojo/keys", // keys.END keys.HOME, keys.LEFT_ARROW etc.
 	"dojo/_base/lang", // lang.hitch
 	"dojo/on",
-	"./Widget"
+	"./Widget",
+	"./focus"
 ], function (dcl, domAttr, keys, lang, on, Widget) {
 
 	// module:
@@ -50,11 +51,6 @@ define([
 		//		focus events and set this.focusedChild.   Must be set by implementing class.   If this is a string
 		//		(ex: "> *") then the implementing class must require dojo/query.
 		childSelector: null,
-
-		// _initialTabIndex: String
-        //		initial tab index of the container before focusing its first child
-        //		and setting it to "-1".
-        _initialTabIndex: null,
 
 		postCreate: function () {
 			// Set tabIndex on root node

@@ -18,8 +18,7 @@ define([
 	"./Destroyable",
 	"./Stateful",
 	"./register",
-	"dojo/has!dojo-bidi?./Bidi",
-	"./focus"
+	"dojo/has!dojo-bidi?./Bidi"
 ], function (require, dcl, aspect, config, Deferred, dom, domAttr, domClass, domConstruct, domGeometry, domStyle,
 			 has, kernel, lang, on, win, Destroyable, Stateful, register, Bidi) {
 
