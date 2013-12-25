@@ -5,7 +5,7 @@ define([
 ], function (lang, on, has) {
 
 	// module:
-	//		dui/typematic
+	//		delite/typematic
 
 	var typematic = {
 		// summary:

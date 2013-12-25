@@ -1,6 +1,6 @@
-# DUI
+# DELITE
 
-Dui aims to provide a widget infrastructure and set of widgets that fit future standards but are possible
+Delite aims to provide a widget infrastructure that fits future standards but is possible
 to use on all modern browsers without performance concerns.
 
 Specifically, it's based on the following concepts:

@@ -1,7 +1,7 @@
 define([], function () {
 
 	// module:
-	//		dui/Bidi
+	//		delite/Bidi
 
 	// UCC - constants that will be used by bidi support.
 	var LRE = "\u202A",

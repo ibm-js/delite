@@ -37,13 +37,13 @@ define(["dojo/dom-construct", "dojo/has"], function (domConstruct, has) {
 
 	return {
 		// summary:
-		//		CSS loading plugin for the DUI widgets.
+		//		CSS loading plugin for the DELITE widgets.
 		//
 		//		This plugin will load the specified CSS files, or alternately AMD modules containing CSS,
 		//		and insert their content into the document in the specified order.
 		//
 		//		The CSS files or modules are specified as a comma separated list, for example
-		//		dui/css!../foo.css,../bar.css or for modules, dui/css!../foo,../bar.
+		//		delite/css!../foo.css,../bar.css or for modules, delite/css!../foo,../bar.
 		//
 		//		Similar to dojo/text!, this plugin won't resolve until it has completed loading the specified CSS.
 		//		

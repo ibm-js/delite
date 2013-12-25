@@ -10,7 +10,7 @@ define(["dcl/dcl", "dojo/data/ItemFileReadStore"], function (dcl, ItemFileReadSt
 		//		- 3 characters: 500ms,
 		//		- 4 or more characters: 100ms.
 
-		declaredClass: "dui.tests._data.SlowStore",
+		declaredClass: "delite.tests._data.SlowStore",
 
 		constructor: function () {
 			this.log = [];

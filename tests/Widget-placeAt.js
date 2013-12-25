@@ -4,11 +4,11 @@ define([
 	"dojo/aspect",
 	"../register",
 	"../Widget",
-	"../Button"
+	"deliteful/Button"		// TODO: remove dependency on deliteful
 ], function (registerSuite, assert, aspect, register, Widget, Button) {
 	var container, SimpleWidget, simple, pane1, pane2, pane3, pane4;
 	registerSuite({
-		name: "dui/Widget-placeAt",
+		name: "Widget-placeAt",
 		setup: function () {
 			container = document.createElement("div");
 			document.body.appendChild(container);

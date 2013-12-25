@@ -4,7 +4,7 @@ define([
 ], function (aspect, dcl) {
 
 	// module:
-	//		dui/Destroyable
+	//		delite/Destroyable
 
 	return dcl(null, {
 		// summary:

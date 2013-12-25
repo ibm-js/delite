@@ -20,7 +20,7 @@ on https://saucelabs.com/appium/tutorial/3.
 Navigate to:
 
 ```
-http://localhost/dui/node_modules/intern/client.html?config=tests/client
+http://localhost/delite/node_modules/intern/client.html?config=tests/client
 ```
 
 Note that this won't run the functional tests.
@@ -38,7 +38,7 @@ Or on Windows (untested):
 
 ```
 cd ..\..\..
-node dui\node_modules\intern\runner.js config=dui\tests\sauce.js
+node delite\node_modules\intern\runner.js config=delite\tests\sauce.js
 ```
 
 ## Running the unit and functional tests locally
@@ -61,7 +61,7 @@ Or on Windows (untested):
 
 ```
 cd ..\..\..
-node dui\node_modules\intern\runner.js config=dui\tests\local.js
+node delite\node_modules\intern\runner.js config=delite\tests\local.js
 ```
 
 

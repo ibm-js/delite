@@ -9,63 +9,61 @@
 <script language="JavaScript" type="text/javascript">
 	var ready = false; // set to true when the test page is ready
 	require([
-		"dui/register",
+		"delite/register",
 		"dojo/dom",
-		"dui/Widget",
-		"dui/Container",
-		"dui/Contained",
-		"dui/KeyNav",
-		"dojo/domReady"
-	], function(register, dom, Widget, Container, Contained, KeyNav, domReady){
-		domReady(function () {
-			var TestContainer = register("test-container", [HTMLElement, Widget, Container, KeyNav], {
-				buildRendering: function () {
-					this.style.display = "block";
-				},
-				enteredViewCallback: function () {
-					// TODO: THIS IS A WORKAROUND FOR https://github.com/ibm-dojo/dui/issues/62
-					// Remove it when the issue is fixed.
-					this._enteredView = true;
-					this.tabIndex = "0";
-				},
-				childSelector: function (child) {
-					return child !== this;
-				},
- 				_getFirst: function () {
-					if (this.hasChildren()) {
-						return this.getChildren()[0];
-					}
-				},
-				_getLast: function () {
-					if (this.children.length) {
-						return this.children[this.children.length - 1];
-					}
-				},
-				_onDownArrow: function () {
-					var nextChild = this._getNext(this.focusedChild, 1);
-					if (nextChild) {
-						this.focusChild(nextChild);
-					}
-				},
-				_onUpArrow: function () {
-					var previousChild = this._getNext(this.focusedChild, -1);
-					if (previousChild) {
-						this.focusChild(previousChild);
-					}
+		"delite/Widget",
+		"delite/Container",
+		"delite/Contained",
+		"delite/KeyNav",
+		"dojo/domReady!"
+	], function(register, dom, Widget, Container, Contained, KeyNav){
+		var TestContainer = register("test-container", [HTMLElement, Widget, Container, KeyNav], {
+			buildRendering: function () {
+				this.style.display = "block";
+			},
+			enteredViewCallback: function () {
+				// TODO: THIS IS A WORKAROUND FOR https://github.com/ibm-dojo/delite/issues/62
+				// Remove it when the issue is fixed.
+				this._enteredView = true;
+				this.tabIndex = "0";
+			},
+			childSelector: function (child) {
+				return child !== this;
+			},
+			_getFirst: function () {
+				if (this.hasChildren()) {
+					return this.getChildren()[0];
 				}
-			});
-
-			var TestContained = register("test-contained", [HTMLElement, Widget, Contained], {
-				buildRendering: function () {
-					this.style.display = "block";
+			},
+			_getLast: function () {
+				if (this.children.length) {
+					return this.children[this.children.length - 1];
 				}
-			});
-
-			register.parse();
-
-			// Set global variable to signal that the test page is ready
-			ready = true;
+			},
+			_onDownArrow: function () {
+				var nextChild = this._getNext(this.focusedChild, 1);
+				if (nextChild) {
+					this.focusChild(nextChild);
+				}
+			},
+			_onUpArrow: function () {
+				var previousChild = this._getNext(this.focusedChild, -1);
+				if (previousChild) {
+					this.focusChild(previousChild);
+				}
+			}
 		});
+
+		var TestContained = register("test-contained", [HTMLElement, Widget, Contained], {
+			buildRendering: function () {
+				this.style.display = "block";
+			}
+		});
+
+		register.parse();
+
+		// Set global variable to signal that the test page is ready
+		ready = true;
 	})
 </script>
 </head>

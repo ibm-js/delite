@@ -2,8 +2,9 @@ define([
 	"intern!object",
 	"intern/chai!assert",
 	"dojo/aspect",
-	"dui/register",
-	"dui/Widget"], function (registerSuite, assert, aspect, register, Widget) {
+	"../register",
+	"../Widget"
+], function (registerSuite, assert, aspect, register, Widget) {
 	var container, TestWidget, w;
 	var obj = {
 		foo: function () {
@@ -14,7 +15,7 @@ define([
 	// Number of times foo was called while TestWidget existed
 	var calls = 0;
 	registerSuite({
-		name: "dui/Widget-lifecycle",
+		name: "Widget-lifecycle",
 
 		create: function () {
 			TestWidget = register("test-lifecycle-widget", [HTMLElement, Widget], {

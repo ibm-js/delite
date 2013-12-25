@@ -9,7 +9,7 @@ define([
 ], function (require, config, domConstruct, domStyle, lang, on, has) {
 
 	// module:
-	//		dui/BackgroundIFrame
+	//		delite/BackgroundIFrame
 
 	// Flag for whether to create background iframe behind popups like Menus and Dialog.
 	// A background iframe is useful to prevent problems with popups appearing behind applets/pdf files.

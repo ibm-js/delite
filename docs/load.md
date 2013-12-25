@@ -1,6 +1,6 @@
-# dui/themes/load!
+# delite/themes/load!
 
-Dui/themes/load! is a high level plugin for loading CSS files based on the theme of the page.
+Delite/themes/load! is a high level plugin for loading CSS files based on the theme of the page.
 
 The plugin is similar to the CSS loader, but will substitute {{theme}} with the page's theme.
 

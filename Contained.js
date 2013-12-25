@@ -3,7 +3,7 @@ define([
 ], function (dcl) {
 
 	// module:
-	//		dui/Contained
+	//		delite/Contained
 
 	return dcl(null, {
 		// summary:
@@ -46,7 +46,7 @@ define([
 			// summary:
 			//		Returns the index of this widget within its container parent.
 			//		It returns -1 if the parent does not exist, or if the parent
-			//		is not a dui/Container
+			//		is not a delite/Container
 
 			var p = this.getParent();
 			if (!p || !p.getIndexOfChild) {

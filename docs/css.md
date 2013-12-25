@@ -1,12 +1,12 @@
-# dui/css!
+# delite/css!
 
-The `dui/css!` plugin is a low level plugin for loading individual CSS files.
+The `delite/css!` plugin is a low level plugin for loading individual CSS files.
 
 This plugin will load the specified CSS files, or alternately AMD modules containing CSS,
 and insert their content into the document in the specified order.
 
 The CSS files or modules are specified as a comma separated list, for example
-`dui/css!../foo.css,../bar.css` or for modules, `dui/css!../foo,../bar`.
+`delite/css!../foo.css,../bar.css` or for modules, `delite/css!../foo,../bar`.
 
 Similar to `dojo/text!`, this plugin won't resolve until it has completed loading the specified CSS.
 

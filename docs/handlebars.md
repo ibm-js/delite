@@ -1,6 +1,6 @@
-# dui/handlebars
+# delite/handlebars
 
-`dui/handlebars` supports reactive templates,
+`delite/handlebars` supports reactive templates,
 so a template like below would automatically adjust the
 DOM as the widget's `iconClass` and `label` properties were changed:
 
@@ -12,11 +12,11 @@ DOM as the widget's `iconClass` and `label` properties were changed:
 	</button>
 
 
-The dui/handlebars! plugin returns a function to operate in the widget's context, so
+The delite/handlebars! plugin returns a function to operate in the widget's context, so
 for widgets to leverage the template engine, you put your template in a separate file,
 and then define the widget like:
 
-	define([..., "dui/handlebars!./templates/MyTemplate.html"], function(..., renderFunc){
+	define([..., "delite/handlebars!./templates/MyTemplate.html"], function(..., renderFunc){
 		...
 		buildRendering: renderFunc,
 		...
@@ -24,7 +24,7 @@ and then define the widget like:
 
 Handlebars can also be used as a plain AMD module, via the `compile()` method:
 
-	define([..., "dui/handlebars"], function(..., handlebars){
+	define([..., "delite/handlebars"], function(..., handlebars){
 		...
 		buildRendering: handlebars.compile(
 			'<span class="duiReset {{iconClass}}">{{label}}</span>'
@@ -63,7 +63,7 @@ A template can contain widgets in addition to plain DOM nodes.  In this case, th
 class is responsible for loading the supporting widgets before compiling the template.
 Therefore, rather than using the plugin syntax, it must use the `compile()` method, for example:
 
-	define([..., "dui/handlebars", "acme/SupportingWidget"], function(..., handlebars){
+	define([..., "delite/handlebars", "acme/SupportingWidget"], function(..., handlebars){
 		...
 		buildRendering: handlebars.compile(
 			'<supporting-widget class="duiReset {{iconClass}}">{{label}}</supporting-widget>'
@@ -73,7 +73,7 @@ Therefore, rather than using the plugin syntax, it must use the `compile()` meth
 
 Note that the template text can still be put into a file, and the file loaded with the text! plugin:
 
-	define([..., "dui/handlebars", "text!./templates/myTemplate.html", "acme/SupportingWidget"],
+	define([..., "delite/handlebars", "text!./templates/myTemplate.html", "acme/SupportingWidget"],
 			function(..., handlebars, text){
 		...
 		buildRendering: handlebars.compile(text),
@@ -82,7 +82,7 @@ Note that the template text can still be put into a file, and the file loaded wi
 
 ## Implementation details
 
-dui/handlebars! compiles the template into an AST format and then uses `dui/template` to generate
+delite/handlebars! compiles the template into an AST format and then uses `delite/template` to generate
 a function from it.
 
 
@@ -99,5 +99,5 @@ There were a number of possible syntaxes proposed for the templates, including:
 
 The JADE like syntax is probably the easiest to write, and the MDV syntax fits the best within the HTML
 paradigm, but initially I just programmed a subset of the Handlebars syntax because it's what our users
-are used to.   However, given the separation between dui/handlebars and dui/template, any number of template
+are used to.   However, given the separation between delite/handlebars and delite/template, any number of template
 engines could be easily written.

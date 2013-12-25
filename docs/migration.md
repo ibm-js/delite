@@ -1,9 +1,9 @@
-# Migrating from dijit and dojox/mobile to dui
+# Migrating from dijit and dojox/mobile to delite
 
 ## Notes for applications
 
 1. In markup, widgets look like `<d-star-rating foo=bar>` rather than
-	`<div data-dojo-type=dui/StarRating data-dojo-props="foo: bar">`.
+	`<div data-dojo-type=delite/StarRating data-dojo-props="foo: bar">`.
 	For widgets that enhance an existing tag, syntax is `<button is="d-button">`.
 2. Use `register.parse()` rather than `dojo/parser.parse()`.  There's no `parseOnLoad:true` or auto-loading
 	or `data-dojo-mixins`.
@@ -98,5 +98,5 @@ TODO: more on lifecycle, especially custom setters
 Resources are loaded through `i18n!` plugin rather than a loadResource() type method.
 
 ### CSS
-A widget should use [dui/themes/load!](load.md) or [dui/css!](css.md) to load its own CSS.
+A widget should use [delite/themes/load!](load.md) or [delite/css!](css.md) to load its own CSS.
 

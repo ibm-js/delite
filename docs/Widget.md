@@ -1,6 +1,6 @@
-# dui/Widget
+# delite/Widget
 
-`dui/Widget` is a mixin used by all widgets.
+`delite/Widget` is a mixin used by all widgets.
 It provides fine grained lifecycle methods, shorthand notation for declaring custom setters,
 and code to read widget parameters specified as DOMNode attributes.
 
@@ -46,7 +46,7 @@ so you don't need to worry about setting up code to call the superclasses' metho
 
 ## Placement
 
-DUI widgets are DOM Custom Elements.  That means they can be placed and manipulated just like other DOM elements.
+DELITE widgets are DOM Custom Elements.  That means they can be placed and manipulated just like other DOM elements.
 Any DOM manipulation library should work well with instances of the widgets, but there is a helper function for
 placing the widget in the DOM named `.placeAt()`.  This function takes one or two arguments.  The first argument is
 node being referenced or the string ID of the node and the second argument is
@@ -125,7 +125,7 @@ _setLabelAttr: function(val){
 }
 ```
 
-Also, note that `dui/Widget` also allows the shorthand syntax for declaring setters from Dijit V1 like:
+Also, note that `delite/Widget` also allows the shorthand syntax for declaring setters from Dijit V1 like:
 
 ```js
 _setTabIndexAttr: "focusNode"

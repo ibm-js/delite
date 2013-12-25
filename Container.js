@@ -5,7 +5,7 @@ define([
 ], function (dcl, domConstruct, Widget) {
 
 	// module:
-	//		dui/Container
+	//		delite/Container
 
 	return dcl(null, {
 		// summary:
@@ -21,7 +21,7 @@ define([
 			}
 		}),
 
-		addChild: function (/*dui/Widget|DOMNode*/ widget, /*int?*/ insertIndex) {
+		addChild: function (/*DOMNode*/ widget, /*int?*/ insertIndex) {
 			// summary:
 			//		Makes the given widget or DOM node a child of this widget.
 			// description:
@@ -86,7 +86,7 @@ define([
 			return this.getChildren().length > 0;	// Boolean
 		},
 
-		getIndexOfChild: function (/*dui/Widget*/ child) {
+		getIndexOfChild: function (/*DOMNode*/ child) {
 			// summary:
 			//		Gets the index of the child in this container or -1 if not found
 			return this.getChildren().indexOf(child);	// int

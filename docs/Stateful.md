@@ -1,6 +1,6 @@
-# dui/Stateful
+# delite/Stateful
 
-dui/Stateful allows you to define a class with a set of properties,
+delite/Stateful allows you to define a class with a set of properties,
 and to define custom getters/setters for some (or all, or none) of those properties:
 
 	MyClass = dcl(Stateful, {
@@ -48,7 +48,7 @@ library.  However, after changing an object property (or set of object propertie
 `Platform.performMicroTaskCheckpoint()`, or a similar method like `observer.deliver()`, so this hardly seems
 like an acceptable solution.
 
-So, the implementation is that dui/Stateful will note all the properties defined in the prototype, direct and inherited,
+So, the implementation is that delite/Stateful will note all the properties defined in the prototype, direct and inherited,
 and call Object.defineProperty() on the prototype to add native ES5 setters and getters for those properties.
 For properties where the subclass doesn't define a custom setter, Stateful will generate one on-the-fly
 that just calls this._set(...) to save the new value and announce the change to any listeners registered

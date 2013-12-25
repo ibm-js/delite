@@ -59,11 +59,11 @@ define({
 	},
 
 	// Non-functional test suite(s) to run in each browser
-	suites: [ "dui/tests/unit" ],
+	suites: [ "delite/tests/unit" ],
 
 	// Functional test suite(s) to run in each browser once non-functional tests are completed
-	functionalSuites: [ "dui/tests/functional" ],
+	functionalSuites: [ "delite/tests/functional" ],
 
 	// A regular expression matching URLs to files that should not be included in code coverage analysis
-	excludeInstrumentation: /^(requirejs|dcl|dojo|dui\/tests)/
+	excludeInstrumentation: /^(requirejs|dcl|dojo|delite\/tests)/
 });

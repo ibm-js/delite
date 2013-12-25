@@ -4,7 +4,7 @@ define([
 	"dojo/Deferred", "dojo/promise/all",
 	"dojo/dom-attr", "dojo/dom-class", "dojo/dom-geometry", "dojo/dom-style",
 	"dojo/_base/kernel", "dojo/on", "dojo/query",
-	"dui/a11y"	// isTabNavigable, _isElementShown
+	"delite/a11y"	// isTabNavigable, _isElementShown
 ], function (Deferred, all, domAttr, domClass, domGeometry, domStyle, kernel, on, query, a11y) {
 
 
@@ -13,7 +13,7 @@ define([
 
 	return {
 
-		isVisible: function isVisible(/*dui/Widget|DomNode*/ node) {
+		isVisible: function isVisible(/*DomNode*/ node) {
 			// summary:
 			//		Return true if node/widget is visible
 			var p;
@@ -23,7 +23,7 @@ define([
 				(p = domGeometry.position(node, true), p.y + p.h >= 0 && p.x + p.w >= 0 && p.h && p.w);
 		},
 
-		isHidden: function isHidden(/*dui/Widget|DomNode*/ node) {
+		isHidden: function isHidden(/*DomNode*/ node) {
 			// summary:
 			//		Return true if node/widget is hidden
 			var p;

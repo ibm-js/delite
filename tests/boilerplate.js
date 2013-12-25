@@ -1,5 +1,5 @@
 // module:
-//		dui/tests/boilerplate
+//		delite/tests/boilerplate
 // description:
 //		A <script src="boilerplate.js"> on your test page will
 //		load the loader (i.e. define the require() method)
@@ -49,7 +49,7 @@ for (i = 0; script = scripts[i]; i++) {
 	var src = script.getAttribute("src"),
 		match = src && src.match(/(.*|^)boilerplate\.js/i);
 	if (match) {
-		// Sniff location of dui/tests directory relative to this test file.   testDir will be an empty string if it's
+		// Sniff location of delite/tests directory relative to this test file.   testDir will be an empty string if it's
 		// the same directory, or a string including a slash, ex: "../", if the test is in a subdirectory.
 		testDir = match[1];
 
@@ -70,7 +70,8 @@ require = {
 	packages: [
 		{name: 'dcl', location: 'dcl'},
 		{name: 'dojo', location: 'dojo'},
-		{name: 'dui', location: 'dui'},
+		{name: 'delite', location: 'delite'},
+		{name: 'deliteful', location: 'deliteful'},
 		{name: 'dojox', location: 'dojox'},
 		{name: 'doh', location: 'util/doh'}
 	],

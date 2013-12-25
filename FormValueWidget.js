@@ -5,7 +5,7 @@ define([
 ], function (dcl, domAttr, FormWidget) {
 
 	// module:
-	//		dui/FormValueWidget
+	//		delite/FormValueWidget
 
 	return dcl(FormWidget, {
 		// summary:

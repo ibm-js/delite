@@ -11,8 +11,6 @@ module.exports = function (grunt) {
 				"*.js",
 
 				// Skip files that still have many errors or haven't been updated at all (TODO: fix)
-				"!Rule.js",
-				"!Slider.js",
 				"!a11y.js",
 				"!a11yclick.js",
 				"!focus.js",

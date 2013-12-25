@@ -2,7 +2,7 @@ define([
 	"intern!object",
 	"intern/chai!assert",
 	"../register",
-	"dui/Stateful",
+	"../Stateful",
 	"dojo/domReady!"
 ], function (registerSuite, assert, register, Stateful) {
 
@@ -14,7 +14,7 @@ define([
 	var nativeButton = document.createElement("button");
 
 	registerSuite({
-		name: "dui/register",
+		name: "register",
 
 		setup: function () {
 			container = document.createElement("div");

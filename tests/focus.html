@@ -2,23 +2,24 @@
 		"http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
-<title>dui/focus automated test</title>
+<title>delite/focus automated test</title>
 
 <script type="text/javascript" src="boilerplate.js"></script>
 
 <script type="text/javascript">
 require([
 	"doh/runner", "dcl/dcl", "dojo/dom", "dojo/on", "dojo/parser", "dojo/query",
-	"dui/focus",
-	"dui/Widget",
+	"delite/focus",
+	"delite/Widget",
 	"dojo/domReady!",
-	"dui/form/DateTextBox", "dui/form/ComboBox", "dui/form/NumberSpinner", "dui/form/ComboButton",
-	"dui/dijit/Menu", "dui/dijit/MenuItem", "dui/dijit/PopupMenuItem"
+	// TODO: use custom widgets rather than depending on code in deliteful/
+	"delite/form/DateTextBox", "delite/form/ComboBox", "delite/form/NumberSpinner", "delite/form/ComboButton",
+	"delite/dijit/Menu", "delite/dijit/MenuItem", "delite/dijit/PopupMenuItem"
 ], function (doh, dcl, dom, on, parser, query, focus, Widget) {
 
 	FakeEditor = dcl(Widget, {
 		buildRendering: function () {
-			// dui/focus gets confused if <body> gets focused, so need to add an extra <div> and focus that instead
+			// delite/focus gets confused if <body> gets focused, so need to add an extra <div> and focus that instead
 			this.domNode = this.containerNode = this.ownerDocument.createElement("iframe");
 			this.domNode.src = 'javascript:\"<html><body><div contenteditable=true>hello world</div></body></html>\"';
 		},
@@ -114,7 +115,7 @@ require([
 					doh.is(dom.byId("first"), focus.curNode);
 					doh.is("first", curNodeWatchLog.join(", "), "curNodeWatchLog");
 
-					// And that the dui.form.Form widget is marked as
+					// And that the deliteful/Form widget is marked as
 					// being "in focus"
 					doh.t(focusEvents["form"], "form focused");
 
@@ -142,7 +143,7 @@ require([
 					doh.is(dom.byId("second"), focus.curNode);
 					doh.is("second", curNodeWatchLog.join(", "), "curNodeWatchLog");
 
-					// Since the dui.form.Form widget didn't leave the focus chain it
+					// Since the deliteful/Form widget didn't leave the focus chain it
 					// shouldn't have any more events (since the resetEvents() call in setUp() above)
 					doh.f("form" in focusEvents, "form no new focus event");
 				}), 500);
@@ -166,7 +167,7 @@ require([
 				});
 
 				// This onFocus() function from helpers.js would be useful here, except it
-				// defeats the purpose of the test by using dui/focus.
+				// defeats the purpose of the test by using delite/focus.
 				on.once(dom.byId("select").focusNode, "focus", function () {
 					setTimeout(d.getTestCallback(function () {
 						// Focus goes to an <input> node deep inside of select.domNode,
@@ -365,7 +366,7 @@ require([
 
 		/*
 		 // Commented out because
-		 // in order to allow dui.popup's getTopPopup() to work,a sub menu's popupParent
+		 // in order to allow delite/popup's getTopPopup() to work,a sub menu's popupParent
 		 // points to the parent Menu, bypassing the parent MenuItem... thus the
 		 // MenuItem is not in the chain of active widgets
 		 {
@@ -399,18 +400,18 @@ require([
 </head>
 <body style="background-color: #fff; color: black; padding: 0; margin: 0" class="claro">
 
-<h3>dui/focus Automated Test</h3>
+<h3>delite/focus Automated Test</h3>
 
 <label>a form ContentPane widget:</label><br>
 
-<form id="form" data-dojo-type="dui/Widget">
+<form id="form" data-dojo-type="delite/Widget">
 	<label for="first">simple input: </label><input id="first"/><br>
 	<label for="second">another simple input: </label><input id="second"/><br>
 
 	<label>a fieldset ContentPane widget:</label><br>
-	<fieldset id=fieldset1 data-dojo-type="dui/Widget">
+	<fieldset id=fieldset1 data-dojo-type="delite/Widget">
 		<label for="select">a ComboBox widget:</label>
-		<select id=select data-dojo-type="dui/form/ComboBox">
+		<select id=select data-dojo-type="delite/form/ComboBox">
 			<option>this</option>
 			<option>is</option>
 			<option>a</option>
@@ -426,30 +427,30 @@ require([
 	</div>
 	<br>
 	<label>another fieldset ContentPane:</label><br>
-	<fieldset id=fieldset2 data-dojo-type="dui/Widget">
+	<fieldset id=fieldset2 data-dojo-type="delite/Widget">
 		<label for="date">a DateTextBox widget:</label>
-		<input id=date data-dojo-type="dui/form/DateTextBox"/><br>
+		<input id=date data-dojo-type="delite/form/DateTextBox"/><br>
 
 		<label for="textarea">a plain textarea:</label><br>
 		<textarea id=textarea>hello there!</textarea><br>
 
 		<label for="spinner">a Spinner widget:</label>
-		<input id=spinner data-dojo-type="dui/form/NumberSpinner" data-dojo-props='value:100'/><br>
+		<input id=spinner data-dojo-type="delite/form/NumberSpinner" data-dojo-props='value:100'/><br>
 
 		<label>a Combobutton widget:</label>
 
-		<div id=button data-dojo-type="dui/form/ComboButton" data-dojo-props='tabIndex:"0"'>
+		<div id=button data-dojo-type="delite/form/ComboButton" data-dojo-props='tabIndex:"0"'>
 			<span>push me</span>
 
-			<div id=menu data-dojo-type="dui/dui/Menu">
-				<div id=mi1 data-dojo-type="dui/dui/MenuItem">menu item 1</div>
-				<div id=mi2 data-dojo-type="dui/dui/MenuItem">menu item 2</div>
-				<div id=popupMenuItem data-dojo-type="dui/dui/PopupMenuItem">
+			<div id=menu data-dojo-type="delite/delite/Menu">
+				<div id=mi1 data-dojo-type="delite/delite/MenuItem">menu item 1</div>
+				<div id=mi2 data-dojo-type="delite/delite/MenuItem">menu item 2</div>
+				<div id=popupMenuItem data-dojo-type="delite/delite/PopupMenuItem">
 					<span>submenu</span>
 
-					<div id=submenu data-dojo-type="dui/dui/Menu">
-						<div id=smi1 data-dojo-type="dui/dui/MenuItem">submenu item 1</div>
-						<div id=smi2 data-dojo-type="dui/dui/MenuItem">submenu item 2</div>
+					<div id=submenu data-dojo-type="delite/delite/Menu">
+						<div id=smi1 data-dojo-type="delite/delite/MenuItem">submenu item 1</div>
+						<div id=smi2 data-dojo-type="delite/delite/MenuItem">submenu item 2</div>
 					</div>
 				</div>
 			</div>

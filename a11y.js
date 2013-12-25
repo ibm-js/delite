@@ -5,7 +5,7 @@ define([
 ], function (dom, domAttr, domStyle) {
 
 	// module:
-	//		dui/a11y
+	//		delite/a11y
 
 	var undefined;
 
