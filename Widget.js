@@ -23,7 +23,7 @@ define([
 			 has, kernel, lang, on, win, Destroyable, Stateful, register, Bidi) {
 
 	// module:
-	//		dui/Widget
+	//		delite/Widget
 
 	// Flag to enable support for textdir attribute
 	has.add("dojo-bidi", false);
@@ -200,7 +200,7 @@ define([
 		//		Used by `<img>` nodes in templates that really get their image via CSS background-image.
 		_blankGif: config.blankGif || require.toUrl("dojo/resources/blank.gif"),
 
-		// register: dui/register
+		// register: delite/register
 		//		Convenience pointer to register class.   Used by buildRendering() functions produced from
 		//		handlebars! / template.
 		register: register,
@@ -256,8 +256,6 @@ define([
 			// description:
 			//		Create calls a number of widget methods (buildRendering, postCreate,
 			//		etc.), some of which of you'll want to override.
-			//		See http://dojotoolkit.org/reference-guide/dui/Widget.html
-			//		for a discussion of the widget creation lifecycle.
 			//
 			//		Of course, adventurous developers could override create entirely, but this should
 			//		only be done as a last resort.
@@ -443,7 +441,7 @@ define([
 		buildRendering: function () {
 			// summary:
 			//		Construct the UI for this widget, filling in subnodes and/or text inside of this.
-			//		Most widgets will leverage dui/handlebars! to implement this method.
+			//		Most widgets will leverage delite/handlebars! to implement this method.
 			// tags:
 			//		protected
 		},
@@ -467,9 +465,9 @@ define([
 			//		and all related widgets have finished their create() cycle, up through postCreate().
 			//
 			//		Note that startup() may be called while the widget is still hidden, for example if the widget is
-			//		inside a hidden dui/Dialog or an unselected tab of a dui/layout/TabContainer.
+			//		inside a hidden deliteful/Dialog or an unselected tab of a deliteful/TabContainer.
 			//		For widgets that need to do layout, it's best to put that layout code inside resize(), and then
-			//		extend dui/layout/_LayoutWidget so that resize() is called when the widget is visible.
+			//		extend delite/_LayoutWidget so that resize() is called when the widget is visible.
 
 			if (this._started) {
 				return;
@@ -650,8 +648,8 @@ define([
 			//		If reference is a DOMNode (or id matching a DOMNode but not a widget),
 			//		the position argument can be a numeric index or a string
 			//		"first", "last", "before", or "after", same as dojo/dom-construct::place().
-			// returns: dui/Widget
-			//		Provides a useful return of the newly created dui._Widget instance so you
+			// returns: delite/Widget
+			//		Provides a useful return of the newly created delite/Widget instance so you
 			//		can "chain" this function by instantiating, placing, then saving the return value
 			//		to a variable.
 			// example:
@@ -667,7 +665,7 @@ define([
 			//	|	var button = new Button({ label:"click" }).placeAt("wrapper","first");
 			// example:
 			//	|	// create a contentpane and add it to a TabContainer
-			//	|	var tc = dui.byId("myTabs");
+			//	|	var tc = document.getElementById("myTabs");
 			//	|	new ContentPane({ href:"foo.html", title:"Wow!" }).placeAt(tc)
 
 			reference = dom.byId(reference);

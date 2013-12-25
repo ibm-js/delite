@@ -2,14 +2,14 @@ define([
 	"intern!object",
 	"intern/chai!assert",
 	"../register",
-	"dui/Widget"
+	"../Widget"
 ], function (registerSuite, assert, register, Widget) {
 	var container, html;
 	/*jshint multistr: true */
 	html = '<my-widget-on id="myWidget" onclick="globalClicked++;" oncustom="globalCustom++;">hi</my-widget-on>';
 
 	registerSuite({
-		name: "dui/Widget-on",
+		name: "Widget-on",
 		setup: function () {
 			container = document.createElement("div");
 			document.body.appendChild(container);

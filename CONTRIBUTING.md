@@ -92,17 +92,17 @@ layer of structure of how repositories can relate to each other.
 Once you have successfully forked your repository, you will need to clone it locally to your machine:
 
 ```bash
-$ git clone git@github.com:username/dui.git
+$ git clone git@github.com:username/delite.git
 ```
 
-This will clone your fork to your current path in a directory named `dui`.
+This will clone your fork to your current path in a directory named `delite`.
 
 You should also setup the `upstream` repository.  This will allow you to take changes from the "master" repository
 and merge them into your local clone and then push them to your GitHub fork:
 
 ```bash
-$ cd dui
-$ git remote add upstream git@github.com:ibm-dojo/dui.git
+$ cd delite
+$ git remote add upstream git@github.com:ibm-dojo/delite.git
 $ git fetch upstream
 ```
 

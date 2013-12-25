@@ -7,7 +7,7 @@ define([
 ], function (Evented, on, domReady, has, winUtils) {
 
 	// module:
-	//		dui/Viewport
+	//		delite/Viewport
 
 	/*=====
 	 return {

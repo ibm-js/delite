@@ -9,13 +9,13 @@ define([
 ], function (dcl, domAttr, keys, lang, on, Widget) {
 
 	// module:
-	//		dui/KeyNav
+	//		delite/KeyNav
 
 	return dcl(Widget, {
 		// summary:
 		//		A mixin to allow arrow key and letter key navigation of child or descendant widgets.
-		//		It can be used by dui/Container based widgets with a flat list of children,
-		//		or more complex widgets like dui/Tree.
+		//		It can be used by delite/Container based widgets with a flat list of children,
+		//		or more complex widgets like deliteful/Tree.
 		//
 		//		To use this mixin, the subclass must:
 		//
@@ -122,7 +122,7 @@ define([
 			//		Returns first child that can be focused.
 
 			// Leverage _getNextFocusableChild() to skip disabled children
-			return this._getNextFocusableChild(null, 1);	// dui/Widget
+			return this._getNextFocusableChild(null, 1);	// delite/Widget
 		},
 
 		_getLastFocusableChild: function () {
@@ -130,7 +130,7 @@ define([
 			//		Returns last child that can be focused.
 
 			// Leverage _getNextFocusableChild() to skip disabled children
-			return this._getNextFocusableChild(null, -1);	// dui/Widget
+			return this._getNextFocusableChild(null, -1);	// delite/Widget
 		},
 
 		focusFirstChild: function () {
@@ -151,7 +151,7 @@ define([
 			this.focusChild(this._getLastFocusableChild());
 		},
 
-		focusChild: function (/*dui/Widget*/ widget, /*Boolean*/ last) {
+		focusChild: function (/*delite/Widget*/ widget, /*Boolean*/ last) {
 			// summary:
 			//		Focus specified child widget.
 			// widget:
@@ -222,7 +222,7 @@ define([
 			}
 		}),
 
-		_onChildFocus: function (/*dui/Widget*/ child) {
+		_onChildFocus: function (/*delite/Widget*/ child) {
 			// summary:
 			//		Called when a child widget gets focus, either by user clicking
 			//		it, or programatically by arrow key handling code.
@@ -253,7 +253,7 @@ define([
 		multiCharSearchDuration: 1000,
 
 		onKeyboardSearch: function (
-				/*dui/Widget*/ item,
+				/*delite/Widget*/ item,
 				/*jshint unused: vars */
 				/*Event*/ evt,
 				/*String*/  searchString,
@@ -268,7 +268,7 @@ define([
 			}
 		},
 
-		_keyboardSearchCompare: function (/*dui/Widget*/ item, /*String*/ searchString) {
+		_keyboardSearchCompare: function (/*delite/Widget*/ item, /*String*/ searchString) {
 			// summary:
 			//		Compares the searchString to the widget's text label, returning:
 			//
@@ -418,11 +418,11 @@ define([
 					child = this._getNext(child, dir);
 				}
 				if (child !== null && child !== wrappedValue && child.isFocusable()) {
-					return child;	// dui/Widget
+					return child;	// delite/Widget
 				}
 			} while (child !== wrappedValue);
 			// no focusable child found
-			return null;	// dui/Widget
+			return null;	// delite/Widget
 		},
 
 		_getFirst: function () {
@@ -431,7 +431,7 @@ define([
 			// tags:
 			//		abstract extension
 
-			return null;	// dui/Widget
+			return null;	// delite/Widget
 		},
 
 		_getLast: function () {
@@ -440,7 +440,7 @@ define([
 			// tags:
 			//		abstract extension
 
-			return null;	// dui/Widget
+			return null;	// delite/Widget
 		},
 
 		_getNext: function (child, dir) {
@@ -457,10 +457,10 @@ define([
 			while (child) {
 				child = child[dir < 0 ? "previousSibling" : "nextSibling"];
 				if (child && child.hasAttribute && child.buildRendering) {
-					return child; // dui/Widget
+					return child; // delite/Widget
 				}
 			}
-			return null;	// dui/Widget
+			return null;	// delite/Widget
 		}
 	});
 });

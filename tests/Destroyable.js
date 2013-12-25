@@ -2,7 +2,7 @@ define([
 	"intern!object",
 	"intern/chai!assert",
 	"dcl/dcl",
-	"dui/Destroyable",
+	"delite/Destroyable",
 	"dojo/Stateful",
 	"dojo/on"
 ], function (registerSuite, assert, dcl, Destroyable, Stateful, on) {
@@ -48,7 +48,7 @@ define([
 		}
 	});
 	registerSuite({
-		name: "dui/Destroyable",
+		name: "Destroyable",
 		setup: function () {
 			container = document.createElement("div");
 			document.body.appendChild(container);

@@ -1,7 +1,7 @@
 <!DOCTYPE>
 <html>
 <head>
-	<title>dui/css unit test</title>
+	<title>delite/css unit test</title>
 	<script type="text/javascript" src="boilerplate.js"></script>
 
 	<script type="text/javascript">
@@ -13,10 +13,10 @@
 				function load() {
 					var d = new doh.Deferred();
 
-					// Load two modules that both use dui/css! to load tests/resources/TestCssWidget.css
+					// Load two modules that both use delite/css! to load tests/resources/TestCssWidget.css
 					require([
-						"dui/tests/resources/TestCssWidget1",
-						"dui/tests/resources/TestCssWidget2"
+						"delite/tests/resources/TestCssWidget1",
+						"delite/tests/resources/TestCssWidget2"
 					], d.getTestCallback(function () {
 						// TestCssWidget.css should be automatically loaded (but just once, not twice) by the time
 						// this require() call completes.  It should occur before the user defined style node.
@@ -28,7 +28,7 @@
 						// Test that image paths are corrected to be relative to the document rather than the CSS file.
 						text.match(/url\("(.*)"\)/);
 						var path = RegExp.$1;
-						doh.is("../../dui/tests/css/../images/plus.gif", path, "URL to image");
+						doh.is("../../delite/tests/css/../images/plus.gif", path, "URL to image");
 					}));
 
 					return d;
@@ -36,10 +36,10 @@
 				function reload() {
 					var d = new doh.Deferred();
 
-					// Load another modules that uses dui/css! to load the same tests/resources/TestCssWidget.css,
+					// Load another modules that uses delite/css! to load the same tests/resources/TestCssWidget.css,
 					// just to triple check that the CSS doesn't get reloaded
 					require([
-						"dui/tests/resources/TestCssWidget3"
+						"delite/tests/resources/TestCssWidget3"
 					], d.getTestCallback(function () {
 						var styleNodes = document.getElementsByTagName("style");
 						doh.is(2, styleNodes.length, "no new style node added");
@@ -55,7 +55,7 @@
 					// Also tests that the new style nodes occur before the user defined style nodes.
 					numStyleNodes = document.getElementsByTagName("style").length;
 					require([
-						"dui/css!dui/tests/css/test2.css,dui/tests/css/TestCssWidget.css,dui/tests/css/test3.css"
+						"delite/css!delite/tests/css/test2.css,delite/tests/css/TestCssWidget.css,delite/tests/css/test3.css"
 					], d.getTestCallback(function () {
 						var styleNodes = document.getElementsByTagName("style");
 						doh.is(4, styleNodes.length, "two new style nodes added");
@@ -79,7 +79,7 @@
 	</style>
 </head>
 <body>
-<h1>dui/css Unit Test</h1>
+<h1>delite/css Unit Test</h1>
 
 <p>Check console for results.</p>
 </body>

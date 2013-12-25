@@ -2,20 +2,20 @@ define([
 	"intern!object",
 	"intern/chai!assert",
 	"../handlebars",
-	"dui/register",
-	"dui/Widget",
-	"dui/handlebars!./templates/SimpleHandleBarsButton.html",
-	"dui/handlebars!./templates/HandlebarsButton.html"
+	"../register",
+	"../Widget",
+	"../handlebars!./templates/SimpleHandleBarsButton.html",
+	"../handlebars!./templates/HandlebarsButton.html"
 ], function (registerSuite, assert, handlebars, register, Widget, simpleHBTmpl, buttonHBTmpl) {
 	var container, myButton;
 	registerSuite({
-		name: "dui/handlebars",
+		name: "handlebars",
 		setup: function () {
 			container = document.createElement("div");
 			document.body.appendChild(container);
 		},
 		"load" : function () {
-			// Test that function returned from dui/handlebars! creates the template correctly
+			// Test that function returned from delite/handlebars! creates the template correctly
 			var TestButton = register("test-button", [HTMLButtonElement, Widget], {
 				iconClass: "originalClass",
 				label: "original label",

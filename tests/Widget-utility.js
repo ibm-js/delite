@@ -18,8 +18,8 @@ define([
 		</div> \
 		<div id='not-a-widget'></div>";
 
-		registerSuite({
-		name: "dui/Widget-utility",
+	registerSuite({
+		name: "Widget-utility",
 		setup: function () {
 			container = document.createElement("div");
 			document.body.appendChild(container);

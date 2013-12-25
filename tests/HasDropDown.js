@@ -36,7 +36,7 @@ define([
 	}
 
 	registerSuite({
-		name: "dui/HasDropDown",
+		name: "HasDropDown",
 		setup: function () {
 			container = document.createElement("div");
 			document.body.appendChild(container);
@@ -122,11 +122,11 @@ define([
 		"destroy open" : function () {
 			click(dd);
 			assert.ok(helpers.isVisible(popup), "popup visible");
-			assert.deepEqual(1, require("dui/popup")._stack.length, "in popup manager stack");
+			assert.deepEqual(1, require("delite/popup")._stack.length, "in popup manager stack");
 		},
 		"destroy destroy" : function () {
 			dd.destroy();
-			assert.deepEqual(0, require("dui/popup")._stack.length, "popup was closed");
+			assert.deepEqual(0, require("delite/popup")._stack.length, "popup was closed");
 		},
 
 		teardown : function () {

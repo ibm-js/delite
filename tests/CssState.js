@@ -2,11 +2,11 @@ define([
 	"intern!object",
 	"intern/chai!assert",
 	"dojo/dom-class",
-	"dui/register",
-	"dui/CssState",
+	"../register",
+	"../CssState"
 ], function (registerSuite, assert, domClass, register, CssState) {
 	registerSuite({
-		name: "dui/CssState",
+		name: "CssState",
 		"basic" : function () {
 			// Workaround problem using dcl() on native DOMNodes on FF and IE,
 			// see https://github.com/uhop/dcl/issues/9.

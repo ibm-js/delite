@@ -1,7 +1,7 @@
-# dui/template
+# delite/template
 
-`Dui/template` is a utility that takes an AST representing a widget template, and compiles it into
-a function for creating a reactive template.   It's used by [dui/handlerbars!](handlebars.md) and designed
+`Delite/template` is a utility that takes an AST representing a widget template, and compiles it into
+a function for creating a reactive template.   It's used by [delite/handlerbars!](handlebars.md) and designed
 so it can be used with other template syntax parsers too.
 
 An AST would look like:
@@ -50,7 +50,7 @@ it's hard to insert new features into that syntax like:
 ## Notes on template compilation
 
 Libraries like Mustache typically use code generation to compile a template into pure javascript,
-and that's what dui/template is currently doing.
+and that's what delite/template is currently doing.
 
 The advantage of this approach is that:
 

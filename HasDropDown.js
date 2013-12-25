@@ -18,7 +18,7 @@ define([
 			 focus, popup, Widget) {
 
 	// module:
-	//		dui/HasDropDown
+	//		delite/HasDropDown
 
 	return dcl(Widget, {
 		// summary:
@@ -215,6 +215,8 @@ define([
 				"left": "Left",
 				"right": "Right"
 			}[this.dropDownPosition[0]] || this.dropDownPosition[0] || "Down";
+
+			// TODO: rename to d-... type CSS class
 			domClass.add(this._arrowWrapperNode || this._buttonNode, "dui" + defaultPos + "ArrowButton");
 		}),
 
@@ -232,7 +234,7 @@ define([
 		},
 
 		destroy: function () {
-			// If dropdown is open, close it, to avoid leaving dui/focus in a strange state.
+			// If dropdown is open, close it, to avoid leaving delite/focus in a strange state.
 			// Put focus back on me to avoid the focused node getting destroyed, which flummoxes IE.
 			if (this.opened) {
 				this.closeDropDown(true);
@@ -375,7 +377,7 @@ define([
 			//		Opens the dropdown for this widget.   To be called only when this.dropDown
 			//		has been created and is ready to display (ie, it's data is loaded).
 			// returns:
-			//		return value of dui/popup.open()
+			//		return value of delite/popup.open()
 			// tags:
 			//		protected
 

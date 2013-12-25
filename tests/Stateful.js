@@ -5,7 +5,7 @@ define([
 	"dcl/dcl"
 ], function (registerSuite, assert, Stateful, dcl) {
 	registerSuite({
-		name: "dui/Stateful",
+		name: "Stateful",
 		"getSetWatch" : function () {
 			var clz = dcl(Stateful, {
 					foo: 3

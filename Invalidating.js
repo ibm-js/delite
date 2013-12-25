@@ -4,7 +4,7 @@ define(["dcl/dcl", "dojo/_base/lang", "./Stateful"], function (dcl, lang, Statef
 		// summary:
 		//		Mixin for classes (usually widgets) that watch invalidated properties and delay the rendering
 		//		after these properties modifications to the next execution frame. The receiving class must extend
-		//		dui/Widget or dojo/Evented.
+		//		delite/Widget or dojo/Evented.
 
 		_renderHandle: null,
 

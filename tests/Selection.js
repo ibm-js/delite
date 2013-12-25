@@ -12,7 +12,7 @@ define([
 		}
 	});
 	registerSuite({
-		name: "dui/Selection",
+		name: "Selection",
 		"testSetGet" : function () {
 			var o = new C();
 			o.selectedItem = "1";

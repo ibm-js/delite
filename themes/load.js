@@ -2,7 +2,7 @@ define([
 	"require",
 	"dojo/has",
 	"dojo/_base/config",
-	"../css"		// listed here for benefit of builder, so dui/css is included into the layer
+	"../css"		// listed here for benefit of builder, so delite/css is included into the layer
 ], function (req, has, config) {
 
 	"use strict";

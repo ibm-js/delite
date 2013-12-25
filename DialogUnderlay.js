@@ -12,11 +12,11 @@ define([
 ], function (lang, aspect, domAttr, domStyle, on, winUtils, register, Widget, BackgroundIframe, Viewport) {
 
 	// module:
-	//		dui/DialogUnderlay
+	//		delite/DialogUnderlay
 
 	var DialogUnderlay = register("d-dialog-underlay", [HTMLElement, Widget], {
 		// summary:
-		//		A component used to block input behind a `dui/Dialog`.
+		//		A component used to block input behind a `deliteful/Dialog`.
 		//
 		//		Normally this class should not be instantiated directly, but rather shown and hidden via
 		//		DialogUnderlay.show() and DialogUnderlay.hide().  And usually the module is not accessed directly
@@ -25,7 +25,7 @@ define([
 		//		The underlay itself can be styled based on and id:
 		//	|	#myDialog_underlay { background-color:red; }
 		//
-		//		In the case of `dui.Dialog`, this id is based on the id of the Dialog,
+		//		In the case of `deliteful/Dialog`, this id is based on the id of the Dialog,
 		//		suffixed with _underlay.
 
 		// Parameters on creation or updatable later

@@ -16,16 +16,16 @@ define([
 ], function (aspect, dcl, dom, domAttr, domClass, domConstruct, Evented, lang, on, domReady, Stateful, win, winUtils, a11y) {
 
 	// module:
-	//		dui/focus
+	//		delite/focus
 
 	var lastFocusin;
 
-	// TODO: switch to using dui/Stateful, and dcl.advise
+	// TODO: switch to using delite/Stateful, and dcl.advise
 
 	var FocusManager = dcl([Stateful, Evented], {
 		// summary:
 		//		Tracks the currently focused node, and which widgets are currently "active".
-		//		Access via require(["dui/focus"], function(focus){ ... }).
+		//		Access via require(["delite/focus"], function(focus){ ... }).
 		//
 		//		A widget is considered active if it or a descendant widget has focus,
 		//		or if a non-focusable node of this widget or a descendant was recently clicked.
@@ -42,7 +42,7 @@ define([
 		//		Currently focused item on screen
 		curNode: null,
 
-		// activeStack: dui/Widget[]
+		// activeStack: delite/Widget[]
 		//		List of currently active widgets (focused widget and it's ancestors)
 		activeStack: [],
 

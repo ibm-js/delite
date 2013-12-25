@@ -7,18 +7,18 @@ define([
 ], function (dcl, winUtils, domStyle, Widget, Invalidating) {
 
 	// module:
-	//		dui/FormWidget
+	//		delite/FormWidget
 
 	return dcl([Widget, Invalidating], {
 		// summary:
 		//		Mixin for widgets that extend HTMLElement, but conceptually correspond
 		//		to native HTML elements such as `<checkbox>` or `<button>`,
-		//		which can be children of a `<form>` node or a `dui/form/Form` widget.
+		//		which can be children of a `<form>` node or a `deliteful/Form` widget.
 		//
 		// description:
 		//		Represents a single HTML element.
 		//		All these widgets should have these attributes just like native HTML input elements.
-		//		You can set them during widget construction or afterwards, via `dui/Widget.set()`.
+		//		You can set them during widget construction or afterwards, via `delite/Widget.set()`.
 		//
 		//		They also share some common methods.
 
@@ -114,7 +114,7 @@ define([
 
 		isFocusable: function () {
 			// summary:
-			//		Tells if this widget is focusable or not.  Used internally by dui.
+			//		Tells if this widget is focusable or not.  Used internally by delite.
 			// tags:
 			//		protected
 			return !this.disabled && this.focusNode && (domStyle.get(this, "display") !== "none");

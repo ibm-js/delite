@@ -5,7 +5,7 @@ define([
 ], function (dcl, domClass, Widget) {
 
 	// module:
-	//		dui/CssState
+	//		delite/CssState
 
 	return dcl(Widget, {
 		// summary:

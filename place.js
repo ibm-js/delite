@@ -6,7 +6,7 @@ define([
 ], function (domGeometry, domStyle, win, Viewport) {
 
 	// module:
-	//		dui/place
+	//		delite/place
 
 
 	function _place(/*DomNode*/ node, choices, layoutNode, aroundNodeCoords) {
@@ -163,7 +163,7 @@ define([
 	var place = {
 		// summary:
 		//		Code to place a DOMNode relative to another DOMNode.
-		//		Load using require(["dui/place"], function(place){ ... }).
+		//		Load using require(["delite/place"], function(place){ ... }).
 
 		at: function (node, pos, corners, padding, layoutNode) {
 			// summary:
@@ -174,7 +174,7 @@ define([
 			//		Node is assumed to be absolutely or relatively positioned.
 			// node: DOMNode
 			//		The node to position
-			// pos: dui/place.__Position
+			// pos: delite/place.__Position
 			//		Object like {x: 10, y: 20}
 			// corners: String[]
 			//		Array of Strings representing order to try corners of the node in, like ["TR", "BL"].
@@ -184,7 +184,7 @@ define([
 			//		- "BR" - bottom right
 			//		- "TL" - top left
 			//		- "TR" - top right
-			// padding: dui/place.__Position?
+			// padding: delite/place.__Position?
 			//		Optional param to set padding, to put some buffer around the element you want to position.
 			//		Defaults to zero.
 			// layoutNode: Function(node, aroundNodeCorner, nodeCorner)
@@ -211,7 +211,12 @@ define([
 			return _place(node, choices, layoutNode);
 		},
 
-		around: function (/*DomNode*/        node, /*DomNode|dui/place.__Rectangle*/ anchor, /*String[]*/    positions, /*Boolean*/        leftToRight, /*Function?*/    layoutNode) {
+		around: function (
+				/*DomNode*/        node,
+				/*DomNode|delite/place.__Rectangle*/ anchor,
+				/*String[]*/    positions,
+				/*Boolean*/        leftToRight,
+				/*Function?*/    layoutNode) {
 
 			// summary:
 			//		Position node adjacent or kitty-corner to anchor

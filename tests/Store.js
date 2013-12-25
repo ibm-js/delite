@@ -6,7 +6,7 @@ define([
 ], function (registerSuite, assert, register, Widget, Store, Observable, JsonRest, Memory) {
 	var C = register("test-store", [HTMLElement, Widget, Store]);
 	registerSuite({
-		name: "dui/Store",
+		name: "Store",
 		"Error" : function () {
 			var d = this.async(2000);
 			var store = new C();

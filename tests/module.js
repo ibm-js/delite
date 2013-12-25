@@ -6,7 +6,7 @@ define([
 	"./Invalidating"
 ], function (doh, require) {
 
-	// Utility methods (previously in dui/_base)
+	// Utility methods (previously in delite/_base)
 	// doh.register("focus", require.toUrl("./focus.html"), 999999); // not working because it references old dijit widgets
 	doh.register("place", require.toUrl("./place.html"), 999999);
 	doh.register("place-margin", require.toUrl("./place-margin.html"), 999999);

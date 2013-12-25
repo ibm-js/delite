@@ -7,7 +7,7 @@ define([
 ], function (registerSuite, assert, a11y, has, html) {
 	var container;
 		registerSuite({
-		name: "dui/a11y",
+		name: "a11y",
 		setup: function () {
 			container = document.createElement("div");
 			document.body.appendChild(container);

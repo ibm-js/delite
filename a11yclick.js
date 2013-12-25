@@ -6,7 +6,7 @@ define([
 ], function (keys, mouse, on, touch) {
 
 	// module:
-	//		dui/a11yclick
+	//		delite/a11yclick
 
 	/*=====
 	 return {
@@ -56,10 +56,6 @@ define([
 		if (clickKey(e)) {
 			// needed on IE for when focus changes between keydown and keyup - otherwise dropdown menus do not work
 			lastKeyDownNode = e.target;
-
-			// Prevent viewport scrolling on space key in IE<9.
-			// (Reproducible on test_Button.html on any of the first dui/form/Button examples)
-			e.preventDefault();
 		} else {
 			lastKeyDownNode = null;
 		}

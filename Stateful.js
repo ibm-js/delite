@@ -1,6 +1,7 @@
 define(["dcl/dcl"], function (dcl) {
+
 	// module:
-	//		dui/Stateful
+	//		delite/Stateful
 
 	var apn = {};
 

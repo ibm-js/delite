@@ -10,7 +10,7 @@ define([
 ], function (registerSuite, assert, register, Widget, StoreMap, Observable, JsonRest, Memory) {
 
 	registerSuite({
-		name: "dui/StoreMap",
+		name: "StoreMap",
 		"Regular" : function () {
 			var C = register("test-storemap-1", [HTMLElement, Widget, StoreMap], {
 				fooAttr: "name",
