@@ -2,9 +2,10 @@ define([
 	"intern!object",
 	"intern/chai!assert",
 	"dojo/aspect",
+	"dojo/dom-class",
 	"../register",
 	"../Widget"
-], function (registerSuite, assert, aspect, register, Widget) {
+], function (registerSuite, assert, aspect, domClass, register, Widget) {
 	var container, TestWidget, w;
 	var obj = {
 		foo: function () {
@@ -75,6 +76,25 @@ define([
 			});
 			new MyWidget();
 			assert.equal(false, fooSetterCalled, "fooSetterCalled");
+		},
+		baseClass : function() {
+			// First check that baseClass specified in prototype gets set
+			var TestWidget = register("test-lifecycle-widget2", [HTMLElement, Widget], {
+				baseClass: "base2"
+			});
+			var myWidget = new TestWidget();
+			myWidget.placeAt(container);
+			myWidget.startup();
+
+			assert(domClass.contains(myWidget, "base2"), "baseClass is base2");
+
+			// Then test that baseClass specified as widget parameter gets set
+			var myWidgetCustom = new TestWidget();
+			myWidgetCustom.baseClass = "customBase";
+			myWidgetCustom.placeAt(container);
+			myWidgetCustom.startup();
+
+			assert(domClass.contains(myWidgetCustom, "customBase"), "baseClass is customBase");
 		},
 		teardown : function () {
 			container.parentNode.removeChild(container);
