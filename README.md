@@ -38,12 +38,15 @@ This project requires the following other projects to run:
 
 ## Installation
 
-To install the latest master, go to the root Dojo installation directory and clone delite from github:
+* Bower release installation: `bower install delite`
+
+* Manual master installation: go to the root Dojo installation directory and clone delite from github:
 
 	$ git clone git://github.com/ibm-dojo/delite.git
 
 Then install dependencies:
 
+	$ cd delite
 	$ bower install
 
 ## Documentation
