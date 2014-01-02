@@ -32,10 +32,14 @@ define([
 	// (ex: node.attributes, node.textContent) disappear, so disabling it on IE11 too.
 	has.add("dom-proto-set", function () {
 		var node = document.createElement("div");
+		/* jshint camelcase: false */
+		/* jshint proto: true */
 		if (!node.__proto__) {
 			return false;
 		}
 		node.__proto__ = {};
+		/* jshint camelcase: true */
+		/* jshint proto: false */
 		return !!node.attributes;
 	});
 
@@ -103,18 +107,24 @@ define([
 	 * @param {Element} inElement The DOMNode
 	 */
 	function upgrade(element) {
-		if (!has("document-register") && !element.__upgraded__) {
+		if (!has("document-register") && /*jshint camelcase: false*/!element.__upgraded__/*jshint camelcase: true*/) {
 			var widget = registry[element.getAttribute("is") || element.nodeName.toLowerCase()];
 			if (widget) {
 				if (has("dom-proto-set")) {
 					// Redefine Element's prototype to point to widget's methods etc.
+					/*jshint camelcase: false*/
+					/*jshint proto: true*/
 					element.__proto__ = widget.prototype;
+					/*jshint camelcase: true*/
+					/*jshint proto: false*/
 				}
 				else {
 					// Mixin all the widget's methods etc. into Element
 					Object.defineProperties(element, widget.props);
 				}
+				/*jshint camelcase: false*/
 				element.__upgraded__ = true;
+				/*jshint camelcase: true*/
 				element._constructor = widget.constructor;	// _constructor b/c constructor is read-only on iOS
 				if (element.createdCallback) {
 					element.createdCallback.call(element, widget.prototype);

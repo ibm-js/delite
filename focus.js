@@ -13,7 +13,8 @@ define([
 	"dojo/_base/window", // win.body
 	"dojo/window", // winUtils.get
 	"./a11y"	// a11y.isTabNavigable
-], function (aspect, dcl, dom, domAttr, domClass, domConstruct, Evented, lang, on, domReady, Stateful, win, winUtils, a11y) {
+], function (aspect, dcl, dom, domAttr, domClass, domConstruct, Evented,
+			 lang, on, domReady, Stateful, win, winUtils, a11y) {
 
 	// module:
 	//		delite/focus
@@ -97,7 +98,7 @@ define([
 			if (body) {
 				// TODO: change this to run on capture phase rather than bubbling phase after that option is added to
 				// dojo/on (see #16596)
-				var mdh = on(targetWindow.document, 'mousedown, touchstart', function (evt) {
+				var mdh = on(targetWindow.document, "mousedown, touchstart", function (evt) {
 					_this._justMouseDowned = true;
 					setTimeout(function () {
 						_this._justMouseDowned = false;
@@ -113,7 +114,7 @@ define([
 					_this._onTouchNode(effectiveNode || evt.target, "mouse");
 				});
 
-				var fih = on(body, 'focusin', function (evt) {
+				var fih = on(body, "focusin", function (evt) {
 
 					lastFocusin = (new Date()).getTime();
 
@@ -125,7 +126,7 @@ define([
 					// IE reports that nodes like <body> have gotten focus, even though they have tabIndex=-1,
 					// ignore those events
 					var tag = evt.target.tagName.toLowerCase();
-					if (tag == "#document" || tag == "body") {
+					if (tag === "#document" || tag === "body") {
 						return;
 					}
 
@@ -139,7 +140,7 @@ define([
 					}
 				});
 
-				var foh = on(body, 'focusout', function (evt) {
+				var foh = on(body, "focusout", function (evt) {
 					// IE9+ has a problem where focusout events come after the corresponding focusin event.  At least
 					// when moving focus from the Editor's <iframe> to a normal DOMNode.
 					if ((new Date()).getTime() < lastFocusin + 100) {
@@ -221,7 +222,7 @@ define([
 					var popupParent = domAttr.get(node, "duiPopupParent");
 					if (popupParent) {
 						node = dom.byId(popupParent);
-					} else if (node.tagName && node.tagName.toLowerCase() == "body") {
+					} else if (node.tagName && node.tagName.toLowerCase() === "body") {
 						// is this the root of the document or just the root of an iframe?
 						if (node === win.body()) {
 							// node is the root of the main document
@@ -255,7 +256,7 @@ define([
 				return;
 			}
 
-			if (node.nodeType == 9) {
+			if (node.nodeType === 9) {
 				// Ignore focus events on the document itself.  This is here so that
 				// (for example) clicking the up/down arrows of a spinner
 				// (which don't get focus) won't cause that widget to blur. (FF issue)
@@ -271,7 +272,7 @@ define([
 
 			this._onTouchNode(node);
 
-			if (node == this.curNode) {
+			if (node === this.curNode) {
 				return;
 			}
 			this.set("prevNode", this.curNode);
@@ -288,7 +289,7 @@ define([
 
 			var oldStack = this.activeStack, lastOldIdx = oldStack.length - 1, lastNewIdx = newStack.length - 1;
 
-			if (newStack[lastNewIdx] == oldStack[lastOldIdx]) {
+			if (newStack[lastNewIdx] === oldStack[lastOldIdx]) {
 				// no changes, return now to avoid spurious notifications about changes to activeStack
 				return;
 			}
@@ -298,7 +299,7 @@ define([
 			var widget, i;
 
 			// for all elements that have gone out of focus, set focused=false
-			for (i = lastOldIdx; i >= 0 && oldStack[i] != newStack[i]; i--) {
+			for (i = lastOldIdx; i >= 0 && oldStack[i] !== newStack[i]; i--) {
 				widget = dom.byId(oldStack[i]);
 				if (widget) {
 					widget._hasBeenBlurred = true;		// TODO: used by form widgets, should be moved there

@@ -6,9 +6,9 @@ define(["./template"], function (template) {
 		text = text.trim();
 		if (text) {
 			text.split(/({{|}})/).forEach(function (str) {
-				if (str == "{{") {
+				if (str === "{{") {
 					inVar = true;
-				} else if (str == "}}") {
+				} else if (str === "}}") {
 					inVar = false;
 				} else if (str) {
 					parts.push(inVar ? { property: str.trim() } : str);
@@ -18,8 +18,7 @@ define(["./template"], function (template) {
 		return parts;
 	}
 
-	var handlebars;
-	return handlebars = {
+	var handlebars = {
 		// summary:
 		//		Plugin that loads a Handlebars template from a specified MID, and returns a function to
 		//		generate DOM corresponding to that template, and set up handlers
@@ -42,7 +41,7 @@ define(["./template"], function (template) {
 			// Scan attributes
 			var attributes = {};
 			var i = 0, item, attrs = templateNode.attributes;
-			for (i = 0; item = attrs[i]; i++) {
+			for (i = 0; (item = attrs[i]); i++) {
 				if (item.name !== "is" && item.value) {
 					attributes[item.name] = tokenize(item.value);
 				}
@@ -69,10 +68,10 @@ define(["./template"], function (template) {
 						children: this.parseChildren(child)
 					});
 					// TODO: handle <each> tags
-				} else if (childType == 1) {
+				} else if (childType === 1) {
 					// Standard DOM node, recurse
 					children.push(handlebars.parseNode(child));
-				} else if (childType == 3) {
+				} else if (childType === 3) {
 					// Text node likely containing variables like {{foo}}.
 					children = children.concat(tokenize(child.nodeValue.trim()));
 				}
@@ -87,9 +86,8 @@ define(["./template"], function (template) {
 
 			// Adjust the template, putting if statements and looping statements inside their own
 			// <each> and <if> blocks.
-			var adjustedTemplate = templateText.
-				replace(/{{#(each|if) +([^}]+)}}/g, "<$1 condition='$2'>").
-				replace(/{{\/[^}]+}}/g, "</$1>");
+			var adjustedTemplate = templateText.replace(/{{#(each|if) +([^}]+)}}/g,
+					"<$1 condition='$2'>").replace(/{{\/[^}]+}}/g, "</$1>");
 
 			// Also, rename all the nodes in the template so that browsers with native document.createElement() support
 			// don't start instantiating nested widgets, creating internal nodes etc.
@@ -103,7 +101,7 @@ define(["./template"], function (template) {
 			// Skip optional top comment node and find root node of template.
 			// Note that template needs to have a single root node.
 			var root = container.firstChild;
-			while (root.nodeType != 1) {
+			while (root.nodeType !== 1) {
 				root = root.nextSibling;
 			}
 
@@ -143,4 +141,6 @@ define(["./template"], function (template) {
 			});
 		}
 	};
+
+	return handlebars;
 });

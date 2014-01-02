@@ -99,6 +99,10 @@ define(["dcl/dcl", "dojo/_base/lang", "./Widget"], function (dcl, lang, Widget) 
 				return;
 			}
 
+			this._setSelected(item, value);
+		},
+
+		_setSelected: function (item, value) {
 			// copy is returned
 			var sel = this.selectedItems;
 
@@ -151,6 +155,10 @@ define(["dcl/dcl", "dojo/_base/lang", "./Widget"], function (dcl, lang, Widget) 
 				return false;
 			}
 
+			return this._selectFromEvent(e, item, renderer, dispatch);
+		},
+
+		_selectFromEvent: function (e, item, renderer, dispatch) {
 			var changed;
 			var oldSelectedItem = this.selectedItem;
 			var selected = item == null ? false : this.isSelected(item);
