@@ -162,7 +162,7 @@ define([
 			}
 		},
 
-		_onBlurNode: function (/*DomNode*/ node) {
+		_onBlurNode: function (/*DomNode*/ node) { // jshint unused: vars
 			// summary:
 			//		Called when focus leaves a node.
 			//		Usually ignored, _unless_ it *isn't* followed by touching another node,
@@ -236,7 +236,7 @@ define([
 						// except ignore clicks on disabled widgets (actually focusing a disabled widget still works,
 						// to support MenuItem)
 						var id = node.buildRendering && node.id;
-						if (id && !(by == "mouse" && node.disabled)) {
+						if (id && !(by === "mouse" && node.disabled)) {
 							newStack.unshift(id);
 						}
 						node = node.parentNode;

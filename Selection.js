@@ -78,14 +78,13 @@ define(["dcl/dcl", "dojo/_base/lang", "./Widget"], function (dcl, lang, Widget) 
 				return this.getIdentity(sitem) === this.getIdentity(item);
 			}));
 		},
-		/*jshint unused: vars */
-		getIdentity: function (item) {
+
+		getIdentity: function (/*jshint unused: vars */item) {
 			// summary:
 			//		This function must be implemented to return the id of a item.
 			// item: Object
 			//		The item to query the identity for.
 		},
-		/*jshint unused: true */
 
 		setSelected: function (item, value) {
 			// summary:
