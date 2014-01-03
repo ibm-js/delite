@@ -340,7 +340,7 @@ define([
 
 	// register top window and all the iframes it contains
 	domReady(function () {
-		var handle = singleton.registerWin(winUtils.get(document));
+		singleton.registerWin(winUtils.get(document));
 	});
 
 	return singleton;

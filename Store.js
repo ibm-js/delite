@@ -94,7 +94,7 @@ define(["dcl/dcl", "dojo/_base/lang", "dojo/when", "./Invalidating"], function (
 					}
 					// if we have a mapping function between store item and some intermediary items use it
 					results = results.map(lang.hitch(this, function (item) {
-						return this.itemToRenderItem(item, store);
+						return this.itemToRenderItem(item);
 					}));
 					when(results, lang.hitch(this, this.initItems), lang.hitch(this, "_queryError"));
 				} else {
@@ -114,7 +114,7 @@ define(["dcl/dcl", "dojo/_base/lang", "dojo/when", "./Invalidating"], function (
 			var items = this.items;
 
 			// if we have a mapping function between store item and some intermediary items use it
-			var newItem = this.itemToRenderItem(object, this.store);
+			var newItem = this.itemToRenderItem(object);
 
 			if (previousIndex !== -1) {
 				// this is a remove or a move
@@ -168,7 +168,7 @@ define(["dcl/dcl", "dojo/_base/lang", "dojo/when", "./Invalidating"], function (
 			//		protected
 
 			// we want to keep the same item object and mixin new values into old object
-			lang.mixin(items[index], item);
+			dcl.mix(items[index], item);
 		},
 
 		addItem: function (index, item, items) {
