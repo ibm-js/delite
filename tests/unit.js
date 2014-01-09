@@ -15,5 +15,8 @@ define([
 	"./Stateful",
 	"./Selection",
 	"./StoreMap",
-	"./Store"
+	"./Store",
+	"./Scrollable",
+	"./ScrollableTestContainer-markup",
+	"./ScrollableTestContainer-prog"
 ]);
