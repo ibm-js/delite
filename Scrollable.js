@@ -55,7 +55,7 @@ define([
 			this.addInvalidatingProperties("scrollDirection");
 		},
 
-		refreshRendering: function () {
+		refreshRendering: dcl.after(function () {
 			if (!this.scrollableNode) {
 				this.scrollableNode = this; // If unspecified, defaults to 'this'.
 			}
@@ -68,10 +68,14 @@ define([
 				/^(both|horizontal)$/.test(this.scrollDirection) ? "scroll" : "");
 			domStyle.set(this.scrollableNode, "overflowY",
 				/^(both|vertical)$/.test(this.scrollDirection) ? "scroll" : "");
-		},
+		}),
 
-		buildRendering: function () {
+		buildRendering: dcl.after(function () {
 			this.invalidateRendering();
+		}),
+		
+		destroy: function () {
+			this._stopAnimation();
 		},
 
 		isTopScroll: function () {
@@ -170,9 +174,11 @@ define([
 			// duration:
 			//		Duration of scrolling animation in milliseconds. If 0 or unspecified,
 			//		scrolls without animation.
-
 			var self = this;
 			var scrollableNode = this.scrollableNode;
+			var from;
+			var animation, anim, Curve;
+			this._stopAnimation();
 			if (!duration || duration <= 0) { // shortcut
 				if (to.x !== undefined) {
 					scrollableNode.scrollLeft = to.x;
@@ -181,28 +187,30 @@ define([
 					scrollableNode.scrollTop = to.y;
 				}
 			} else {
-				var from = {
+				from = {
 					x: to.x !== undefined ? scrollableNode.scrollLeft : undefined,
 					y: to.y !== undefined ? scrollableNode.scrollTop : undefined
 				};
-				var animation = function () {
-					if (self._animation && self._animation.status() === "playing") {
-						self._animation.stop();
-					}
+				anim = function () {
 					// dojo/_base/fx._Line cannot be used for animating several
-					// properties at once. Hence:
-					baseFx._Line.prototype.getValue = function (/*float*/ n) {
+					// properties at once (scrollTop and scrollLeft in our case). 
+					// Hence, using instead a custom function:
+					Curve = function (/*int*/ start, /*int*/ end){
+						this.start = start;
+						this.end = end;
+					};
+					Curve.prototype.getValue = function (/*float*/ n){
 						return {
-							x: ((this.end.x - this.start.x) * n) + this.start.x,
-							y: ((this.end.y - this.start.y) * n) + this.start.y
+							x: ((to.x - from.x) * n) + from.x,
+							y: ((to.y - from.y) * n) + from.y
 						};
 					};
-					var	anim = new baseFx.Animation({
+					animation = new baseFx.Animation({
 						beforeBegin: function () {
 							if (this.curve) {
 								delete this.curve;
 							}
-							anim.curve = new baseFx._Line(from, to);
+							animation.curve = new Curve(from, to);
 						},
 						onAnimate: function (val) {
 							if (val.x !== undefined) {
@@ -216,12 +224,19 @@ define([
 						duration: duration,
 						rate: 20 // TODO: IMPROVEME
 					});
-					self._animation = anim;
-
-					return anim; // dojo/_base/fx/Animation
+					self._animation = animation;
+					return animation; // dojo/_base/fx/Animation
 				};
-				animation().play();
+				anim().play();
 			}
+		},
+		
+		_stopAnimation: function () {
+			// summary:
+			//		Stops the scrolling animation if it is currently playing. 
+			if (this._animation && this._animation.status() === "playing") {
+				this._animation.stop();
+			} 
 		}
 	});
 });
