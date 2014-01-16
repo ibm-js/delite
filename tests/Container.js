@@ -5,9 +5,8 @@ define([
 	"../focus",
 	"../register",
 	"../Widget",
-	"../Container",
-	"../Contained",
-], function (registerSuite, assert, a11y, focus, register, Widget, Container, Contained) {
+	"../Container"
+], function (registerSuite, assert, a11y, focus, register, Widget, Container) {
 	var container, PlainWidget, TestContainer, TestContained, html, zero, two, four;
 	/*jshint multistr: true */
 	html = "<label for='input'>before:</label><input id='input'/> \
@@ -31,7 +30,7 @@ define([
 			container.innerHTML = html;
 			PlainWidget = register("plain-widget", [HTMLElement, Widget], {});
 			TestContainer = register("test-container", [HTMLElement, Widget, Container], {});
-			TestContained = register("test-contained", [HTMLElement, Widget, Contained], {});
+			TestContained = register("test-contained", [HTMLElement, Widget], {});
 		},
 		"parse" : function () {
 			register.parse(container);
@@ -57,11 +56,15 @@ define([
 			assert.deepEqual(-1, c.getIndexOfChild(document.getElementById("outsideCont")), "outsideCont test");
 
 		},
-		"basic tests getIndexInParent" : function () {
-			assert.deepEqual(0, document.getElementById("zero").getIndexInParent(), "zero test");
-			assert.deepEqual(1, document.getElementById("one").getIndexInParent(), "one test");
-			assert.deepEqual(2, document.getElementById("two").getIndexInParent(), "two test");
-			assert.deepEqual(-1, document.getElementById("outsideCont").getIndexInParent(), "- one test");
+		"basic tests getNextSibling" : function () {
+			var c = document.getElementById("container");
+			assert.deepEqual("one", c.getNextSibling(document.getElementById("zero")).id, "zero next");
+			assert(!c.getNextSibling(document.getElementById("four")), "four next");
+		},
+		"basic tests getPreviousSibling" : function () {
+			var c = document.getElementById("container");
+			assert.deepEqual("zero", c.getPreviousSibling(document.getElementById("one")).id, "one prev");
+			assert(!c.getPreviousSibling(document.getElementById("zero")), "zero prev");
 		},
 		"basic tests removeChild" : function () {
 			var c = document.getElementById("container");
