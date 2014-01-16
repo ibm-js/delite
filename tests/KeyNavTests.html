@@ -13,10 +13,9 @@
 		"dojo/dom",
 		"delite/Widget",
 		"delite/Container",
-		"delite/Contained",
 		"delite/KeyNav",
 		"dojo/domReady!"
-	], function(register, dom, Widget, Container, Contained, KeyNav){
+	], function(register, dom, Widget, Container, KeyNav){
 		var TestContainer = register("test-container", [HTMLElement, Widget, Container, KeyNav], {
 			buildRendering: function () {
 				this.style.display = "block";
@@ -54,7 +53,7 @@
 			}
 		});
 
-		var TestContained = register("test-contained", [HTMLElement, Widget, Contained], {
+		var TestContained = register("test-contained", [HTMLElement, Widget], {
 			buildRendering: function () {
 				this.style.display = "block";
 			}

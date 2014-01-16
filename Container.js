@@ -7,16 +7,13 @@ define([
 	// module:
 	//		delite/Container
 
-	return dcl(null, {
+	return dcl(Widget, {
 		// summary:
-		//		Mixin for widgets that contain HTML and/or a set of widget children.
+		//		Widget that contains a set of widget children.
 
 		buildRendering: dcl.after(function () {
 			if (!this.containerNode) {
 				// All widgets with descendants must set containerNode.
-				// NB: this code doesn't quite work right because for TabContainer it runs before
-				// _TemplatedMixin::buildRendering(), and thus
-				// sets this.containerNode to this, later to be overridden by the assignment in the template.
 				this.containerNode = this;
 			}
 		}),
@@ -62,7 +59,7 @@ define([
 			}
 		},
 
-		removeChild: function (/*Widget|int*/ widget) {
+		removeChild: function (/*Element|int*/ widget) {
 			// summary:
 			//		Removes the passed widget instance from this widget but does
 			//		not destroy it.  You can also pass in an integer indicating
@@ -90,6 +87,37 @@ define([
 			// summary:
 			//		Gets the index of the child in this container or -1 if not found
 			return this.getChildren().indexOf(child);	// int
+		},
+
+		_getSibling: function (/*Element*/ node, /*String*/ which) {
+			// summary:
+			//		Returns next or previous sibling of specified node
+			// node:
+			//		The node
+			// which:
+			//		Either "next" or "previous"
+			// tags:
+			//		private
+			do {
+				node = node[which + "Sibling"];
+			} while (node && node.nodeType !== 1);
+			return node;	// Element
+		},
+
+		getPreviousSibling: function (/*Element*/ node) {
+			// summary:
+			//		Returns null if this is the first child of the parent,
+			//		otherwise returns the next element sibling to the "left".
+
+			return this._getSibling(node, "previous"); // Element
+		},
+
+		getNextSibling: function (/*Element*/ node) {
+			// summary:
+			//		Returns null if this is the last child of the parent,
+			//		otherwise returns the next element sibling to the "right".
+
+			return this._getSibling(node, "next"); // Element
 		}
 	});
 });
