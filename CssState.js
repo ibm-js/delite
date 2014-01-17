@@ -38,7 +38,7 @@ define([
 					return;
 				}
 				var classes = baseClasses.map(function (c) {
-					return c + modifier[0].toUpperCase() + modifier.substr(1);
+					return c + "-" + modifier;
 				});
 				domClass.toggle(self, classes, condition);
 			}
