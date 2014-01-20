@@ -20,26 +20,26 @@ define([
 			var CssWidget = register("css-widget", [HTMLElement, CssWidgetMixin], { });
 
 			var widget = new CssWidget({
-				state: "Error",
+				state: "error",
 				disabled: true,
 				checked: true
 			});
 
-			assert.ok(domClass.contains(widget, "duiCssError"), "error state");
-			assert.ok(domClass.contains(widget, "fooDisabled"), "disabled");
-			assert.ok(domClass.contains(widget, "fooChecked"), "checked");
+			assert.ok(domClass.contains(widget, "duiCss-error"), "error state");
+			assert.ok(domClass.contains(widget, "foo-disabled"), "disabled");
+			assert.ok(domClass.contains(widget, "foo-checked"), "checked");
 
 			widget.mix({
-				state: "Incomplete",
+				state: "incomplete",
 				disabled: false,
 				checked: "mixed"
 			});
 
-			assert.ok(!domClass.contains(widget, "duiCssError"), "not error state");
-			assert.ok(domClass.contains(widget, "duiCssIncomplete"), "incomplete state");
-			assert.ok(!domClass.contains(widget, "fooDisabled"), "not disabled");
-			assert.ok(domClass.contains(widget, "fooMixed"), "half checked");
-			assert.ok(!domClass.contains(widget, "fooChecked"), "original checked removed");
+			assert.ok(!domClass.contains(widget, "duiCss-error"), "not error state");
+			assert.ok(domClass.contains(widget, "duiCss-incomplete"), "incomplete state");
+			assert.ok(!domClass.contains(widget, "foo-disabled"), "not disabled");
+			assert.ok(domClass.contains(widget, "foo-mixed"), "half checked");
+			assert.ok(!domClass.contains(widget, "foo-checked"), "original checked removed");
 		}
 	});
 });
