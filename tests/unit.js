@@ -15,5 +15,6 @@ define([
 	"./Stateful",
 	"./Selection",
 	"./StoreMap",
-	"./Store"
+	"./Store",
+	"./Scrollable"
 ]);
