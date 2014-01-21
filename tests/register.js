@@ -21,6 +21,19 @@ define([
 			document.body.appendChild(container);
 		},
 
+		// Test the parser doesn't fail when no widgets are registered.  It just shouldn't do anything.
+		// Unfortunately, since Intern doesn't have sandboxing, usually when this runs there are already
+		// widgets registered, so it's not actually testing anything yet.
+		"no widgets registered parse" : function () {
+			container.innerHTML = "<div>" +
+				"<button is='test-extended-button-widget' id=ebw2>hello</button>" +
+				"<span>random node</span>" +
+				"<test-parser-widget id=pw></test-parser-widget>" +
+				"</div>";
+
+			register.parse(container);
+		},
+
 		// Declare and instantiate a simple widget
 		"simple" : function () {
 			TestWidget = register("test-simple-widget", [HTMLElement], {
