@@ -368,7 +368,7 @@ define([
 	function parse(root) {
 		// Note that upgrade() will be a no-op when has("document-register") is true, but we still
 		// need to calculate nodes[] for the startup() call below.
-		var node, idx = 0, nodes = (root || doc).querySelectorAll(selectors);
+		var node, idx = 0, nodes = (root || doc).querySelectorAll(selectors.join(", "));
 		while ((node = nodes[idx++])) {
 			upgrade(node);
 		}
