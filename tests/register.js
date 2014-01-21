@@ -23,12 +23,63 @@ define([
 
 		// Declare and instantiate a simple widget
 		"simple" : function () {
-			// Create a mixin for testing purposes.  Note that (currently) Stateful must be in the inheritance chain
-			// because register() expects this.introspect() and this._getProps() to be defined.
+			TestWidget = register("test-simple-widget", [HTMLElement], {
+				foo: 3,
+				createdCallback: function () {
+					this._createdCallbackCalled = true;
+				},
+				enteredViewCallback: function () {
+					this._enteredViewCallbackCalled = true;
+				},
+				fooFunc: function () {
+					this._fooCalled = true;
+				},
+
+				barFunc: function () {
+					this._barCalled = true;
+				}
+			});
+			assert.ok(TestWidget, "TestWidget created");
+
+			container.innerHTML += "<test-simple-widget id=tsw></test-simple-widget>";
+			var tsw = document.getElementById("tsw");
+			register.upgrade(tsw);
+
+			// lifecycle methods
+			assert.ok(tsw._createdCallbackCalled, "createdCallback called");
+			assert.ok(tsw._enteredViewCallbackCalled, "enteredViewCallback called");
+
+			// property exists
+			assert.ok(tsw.foo, "foo");
+
+			// function from mixin exists
+			tsw.fooFunc();
+			assert.ok(tsw._fooCalled, "_fooCalled");
+
+			// properties are enumerable
+			var sawFoo;
+			for (var key in tsw) {
+				if (key === "foo") {
+					sawFoo = true;
+					break;
+				}
+			}
+			assert.ok(sawFoo, "foo enumerable");
+		},
+
+		// Declare and instantiate a widget from a mixin that extends Stateful
+		"stateful" : function () {
+			// Create a mixin for testing purposes.
+			// register() should call this.introspect() if it's defined, because it isn't called naturally.
 			Mixin = register.dcl(Stateful, {
 				foo: 3,
 				fooFunc: function () {
 					this._fooCalled = true;
+				},
+
+				cs1: 3,
+				_setCs1Attr: function (val) {
+					this._set("cs1", val + 1);
 				},
 
 				// Need to redefine Stateful._getProps() because on FF and IE, we get exceptions when accessing props
@@ -49,6 +100,11 @@ define([
 			TestWidget = register("test-widget", [HTMLElement, Mixin], {
 				barFunc: function () {
 					this._barCalled = true;
+				},
+
+				cs2: 3,
+				_setCs2Attr: function (val) {
+					this._set("cs2", val + 1);
 				}
 			});
 			assert.ok(TestWidget, "TestWidget created");
@@ -68,21 +124,18 @@ define([
 			tw.barFunc();
 			assert.ok(tw._barCalled, "_barCalled");
 
-			// properties are enumerable
-			var sawFoo;
-			for (var key in tw) {
-				if (key === "foo") {
-					sawFoo = true;
-					break;
-				}
-			}
-			assert.ok(sawFoo, "foo enumerable");
+			// check that custom setters are working
+			assert.strictEqual(tw.cs1, 3, "tw.cs1");
+			tw.cs1 = 4;			// actually sets cs1 to 5, due to custom setter
+			assert.strictEqual(tw.cs1, 5, "tw.cs1 after set");
 
-			// TODO: test that createdCallback() was called
+			assert.strictEqual(tw.cs2, 3, "tw.cs2");
+			tw.cs2 = 4;			// actually sets cs2 to 5, due to custom setter
+			assert.strictEqual(tw.cs1, 5, "tw.cs2 after set");
+
 		},
 
 		"extended": function () {
-
 			// Create extension of another widget
 			TestExtendedWidget = register("test-extended-widget", [TestWidget], {
 				extFunc: function () {
