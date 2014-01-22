@@ -53,7 +53,7 @@ define(["dcl/dcl", "dojo/_base/lang", "./Stateful"], function (dcl, lang, Statef
 			// summary:
 			//		Add the properties listed as parameters to the watched properties to trigger invalidation.
 			// 		This method must be called during the startup lifecycle, before buildRendering() completes.
-			//		It is typically used by subclasses of a _Invalidating class to
+			//		It is typically used by subclasses of a Invalidating class to
 			// 		add more properties	to watch for.
 			// tags:
 			//		protected
