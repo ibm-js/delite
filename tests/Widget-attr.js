@@ -82,7 +82,7 @@ define([
 			assert.strictEqual("hello world &lt;&gt;&amp;;", widget.plainTextNode.innerHTML, "innerHTML");
 
 		},
-		// tabIndex is problematic, see https://github.com/ibm-dojo/delite/issues/34.
+		// tabIndex is problematic, see https://github.com/ibm-js/delite/issues/34.
 		"specialNames" : function () {
 			// Test when tabIndex is declared top level, in the props passed to register().
 			// TODO: enable when https://github.com/uhop/dcl/issues/9 is fixed
