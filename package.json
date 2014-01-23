@@ -13,8 +13,8 @@
 	"licenses": [
 		{
 			"type": "BSD",
-			"url": "https://github.com/ibm-dojo/delite/blob/master/LICENSE"
+			"url": "https://github.com/ibm-js/delite/blob/master/LICENSE"
 		}
 	],
-	"bugs": "https://github.com/ibm-dojo/delite/issues"
+	"bugs": "https://github.com/ibm-js/delite/issues"
 }

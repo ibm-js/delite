@@ -22,7 +22,7 @@ Migration will require manual steps listed [here](docs/migration.md).
 ## Issues
 
 Bugs and open issues are tracked in the
-[github issues tracker])(https://github.com/ibm-dojo/delite/issues).
+[github issues tracker])(https://github.com/ibm-js/delite/issues).
 
 ## Licensing
 
@@ -42,7 +42,7 @@ This project requires the following other projects to run:
 
 * Manual master installation: go to the root Dojo installation directory and clone delite from github:
 
-	$ git clone git://github.com/ibm-dojo/delite.git
+	$ git clone git://github.com/ibm-js/delite.git
 
 Then install dependencies:
 
