@@ -32,10 +32,10 @@ define(["dcl/dcl", "dojo/_base/lang", "dojo/when", "./Invalidating"], function (
 		//		Options to be applied when querying the store.
 		queryOptions: null,
 
-		// items: Array
+		// renderItems: Array
 		//		The render items corresponding to the store items for this widget. This is filled from the store and
 		//		is not supposed to be modified directly. Initially null.
-		items: null,
+		renderItems: null,
 
 		preCreate: function () {
 			// we want to be able to wait for potentially several of those properties to be set before
@@ -67,16 +67,25 @@ define(["dcl/dcl", "dojo/_base/lang", "dojo/when", "./Invalidating"], function (
 			return item;
 		},
 
-		initItems: function (items) {
+		initItems: function (renderItems) {
+			// summary:
+			//		This method is called once the query has been executed to initial the renderItems array
+			//		with the list of initial render items.
+			// description:
+			//		This method sets the renderItems property to the render items array passed as parameter. Once
+			//		done, it fires a 'query-success' event.
+			// renderItems:
+			//		The array of initial render items to be set in the renderItems property.
 			// tags:
 			//		protected
-			this.items = items;
-			this.emit("query-success", { items: items, cancelable: false, bubbles: true });
+			this.renderItems = renderItems;
+			this.emit("query-success", { renderItems: renderItems, cancelable: false, bubbles: true });
 		},
 
 		refreshProperties: function (props) {
 			// summary:
-			//		Actually refresh the rendering by querying the store.
+			//		Query the store, create the render items and call initItems() when ready. If an error occurs
+			//		a 'query-error' event will be fired.
 			// tags:
 			//		protected
 			if (isStoreInvalidated(props)) {
@@ -111,7 +120,7 @@ define(["dcl/dcl", "dojo/_base/lang", "dojo/when", "./Invalidating"], function (
 			// tags:
 			//		private
 
-			var items = this.items;
+			var items = this.renderItems;
 
 			// if we have a mapping function between store item and some intermediary items use it
 			var newItem = this.itemToRenderItem(object);
@@ -131,7 +140,7 @@ define(["dcl/dcl", "dojo/_base/lang", "dojo/when", "./Invalidating"], function (
 
 			}
 			// set back the modified items property
-			this.items = items;
+			this.renderItems = items;
 		},
 
 		destroy: function () {
@@ -141,45 +150,48 @@ define(["dcl/dcl", "dojo/_base/lang", "dojo/when", "./Invalidating"], function (
 			}
 		},
 
-		removeItem: function (index, item, items) {
+		removeItem: function (index, renderItem, renderItems) {
 			// summary:
-			//		Remove a render item. This can be redefined but must not be called directly.
+			//		When the store is observed and an item is removed in the store this method is called to remove the
+			//		corresponding render item. This can be redefined but must not be called directly.
 			// index: Number
-			//		The index of the removed item.
-			// item: Object
-			//		The removed item.
-			// items: Array
-			//		The array of items to remove the item from.
+			//		The index of the item to remove.
+			// renderItem: Object
+			//		The render item to be removed.
+			// renderItems: Array
+			//		The array of render items to remove the render item from.
 			// tags:
 			//		protected
-			items.splice(index, 1);
+			renderItems.splice(index, 1);
 		},
 
-		putItem: function (index, item, items) {
+		putItem: function (index,  renderItem, renderItems) {
 			// summary:
-			//		Modify a render item. This can be redefined but must not be called directly.
+			//		When the store is observed and an item is updated in the store this method is called to update the
+			//		corresponding render item. This can be redefined but must not be called directly.
 			// index: Number
-			//		The index of the modified item.
-			// item: Object
-			//		The modified item.
-			// items: Array
-			//		The array of items in which the modified item is.
+			//		The index of the updated item.
+			// renderItem: Object
+			//		The render item data the render item must be updated with.
+			// renderItems: Array
+			//		The array of render items to render item to be updated is part of.
 			// tags:
 			//		protected
 
 			// we want to keep the same item object and mixin new values into old object
-			dcl.mix(items[index], item);
+			dcl.mix(renderItems[index], renderItem);
 		},
 
 		addItem: function (index, item, items) {
 			// summary:
-			//		Add a render item. This can be redefined but must not be called directly.
+			//		When the store is observed and an item is added in the store this method is called to add the
+			//		corresponding render item. This can be redefined but must not be called directly.
 			// index: Number
-			//		The index of the added item.
-			// item: Object
-			//		The added item.
-			// items: Array
-			//		The array of items in which to add the item.
+			//		The index of the item to add.
+			// renderItem: Object
+			//		The render item to be added.
+			// renderItems: Array
+			//		The array of render items to add the render item to.
 			// tags:
 			//		protected
 			items.splice(index, 0, item);

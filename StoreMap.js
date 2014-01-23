@@ -183,7 +183,12 @@ define(["dcl/dcl", "dojo/_base/lang", "./Store"], function (dcl, lang, Store) {
 		},
 
 		remap: function () {
-			var items = this.items;
+			// summary:
+			//		If allowRemap is true, the method allows to perform again the mapping between the data item
+			//		and the render items. This might be useful is mapping by function is used and the executation
+			//		context of the mapping function as changed so that the results would need to be updated.
+			//		It should not be called if allowRemap is false.
+			var items = this.renderItems;
 			var mappedKeys = this._mappedKeys;
 			for (var i = 0; i < items.length; i++) {
 				for (var j = 0; j < mappedKeys.length; j++) {
