@@ -30,24 +30,24 @@ define([
 				{ id: "bar", name: "Bar" }
 			];
 			store.on("query-success", d.callback(function () {
-				assert.deepEqual(myData, store.items);
+				assert.deepEqual(myData, store.renderItems);
 				myStore.put({ id: "foo", name: "Foo2" });
 				// this works because put is synchronous & same for add etc...
 				assert.deepEqual([
 					{ id: "foo", name: "Foo2" },
 					{ id: "bar", name: "Bar" }
-				], store.items);
+				], store.renderItems);
 				myStore.add({ id: "fb", name: "FB" });
 				assert.deepEqual([
 					{ id: "foo", name: "Foo2" },
 					{ id: "bar", name: "Bar" },
 					{ id: "fb", name: "FB" }
-				], store.items);
+				], store.renderItems);
 				myStore.remove("bar");
 				assert.deepEqual([
 					{ id: "foo", name: "Foo2" },
 					{ id: "fb", name: "FB" }
-				], store.items);
+				], store.renderItems);
 			}));
 			store.startup();
 			var myStore = Observable(new Memory({ data: myData }));
@@ -62,7 +62,7 @@ define([
 				{ id: "bar", name: "Bar" }
 			];
 			store.on("query-success", d.callback(function () {
-				assert.deepEqual(myData, store.items);
+				assert.deepEqual(myData, store.renderItems);
 				// we destroy the store, we should not get any notification after that
 				store.destroy();
 				myStore.put({ id: "foo", name: "Foo2" });
@@ -70,17 +70,17 @@ define([
 				assert.deepEqual([
 					{ id: "foo", name: "Foo" },
 					{ id: "bar", name: "Bar" }
-				], store.items);
+				], store.renderItems);
 				myStore.add({ id: "fb", name: "FB" });
 				assert.deepEqual([
 					{ id: "foo", name: "Foo" },
 					{ id: "bar", name: "Bar" }
-				], store.items);
+				], store.renderItems);
 				myStore.remove("bar");
 				assert.deepEqual([
 					{ id: "foo", name: "Foo" },
 					{ id: "bar", name: "Bar" }
-				], store.items);
+				], store.renderItems);
 			}));
 			store.startup();
 			var myStore = Observable(new Memory({ data: myData }));
