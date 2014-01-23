@@ -5,6 +5,10 @@ define(["dcl/dcl", "dojo/_base/lang", "./Stateful"], function (dcl, lang, Statef
 		//		Mixin for classes (usually widgets) that watch invalidated properties and delay the rendering
 		//		after these properties modifications to the next execution frame. The receiving class must extend
 		//		delite/Widget or dojo/Evented.
+		// description:
+		//		Once a set of properties has been declared subject to invalidation, when the user will change their
+		//		values this will end up calling possible the refreshProperties() and in all cases the
+		//		refreshRendering() method allowing the receiving class to refresh itself based on the new values.
 
 		_renderHandle: null,
 
@@ -55,6 +59,18 @@ define(["dcl/dcl", "dojo/_base/lang", "./Stateful"], function (dcl, lang, Statef
 			// 		This method must be called during the startup lifecycle, before buildRendering() completes.
 			//		It is typically used by subclasses of a Invalidating class to
 			// 		add more properties	to watch for.
+			// description:
+			//		This can be used to trigger invalidation for rendering or for both property and rendering. When
+			//		no invalidation mechanism is specificed only the rendering refresh will be triggered (i.e. only
+			//		the refreshRendering() method will be called.
+			//		This can either be called with a list of properties to invalidate the rendering for as follows:
+			//			this.addInvalidatingProperties("foo", "bar", ...);
+			//		or with an hash of keys / values, the keys being the properties to invalidate and the values the
+			//		invalidation method (i.e. rendering or property and rendering):
+			//			this.addInvalidatingProperties({
+			//				"foo": "invalidateProperty",
+			//				"bar": "invalidateRendering"
+			//			});
 			// tags:
 			//		protected
 			if (this._invalidatingProperties == null) {
@@ -144,7 +160,12 @@ define(["dcl/dcl", "dojo/_base/lang", "./Stateful"], function (dcl, lang, Statef
 				var props = lang.clone(this._invalidatedProperties);
 				this.invalidRendering = false;
 				this.refreshRendering(this._invalidatedProperties);
-				this._invalidatedProperties = {};
+				// do not fully delete invalidateProperties because someone might have set a property in
+				// its refreshRendering method (not wise but who knows what people are doing) and a new cycle
+				// should start with that properties listed as invalid instead of a blank set of properties
+				for (var key in props) {
+					delete this._invalidatedProperties[key];
+				}
 				this.emit("refresh-rendering-complete",
 					{ invalidatedProperties: props, bubbles: true, cancelable: false });
 			}
@@ -162,7 +183,8 @@ define(["dcl/dcl", "dojo/_base/lang", "./Stateful"], function (dcl, lang, Statef
 			// summary:
 			//		Actually refresh the properties. Implementation should implement that method.
 			// props: Object
-			//		A hash of invalidated properties.
+			//		A hash of invalidated properties. This hash will then be passed further down to the
+			//		refreshRendering method. As such any modification to it will be visible in refreshRendering.
 			// tags:
 			//		protected
 		},
