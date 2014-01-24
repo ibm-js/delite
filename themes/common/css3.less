@@ -7,6 +7,16 @@
   border-radius: @radius;
 }
 
+.transition (@value) {
+  -webkit-transition: @value;
+  transition: @value;
+}
+
+.transition (@value1, @value2) {
+  -webkit-transition: @value1, @value2;
+  transition: @value1, @value2;
+}
+
 .transition-property (@value) {
   -webkit-transition-property: @value;
   -moz-transition-property: @value;
@@ -223,10 +233,19 @@
 	-webkit-animation-timing-function: @v;
 	animation-timing-function: @v;
 }
+.animation-delay (@v) {
+  -webkit-delay: @v;
+  animation-delay: @v;
+}
 .animation-iteration-count (@v) {
 	-webkit-animation-iteration-count: @v;
 	animation-iteration-count: @v;
 }
+.animation-direction (@v) {
+  -webkit-animation-direction: @v;
+  animation-direction: @v;
+}
+
 .box-shadow (@v) {
 	-webkit-box-shadow: @v;
 	-moz-box-shadow: @v;
@@ -234,6 +253,7 @@
 }
 .box-sizing (@v) {
 	-webkit-box-sizing: @v;
+	-moz-box-sizing: @v;
 	box-sizing: @v;
 }
 .appearance (@v) {
