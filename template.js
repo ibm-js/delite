@@ -85,7 +85,7 @@ define(["./register"], function (register) {
 						".nodeValue = n; });\n";
 				} else {
 					// static text
-					text += nodeName + ".appendChild(doc.createTextNode('" + child + "'));\n";
+					text += nodeName + ".appendChild(doc.createTextNode('" + child.replace(/'/g, "\\'") + "'));\n";
 				}
 			}, this);
 
@@ -119,7 +119,7 @@ define(["./register"], function (register) {
 						watchProps.push(part.property);
 						return "widget." + part.property;	// note: "this" not available in func passed to watch()
 					} else {
-						return "'" + part + "'";
+						return "'" + part.replace(/'/g, "\\'") + "'";
 					}
 				}).join(" + ");
 
