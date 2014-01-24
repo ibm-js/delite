@@ -1,8 +1,7 @@
 define(["dcl/dcl", "dojo/_base/lang", "./Widget"], function (dcl, lang, Widget) {
 	return dcl(Widget, {
 		// summary:
-		//		Mixin for classes for widgets that manage a list of selected data items. Receiving class must extend
-		//		delite/Widget.
+		//		Mixin for classes for widgets that manage a list of selected data items. 
 
 		preCreate: function () {
 			this._set("selectedItems", []);
