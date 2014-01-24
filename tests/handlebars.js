@@ -98,16 +98,16 @@ define([
 		"special characters" : function () {
 			// Test that special characters are escaped.  This is actually testing template.js.
 			var TestList = register("test-ul", [ HTMLUListElement, Widget], {
-				label: "bill",
+				label: "bill'\\",
 				buildRendering: handlebars.compile(
-					"<ul><li foo=\"a.b('c,d')\" bar='hello \"world\"'>\"{{label}}'</li></ul>")
+					"<ul><li foo=\"a.b('c,d')\" bar='\\\"hello\"'>\"\\{{label}}'</li></ul>")
 			});
 			myList = new TestList();
 			assert.strictEqual(myList.tagName.toLowerCase(), "ul", "root node exists");
 			assert.strictEqual(myList.firstChild.tagName.toLowerCase(), "li", "child exists");
 			assert.strictEqual(myList.firstChild.getAttribute("foo"), "a.b('c,d')", "single quotes prop");
-			assert.strictEqual(myList.firstChild.getAttribute("bar"), "hello \"world\"", "double quotes prop");
-			assert.strictEqual(myList.firstChild.textContent, "\"bill'", "node text");
+			assert.strictEqual(myList.firstChild.getAttribute("bar"), "\\\"hello\"", "double quotes, backslash prop");
+			assert.strictEqual(myList.firstChild.textContent, "\"\\bill'\\'", "node text");
 		},
 		"Widgets in Template" : function () {
 			register("simple-heading", [HTMLElement, Widget], {
