@@ -23,6 +23,12 @@ define(["./register"], function (register) {
 		return attrMap[tag][attrName];
 	}
 
+	function singleQuote(text) {
+		// summary:
+		//		Helper for generating javascript; creates text strings enclosed in single quotes.
+		return "'" + text.replace(/(['\\])/g, "\\$1") + "'";
+	}
+
 	return {
 		// summary:
 		//		Compile an object tree representing a template into a function to generate that DOM,
@@ -85,7 +91,7 @@ define(["./register"], function (register) {
 						".nodeValue = n; });\n";
 				} else {
 					// static text
-					text += nodeName + ".appendChild(doc.createTextNode('" + child.replace(/'/g, "\\'") + "'));\n";
+					text += nodeName + ".appendChild(doc.createTextNode(" + singleQuote(child) + "));\n";
 				}
 			}, this);
 
@@ -119,7 +125,7 @@ define(["./register"], function (register) {
 						watchProps.push(part.property);
 						return "widget." + part.property;	// note: "this" not available in func passed to watch()
 					} else {
-						return "'" + part.replace(/'/g, "\\'") + "'";
+						return singleQuote(part);
 					}
 				}).join(" + ");
 
