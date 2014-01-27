@@ -10,12 +10,14 @@ define([
 	return {
 		"Default CSS" : function () {
 			var w = document.getElementById("sc1");
+			w.validateRendering();
 			assert.isTrue(domClass.contains(w, "test-scrollable-container"), 
 				"Expecting test-scrollable-container CSS class! (id='sc1')");
 			assert.isTrue(domClass.contains(w, "d-scrollable"), // class added by the mixin delite/Scrollable
 				"Expecting d-scrollable CSS class! (id='sc1')");
 
 			w = document.getElementById("sc2"); // with scrollDirection == "none"
+			w.validateRendering();
 			assert.equal(w.scrollDirection, "none", "wrong scroll direction for id=sc2!");
 			assert.isTrue(domClass.contains(w, "test-scrollable-container"),
 				"Expecting test-scrollable-container CSS class! (id='sc2')");
@@ -24,6 +26,7 @@ define([
 				"Not expecting d-scrollable CSS class! (id='sc2')");
 
 			w = document.getElementById("mysc1");
+			w.validateRendering();
 			assert.isTrue(domClass.contains(w, "test-scrollable-container"), 
 				"Expecting test-scrollable-container CSS class! (id='mysc1')");
 			assert.isTrue(domClass.contains(w, "d-scrollable"), // class added by the mixin delite/Scrollable
@@ -32,6 +35,7 @@ define([
 
 		"CSS class dependency on scrollDirection" : function () {
 			var w = document.getElementById("sc1");
+			w.validateRendering();
 			assert.isTrue(domClass.contains(w, "test-scrollable-container"),
 				"Expecting test-scrollable-container CSS class! (id='sc1')");
 			assert.isTrue(domClass.contains(w, "d-scrollable"), // class added by the mixin delite/Scrollable
@@ -77,6 +81,7 @@ define([
 
 		"scrollableNode" : function () {
 			var w = document.getElementById("sc1");
+			w.validateRendering();
 			assert.isTrue(w.scrollableNode === w, "Wrong scrollableNode!");
 		},
 
