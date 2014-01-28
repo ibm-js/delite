@@ -25,27 +25,27 @@ define([
 				{ id: "bar", name: "Bar", firstname: "2" }
 			];
 			store.on("query-success", d.callback(function () {
-				assert.deepEqual([
+				assert.deepEqual(store.renderItems, [
 					{ id: "foo", foo: "Foo", bar: "1" },
 					{ id: "bar", foo: "Bar", bar: "2" }
-				], store.renderItems);
+				]);
 				myStore.put({ id: "foo", name: "Foo2", firstname: "3" });
 				// this works because put is synchronous & same for add etc...
-				assert.deepEqual([
+				assert.deepEqual(store.renderItems, [
 					{ id: "foo", foo: "Foo2", bar: "3" },
 					{ id: "bar", foo: "Bar", bar: "2" }
-				], store.renderItems);
+				]);
 				myStore.add({ id: "fb", name: "FB", firstname: "4" });
-				assert.deepEqual([
+				assert.deepEqual(store.renderItems, [
 					{ id: "foo", foo: "Foo2", bar: "3" },
 					{ id: "bar", foo: "Bar", bar: "2" },
 					{ id: "fb", foo: "FB", bar: "4" }
-				], store.renderItems);
+				]);
 				myStore.remove("bar");
-				assert.deepEqual([
+				assert.deepEqual(store.renderItems, [
 					{ id: "foo", foo: "Foo2", bar: "3" },
 					{ id: "fb", foo: "FB", bar: "4" }
-				], store.renderItems);
+				]);
 			}));
 			store.startup();
 			var myStore = Observable(new Memory({ data: myData }));
@@ -63,27 +63,27 @@ define([
 				{ id: "bar", name: "Bar", firstname: "2" }
 			];
 			store.on("query-success", d.callback(function () {
-				assert.deepEqual([
+				assert.deepEqual(store.renderItems, [
 					{ id: "foo", name: "Foo", firstname: "1" },
 					{ id: "bar", name: "Bar", firstname: "2" }
-				], store.renderItems);
+				]);
 				myStore.put({ id: "foo", name: "Foo2", firstname: "3" });
 				// this works because put is synchronous & same for add etc...
-				assert.deepEqual([
+				assert.deepEqual(store.renderItems, [
 					{ id: "foo", name: "Foo2", firstname: "3" },
 					{ id: "bar", name: "Bar", firstname: "2" }
-				], store.renderItems);
+				]);
 				myStore.add({ id: "fb", name: "FB", firstname: "4" });
-				assert.deepEqual([
+				assert.deepEqual(store.renderItems, [
 					{ id: "foo", name: "Foo2", firstname: "3" },
 					{ id: "bar", name: "Bar", firstname: "2" },
 					{ id: "fb", name: "FB", firstname: "4" }
-				], store.renderItems);
+				]);
 				myStore.remove("bar");
-				assert.deepEqual([
+				assert.deepEqual(store.renderItems, [
 					{ id: "foo", name: "Foo2", firstname: "3" },
 					{ id: "fb", name: "FB", firstname: "4" }
-				], store.renderItems);
+				]);
 			}));
 			store.startup();
 			var myStore = Observable(new Memory({ data: myData }));
@@ -100,27 +100,27 @@ define([
 				{ id: "bar", name: "Bar", firstname: "2" }
 			];
 			store.on("query-success", d.callback(function () {
-				assert.deepEqual([
+				assert.deepEqual(store.renderItems, [
 					{ id: "foo", foo: "Foo" },
 					{ id: "bar", foo: "Bar" }
-				], store.renderItems);
+				]);
 				myStore.put({ id: "foo", name: "Foo2" });
 				// this works because put is synchronous & same for add etc...
-				assert.deepEqual([
+				assert.deepEqual(store.renderItems, [
 					{ id: "foo", foo: "Foo2" },
 					{ id: "bar", foo: "Bar" }
-				], store.renderItems);
+				]);
 				myStore.add({ id: "fb", name: "FB" });
-				assert.deepEqual([
+				assert.deepEqual(store.renderItems, [
 					{ id: "foo", foo: "Foo2" },
 					{ id: "bar", foo: "Bar" },
 					{ id: "fb", foo: "FB" }
-				], store.renderItems);
+				]);
 				myStore.remove("bar");
-				assert.deepEqual([
+				assert.deepEqual(store.renderItems, [
 					{ id: "foo", foo: "Foo2" },
 					{ id: "fb", foo: "FB" }
-				], store.renderItems);
+				]);
 			}));
 			store.startup();
 			var myStore = Observable(new Memory({ data: myData }));
@@ -144,18 +144,18 @@ define([
 				{ id: "bar", name: "Bar", firstname: "2" }
 			];
 			store.on("query-success", d.callback(function () {
-				assert.deepEqual("Foo", store.renderItems[0].foo);
-				assert.deepEqual("11", store.renderItems[0].bar);
+				assert.deepEqual(store.renderItems[0].foo, "Foo");
+				assert.deepEqual(store.renderItems[0].bar, "11");
 				myStore.put({ id: "foo", name: "Foo2", firstname: "3" });
 				// this works because put is synchronous & same for add etc...
-				assert.deepEqual("Foo2", store.renderItems[0].foo);
-				assert.deepEqual("31", store.renderItems[0].bar);
+				assert.deepEqual(store.renderItems[0].foo, "Foo2");
+				assert.deepEqual(store.renderItems[0].bar, "31");
 				value = 2;
-				assert.deepEqual("Foo2", store.renderItems[0].foo);
-				assert.deepEqual("31", store.renderItems[0].bar);
+				assert.deepEqual(store.renderItems[0].foo, "Foo2");
+				assert.deepEqual(store.renderItems[0].bar, "31");
 				store.remap();
-				assert.deepEqual("Foo2", store.renderItems[0].foo);
-				assert.deepEqual("32", store.renderItems[0].bar);
+				assert.deepEqual(store.renderItems[0].foo, "Foo2");
+				assert.deepEqual(store.renderItems[0].bar, "32");
 			}));
 			store.startup();
 			var myStore = Observable(new Memory({ data: myData }));
@@ -178,32 +178,60 @@ define([
 				{ id: "bar", name: "Bar", firstname: "2" }
 			];
 			store.on("query-success", d.callback(function () {
-				assert.deepEqual([
+				assert.deepEqual(store.renderItems, [
 					{ id: "foo", foo: "Foo", bar: "1" },
 					{ id: "bar", foo: "Bar", bar: "2" }
-				], store.renderItems);
+				]);
 				myStore.put({ id: "foo", name: "Foo2", firstname: "3" });
 				// this works because put is synchronous & same for add etc...
-				assert.deepEqual([
+				assert.deepEqual(store.renderItems, [
 					{ id: "foo", foo: "Foo2", bar: "3" },
 					{ id: "bar", foo: "Bar", bar: "2" }
-				], store.renderItems);
+				]);
 				myStore.add({ id: "fb", name: "FB", firstname: "4" });
-				assert.deepEqual([
+				assert.deepEqual(store.renderItems, [
 					{ id: "foo", foo: "Foo2", bar: "3" },
 					{ id: "bar", foo: "Bar", bar: "2" },
 					{ id: "fb", foo: "FB", bar: "4" }
-				], store.renderItems);
+				]);
 				myStore.remove("bar");
-				assert.deepEqual([
+				assert.deepEqual(store.renderItems, [
 					{ id: "foo", foo: "Foo2", bar: "3" },
 					{ id: "fb", foo: "FB", bar: "4" }
-				], store.renderItems);
+				]);
 			}));
 			var myStore = Observable(new Memory({ data: myData }));
 			store.store = myStore;
 			return d;
 
+		},
+		"ItemToAndFrom": function () {
+			var C = register("test-storemap-6", [HTMLElement, Widget, StoreMap], {
+				fooAttr: "name",
+				barFunc: function (item) {
+					return item.firstname;
+				}
+			});
+			var d = this.async(2000);
+			var store = new C();
+			var myData = [
+				{ id: "foo", name: "Foo", firstname: "1" },
+				{ id: "bar", name: "Bar", firstname: "2" }
+			];
+			store.on("query-success", d.callback(function () {
+				assert.deepEqual(store.renderItems, [
+					{ id: "foo", foo: "Foo", bar: "1" },
+					{ id: "bar", foo: "Bar", bar: "2" }
+				]);
+				var item = store.renderItemToItem(store.renderItems[0]);
+				assert.deepEqual(item, { id: "foo", name: "Foo", firstname: "1" });
+				var renderItem = store.itemToRenderItem(item);
+				assert.deepEqual(renderItem, { id: "foo", foo: "Foo", bar: "1" });
+			}));
+			store.startup();
+			var myStore = new Memory({ data: myData });
+			store.store = myStore;
+			return d;
 		},
 		teardown : function () {
 			//container.parentNode.removeChild(container);
