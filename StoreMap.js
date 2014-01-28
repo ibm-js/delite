@@ -142,7 +142,9 @@ define(["dcl/dcl", "dojo/_base/lang", "./Store"], function (dcl, lang, Store) {
 			for (var key in renderItem) {
 				setvalue(this, item, key, store, renderItem[key]);
 			}
-			return dcl.mix(store.get(renderItem[store.idProperty]), item);
+			var r = store.get(renderItem[store.idProperty]);
+			dcl.mix(r, item);
+			return r;
 		},
 
 		itemToRenderItem: function (item) {
