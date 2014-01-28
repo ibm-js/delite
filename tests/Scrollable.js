@@ -69,7 +69,7 @@ define([
 		}
 	};
 
-	dcl.mix(suite, ScrollableSharedTests);
+	dcl.mix(suite, ScrollableSharedTests.testCases);
 
 	registerSuite(suite);
 	
@@ -111,7 +111,7 @@ define([
 		}
 	};
 
-	dcl.mix(suite, ScrollableSharedTests);
+	dcl.mix(suite, ScrollableSharedTests.testCases);
 
 	registerSuite(suite);
 });
