@@ -182,7 +182,7 @@ define(["dcl/dcl", "dojo/_base/lang", "dojo/when", "./Invalidating"], function (
 			dcl.mix(renderItems[index], renderItem);
 		},
 
-		addItem: function (index, item, items) {
+		addItem: function (index, renderItem, renderItems) {
 			// summary:
 			//		When the store is observed and an item is added in the store this method is called to add the
 			//		corresponding render item. This can be redefined but must not be called directly.
@@ -194,7 +194,7 @@ define(["dcl/dcl", "dojo/_base/lang", "dojo/when", "./Invalidating"], function (
 			//		The array of render items to add the render item to.
 			// tags:
 			//		protected
-			items.splice(index, 0, item);
+			renderItems.splice(index, 0, renderItem);
 		}
 	});
 });
