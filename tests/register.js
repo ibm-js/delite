@@ -3,13 +3,20 @@ define([
 	"intern/chai!assert",
 	"../register",
 	"../Stateful",
+	"../Widget",
 	"dojo/domReady!"
-], function (registerSuite, assert, register, Stateful) {
+], function (registerSuite, assert, register, Stateful, Widget) {
 
 	// The <div> node where we will put all our DOM nodes
 	var container;
 
 	var Mixin, TestWidget, TestButtonWidget, TestExtendedWidget, TestExtendedButtonWidget;
+
+	var WidgetThatSetStyleInBuildRendering = register("styled-widget",
+													[HTMLElement, Widget],
+													{buildRendering: function () {
+														this.style.display = "block";
+													}});
 
 	var nativeButton = document.createElement("button");
 
@@ -262,7 +269,12 @@ define([
 			assert.strictEqual(1, document.getElementById("pw").createdCalls, "pw.createdCalls");
 			assert.strictEqual(1, document.getElementById("pw").startupCalls, "pw.startupCalls");
 		},
-
+		"style declared in constructor is merged with pre existing styles": function () {
+			var w = new WidgetThatSetStyleInBuildRendering({style: "height: 200px;"});
+			w.startup();
+			assert.equal(w.style.display, "block");
+			assert.equal(w.style.height, "200px");
+		},
 		teardown: function () {
 			container.parentNode.removeChild(container);
 		}
