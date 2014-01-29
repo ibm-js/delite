@@ -1,13 +1,15 @@
 define([
 	"intern!object",
 	"intern/chai!assert",
+	"dcl/dcl",
+	"dojo/_base/declare",
 	"delite/register",
 	"delite/Widget",
 	"delite/StoreMap",
-	"dojo/store/Observable",
-	"dojo/store/JsonRest",
-	"dojo/store/Memory"
-], function (registerSuite, assert, register, Widget, StoreMap, Observable, JsonRest, Memory) {
+	"dstore/Observable",
+	"dstore/Memory", "dcl/inherited"
+], function (registerSuite, assert, dcl, declare, register, Widget, StoreMap, Observable, Memory) {
+	var M = declare([Memory, Observable], {});
 
 	registerSuite({
 		name: "StoreMap",
@@ -45,7 +47,7 @@ define([
 				assert.deepEqual(store.renderItems[1], { id: "fb", foo: "FB", bar: "4" });
 			}));
 			store.startup();
-			var myStore = Observable(new Memory({ data: myData }));
+			var myStore = new M({ data: myData});
 			store.store = myStore;
 			return d;
 		},
@@ -80,7 +82,8 @@ define([
 				assert.deepEqual(store.renderItems[1], { id: "fb", name: "FB", firstname: "4" });
 			}));
 			store.startup();
-			var myStore = Observable(new Memory({ data: myData }));
+			// use empty model to ease comparison
+			var myStore = new M({ data: myData });
 			store.store = myStore;
 			return d;
 		},
@@ -114,7 +117,7 @@ define([
 				assert.deepEqual(store.renderItems[1], { id: "fb", foo: "FB" });
 			}));
 			store.startup();
-			var myStore = Observable(new Memory({ data: myData }));
+			var myStore = new M({ data: myData });
 			store.store = myStore;
 			return d;
 
@@ -149,7 +152,7 @@ define([
 				assert.deepEqual(store.renderItems[0].bar, "32");
 			}));
 			store.startup();
-			var myStore = Observable(new Memory({ data: myData }));
+			var myStore = new M({ data: myData });
 			store.store = myStore;
 			return d;
 
@@ -188,7 +191,7 @@ define([
 				assert.deepEqual(store.renderItems[0], { id: "foo", foo: "Foo2", bar: "3" });
 				assert.deepEqual(store.renderItems[1], { id: "fb", foo: "FB", bar: "4" });
 			}));
-			var myStore = Observable(new Memory({ data: myData }));
+			var myStore = new M({ data: myData });
 			store.store = myStore;
 			return d;
 
@@ -212,7 +215,7 @@ define([
 				assert.deepEqual(store.renderItems[0], { id: "foo", foo: "Foo", bar: "1" });
 				assert.deepEqual(store.renderItems[1], { id: "bar", foo: "Bar", bar: "2" });
 				var item = store.renderItemToItem(store.renderItems[0]);
-				assert.deepEqual(item, { id: "foo", name: "Foo", firstname: "1" });
+				assert.deepEqual(item, myData[0]);
 				var renderItem = store.itemToRenderItem(item);
 				assert.deepEqual(renderItem, { id: "foo", foo: "Foo", bar: "1" });
 			}));

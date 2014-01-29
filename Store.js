@@ -24,13 +24,9 @@ define(["dcl/dcl", "dojo/_base/lang", "dojo/when", "./Invalidating"], function (
 		//		The store that contains the items to display.
 		store: null,
 
-		// query: Object
-		//		A query that can be passed to when querying the store.
-		query: {},
-
-		// queryOptions: dojo/store/api/Store.QueryOptions?
-		//		Options to be applied when querying the store.
-		queryOptions: null,
+		// filter: Object
+		//		A filter to apply to the store.
+		filter: {},
 
 		// renderItems: Array
 		//		The render items corresponding to the store items for this widget. This is filled from the store and
@@ -89,23 +85,21 @@ define(["dcl/dcl", "dojo/_base/lang", "dojo/when", "./Invalidating"], function (
 			// tags:
 			//		protected
 			if (isStoreInvalidated(props)) {
-				if (this._observeHandler) {
-					this._observeHandler.remove();
-					this._observeHandler = null;
-				}
+				this._untrack();
 				setStoreValidate(props);
-				var store = this.store;
+				var store = this.store.filter(this.filter);
 				if (store != null) {
-					var results = store.query(this.query, this.queryOptions);
-					if (results.observe) {
+					if (store.track) {
 						// user asked us to observe the store
-						this._observeHandler = results.observe(lang.hitch(this, "_updateItem"), true);
+						var tracked = this._tracked = store.track();
+						tracked.on("add", this.itemAdded.bind(this));
+						tracked.on("update", this.itemUpdated.bind(this));
+						tracked.on("remove", this.itemRemoved.bind(this));
 					}
 					// if we have a mapping function between store item and some intermediary items use it
-					results = results.map(lang.hitch(this, function (item) {
+					when(store.map(function (item) {
 						return this.itemToRenderItem(item);
-					}));
-					when(results, lang.hitch(this, this.initItems), lang.hitch(this, "_queryError"));
+					}, this), lang.hitch(this, this.initItems), lang.hitch(this, "_queryError"));
 				} else {
 					this.initItems([]);
 				}
@@ -116,85 +110,70 @@ define(["dcl/dcl", "dojo/_base/lang", "dojo/when", "./Invalidating"], function (
 			this.emit("query-error", { error: error, cancelable: false, bubbles: true });
 		},
 
-		_updateItem: function (object, previousIndex, newIndex) {
-			// tags:
-			//		private
-
-			var items = this.renderItems;
-
-			// if we have a mapping function between store item and some intermediary items use it
-			var newItem = this.itemToRenderItem(object);
-
-			if (previousIndex !== -1) {
-				// this is a remove or a move
-				if (newIndex !== previousIndex) {
-					// remove
-					this.removeItem(previousIndex, newItem, items);
-				} else {
-					// this is a put, previous and new index identical
-					this.putItem(previousIndex, newItem, items);
-				}
-			} else if (newIndex !== -1) {
-				// this is a add
-				this.addItem(newIndex, newItem, items);
-
+		_untrack: function () {
+			if (this._tracked) {
+				this._tracked.tracking.remove();
+				this._tracked = null;
 			}
-			// set back the modified items property
-			this.renderItems = items;
 		},
 
 		destroy: function () {
-			if (this._observeHandler) {
-				this._observeHandler.remove();
-				this._observeHandler = null;
-			}
+			this._untrack();
 		},
 
-		removeItem: function (index, renderItem, renderItems) {
+		itemRemoved: function (event) {
 			// summary:
 			//		When the store is observed and an item is removed in the store this method is called to remove the
 			//		corresponding render item. This can be redefined but must not be called directly.
-			// index: Number
-			//		The index of the item to remove.
-			// renderItem: Object
-			//		The render item to be removed.
-			// renderItems: Array
-			//		The array of render items to remove the render item from.
+			// event: Event
+			//		The "remove" dstore/Observable event
 			// tags:
 			//		protected
-			renderItems.splice(index, 1);
+			this.renderItems.splice(event.previousIndex, 1);
+			// set back the modified items property
+			this.renderItems = this.renderItems;
 		},
 
-		putItem: function (index,  renderItem, renderItems) {
+		itemUpdated: function (event) {
 			// summary:
 			//		When the store is observed and an item is updated in the store this method is called to update the
 			//		corresponding render item. This can be redefined but must not be called directly.
-			// index: Number
-			//		The index of the updated item.
-			// renderItem: Object
-			//		The render item data the render item must be updated with.
-			// renderItems: Array
-			//		The array of render items to render item to be updated is part of.
+			// event: Event
+			//		The "update" dstore/Observable event
 			// tags:
 			//		protected
-
-			// we want to keep the same item object and mixin new values into old object
-			dcl.mix(renderItems[index], renderItem);
+			if (event.index === undefined) {
+				// this is actually a remove
+				this.renderItems.splice(event.previousIndex, 1);
+			} else if (event.previousIndex === undefined) {
+				// this is actually a add
+				this.renderItems.splice(event.index, 0, this.itemToRenderItem(event.target));
+			} else if (event.index !== event.previousIndex) {
+				// this is a move
+				this.renderItems.splice(event.previousIndex, 1);
+				this.renderItems.splice(event.index, 0, this.itemToRenderItem(event.target));
+			} else {
+				// we want to keep the same item object and mixin new values into old object
+				dcl.mix(this.renderItems[event.index], this.itemToRenderItem(event.target));
+			}
+			// set back the modified items property
+			this.renderItems = this.renderItems;
 		},
 
-		addItem: function (index, renderItem, renderItems) {
+		itemAdded: function (event) {
 			// summary:
 			//		When the store is observed and an item is added in the store this method is called to add the
 			//		corresponding render item. This can be redefined but must not be called directly.
-			// index: Number
-			//		The index of the item to add.
-			// renderItem: Object
-			//		The render item to be added.
-			// renderItems: Array
-			//		The array of render items to add the render item to.
+			// event: Event
+			//		The "add" dstore/Observable event
 			// tags:
 			//		protected
-			renderItems.splice(index, 0, renderItem);
+			if (event.index) {
+				this.renderItems.splice(event.index, 0, this.itemToRenderItem(event.target));
+				// set back the modified items property
+				this.renderItems = this.renderItems;
+			}
+			// if no index the item is added outside of the range we monitor so we don't care
 		}
 	});
 });
