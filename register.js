@@ -275,7 +275,7 @@ define([
 			// Set parameters on node
 			for (var name in params || {}) {
 				if (name === "style") {
-					node.style.cssText += params.style;
+					node.style.cssText = params.style;
 				} else {
 					node[name] = params[name];
 				}
