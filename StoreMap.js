@@ -175,7 +175,7 @@ define(["dcl/dcl", "dojo/_base/lang", "./Store"], function (dcl, lang, Store) {
 			}
 			if (this.copyAllItemProps) {
 				for (var key in item) {
-					if (this._itemKeys.indexOf(key) === -1) {
+					if (this._itemKeys.indexOf(key) === -1 && item.hasOwnProperty(key)) {
 						renderItem[key] = item[key];
 					}
 				}
