@@ -26,7 +26,7 @@ Bugs and open issues are tracked in the
 
 ## Licensing
 
-This project is distributed by the Dojo Foundation and licensed under the ["New" BSD License](https://github.com/dojo/dojo/blob/master/LICENSE#L13-L41).
+This project is distributed by the Dojo Foundation and licensed under the ["New" BSD License](./LICENSE).
 All contributions require a [Dojo Foundation CLA](http://dojofoundation.org/about/claForm).
 
 ## Dependencies
@@ -38,13 +38,15 @@ This project requires the following other projects to run:
 
 ## Installation
 
-* Bower release installation: `bower install delite`
+Bower_ release installation:
 
-* Manual master installation: go to the root Dojo installation directory and clone delite from github:
+    $ bower install delite
 
-	$ git clone git://github.com/ibm-js/delite.git
+_Manual_ master installation:
 
-Then install dependencies:
+    $ git clone git://github.com/ibm-js/delite.git
+
+Then install dependencies with bower (or manually from github if you prefer to):
 
 	$ cd delite
 	$ bower install
