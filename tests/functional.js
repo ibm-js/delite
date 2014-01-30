@@ -1,5 +1,5 @@
 // Listing of all the infrastructure functional tests
 define([
-	"./TabIndex",
-	"./KeyNav"
+	"./functional/TabIndex",
+	"./functional/KeyNav"
 ]);

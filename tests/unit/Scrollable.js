@@ -6,8 +6,8 @@ define([
 	"delite/register",
 	"delite/Widget",
 	"delite/Scrollable",
-	"./ScrollableTestContainer",
-	"./Scrollable-shared"
+	"../ScrollableTestContainer",
+	"../Scrollable-shared"
 ], function (dcl, registerSuite, assert, domClass, register, Widget, 
 	Scrollable, ScrollableTestContainer, ScrollableSharedTests) {
 		
