@@ -1,9 +1,9 @@
 define([
 	"intern!object",
 	"intern/chai!assert",
-	"../register",
+	"../../register",
 	"dojo/sniff",
-	"../Widget",
+	"../../Widget",
 	"dojo/domReady!"
 ], function (registerSuite, assert, register, has, Widget) {
 	var container;

@@ -2,8 +2,8 @@ define([
 	"intern!object",
 	"intern/chai!assert",
 	"dojo/aspect",
-	"../register",
-	"../Widget",
+	"../../register",
+	"../../Widget",
 	"deliteful/Button"		// TODO: remove dependency on deliteful
 ], function (registerSuite, assert, aspect, register, Widget, Button) {
 	var container, SimpleWidget, simple, pane1, pane2, pane3, pane4;

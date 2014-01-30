@@ -1,7 +1,7 @@
 define([
 	"intern!object",
 	"intern/chai!assert",
-	"../Stateful",
+	"../../Stateful",
 	"dcl/dcl"
 ], function (registerSuite, assert, Stateful, dcl) {
 	registerSuite({

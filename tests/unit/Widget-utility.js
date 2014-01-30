@@ -1,8 +1,8 @@
 define([
 	"intern!object",
 	"intern/chai!assert",
-	"../register",
-	"../Widget"
+	"../../register",
+	"../../Widget"
 ], function (registerSuite, assert, register, Widget) {
 	var container, html;
 	/*jshint multistr: true */

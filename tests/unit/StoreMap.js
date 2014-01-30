@@ -1,9 +1,9 @@
 define([
 	"intern!object",
 	"intern/chai!assert",
-	"../register",
-	"../Widget",
-	"../StoreMap",
+	"../../register",
+	"../../Widget",
+	"../../StoreMap",
 	"dojo/store/Observable",
 	"dojo/store/JsonRest",
 	"dojo/store/Memory"
