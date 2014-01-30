@@ -1,8 +1,8 @@
 define([
 	"intern!object",
 	"intern/chai!assert",
-	"../register",
-	"../Selection"
+	"delite/register",
+	"delite/Selection"
 ], function (registerSuite, assert, register, Selection) {
 	var C = register("test-selection", [HTMLElement, Selection], {
 		updateRenderers: function () {

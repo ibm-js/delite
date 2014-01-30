@@ -4,9 +4,9 @@ define([
 	"intern/chai!assert",
 	"dojo/on",
 	"dojo/Deferred",
-	"../DisplayContainer",
-	"../Widget",
-	"../register",
+	"delite/DisplayContainer",
+	"delite/Widget",
+	"delite/register",
 	"dojo/domReady!"
 ], function (require, registerSuite, assert, on, Deferred, DisplayContainer, Widget, register) {
 	var container;

@@ -1,7 +1,9 @@
 define([
 	"intern!object",
 	"intern/chai!assert",
-	"../register", "../Widget", "../Store",
+	"delite/register",
+	"delite/Widget",
+	"delite/Store",
 	"dojo/store/Observable", "dojo/store/JsonRest", "dojo/store/Memory"
 ], function (registerSuite, assert, register, Widget, Store, Observable, JsonRest, Memory) {
 	var C = register("test-store", [HTMLElement, Widget, Store]);

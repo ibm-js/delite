@@ -2,8 +2,8 @@ define([
 	"intern!object",
 	"intern/chai!assert",
 	"dojo/dom-class",
-	"../register",
-	"../CssState"
+	"delite/register",
+	"delite/CssState"
 ], function (registerSuite, assert, domClass, register, CssState) {
 	registerSuite({
 		name: "CssState",
