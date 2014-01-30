@@ -1,11 +1,11 @@
 define([
 	"intern!object",
 	"intern/chai!assert",
-	"../handlebars",
-	"../register",
-	"../Widget",
-	"../handlebars!./templates/SimpleHandleBarsButton.html",
-	"../handlebars!./templates/HandlebarsButton.html"
+	"delite/handlebars",
+	"delite/register",
+	"delite/Widget",
+	"delite/handlebars!../templates/SimpleHandleBarsButton.html",
+	"delite/handlebars!../templates/HandlebarsButton.html"
 ], function (registerSuite, assert, handlebars, register, Widget, simpleHBTmpl, buttonHBTmpl) {
 	var container, myButton;
 	registerSuite({

@@ -3,10 +3,10 @@ define([
 	"intern/chai!assert",
 	"dojo/keys",
 	"dojo/on",
-	"../register",
-	"../HasDropDown",
-	"../Widget",
-	"./helpers"
+	"delite/register",
+	"delite/HasDropDown",
+	"delite/Widget",
+	"../helpers"
 ], function (registerSuite, assert, keys, on, register, HasDropDown, Widget, helpers) {
 	var container, SimplePopup, SimpleDropDownButton, NonFocusableDropDownButton, popup, dd, ndd;
 

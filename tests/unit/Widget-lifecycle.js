@@ -3,8 +3,8 @@ define([
 	"intern/chai!assert",
 	"dojo/aspect",
 	"dojo/dom-class",
-	"../register",
-	"../Widget"
+	"delite/register",
+	"delite/Widget"
 ], function (registerSuite, assert, aspect, domClass, register, Widget) {
 	var container, TestWidget, w;
 	var obj = {
