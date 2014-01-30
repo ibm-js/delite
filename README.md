@@ -38,7 +38,7 @@ This project requires the following other projects to run:
 
 ## Installation
 
-Bower_ release installation:
+_Bower_ release installation:
 
     $ bower install delite
 
