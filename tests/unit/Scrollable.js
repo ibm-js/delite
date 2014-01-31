@@ -8,7 +8,7 @@ define([
 	"delite/Scrollable",
 	"../ScrollableTestContainer",
 	"../Scrollable-shared"
-], function (dcl, registerSuite, assert, domClass, register, Widget, 
+], function (dcl, registerSuite, assert, domClass, register, Widget,
 	Scrollable, ScrollableTestContainer, ScrollableSharedTests) {
 		
 	var container, MyScrollableWidget, MyScrollableTestContainer;
@@ -40,7 +40,8 @@ define([
 			var w = (new MyScrollableWidget({id: "mysw"})).placeAt(container);
 			w.startup();
 			w.validateRendering();
-			assert.isTrue(domClass.contains(w.scrollableNode, "d-scrollable"), // class added by the mixin delite/Scrollable
+			// The CSS class d-scrollable is expected to be added by the mixin delite/Scrollable
+			assert.isTrue(domClass.contains(w.scrollableNode, "d-scrollable"),
 				"Expecting d-scrollable CSS class!");
 		},
 		

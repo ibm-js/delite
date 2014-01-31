@@ -18,7 +18,7 @@ define([
 		"Default CSS" : function () {
 			var w = document.getElementById("sc1");
 			w.validateRendering();
-			assert.isTrue(domClass.contains(w, shared.containerCSSClassName), 
+			assert.isTrue(domClass.contains(w, shared.containerCSSClassName),
 				"Expecting " + shared.containerCSSClassName + " CSS class! (id='sc1')");
 			assert.isTrue(domClass.contains(w, "d-scrollable"), // class added by the mixin delite/Scrollable
 				"Expecting d-scrollable CSS class! (id='sc1')");
@@ -34,7 +34,7 @@ define([
 
 			w = document.getElementById("mysc1");
 			w.validateRendering();
-			assert.isTrue(domClass.contains(w, shared.containerCSSClassName), 
+			assert.isTrue(domClass.contains(w, shared.containerCSSClassName),
 				"Expecting " + shared.containerCSSClassName + " CSS class! (id='mysc1')");
 			assert.isTrue(domClass.contains(w, "d-scrollable"), // class added by the mixin delite/Scrollable
 				"Expecting d-scrollable CSS class! (id='mysc1')");
@@ -217,33 +217,33 @@ define([
 			assert.isFalse(w.isRightScroll(), "isRightScroll() #6");
 			assert.isTrue(w.isLeftScroll(), "isLeftScroll() #6");
 		},
-		
+
 		"destroy during scroll animation" : function () {
 			var d = this.async(1000);
 			var errorCounter = 0;
 			var errorMsg;
-			window.onerror = function(msg, url, lineNumber){
+			window.onerror = function (msg, url, lineNumber) {
 				errorCounter++;
-				errorMsg = "After destroy: " + msg + "\nURL: " + url + 
+				errorMsg = "After destroy: " + msg + "\nURL: " + url +
 					"\nLine number: " + lineNumber;
 				console.log(errorMsg);
 			};
 			var w = document.getElementById("sc1");
 			w.scrollDirection = "both";
 			w.validateRendering();
-			
+
 			// Scroll with animation
 			w.scrollBy({x: 10, y: 10}, 300/*duration*/);
-			
+
 			// Destroy while an animation is ongoing
 			try {
-				// The variant with preserveDom at false is the most dangerous. 
+				// The variant with preserveDom at false is the most dangerous.
 				w.destroy(false/*preserveDom*/);
 			} catch (e) {
 				assert.isTrue(false, "destroy(false) should not throw an error: " + e);
 			}
 			// Check that no error has been thrown asynchronously due to the animation
-			setTimeout(d.callback(function(){
+			setTimeout(d.callback(function () {
 				assert.equal(0, errorCounter, errorMsg);
 			}), 500); // smaller than the total timeout of the test case
 		}
