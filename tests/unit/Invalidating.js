@@ -17,15 +17,15 @@ define([
 				refreshProperties: function () {
 					assert(false, "refreshProperties should not be called");
 				},
-				refreshRendering: function (props) {
+				refreshRendering: d.callback(function (props) {
 					assert.deepEqual(props, {"b": true});
-				}
+				})
 			});
 			var o = new C();
 			var afterPropsR, beforePropsR;
-			o.on("refresh-properties-complete", function () {
+			o.on("refresh-properties-complete", d.callback(function () {
 				assert(false, "refreshProperties should not be called");
-			});
+			}));
 			o.on("refresh-rendering-complete", function (e) {
 				afterPropsR = o._invalidatedProperties;
 				beforePropsR = e.invalidatedProperties;
@@ -34,11 +34,11 @@ define([
 			assert.deepEqual(o._invalidatingProperties, { "a": "invalidateRendering", "b": "invalidateRendering" });
 			o.b = "foo";
 			// we need to check before the timeout that refresh-complete was called
-			setTimeout(function () {
+			setTimeout(d.callback(function () {
 				assert.deepEqual(afterPropsR, {});
 				assert.deepEqual(beforePropsR, {"b": true});
 				d.resolve();
-			}, 500);
+			}), 500);
 			return d;
 		},
 		"InCreation": function () {
@@ -49,18 +49,18 @@ define([
 				},
 				a: null,
 				b: null,
-				refreshProperties: function () {
+				refreshProperties: d.callback(function () {
 					assert(false, "refreshProperties should not be called");
-				},
-				refreshRendering: function (props) {
+				}),
+				refreshRendering: d.callback(function (props) {
 					assert.deepEqual(props, {"b": true});
-				}
+				})
 			});
 			var o = new C({b: "foo"});
 			var afterPropsR, beforePropsR;
-			o.on("refresh-properties-complete", function () {
+			o.on("refresh-properties-complete", d.callback(function () {
 				assert(false, "refreshProperties should not be called");
-			});
+			}));
 			o.on("refresh-rendering-complete", function (e) {
 				afterPropsR = o._invalidatedProperties;
 				beforePropsR = e.invalidatedProperties;
@@ -68,11 +68,11 @@ define([
 			o.startup();
 			assert.deepEqual(o._invalidatingProperties, { "a": "invalidateRendering", "b": "invalidateRendering" });
 			// we need to check before the timeout that refresh-complete was called
-			setTimeout(function () {
+			setTimeout(d.callback(function () {
 				assert.deepEqual(afterPropsR, {});
 				assert.deepEqual(beforePropsR, {"b": true});
 				d.resolve();
-			}, 500);
+			}), 500);
 			return d;
 		},
 		"OnlyRefreshProperty": function () {
@@ -84,15 +84,14 @@ define([
 				},
 				a: null,
 				b: null,
-				refreshProperties: function (props) {
+				refreshProperties: d.callback(function (props) {
 					assert.deepEqual(props, {"a": true, "b": true});
 					// only a should lead to a refreshRendering
 					delete props.b;
-
-				},
-				refreshRendering: function (props) {
+				}),
+				refreshRendering: d.callback(function (props) {
 					assert.deepEqual(props, {"a": true});
-				}
+				})
 			});
 			var o = new C();
 			var afterPropsR, beforePropsR, afterPropsP, beforePropsP;
@@ -110,13 +109,13 @@ define([
 			o.b = "foo";
 			o.a = "bar";
 			// we need to check before the timeout that refresh-complete was called
-			setTimeout(function () {
+			setTimeout(d.callback(function () {
 				assert.deepEqual(afterPropsP, {"a": true});
 				assert.deepEqual(beforePropsP, {"a": true, "b": true});
 				assert.deepEqual(afterPropsR, {});
 				assert.deepEqual(beforePropsR, {"a": true});
 				d.resolve();
-			}, 500);
+			}), 500);
 			return d;
 		},
 		"Manual": function () {
@@ -124,12 +123,12 @@ define([
 			var C = register("test-invalidating-manual", [HTMLElement, Widget, Invalidating], {
 				a: null,
 				b: null,
-				refreshProperties: function (props) {
+				refreshProperties: d.callback(function (props) {
 					assert.deepEqual(props, {"b": true});
-				},
-				refreshRendering: function (props) {
+				}),
+				refreshRendering: d.callback(function (props) {
 					assert.deepEqual(props, {"b": true});
-				}
+				})
 			});
 			var o = new C();
 			var afterPropsR, beforePropsR, afterPropsP, beforePropsP;
@@ -139,7 +138,7 @@ define([
 				beforePropsP = e.invalidatedProperties;
 			});
 			o.on("refresh-rendering-complete", function (e) {
-				afterPropsR = Object.create(o._invalidatedProperties);
+				afterPropsR = o._invalidatedProperties;
 				beforePropsR = e.invalidatedProperties;
 			});
 			o.startup();
@@ -147,13 +146,13 @@ define([
 			o.b = "foo";
 			o.invalidateProperty("b");
 			// we need to check before the timeout that refresh-complete was called
-			setTimeout(function () {
+			setTimeout(d.callback(function () {
 				assert.deepEqual(afterPropsP, {"b": true});
 				assert.deepEqual(beforePropsP, {"b": true});
 				assert.deepEqual(afterPropsR, {});
 				assert.deepEqual(beforePropsR, {"b": true});
 				d.resolve();
-			}, 500);
+			}), 500);
 			return d;
 		},
 		"PropertyAndRendering": function () {
@@ -164,12 +163,12 @@ define([
 				},
 				a: null,
 				b: null,
-				refreshProperties: function (props) {
+				refreshProperties: d.callback(function (props) {
 					assert.deepEqual(props, {"b": true});
-				},
-				refreshRendering: function (props) {
+				}),
+				refreshRendering: d.callback(function (props) {
 					assert.deepEqual(props, {"b": true});
-				}
+				})
 			});
 			var o = new C();
 			var afterPropsR, beforePropsR, afterPropsP, beforePropsP;
@@ -179,20 +178,20 @@ define([
 				beforePropsP = e.invalidatedProperties;
 			});
 			o.on("refresh-rendering-complete", function (e) {
-				afterPropsR = Object.create(null, o._invalidatedProperties);
+				afterPropsR = o._invalidatedProperties;
 				beforePropsR = e.invalidatedProperties;
 			});
 			o.startup();
 			assert.deepEqual(o._invalidatingProperties, { "a": "invalidateProperty", "b": "invalidateProperty" });
 			o.b = "foo";
 			// we need to check before the timeout that refresh-complete was called
-			setTimeout(function () {
+			setTimeout(d.callback(function () {
 				assert.deepEqual(afterPropsP, {"b": true});
 				assert.deepEqual(beforePropsP, {"b": true});
 				assert.deepEqual(afterPropsR, {});
 				assert.deepEqual(beforePropsR, {"b": true});
 				d.resolve();
-			}, 500);
+			}), 500);
 			return d;
 		},
 		"NonWidget" : function () {
@@ -203,12 +202,12 @@ define([
 				},
 				a: null,
 				b: null,
-				refreshProperties: function (props) {
+				refreshProperties: d.callback(function (props) {
 					assert.deepEqual(props, {"b": true});
-				},
-				refreshRendering: function (props) {
+				}),
+				refreshRendering: d.callback(function (props) {
 					assert.deepEqual(props, {"b": true});
-				}
+				})
 			});
 			var o = new C();
 			var afterPropsR, beforePropsR, afterPropsP, beforePropsP;
@@ -218,19 +217,19 @@ define([
 				beforePropsP = e.invalidatedProperties;
 			});
 			o.on("refresh-rendering-complete", function (e) {
-				afterPropsR = Object.create(o._invalidatedProperties);
+				afterPropsR = o._invalidatedProperties;
 				beforePropsR = e.invalidatedProperties;
 			});
 			assert.deepEqual(o._invalidatingProperties, { "a": "invalidateProperty", "b": "invalidateProperty" });
 			o.b = "foo";
 			// we need to check before the timeout that refresh-complete was called
-			setTimeout(function () {
+			setTimeout(d.callback(function () {
 				assert.deepEqual(afterPropsP, {"b": true});
 				assert.deepEqual(beforePropsP, {"b": true});
 				assert.deepEqual(afterPropsR, {});
 				assert.deepEqual(beforePropsR, {"b": true});
 				d.resolve();
-			}, 500);
+			}), 500);
 			return d;
 		},
 		"ChangeInRendering": function () {
@@ -242,7 +241,7 @@ define([
 				a: null,
 				b: null,
 				callCount: 0,
-				refreshRendering: function (props) {
+				refreshRendering: d.callback(function (props) {
 					if (this.callCount === 0) {
 						this.callCount++;
 						assert.equal(this.b, "foo");
@@ -255,14 +254,14 @@ define([
 						assert.equal(this.a, "bar");
 						assert.deepEqual(props, {"a": true});
 						// let some time to verify we are not called yet another time
-						setTimeout(function() {
+						setTimeout(d.callback(function () {
 							d.resolve();
-						}, 500);
+						}), 500);
 					} else {
 						// should not happen
 						assert(false, "should not happen");
 					}
-				}
+				})
 			});
 			var o = new C();
 			o.startup();
