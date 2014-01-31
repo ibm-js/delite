@@ -138,112 +138,100 @@ define([
 	}
 
 	/**
-	 * Hash mapping of HTMLElement interfaces to tag names
+	 * Mapping of tag names to HTMLElement interfaces.
+	 * Doesn't include newer elements not available on all browsers.
 	 * @type {Object}
 	 */
-	var tags = {
-		HTMLAnchorElement: "a",
-		HTMLAppletElement: "applet",
-		HTMLAreaElement: "area",
-		HTMLAudioElement: "audio",
-		HTMLBaseElement: "base",
-		HTMLBRElement: "br",
-		HTMLButtonElement: "button",
-		HTMLCanvasElement: "canvas",
-		HTMLDataElement: "data",
-		HTMLDataListElement: "datalist",
-		HTMLDivElement: "div",
-		HTMLDListElement: "dl",
-		HTMLDirectoryElement: "directory",
-		HTMLEmbedElement: "embed",
-		HTMLFieldSetElement: "fieldset",
-		HTMLFontElement: "font",
-		HTMLFormElement: "form",
-		HTMLHeadElement: "head",
-		HTMLHeadingElement: "h1",
-		HTMLHtmlElement: "html",
-		HTMLHRElement: "hr",
-		HTMLIFrameElement: "iframe",
-		HTMLImageElement: "img",
-		HTMLInputElement: "input",
-		HTMLKeygenElement: "keygen",
-		HTMLLabelElement: "label",
-		HTMLLegendElement: "legend",
-		HTMLLIElement: "li",
-		HTMLLinkElement: "link",
-		HTMLMapElement: "map",
-		HTMLMediaElement: "media",
-		HTMLMenuElement: "menu",
-		HTMLMetaElement: "meta",
-		HTMLMeterElement: "meter",
-		HTMLModElement: "ins",
-		HTMLObjectElement: "object",
-		HTMLOListElement: "ol",
-		HTMLOptGroupElement: "optgroup",
-		HTMLOptionElement: "option",
-		HTMLOutputElement: "output",
-		HTMLParagraphElement: "p",
-		HTMLParamElement: "param",
-		HTMLPreElement: "pre",
-		HTMLProgressElement: "progress",
-		HTMLQuoteElement: "quote",
-		HTMLScriptElement: "script",
-		HTMLSelectElement: "select",
-		HTMLSourceElement: "source",
-		HTMLSpanElement: "span",
-		HTMLStyleElement: "style",
-		HTMLTableElement: "table",
-		HTMLTableCaptionElement: "caption",
-		HTMLTableDataCellElement: "td",
-		HTMLTableHeaderCellElement: "th",
-		HTMLTableColElement: "col",
-		HTMLTableRowElement: "tr",
-		HTMLTableSectionElement: "tbody",
-		HTMLTextAreaElement: "textarea",
-		HTMLTimeElement: "time",
-		HTMLTitleElement: "title",
-		HTMLTrackElement: "track",
-		HTMLUListElement: "ul",
-		HTMLUnknownElement: "blink",
-		HTMLVideoElement: "video"
+	var tagMap = {
+		a: HTMLAnchorElement,
+		// applet: HTMLAppletElement,
+		// area: HTMLAreaElement,
+		// audio: HTMLAudioElement,
+		base: HTMLBaseElement,
+		br: HTMLBRElement,
+		button: HTMLButtonElement,
+		canvas: HTMLCanvasElement,
+		// data: HTMLDataElement,
+		// datalist: HTMLDataListElement,
+		div: HTMLDivElement,
+		dl: HTMLDListElement,
+		directory: HTMLDirectoryElement,
+		// embed: HTMLEmbedElement,
+		fieldset: HTMLFieldSetElement,
+		font: HTMLFontElement,
+		form: HTMLFormElement,
+		head: HTMLHeadElement,
+		h1: HTMLHeadingElement,
+		html: HTMLHtmlElement,
+		hr: HTMLHRElement,
+		iframe: HTMLIFrameElement,
+		img: HTMLImageElement,
+		input: HTMLInputElement,
+		// keygen: HTMLKeygenElement,
+		label: HTMLLabelElement,
+		legend: HTMLLegendElement,
+		li: HTMLLIElement,
+		link: HTMLLinkElement,
+		map: HTMLMapElement,
+		// media: HTMLMediaElement,
+		menu: HTMLMenuElement,
+		meta: HTMLMetaElement,
+		// meter: HTMLMeterElement,
+		ins: HTMLModElement,
+		object: HTMLObjectElement,
+		ol: HTMLOListElement,
+		optgroup: HTMLOptGroupElement,
+		option: HTMLOptionElement,
+		// output: HTMLOutputElement,
+		p: HTMLParagraphElement,
+		param: HTMLParamElement,
+		pre: HTMLPreElement,
+		// progress: HTMLProgressElement,
+		quote: HTMLQuoteElement,
+		script: HTMLScriptElement,
+		select: HTMLSelectElement,
+		// source: HTMLSourceElement,
+		// span: HTMLSpanElement,
+		style: HTMLStyleElement,
+		table: HTMLTableElement,
+		caption: HTMLTableCaptionElement,
+		// td: HTMLTableDataCellElement,
+		// th: HTMLTableHeaderCellElement,
+		col: HTMLTableColElement,
+		tr: HTMLTableRowElement,
+		tbody: HTMLTableSectionElement,
+		textarea: HTMLTextAreaElement,
+		// time: HTMLTimeElement,
+		title: HTMLTitleElement,
+		// track: HTMLTrackElement,
+		ul: HTMLUListElement,
+		// blink: HTMLUnknownElement,
+		video: HTMLVideoElement
 	};
-
-	/**
-	 * For a constructor function, attempt to determine name of the "class"
-	 * @param  {Function} base The constructor function to identify
-	 * @return {String}           The string name of the class
-	 */
-	function getBaseName(base) {
-		// Try to use Function.name if available
-		if (base && base.name) {
-			return base.name;
-		}
-		var matches;
-		// Attempt to determine the name of the "class" by either getting it from the "function Name()" or the
-		// .toString() of the constructor function.  This is required on IE due to the fact that function.name is
-		// not a standard property and is not implemented on IE
-		if ((matches = base.toString().match(/^(?:function\s(\S+)\(\)\s|\[\S+\s(\S+)\])/))) {
-			return matches[1] || matches[2];
-		}
-	}
+	var tags = Object.keys(tagMap);
 
 	/**
 	 * Registers the tag with the current document, and save tag information in registry.
 	 * Handles situations where the base constructor inherits from
 	 * HTMLElement but is not HTMLElement.
-	 * @param  {String}   tag      The custom tag name for the element, or the "is" attribute value.
-	 * @param  {String}   baseName The base "class" name that this custom element is being built on
-	 * @param  {Function} baseCtor The constructor function
-	 * @return {Function}          The "new" constructor function that can create instances of the custom element
+	 * @param  {String}   tag         The custom tag name for the element, or the "is" attribute value.
+	 * @param  {String}   baseElement The native HTML*Element "class" that this custom element is extending.
+	 * @param  {Function} baseCtor    The constructor function.
+	 * @return {Function}             The "new" constructor function that can create instances of the custom element.
 	 */
-	function getTagConstructor(tag, baseName, baseCtor) {
+	function getTagConstructor(tag, baseElement, baseCtor) {
 		var proto = baseCtor.prototype,
 			config = registry[tag] = {
 				constructor: baseCtor,
 				prototype: proto
 			};
-		if (baseName !== "HTMLElement") {
-			config.extends = tags[baseName];
+		if (baseElement !== HTMLElement) {
+			config.extends = tags.filter(function (tag) {
+				return tagMap[tag] === baseElement;
+			})[0];
+			if (!config.extends) {
+				throw new TypeError(tag + ": must have HTMLElement in prototype chain");
+			}
 		}
 
 		if (has("document-register")) {
@@ -322,30 +310,24 @@ define([
 		// I.E. remove the wrapper added by getTagConstructor().
 		var bases = (superclasses instanceof Array ? superclasses : superclasses ? [superclasses] : []).map(restore);
 
-		var baseName, baseElement = bases[0];
 
 		// Check to see if the custom tag is already registered
 		if (tag in registry) {
 			throw new TypeError("A widget is already registered with tag '" + tag + "'.");
 		}
-		// Get name of root class: "HTMLElement", "HTMLInputElement", etc.
-		if (!(baseName = (baseElement.prototype && baseElement.prototype._baseName) || getBaseName(baseElement))) {
-			throw new TypeError(tag + ": Cannot determine class of baseElement");
-		}
-		baseName = baseName.replace(/Constructor$/, "");	// normalize HTMLElementConstructor --> HTMLElement on iOS
 
-		// Check to see if baseElement is appropriate
-		if (!/^HTML.*Element$/.test(baseName)) {
-			throw new TypeError(tag + ": baseElement must have HTMLElement in its prototype chain");
+		// Get root (aka native) class: HTMLElement, HTMLInputElement, etc.
+		var baseElement = bases[0];
+		if (baseElement.prototype && baseElement.prototype._baseElement) {
+			// The first superclass is a widget created by another call to register, so get that widget's root class
+			baseElement = baseElement.prototype._baseElement;
 		}
-
-		props = props || {};
 
 		// Get a composited constructor
-		var ctor = dcl(bases, props),
+		var ctor = dcl(bases, props || {}),
 			proto = ctor.prototype;
 		proto._ctor = ctor;
-		proto._baseName = baseName;
+		proto._baseElement = baseElement;
 
 		// Run introspection to add ES5 getters/setters.
 		// Doesn't happen automatically because Stateful's constructor isn't called.
@@ -358,7 +340,7 @@ define([
 
 		// Save widget metadata to the registry and return constructor that creates an upgraded DOMNode for the widget
 		/* jshint boss:true */
-		return getTagConstructor(tag, baseName, ctor);
+		return getTagConstructor(tag, baseElement, ctor);
 	}
 
 	/**

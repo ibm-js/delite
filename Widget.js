@@ -230,7 +230,7 @@ define([
 
 				proto = Object.getPrototypeOf(proto);
 				ctor = proto && proto.constructor;
-			} while (proto && !/HTML[a-zA-Z]*Element/.test(ctor.name || ctor.toString()));
+			} while (proto && ctor !== this._baseElement);
 
 			return list;
 		},
@@ -323,7 +323,10 @@ define([
 					// begin watching for changes to the tabindex DOM attribute
 					/* global WebKitMutationObserver */
 					if ("WebKitMutationObserver" in window) {
-						var observer = new WebKitMutationObserver(function () {
+						// If Polymer is loaded, use MutationObserver rather than WebKitMutationObserver
+						// to avoid error about "referencing a Node in a context where it does not exist".
+						var MO = window.MutationObserver || WebKitMutationObserver;	// for jshint
+						var observer = new MO(function () {
 							var newValue = self.getAttribute("tabindex");
 							if (newValue !== null) {
 								self.removeAttribute("tabindex");
