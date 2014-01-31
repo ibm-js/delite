@@ -6,7 +6,7 @@ define([
 	registerSuite({
 		name: "Invalidating",
 		"PostCreation": function () {
-			var d = this.async(2000);
+			var d = this.async(1000);
 			var C = register("test-invalidating-post", [HTMLElement, Widget, Invalidating], {
 				preCreate: function () {
 					this.addInvalidatingProperties("a");
@@ -38,11 +38,11 @@ define([
 				assert.deepEqual(afterPropsR, {});
 				assert.deepEqual(beforePropsR, {"b": true});
 				d.resolve();
-			}, 1000);
+			}, 500);
 			return d;
 		},
 		"InCreation": function () {
-			var d = this.async(2000);
+			var d = this.async(1000);
 			var C = register("test-invalidating-in", [HTMLElement, Widget, Invalidating], {
 				preCreate: function () {
 					this.addInvalidatingProperties("a", "b");
@@ -72,11 +72,11 @@ define([
 				assert.deepEqual(afterPropsR, {});
 				assert.deepEqual(beforePropsR, {"b": true});
 				d.resolve();
-			}, 1000);
+			}, 500);
 			return d;
 		},
 		"OnlyRefreshProperty": function () {
-			var d = this.async(2000);
+			var d = this.async(1000);
 			var C = register("test-invalidating-only-refresh-props", [HTMLElement, Widget, Invalidating], {
 				preCreate: function () {
 					this.addInvalidatingProperties({"a": "invalidateProperty"});
@@ -116,11 +116,11 @@ define([
 				assert.deepEqual(afterPropsR, {});
 				assert.deepEqual(beforePropsR, {"a": true});
 				d.resolve();
-			}, 1000);
+			}, 500);
 			return d;
 		},
 		"Manual": function () {
-			var d = this.async(2000);
+			var d = this.async(1000);
 			var C = register("test-invalidating-manual", [HTMLElement, Widget, Invalidating], {
 				a: null,
 				b: null,
@@ -153,11 +153,11 @@ define([
 				assert.deepEqual(afterPropsR, {});
 				assert.deepEqual(beforePropsR, {"b": true});
 				d.resolve();
-			}, 1000);
+			}, 500);
 			return d;
 		},
 		"PropertyAndRendering": function () {
-			var d = this.async(2000);
+			var d = this.async(1000);
 			var C = register("test-invalidating-prop-rendering", [HTMLElement, Widget, Invalidating], {
 				preCreate: function () {
 					this.addInvalidatingProperties({"a": "invalidateProperty", "b": "invalidateProperty"});
@@ -192,11 +192,11 @@ define([
 				assert.deepEqual(afterPropsR, {});
 				assert.deepEqual(beforePropsR, {"b": true});
 				d.resolve();
-			}, 1000);
+			}, 500);
 			return d;
 		},
-		"NonWidget" : function (t) {
-			var d = this.async(2000);
+		"NonWidget" : function () {
+			var d = this.async(1000);
 			var C = dcl([Invalidating, Stateful, Evented], {
 				constructor: function () {
 					this.addInvalidatingProperties({"a": "invalidateProperty", "b": "invalidateProperty"});
@@ -230,7 +230,43 @@ define([
 				assert.deepEqual(afterPropsR, {});
 				assert.deepEqual(beforePropsR, {"b": true});
 				d.resolve();
-			}, 1000);
+			}, 500);
+			return d;
+		},
+		"ChangeInRendering": function () {
+			var d = this.async(1000);
+			var C = register("test-invalidating-change", [HTMLElement, Widget, Invalidating], {
+				preCreate: function () {
+					this.addInvalidatingProperties("a", "b");
+				},
+				a: null,
+				b: null,
+				callCount: 0,
+				refreshRendering: function (props) {
+					if (this.callCount === 0) {
+						this.callCount++;
+						assert.equal(this.b, "foo");
+						assert.isNull(this.a);
+						assert.deepEqual(props, {"b": true});
+						this.a = "bar";
+					} else if (this.callCount === 1) {
+						this.callCount++;
+						assert.equal(this.b, "foo");
+						assert.equal(this.a, "bar");
+						assert.deepEqual(props, {"a": true});
+						// let some time to verify we are not called yet another time
+						setTimeout(function() {
+							d.resolve();
+						}, 500);
+					} else {
+						// should not happen
+						assert(false, "should not happen");
+					}
+				}
+			});
+			var o = new C();
+			o.startup();
+			o.b = "foo";
 			return d;
 		}
 	});
