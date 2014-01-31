@@ -22,7 +22,7 @@ Migration will require manual steps listed [here](docs/migration.md).
 ## Issues
 
 Bugs and open issues are tracked in the
-[github issues tracker])(https://github.com/ibm-js/delite/issues).
+[github issues tracker](https://github.com/ibm-js/delite/issues).
 
 ## Licensing
 
