@@ -1,9 +1,6 @@
 define([
 	"doh/main",
-	"require",
-
-	// Unit tests
-	"./Invalidating"
+	"require"
 ], function (doh, require) {
 
 	// Utility methods (previously in delite/_base)

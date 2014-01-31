@@ -17,5 +17,6 @@ define([
 	"./unit/Selection",
 	"./unit/StoreMap",
 	"./unit/Store",
-	"./unit/Scrollable"
+	"./unit/Scrollable",
+	"./unit/Invalidating"
 ]);
