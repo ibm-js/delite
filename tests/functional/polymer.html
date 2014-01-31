@@ -1,0 +1,25 @@
+<html>
+<head>
+	<!--
+		Test that delite and polymer can coexist.
+		This is intentionally a functional test because unit tests don't have sandboxing.
+	-->
+	<script src="../../../platform/platform.js"></script>
+	<script src="../../../requirejs/require.js"></script>
+	<script>
+		var ready = false; // set to true when the test page is ready
+		require.config({
+			baseUrl: "../../.."
+		});
+		require(["delite/ExampleWidget", "delite/register", "dojo/domReady!"], function(ExampleWidget, register){
+			register.parse();
+
+			// Set global variable to signal that the test page is ready
+			ready = true;
+		});
+	</script>
+</head>
+<body>
+	<d-example id="example"></d-example>
+</body>
+</html>
