@@ -263,6 +263,30 @@ define([
 			assert.strictEqual(1, document.getElementById("pw").startupCalls, "pw.startupCalls");
 		},
 
+		// Test error conditions
+		"errors" : function () {
+			var threw;
+
+			try {
+				register("test-bad-inheritance", [Stateful], { } );
+			} catch (err) {
+				assert(/must have HTMLElement in prototype chain/.test(err.toString()), "err not extending HTMLElement");
+				threw = true;
+			}
+			assert(threw, "threw error when not extending HTMLElement");
+
+
+			register("test-repeated-tag", [HTMLElement, Mixin], { } );
+			threw = false;
+			try {
+				register("test-repeated-tag", [HTMLElement], { } );
+			} catch (err) {
+				assert(/A widget is already registered with tag/.test(err.toString()), "err repeating tag");
+				threw = true;
+			}
+			assert(threw, "threw error when redeclaring same tag");
+		},
+
 		teardown: function () {
 			container.parentNode.removeChild(container);
 		}
