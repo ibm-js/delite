@@ -34,7 +34,7 @@ define(["./template"], function (template) {
 		//		(<ul> in this example) can't have any other children besides what's defined by
 		//		the {{#each ary}}...{{/ary}} block.
 
-		parseNode: function (/*DOMNode*/ templateNode) {
+		parseNode: function (/*DOMNode*/ templateNode, /*String?*/ xmlns) {
 			// summary:
 			//		Scan a single Element (not text node, not branching node like {{#if}}, but regular DOMNode
 
@@ -42,19 +42,22 @@ define(["./template"], function (template) {
 			var attributes = {};
 			var i = 0, item, attrs = templateNode.attributes;
 			for (i = 0; (item = attrs[i]); i++) {
-				if (item.name !== "is" && item.value) {
+				if (item.name == "xmlns") {
+					xmlns = item.value;
+				} else if (item.name !== "is" && item.value) {
 					attributes[item.name] = tokenize(item.value);
 				}
 			}
 
 			return {
 				tag: templateNode.getAttribute("is") || templateNode.tagName.replace(/^template-/i, ""),
+				xmlns: xmlns,
 				attributes: attributes,
-				children: handlebars.parseChildren(templateNode)
+				children: handlebars.parseChildren(templateNode, xmlns)
 			};
 		},
 
-		parseChildren: function (/*DOMNode*/ templateNode) {
+		parseChildren: function (/*DOMNode*/ templateNode, /*String?*/ xmlns) {
 			// summary:
 			//		Scan child nodes, both text and Elements
 
@@ -65,12 +68,12 @@ define(["./template"], function (template) {
 				if (/each|if/i.test(child.tagName)) {
 					children.push({
 						branch: child.attributes.condition.nodeValue,
-						children: this.parseChildren(child)
+						children: this.parseChildren(child, xmlns)
 					});
 					// TODO: handle <each> tags
 				} else if (childType === 1) {
 					// Standard DOM node, recurse
-					children.push(handlebars.parseNode(child));
+					children.push(handlebars.parseNode(child, xmlns));
 				} else if (childType === 3) {
 					// Text node likely containing variables like {{foo}}.
 					children = children.concat(tokenize(child.nodeValue.trim()));

@@ -112,7 +112,9 @@ define(["./register"], function (register) {
 
 			// Create node
 			if (nodeName !== "this") {
-				text += "var " + nodeName + " = register.createElement('" + templateNode.tag + "');\n";
+				text += "var " + nodeName + " = " + (templateNode.xmlns ?
+					"doc.createElementNS('" + templateNode.xmlns + "', '" + templateNode.tag + "');\n" :
+					"register.createElement('" + templateNode.tag + "');\n");
 			}
 
 			// Set attributes/properties

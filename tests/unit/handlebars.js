@@ -5,8 +5,9 @@ define([
 	"delite/register",
 	"delite/Widget",
 	"delite/handlebars!../templates/SimpleHandleBarsButton.html",
-	"delite/handlebars!../templates/HandlebarsButton.html"
-], function (registerSuite, assert, handlebars, register, Widget, simpleHBTmpl, buttonHBTmpl) {
+	"delite/handlebars!../templates/HandlebarsButton.html",
+	"delite/handlebars!../templates/SvgWidget.html"
+], function (registerSuite, assert, handlebars, register, Widget, simpleHBTmpl, buttonHBTmpl, svgTmpl) {
 	var container, myButton;
 	registerSuite({
 		name: "handlebars",
@@ -143,6 +144,20 @@ define([
 			});
 			assert.deepEqual("new heading", headingWidget.textContent, "heading changed");
 			assert.deepEqual("new button label", buttonWidget.textContent.trim(), "button changed");
+		},
+		svg: function () {
+			// Test that function returned from delite/handlebars! creates the template correctly
+			var TestSvg = register("test-svg", [HTMLElement, Widget], {
+				buildRendering: svgTmpl
+			});
+			var node = new TestSvg();
+			assert.strictEqual(node.tagName.toLowerCase(), "test-svg", "root node exists");
+			node = node.firstChild;
+			assert.strictEqual(node.tagName.toLowerCase(), "svg", "svg node exists");
+			assert.strictEqual(node.namespaceURI, "http://www.w3.org/2000/svg", "svg.namespaceURI");
+			node = node.firstChild;
+			assert.strictEqual(node.tagName.toLowerCase(), "rect", "rect node exists");
+			assert.strictEqual(node.namespaceURI, "http://www.w3.org/2000/svg", "rect.namespaceURI");
 		},
 
 		teardown : function () {
