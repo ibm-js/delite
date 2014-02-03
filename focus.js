@@ -19,7 +19,8 @@ define([
 	// module:
 	//		delite/focus
 
-	var lastFocusin;
+	// Time of the last touch or focusIn event
+	var lastTouch;
 
 	// TODO: switch to using delite/Stateful, and dcl.advise
 
@@ -99,11 +100,6 @@ define([
 				// TODO: change this to run on capture phase rather than bubbling phase after that option is added to
 				// dojo/on (see #16596)
 				var mdh = on(targetWindow.document, "mousedown, touchstart", function (evt) {
-					_this._justMouseDowned = true;
-					setTimeout(function () {
-						_this._justMouseDowned = false;
-					}, 0);
-
 					// workaround weird IE bug where the click is on an orphaned node
 					// (first time clicking a Select/DropDownButton inside a TooltipDialog).
 					// actually, strangely this is happening on latest chrome too.
@@ -115,9 +111,6 @@ define([
 				});
 
 				var fih = on(body, "focusin", function (evt) {
-
-					lastFocusin = (new Date()).getTime();
-
 					// When you refocus the browser window, IE gives an event with an empty srcElement
 					if (!evt.target.tagName) {
 						return;
@@ -141,9 +134,10 @@ define([
 				});
 
 				var foh = on(body, "focusout", function (evt) {
-					// IE9+ has a problem where focusout events come after the corresponding focusin event.  At least
-					// when moving focus from the Editor's <iframe> to a normal DOMNode.
-					if ((new Date()).getTime() < lastFocusin + 100) {
+					// IE9+ and chrome have a problem where focusout events come after the corresponding focusin event.
+					// For chrome problem see https://bugs.dojotoolkit.org/ticket/17668.
+					// IE problem happens when moving focus from the Editor's <iframe> to a normal DOMNode.
+					if ((new Date()).getTime() < lastTouch + 100) {
 						return;
 					}
 
@@ -179,12 +173,6 @@ define([
 				this.set("curNode", null);
 			}), 0);
 
-			if (this._justMouseDowned) {
-				// the mouse down caused a new widget to be marked as active; this blur event
-				// is coming late, so ignore it.
-				return;
-			}
-
 			// If the blur event isn't followed by a focus or touch event then mark all widgets as inactive.
 			if (this._clearActiveWidgetsTimer) {
 				clearTimeout(this._clearActiveWidgetsTimer);
@@ -202,6 +190,9 @@ define([
 			//		The node that was touched.
 			// by:
 			//		"mouse" if the focus/touch was caused by a mouse down event
+
+			// Keep track of time of last focusin or touch event.
+			lastTouch = (new Date()).getTime();
 
 			// ignore the recent blurNode event
 			if (this._clearActiveWidgetsTimer) {
