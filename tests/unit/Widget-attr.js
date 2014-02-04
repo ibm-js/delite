@@ -38,50 +38,7 @@ define([
 			assert.strictEqual(2, d.objProp1.bar, "d.objProp1.bar");
 			assert.strictEqual("global var", d.objProp2.text, "d.objProp2.text");
 		},
-		"domMapping" : function () {
-			var IndividualMaps = register("individual-maps", [HTMLElement, Widget], {
-				// Mapping foo to this.plainTextNode.foo
-				foo: "",
-				_setFooAttr: "plainTextNode",
 
-				// Mapping bar to this.buttonNode.bar
-				bar: "",
-				_setBarAttr: "buttonNode",
-
-				// Mapping plainText to this.plainTextNode.innerHTML
-				plainText: "",
-				_setPlainTextAttr: {node: "plainTextNode", type: "innerText"},
-
-				buildRendering: function () {
-					this.className = "class1";
-
-					this.buttonNode = this.focusNode = this.ownerDocument.createElement("button");
-					this.buttonNode.textContent = "hi";
-					this.appendChild(this.buttonNode);
-
-					this.plainTextNode = this.focusNode = this.ownerDocument.createElement("span");
-					this.plainTextNode.textContent = "original plain text";
-					this.appendChild(this.plainTextNode);
-				}
-			});
-			container.innerHTML += "<div id='wrapper'></div>";
-
-			var widget = new IndividualMaps({
-				foo: "value1",
-				bar: "value2",
-				className: "class2",
-				style: "height: 123px",
-				plainText: "hello world <>&;",
-				"name-with-dashes": "name with dashes"
-			}).placeAt(document.getElementById("wrapper"));
-
-			// test attributes specified to constructor were copied over to DOM
-			assert.strictEqual("value1", widget.plainTextNode.foo, "widget.plainTextNode.foo");
-			assert.strictEqual("value2", widget.buttonNode.bar, "widget.buttonNode.bar");
-			assert.isTrue(widget.classList.contains("class2"), "class2");
-			assert.strictEqual("hello world &lt;&gt;&amp;;", widget.plainTextNode.innerHTML, "innerHTML");
-
-		},
 		// tabIndex is problematic, see https://github.com/ibm-js/delite/issues/34.
 		"specialNames" : function () {
 			// Test when tabIndex is declared top level, in the props passed to register().

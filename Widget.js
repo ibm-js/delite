@@ -30,80 +30,6 @@ define([
 
 	var div = document.createElement("div");
 
-	function genSetter(/*String*/ attr, /*Object*/ commands) {
-		// summary:
-		//		Return setter for a widget property, often mapping the property to a
-		//		DOMNode attribute, innerHTML, or innerText.
-		//		Note some attributes like "type" cannot be processed this way as they are not mutable.
-		// attr:
-		//		Name of widget property, ex: "label"
-		// commands:
-		//		A single command or array of commands.  A command is:
-		//
-		//			- null to indicate a plain setter that just saves the value and notifies listeners
-		//				registered with watch()
-		//			- a string like "focusNode" to set this.focusNode[attr]
-		//			- an object like {node: "labelNode", type: "attribute", attribute: "role" } to set
-		//				this.labelNode.role
-		//			- an object like {node: "focusNode", type: "class" } to set this.focusNode.className
-		//			- an object like {node: "labelNode", type: "innerHTML" } to set this.labelNode.innerHTML
-		//			- an object like {node: "labelNode", type: "innerText" } to set this.labelNode.innerText
-		//
-		//		If an object doesn't specify a node, it maps to the root node.
-
-		function genSimpleSetter(command) {
-			// Setup mapNode(this) method that returns the node to map to.  Does late resolution, i.e. doesn't
-			// lookup this.focusNode until it's called.
-			var mapNodeName = command.node || (command && typeof command === "string" ? command : "domNode"),
-				mapNode = mapNodeName === "domNode" ? function (x) {
-					return x;
-				} :
-					function (x) {
-						return x[mapNodeName];
-					};
-			switch (command.type) {
-			case "innerText":
-				return function (value) {
-					mapNode(this).innerHTML = "";
-					mapNode(this).appendChild(this.ownerDocument.createTextNode(value));
-					this._set(attr, value);
-				};
-			case "innerHTML":
-				return function (value) {
-					mapNode(this).innerHTML = value;
-					this._set(attr, value);
-				};
-			case "class":
-				return function (value) {
-					domClass.replace(mapNode(this), value, this[attr]);
-					this._set(attr, value);
-				};
-			default:
-				// Map to DOMNode property.   DOMNode is possibly a widget.
-				var attrName = command.attribute || attr;
-				return function (value) {
-					if (typeof value === "function") { // functions execute in the context of the widget
-						value = lang.hitch(this, value);
-					}
-					mapNode(this)[attrName] = value;
-					this._set(attr, value);
-				};
-			}
-		}
-
-		if (commands instanceof Array) {
-			// Unusual case where there's a list of commands, ex: _setFooAttr: ["focusNode", "domNode"].
-			var setters = commands.map(genSimpleSetter);
-			return function (value) {
-				setters.forEach(function (setter) {
-					setter.call(this, value);
-				}, this);
-			};
-		} else {
-			return genSimpleSetter(commands);
-		}
-	}
-
 	var _widgetTypeCtr = {};
 
 	function getUniqueId(/*String*/ tag) {
@@ -129,30 +55,6 @@ define([
 		//
 		//		Widgets can provide custom setters/getters for widget attributes, which are called automatically
 		//		by set(name, value).  For an attribute XXX, define methods _setXXXAttr() and/or _getXXXAttr().
-		//
-		//		_setXXXAttr can also be a string/hash/array mapping from a widget attribute XXX to the
-		//		widget's DOMNodes:
-		//
-		//		- DOM node attribute
-		// |		_setFocusAttr: {node: "focusNode", type: "attribute"}
-		// |		_setFocusAttr: "focusNode"	(shorthand)
-		// |		_setFocusAttr: ""		(shorthand, maps to root node)
-		//		Maps this.focus to this.focusNode.focus, or (last example) to widget root node.
-		//
-		//		- DOM node innerHTML
-		//	|		_setTitleAttr: { node: "titleNode", type: "innerHTML" }
-		//		Maps this.title to this.titleNode.innerHTML
-		//
-		//		- DOM node innerText
-		//	|		_setTitleAttr: { node: "titleNode", type: "innerText" }
-		//		Maps this.title to this.titleNode.innerText
-		//
-		//		- DOM node CSS class
-		// |		_setMyClassAttr: { node: "labelNode", type: "class" }
-		//		Maps this.myClass to this.labelNode.className
-		//
-		//		If the value of _setXXXAttr is an array, then each element in the array matches one of the
-		//		formats of the above list.
 
 		// baseClass: [protected] String
 		//		Root CSS class of the widget (ex: duiTextBox), used to construct CSS classes to indicate
@@ -218,19 +120,6 @@ define([
 			} while (proto && ctor !== this._baseElement);
 
 			return list;
-		},
-
-		_introspect: function () {
-			// Various introspection to be done on my prototype.
-			// "this" refers to my prototype.
-
-			// Legacy stuff.  Revisit later to see if we really need this.
-			for (var key in this) {
-				// Convert shorthand notations like _setAltAttr: "focusNode" into real functions.
-				if (/^_set[A-Z](.*)Attr$/.test(key) && typeof this[key] !== "function") {
-					this[key] = genSetter(key.charAt(4).toLowerCase() + key.substr(5, key.length - 9), this[key]);
-				}
-			}
 		},
 
 		//////////// INITIALIZATION METHODS ///////////////////////////////////////
