@@ -44,14 +44,20 @@ define([
 				// summary:
 				//		A trivial popup widget
 				label: "i'm a popup",
-				_setLabelAttr: { type: "innerText" }
+				_setLabelAttr: function (val) {
+					this.textContent = val;
+					this._set("label", val);
+				}
 			});
 
 			SimpleDropDownButton = register("simple-drop-down-button", [HTMLButtonElement, Widget, HasDropDown], {
 				// summary:
 				//		A button that shows a popup.
 				label: "show popup",
-				_setLabelAttr: { type: "innerText" },
+				_setLabelAttr: function (val) {
+					this.textContent = val;
+					this._set("label", val);
+				},
 				popupLabel: "i'm a popup",
 				orient: ["below"],
 
@@ -67,7 +73,10 @@ define([
 				// summary:
 				//		A non-focusable "button" that shows a popup.   Should work for mouse, although not for keyboard.
 				label: "show popup (non-focusable)",
-				_setLabelAttr: { type: "innerText" },
+				_setLabelAttr: function (val) {
+					this.textContent = val;
+					this._set("label", val);
+				},
 				orient: ["below"],
 
 				postCreate: register.after(function () {
