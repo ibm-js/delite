@@ -13,5 +13,5 @@ define({
 	},
 
 	// Non-functional test suites
-	suites: [ "delite/tests/unit" ]
+	suites: [ "delite/tests/unit/all" ]
 });

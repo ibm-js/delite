@@ -1,0 +1,22 @@
+// Listing of all the infrastructure unit tests
+define([
+	"./Destroyable",
+	"./DisplayContainer",
+	"./register",
+	"./Widget-attr",
+	"./handlebars",
+	"./Widget-lifecycle",
+	"./Widget-placeAt",
+	"./Widget-utility",
+	"./HasDropDown",
+	"./CssState",
+	"./Container",
+	"./a11y",
+	"./Widget-on",
+	"./Stateful",
+	"./Selection",
+	"./StoreMap",
+	"./Store",
+	"./Scrollable",
+	"./Invalidating"
+]);
