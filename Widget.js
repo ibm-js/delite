@@ -30,22 +30,6 @@ define([
 
 	var div = document.createElement("div");
 
-	var _widgetTypeCtr = {};
-
-	function getUniqueId(/*String*/ tag) {
-		// summary:
-		//		Generates a unique id for a given widget type.
-		//		Note: doesn't work for multi-document case.
-
-		var id;
-		do {
-			id = tag + "-" +
-				(tag in _widgetTypeCtr ?
-					++_widgetTypeCtr[tag] : _widgetTypeCtr[tag] = 0);
-		} while (dom.byId(tag));
-		return id; // String
-	}
-
 	var Widget = dcl([Stateful, Destroyable], {
 		// summary:
 		//		Base class for all widgets.
@@ -347,13 +331,6 @@ define([
 
 			if (!this._enteredView) {
 				this.enteredViewCallback();
-			}
-
-			// Generate an id for the widget if one wasn't specified, or it was specified as id: undefined.
-			// Used by focus.js etc.
-			// TODO: this will be problematic for form widgets that want to put the id on the nested <input>
-			if (!this.id) {
-				this.id = getUniqueId(this.nodeName.toLowerCase());
 			}
 
 			this._started = true;
