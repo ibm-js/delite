@@ -170,21 +170,6 @@ define([
 		 //		"Children" in this case refers to both DOM nodes and widgets.
 		 //		For example, for myWidget:
 		 //
-		 //		|	<div data-dojo-type=myWidget>
-		 //		|		<b> here's a plain DOM node
-		 //		|		<span data-dojo-type=subWidget>and a widget</span>
-		 //		|		<i> and another plain DOM node </i>
-		 //		|	</div>
-		 //
-		 //		containerNode would point to:
-		 //
-		 //		|		<b> here's a plain DOM node
-		 //		|		<span data-dojo-type=subWidget>and a widget</span>
-		 //		|		<i> and another plain DOM node </i>
-		 //
-		 //		In templated widgets, "containerNode" is set via a
-		 //		data-dojo-attach-point assignment.
-		 //
 		 //		containerNode must be defined for any widget that accepts innerHTML
 		 //		(like ContentPane or BorderContainer or even Button), and conversely
 		 //		is null for widgets that don't, like TextBox.
