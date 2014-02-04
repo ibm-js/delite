@@ -278,11 +278,6 @@ define([
 
 			this._created = true;
 
-			// data-dojo-id specifies that a global variable should be created to point to this widget
-			if (this.hasAttribute("data-dojo-id")) {
-				window[this.getAttribute("data-dojo-id")] = this;
-			}
-
 			// Now that creation has finished, apply parameters that were specified declaratively.
 			// This is consistent with the timing that parameters are applied for programmatic creation.
 			dcl.mix(this, params);
