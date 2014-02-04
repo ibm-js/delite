@@ -4,9 +4,9 @@ define([
 	"delite/handlebars",
 	"delite/register",
 	"delite/Widget",
-	"delite/handlebars!../templates/SimpleHandleBarsButton.html",
-	"delite/handlebars!../templates/HandlebarsButton.html",
-	"delite/handlebars!../templates/SvgWidget.html"
+	"delite/handlebars!./templates/SimpleHandleBarsButton.html",
+	"delite/handlebars!./templates/HandlebarsButton.html",
+	"delite/handlebars!./templates/SvgWidget.html"
 ], function (registerSuite, assert, handlebars, register, Widget, simpleHBTmpl, buttonHBTmpl, svgTmpl) {
 	var container, myButton;
 	registerSuite({
