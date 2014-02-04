@@ -159,6 +159,20 @@ define([
 			assert.deepEqual("function", typeof attr2.foo, "function attribute set");
 			assert.deepEqual("baz", attr2.foo(), "function has proper return value");
 			assert.deepEqual(4, attr2.bar, "attribute has proper value");
+
+			// Check if user overrides widget to not process constructor params
+			var IgnoreParamsStateful = dcl(Stateful, {
+				foo: 3,
+				processConstructorParameters: function() { }
+			});
+			var ignore = new IgnoreParamsStateful({
+				foo: 4
+			});
+			assert.strictEqual(ignore.foo, 3, "constructor foo ignored");
+
+			// And make sure it works even if the argument isn't a hash
+			var ignore2 = new IgnoreParamsStateful(5, 4, 3, 2, 1);
+			assert.strictEqual(ignore.foo, 3, "ignore2 created");
 		},
 		"_set" : function () {
 			var output = [];

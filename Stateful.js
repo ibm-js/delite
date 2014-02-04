@@ -40,12 +40,19 @@ define(["dcl/dcl"], function (dcl) {
 		//		and getters should access the property value as this._fooAttr.
 		//
 		// example:
-		//	|	var MyClass = dcl(Stateful, {});
+		//	|	var MyClass = dcl(Stateful, { foo: "initial" });
 		//	|	var obj = new MyClass();
 		//	|	obj.watch("foo", function(){
 		//	|		console.log("foo changed to " + this.foo);
 		//	|	});
 		//	|	obj.foo = bar;
+		//
+		//		Stateful by default interprets the first parameter passed to the constructor as
+		//		a set of properties to set on the widget immediately after its created.
+		//
+		// example:
+		//	|	var MyClass = dcl(Stateful, { foo: "initial" });
+		//	|	var obj = new MyClass({ foo: "special"});
 
 		_getProps: function () {
 			// summary:
@@ -107,11 +114,17 @@ define(["dcl/dcl"], function (dcl) {
 			after: function (args) {
 				// Automatic setting of params during construction.
 				// In after() advice so that it runs after all the subclass constructor methods.
-				if (args.length) {
-					this.mix(args[0]);
-				}
+				this.processConstructorParameters(args);
 			}
 		}),
+
+		processConstructorParameters: function (args) {
+			// summary:
+			//		Called after Object is created to process parameters passed to constructor
+			if (args.length) {
+				this.mix(args[0]);
+			}
+		},
 
 		mix: function (/*Object*/ hash) {
 			// summary:
