@@ -2,25 +2,21 @@ define([
 	"require", // require.toUrl
 	"dcl/dcl",
 	"dojo/aspect",
-	"dojo/_base/config", // config.blankGif
 	"dojo/Deferred",
 	"dojo/dom", // dom.byId
-	"dojo/dom-attr", // domAttr.set domAttr.remove
 	"dojo/dom-class", // domClass.add domClass.replace
 	"dojo/dom-construct", // domConstruct.destroy domConstruct.place
 	"dojo/dom-geometry", // isBodyLtr
 	"dojo/dom-style", // domStyle.set, domStyle.get
 	"dojo/has",
-	"dojo/_base/kernel",
 	"dojo/_base/lang", // mixin(), hitch(), etc.
 	"dojo/on",
-	"dojo/_base/window", // win.body()
 	"./Destroyable",
 	"./Stateful",
 	"./register",
 	"dojo/has!dojo-bidi?./Bidi"
-], function (require, dcl, aspect, config, Deferred, dom, domAttr, domClass, domConstruct, domGeometry, domStyle,
-			 has, kernel, lang, on, win, Destroyable, Stateful, register, Bidi) {
+], function (require, dcl, aspect, Deferred, dom, domClass, domConstruct, domGeometry, domStyle,
+			 has, lang, on, Destroyable, Stateful, register, Bidi) {
 
 	// module:
 	//		delite/Widget
@@ -65,11 +61,6 @@ define([
 		 //		startup() has completed.
 		 _started: false,
 		 =====*/
-
-		// _blankGif: [protected] String
-		//		Path to a blank 1x1 image.
-		//		Used by `<img>` nodes in templates that really get their image via CSS background-image.
-		_blankGif: config.blankGif || require.toUrl("dojo/resources/blank.gif"),
 
 		// register: delite/register
 		//		Convenience pointer to register class.   Used by buildRendering() functions produced from
@@ -335,7 +326,7 @@ define([
 
 			this._started = true;
 			this.getChildren().forEach(function (obj) {
-				if (!obj._started && !obj._destroyed && lang.isFunction(obj.startup)) {
+				if (!obj._started && !obj._destroyed && typeof obj.startup == "function") {
 					obj.startup();
 					obj._started = true;
 				}
@@ -429,7 +420,7 @@ define([
 			// description:
 			//		Call specified function when event `type` occurs, ex: `myWidget.on("click", function () { ... })`.
 			//		Note that the function is not run in any particular scope, so if (for example) you want it to run
-			//		in the widget's scope you must do `myWidget.on("click", lang.hitch(myWidget, func))`.
+			//		in the widget's scope you must do `myWidget.on("click", myWidget.func.bind(myWidget))`.
 
 			return this.own(on(this, type, func))[0];
 		},
@@ -503,7 +494,7 @@ define([
 			//		to a variable.
 			// example:
 			//	|	// create a Button with no srcNodeRef, and place it in the body:
-			//	|	var button = new Button({ label:"click" }).placeAt(win.body());
+			//	|	var button = new Button({ label:"click" }).placeAt(document.body);
 			//	|	// now, 'button' is still the widget reference to the newly created button
 			//	|	button.on("click", function (e) { console.log('click'); }));
 			// example:
@@ -552,8 +543,8 @@ define([
 			// tags:
 			//		protected
 
-			var timer = setTimeout(lang.hitch(this,
-				function () {
+			var timer = setTimeout(
+				(function () {
 					if (!timer) {
 						return;
 					}
@@ -561,7 +552,7 @@ define([
 					if (!this._destroyed) {
 						lang.hitch(this, fcn)();
 					}
-				}),
+				}).bind(this),
 				delay || 0
 			);
 			return {
@@ -596,7 +587,7 @@ define([
 				}
 			}
 
-			getChildrenHelper(root || document.body);
+			getChildrenHelper(root || this.ownerDocument.body);
 			return outAry;
 		},
 
