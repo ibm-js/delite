@@ -244,7 +244,7 @@ define([
 			}
 			// Check that no error has been thrown asynchronously due to the animation
 			setTimeout(d.callback(function () {
-				assert.equal(0, errorCounter, errorMsg);
+				assert.equal(errorCounter, 0, errorMsg);
 			}), 500); // smaller than the total timeout of the test case
 		}
 	};
