@@ -50,12 +50,11 @@ define([
 		 // containerNode: [readonly] DomNode
 		 //		Designates where children of the source DOM node will be placed.
 		 //		"Children" in this case refers to both DOM nodes and widgets.
-		 //		For example, for myWidget:
 		 //
 		 //		containerNode must be defined for any widget that accepts innerHTML
 		 //		(like ContentPane or BorderContainer or even Button), and conversely
-		 //		is null for widgets that don't, like TextBox.
-		 containerNode: null,
+		 //		is undefined for widgets that don't, like TextBox.
+		 containerNode: undefined,
 
 		 // _started: [readonly] Boolean
 		 //		startup() has completed.
