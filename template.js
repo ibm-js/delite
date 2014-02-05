@@ -1,18 +1,37 @@
 define(["./register"], function (register) {
 
-	var attrMap = {};
 
+	var elementCache = {};
+	function getElement(tag) {
+		// summary:
+		//		Return cached reference to Element with given tag name
+		if (!(tag in elementCache)) {
+			elementCache[tag] = register.createElement(tag);
+		}
+		return elementCache[tag];
+	}
+
+	function isFuncAttr(tag, attrName) {
+		// summary:
+		//		Return true if tag.attrName is a function, for example button.onclick
+
+		// Unfortunately since onclick is null, typeof button.onclick returns "object" not "function".
+		// Need heuristic (or hardcoded list) to tell which attributes are handlers.
+		return /^on/.test(attrName) && attrName in getElement(tag);
+	}
+
+	var attrMap = {};
 	function getProp(tag, attrName) {
 		// summary:
 		//		Given a tag and attribute name, return the associated property name,
 		//		or undefined if no such property exists, for example:
 		//		Ex:
-		//			- getProp("class") --> "className"
-		//			- getProp("tabindex") --> "tabIndex"
-		//			- getProp("role") --> undefined
+		//			- getProp("div", "class") --> "className"
+		//			- getProp("div", "tabindex") --> "tabIndex"
+		//			- getProp("div", "role") --> undefined
 
 		if (!(tag in attrMap)) {
-			var proto = register.createElement(tag),
+			var proto = getElement(tag),
 				map = attrMap[tag] = {};
 			for (var prop in proto) {
 				map[prop.toLowerCase()] = prop;
@@ -119,26 +138,34 @@ define(["./register"], function (register) {
 
 			// Set attributes/properties
 			for (var attr in templateNode.attributes) {
-				// Get expression for the value of this property, ex: 'duiReset ' + this.baseClass.
-				// Also get list of properties that we need to watch for changes.
+				// List of strings and property names that define the attribute/property value
 				var parts = templateNode.attributes[attr];
-				var watchProps = [], js = parts.map(function (part) {
-					if (part.property) {
-						watchProps.push(part.property);
-						return "widget." + part.property;	// note: "this" not available in func passed to watch()
-					} else {
-						return singleQuote(part);
-					}
-				}).join(" + ");
 
-				// Generate code to set this property or attribute
-				var propName = getProp(templateNode.tag, attr);
-				var codeToSetProp = propName ? nodeName + "." + propName + "=" + js + ";" :
-					nodeName + ".setAttribute('" + attr + "', " + js + ");";
-				text += codeToSetProp + "\n";
-				watchProps.forEach(function (wp) {
-					text += "this.watch('" + wp + "', function(){ " + codeToSetProp + " });\n";
-				});
+				if (isFuncAttr(templateNode.tag, attr)) {
+					// Functional property setting, ex: onclick="console.log('hi');".
+					// Bind variables not currently supported.  That would require using new Function().
+					text += nodeName + "." + attr + " = function(){" + parts.join("") + "};"
+				} else {
+					// Get expression for the value of this property, ex: 'duiReset ' + this.baseClass.
+					// Also get list of properties that we need to watch for changes.
+					var watchProps = [], js = parts.map(function (part) {
+						if (part.property) {
+							watchProps.push(part.property);
+							return "widget." + part.property;	// note: "this" not available in func passed to watch()
+						} else {
+							return singleQuote(part);
+						}
+					}).join(" + ");
+
+					// Generate code to set this property or attribute
+					var propName = getProp(templateNode.tag, attr);
+					var codeToSetProp = propName ? nodeName + "." + propName + "=" + js + ";" :
+						nodeName + ".setAttribute('" + attr + "', " + js + ");";
+					text += codeToSetProp + "\n";
+					watchProps.forEach(function (wp) {
+						text += "this.watch('" + wp + "', function(){ " + codeToSetProp + " });\n";
+					});
+				}
 			}
 
 			// Create descendant Elements and text nodes
