@@ -30,14 +30,10 @@
 				return child !== this;
 			},
 			_getFirst: function () {
-				if (this.hasChildren()) {
-					return this.getChildren()[0];
-				}
+				return this.firstElementChild;
 			},
 			_getLast: function () {
-				if (this.children.length) {
-					return this.children[this.children.length - 1];
-				}
+				return this.lastElementChild;
 			},
 			_onDownArrow: function () {
 				var nextChild = this._getNext(this.focusedChild, 1);
@@ -69,12 +65,14 @@
 <body>
 	<input id="autofocusInput" type="text" autofocus="autofocus">
 	<test-container id="testContainer">
-		<!-- comment just to make sure that numbering isn't thrown off -->
+		<!-- widget children -->
 		<test-contained id="one">one</test-contained>
 		<test-contained id="two">two</test-contained>
 		<test-contained id="three">three</test-contained>
-		<test-contained id="four">four</test-contained>
-		<test-contained id="five">five</test-contained>
+
+		<!-- plain Element children -->
+		<div id="four">four</div>
+		<div id="five">five</div>
 	</test-container>
 	<test-container id="emptyContainer" style="height: 40px; background-color: red;">
 	</test-container>

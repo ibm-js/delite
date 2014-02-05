@@ -120,5 +120,7 @@ define(["intern!object",
 						assert.equal("one", value, "still on one");
 					});
 		}
+
+		// TODO: test keyboard navigation
 	});
 });
