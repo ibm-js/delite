@@ -1,13 +1,14 @@
 define([
 	"intern!object",
 	"intern/chai!assert",
+	"dojo/on",
 	"delite/handlebars",
 	"delite/register",
 	"delite/Widget",
 	"delite/handlebars!./templates/SimpleHandleBarsButton.html",
 	"delite/handlebars!./templates/HandlebarsButton.html",
 	"delite/handlebars!./templates/SvgWidget.html"
-], function (registerSuite, assert, handlebars, register, Widget, simpleHBTmpl, buttonHBTmpl, svgTmpl) {
+], function (registerSuite, assert,  on, handlebars,register, Widget, simpleHBTmpl, buttonHBTmpl, svgTmpl) {
 	var container, myButton;
 	registerSuite({
 		name: "handlebars",
@@ -109,6 +110,18 @@ define([
 			assert.strictEqual(myList.firstChild.getAttribute("foo"), "a.b('c,d')", "single quotes prop");
 			assert.strictEqual(myList.firstChild.getAttribute("bar"), "\\\"hello\"", "double quotes, backslash prop");
 			assert.strictEqual(myList.firstChild.textContent, "\"\\bill'\\'", "node text");
+		},
+		events : function () {
+			// Test that listeners like onclick work.
+			global = 1;
+			var TestClick = register("test-events", [ HTMLElement, Widget], {
+				buildRendering: handlebars.compile(
+					"<span><span onclick='global = 2;'>click me</span></span>")
+			});
+			var myClick = new TestClick();
+			myClick.placeAt(container);
+			on.emit(myClick.firstChild, "click", {});
+			assert.strictEqual(global, 2, "click handler fired");
 		},
 		"Widgets in Template" : function () {
 			register("simple-heading", [HTMLElement, Widget], {
