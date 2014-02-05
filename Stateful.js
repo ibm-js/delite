@@ -48,7 +48,7 @@ define(["dcl/dcl"], function (dcl) {
 		//	|	obj.foo = bar;
 		//
 		//		Stateful by default interprets the first parameter passed to the constructor as
-		//		a set of properties to set on the widget immediately after its created.
+		//		a set of properties to set on the widget immediately after it is created.
 		//
 		// example:
 		//	|	var MyClass = dcl(Stateful, { foo: "initial" });
