@@ -37,9 +37,12 @@ define([
 		//		by set(name, value).  For an attribute XXX, define methods _setXXXAttr() and/or _getXXXAttr().
 
 		// baseClass: [protected] String
-		//		Root CSS class of the widget (ex: duiTextBox), used to construct CSS classes to indicate
-		//		widget state.
+		//		Root CSS class of the widget (ex: d-text-box)
 		baseClass: "",
+		_setBaseClassAttr: function (value) {
+			domClass.replace(this, value, this.baseClass);
+			this._set("baseClass", value);
+		},
 
 		// focused: [readonly] Boolean
 		//		This widget or a widget it contains has focus, or is "active" because
@@ -140,9 +143,8 @@ define([
 
 			// When Widget extends Invalidating some/all of this code should probably be moved to refreshRendering()
 
-			// baseClass is a single class name or occasionally a space-separated list of names.
 			if (this.baseClass) {
-				domClass.add(this, this.baseClass.split(" "));
+				domClass.add(this, this.baseClass);
 			}
 			if (!this.isLeftToRight()) {
 				domClass.add(this, "d-rtl");
