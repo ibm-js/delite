@@ -2,32 +2,37 @@ define(["dcl/dcl", "dojo/_base/lang", "./Stateful"], function (dcl, lang, Statef
 
 	return dcl(Stateful, {
 		// summary:
-		//		Mixin for classes (usually widgets) that watch invalidated properties and delay the rendering
-		//		after these properties modifications to the next execution frame. The receiving class must extend
-		//		delite/Widget or dojo/Evented.
+		//		Mixin for classes (usually widgets) that watch a set of invalidating properties
+		//		and delay to the next execution frame the refresh following the changes of
+		//		the values of these properties. The receiving class must extend delite/Widget
+		//		or dojo/Evented.
 		// description:
-		//		Once a set of properties has been declared subject to invalidation, when the user will change their
-		//		values this will end up calling possible the refreshProperties() and in all cases the
-		//		refreshRendering() method allowing the receiving class to refresh itself based on the new values.
+		//		Once a set of properties have been declared subject to invalidation using the method
+		//		addInvalidatingProperties(), changes of the values of these properties possibly
+		//		end up calling refreshProperties() and in all cases refreshRendering(),
+		//		thus allowing the receiving class to refresh itself based on the new values.
 
 		_renderHandle: null,
 
-		// _invalidatingProperties: {}
-		//		A hash of properties to watch for to trigger properties invalidation and/or rendering
-		//		invalidation.
-		//		This list must be initialized by the time buildRendering() completes, usually in preCreate()
-		//		using addInvalidatingProperties. Default value is null.
+		// _invalidatingProperties: [private] Object
+		//		A hash of properties to watch in order to trigger the invalidation of these properties
+		//		and/or the rendering invalidation.
+		//		This list must be initialized by the time buildRendering() completes, usually in preCreate(),
+		//		using addInvalidatingProperties(). Default value is null.
 		_invalidatingProperties: null,
+		
 		// _invalidatedProperties: [private] Object
-		//		A hash of invalidated properties either to refresh them or refresh the rendering
+		//		A hash of invalidated properties either to refresh them or to refresh the rendering.
 		_invalidatedProperties: null,
+		
 		// invalidProperties: Boolean
-		//		Whether at least one property is invalid or not. This is a readonly information, one must call
-		//		invalidateProperties to modify this flag.
+		//		Whether at least one property is invalid. This is readonly information, one must call
+		//		invalidateProperties() to modify this flag.
 		invalidProperties: false,
+		
 		// invalidRenderering: Boolean
-		//		Whether the rendering is invalid or not. This is a readonly information, one must call
-		//		invalidateRendering to modify this flag.
+		//		Whether the rendering is invalid. This is readonly information, one must call
+		//		invalidateRendering() to modify this flag.
 		invalidRendering: false,
 
 		// if we are not a Widget, setup the listeners at construction time
@@ -35,7 +40,7 @@ define(["dcl/dcl", "dojo/_base/lang", "./Stateful"], function (dcl, lang, Statef
 			this._initializeInvalidating();
 		}),
 
-		// if we are on a Widget listen for any changes to properties after the widget has been rendered,
+		// if we are on a Widget, listen for any changes to properties after the widget has been rendered,
 		// including when declarative properties (ex: iconClass=xyz) are applied.
 		buildRendering: dcl.after(function () {
 			// tags:
@@ -55,18 +60,17 @@ define(["dcl/dcl", "dojo/_base/lang", "./Stateful"], function (dcl, lang, Statef
 
 		addInvalidatingProperties: function () {
 			// summary:
-			//		Add the properties listed as parameters to the watched properties to trigger invalidation.
-			// 		This method must be called during the startup lifecycle, before buildRendering() completes.
-			//		It is typically used by subclasses of a Invalidating class to
-			// 		add more properties	to watch for.
+			//		Adds the properties listed as arguments to the properties watched for triggering invalidation.
+			// 		This method must be called during the startup lifecycle before buildRendering() completes,
+			//		usually in preCreate().
 			// description:
 			//		This can be used to trigger invalidation for rendering or for both property and rendering. When
-			//		no invalidation mechanism is specificed only the rendering refresh will be triggered (i.e. only
+			//		no invalidation mechanism is specified, only the rendering refresh will be triggered, that is only
 			//		the refreshRendering() method will be called.
-			//		This can either be called with a list of properties to invalidate the rendering for as follows:
+			//		This method can either be called with a list of properties to invalidate the rendering as follows:
 			//			this.addInvalidatingProperties("foo", "bar", ...);
-			//		or with an hash of keys / values, the keys being the properties to invalidate and the values the
-			//		invalidation method (i.e. rendering or property and rendering):
+			//		or with an hash of keys/values, the keys being the properties to invalidate and the values
+			//		being the invalidation method (either rendering or property and rendering):
 			//			this.addInvalidatingProperties({
 			//				"foo": "invalidateProperty",
 			//				"bar": "invalidateRendering"
@@ -81,7 +85,7 @@ define(["dcl/dcl", "dojo/_base/lang", "./Stateful"], function (dcl, lang, Statef
 					// we just want the rendering to be refreshed
 					this._invalidatingProperties[arguments[i]] = "invalidateRendering";
 				} else {
-					// we just merge object keys/values into our invalidate list
+					// we just merge key/value objects into our list of invalidating properties
 					var props = Object.keys(arguments[i]);
 					for (var j = 0; j < props.length; j++) {
 						this._invalidatingProperties[props[j]] = arguments[i][props[j]];
@@ -89,12 +93,14 @@ define(["dcl/dcl", "dojo/_base/lang", "./Stateful"], function (dcl, lang, Statef
 				}
 			}
 		},
+		
 		invalidateProperty: function (name) {
 			// summary:
-			//		Invalidating the property for the next execution frame.
+			//		Invalidates the property for the next execution frame.
 			// name: String?
-			//		The name of the property to invalidate. If absent then re-validation is asked without a
-			//		particular property being invalidated.
+			//		The name of the property to invalidate. If absent, the revalidation
+			//		is performed without a particular property being invalidated, that is
+			//		the argument passed to refreshProperties() does not contain is called without any argument.
 			// tags:
 			//		protected
 			if (name) {
@@ -111,16 +117,18 @@ define(["dcl/dcl", "dojo/_base/lang", "./Stateful"], function (dcl, lang, Statef
 				}
 				// TODO: should be defer but we might change this mechanism to a centralized one, so keep it like
 				// that for now. If we don't come up with a centralized one, move defer to Destroyable and require
-				// Destroyable mixin
+				// the Destroyable mixin.
 				setTimeout(lang.hitch(this, "validateProperties"), 0);
 			}
 		},
+		
 		invalidateRendering: function (name) {
 			// summary:
-			//		Invalidating the rendering for the next execution frame.
+			//		Invalidates the rendering for the next execution frame.
 			// name: String?
-			//		The name of the property to invalidate. If absent then re-validation is asked without a
-			//		particular property being invalidated.
+			//		The name of the property to invalidate. If absent then the revalidation is asked without a
+			//		particular property being invalidated, that is refreshRendering() is called without
+			//		any argument.
 			// tags:
 			//		protected
 			if (name) {
@@ -130,13 +138,16 @@ define(["dcl/dcl", "dojo/_base/lang", "./Stateful"], function (dcl, lang, Statef
 				this.invalidRendering = true;
 				// TODO: should be defer but we might change this mechanism to a centralized one, so keep it like
 				// that for now. If we don't come up with a centralized one, move defer to Destroyable and require
-				// Destroyable mixin
+				// the Destroyable mixin.
 				this._renderHandle = setTimeout(lang.hitch(this, "validateRendering"), 0);
 			}
 		},
+		
 		validateProperties: function () {
 			// summary:
-			//		Immediately validate the properties if they have been invalidated.
+			//		Immediately validates the properties.
+			// description:
+			//		Does nothing if no invalidating property is invalid.
 			//		You generally do not call that method yourself.
 			// tags:
 			//		protected
@@ -150,9 +161,12 @@ define(["dcl/dcl", "dojo/_base/lang", "./Stateful"], function (dcl, lang, Statef
 				this.invalidateRendering();
 			}
 		},
+		
 		validateRendering: function () {
 			// summary:
-			//		Immediately validate the rendering if it has been invalidated.
+			//		Immediately validates the rendering.
+			// description:
+			//		Does nothing if the rendering is not invalid.
 			//		You generally do not call that method yourself.
 			// tags:
 			//		protected
@@ -170,27 +184,47 @@ define(["dcl/dcl", "dojo/_base/lang", "./Stateful"], function (dcl, lang, Statef
 					{ invalidatedProperties: props, bubbles: true, cancelable: false });
 			}
 		},
+		
 		validate: function () {
 			// summary:
-			//		Immediately validate the properties & the rendering if it has been invalidated.
+			//		Immediately validates the properties and the rendering.
+			// description:
+			//		The method calls validateProperties() then validateRendering().
 			//		You generally do not call that method yourself.
 			// tags:
 			//		protected
 			this.validateProperties();
 			this.validateRendering();
 		},
+		
 		refreshProperties: function (/*jshint unused: vars */props) {
 			// summary:
-			//		Actually refresh the properties. Implementation should implement that method.
+			//		Actually refreshes the properties. 
+			// description:
+			//		The default implementation does nothing. A class using this mixin
+			//		should implement this method if it needs to react to changes
+			//		of the value of an invalidating property, except for modifying the
+			//		DOM in which case refreshRendering() should be used instead.
+			//		Typically, this method should be overriden for implementing
+			//		the reconciliation of properties, for instance for adjusting 
+			//		interdependent properties such as "min", "max", and "value". 
+			//		The mixin calls this method before refreshRendering().
 			// props: Object
 			//		A hash of invalidated properties. This hash will then be passed further down to the
-			//		refreshRendering method. As such any modification to it will be visible in refreshRendering.
+			//		refreshRendering() method. As such any modification to this hash will be 
+			//		visible in refreshRendering().
 			// tags:
 			//		protected
 		},
+		
 		refreshRendering: function (/*jshint unused: vars */props) {
 			// summary:
-			//		Actually refresh the rendering. Implementation should implement that method.
+			//		Actually refreshes the rendering.
+			// description:
+			//		The default implementation does nothing. A class using this mixin
+			//		should implement this method if it needs to modify the DOM in reaction 
+			//		to changes of the value of invalidating properties.
+			//		The mixin calls this method after refreshProperties().
 			// props: Object
 			//		A hash of invalidated properties.
 			// tags:
