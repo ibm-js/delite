@@ -47,34 +47,40 @@ define([
 		//		Designates the descendant node of this widget which is made scrollable.
 		//		The default value is 'null'. If not set, defaults to this widget
 		//		itself ('this').
-		//		Note that this property can be set only at construction time, as a
-		//		constructor argument or in markup as a property of the widget into
-		//		which this class is mixed.
+		//		Note that this property can be set only at construction time, at latest
+		//		in the buildRendering() method of the widget into which this class is mixed.
 		scrollableNode: null,
 
 		preCreate: function () {
 			this.addInvalidatingProperties("scrollDirection");
 		},
 
-		refreshRendering: dcl.after(function () {
+		postCreate: function () {
+			// Do it in postCreate to give a chance to a custom widget to set the 
+			// scrollableNode at latest in buildRendering().
 			if (!this.scrollableNode) {
 				this.scrollableNode = this; // If unspecified, defaults to 'this'.
 			}
-
-			domClass.toggle(this.scrollableNode, "d-scrollable", this.scrollDirection !== "none");
-
 			dom.setSelectable(this.scrollableNode, false);
+			this.invalidateProperty("scrollDirection");
+			this.invalidateRendering(); // must be done after scrollableNode is set
+		},
+		
+		refreshRendering: dcl.superCall(function (sup) {
+			return function (props) {
+				sup.apply(this, props);
 
-			domStyle.set(this.scrollableNode, "overflowX",
-				/^(both|horizontal)$/.test(this.scrollDirection) ? "scroll" : "");
-			domStyle.set(this.scrollableNode, "overflowY",
-				/^(both|vertical)$/.test(this.scrollDirection) ? "scroll" : "");
+				if (props && props.scrollDirection) {
+					domClass.toggle(this.scrollableNode, "d-scrollable", this.scrollDirection !== "none");
+
+					domStyle.set(this.scrollableNode, "overflowX",
+						/^(both|horizontal)$/.test(this.scrollDirection) ? "scroll" : "");
+					domStyle.set(this.scrollableNode, "overflowY",
+						/^(both|vertical)$/.test(this.scrollDirection) ? "scroll" : "");
+				}
+			};
 		}),
-
-		buildRendering: dcl.after(function () {
-			this.invalidateRendering();
-		}),
-
+		
 		destroy: function () {
 			this._stopAnimation();
 		},
