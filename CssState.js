@@ -10,52 +10,37 @@ define([
 	return dcl(Widget, {
 		// summary:
 		//		Update the visual state of the widget by setting CSS classes on widget root node
-		//		by combining this.baseClass with various suffixes that represent the current widget state(s).
-		//		For example, it sets classes like duiToggleButtonChecked.
+		//		based on widget properties:
 		//
-		//		The widget may have one or more of the following states, determined
-		//		by this.state, this.checked, this.valid, this.selected, this.focused, this.opened,
-		//		this.disabled and this.readOnly:
-		//
-		//		- Error - ValidationTextBox sets this.state to "Error" if the current input value is invalid
-		//		- Incomplete - ValidationTextBox sets this.state to "Incomplete" if the current input value
-		//		  is not finished yet
-		//		- Checked - ex: a checkmark or a ToggleButton in a checked state, will have this.checked==true
-		//		- Selected - ex: currently selected tab will have this.selected==true
-		//		- Disabled - if the widget is disabled
-		//		- ReadOnly - if the widget is read only
-		//		- Focused - if the widget root node or a descendant node has focus, or was recently clicked
+		//			- this.disabled --> "d-disabled"
+		//			- this.readOnly --> "d-readonly"
+		//			- this.selected --> "d-selected" (ex: currently selected tab)
+		//			- this.focused --> "d-focused" (widget or a descendant node has focus, or was recently clicked)
+		//			- this.checked == true --> "d-checked" (ex: a checkbox or a ToggleButton in a checked state)
+		//			- this.checked == "mixed" --> "d-mixed" (half-checked aka indeterminate checkbox)
+		//			- this.state == "Error" --> "d-error" (ValidationTextBox value is invalid)
+		//			- this.state == "Incomplete" --> "d-incomplete" (user hasn't finished typing value yet)
 
 		// cssProps: String[]
-		//		List of properties to watch
+		//		List of boolean properties to watch.
 		booleanCssProps: ["disabled", "readOnly", "selected", "focused", "opened"],
 
 		postCreate: function () {
-			var self = this, baseClasses = this.baseClass.split(" ");
-
-			function toggleClasses(/*String*/ modifier, /*Boolean*/ condition) {
-				if (!modifier) {
-					return;
-				}
-				var classes = baseClasses.map(function (c) {
-					return c + "-" + modifier;
-				});
-				domClass.toggle(self, classes, condition);
-			}
+			var toggle = domClass.toggle.bind(domClass, this);
 
 			// Monitoring changes to disabled, readonly, etc. state, and update CSS class of root node
 			this.booleanCssProps.forEach(function (name) {
 				this.watch(name, function (name, oval, nval) {
-					toggleClasses(name, nval);
+					toggle("d-" + name.toLowerCase(), nval);
 				});
 			}, this);
 			this.watch("checked", function (name, oval, nval) {
-				toggleClasses(oval === "mixed" ? "mixed" : "checked", false);
-				toggleClasses(nval === "mixed" ? "mixed" : "checked", nval);
+				toggle(oval === "mixed" ? "d-mixed" : "d-checked", false);
+				toggle(nval === "mixed" ? "d-mixed" : "d-checked", nval);
 			});
 			this.watch("state", function (name, oval, nval) {
-				toggleClasses(oval, false);
-				toggleClasses(nval, true);
+				toggle("d-" + oval.toLowerCase(), false);
+				toggle("d-" + nval.toLowerCase(), true);
 			});
 		}
 	});
