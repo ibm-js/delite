@@ -51,19 +51,6 @@ define([
 			// test the DOM node was removed
 			assert.ok(!document.getElementById("w1"), "DOM Node removed");
 		},
-		"destroy(true)  (preserving DOM node)" : function () {
-			var w = document.getElementById("w2");
-			w.destroy(true);
-
-			// test the DOM node *wasn't* removed
-			assert.ok(document.getElementById("w2"), "DOM Node left");
-
-		},
-		"create with undefined id" : function () {
-			// If id is "specified" as undefined, generate a new one
-			var w = new TestWidget({id: undefined});
-			assert.notEqual(undefined, w.id);
-		},
 		"setter not called on creation" : function () {
 			// Setters are no longer called on creation except for parameters sent to new Foo(...)
 			var fooSetterCalled = false;
