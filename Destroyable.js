@@ -42,8 +42,8 @@ define([
 
 				// When this.destroy() is called, destroy handle.  Since I'm using aspect.before(),
 				// the handle will be destroyed before a subclass's destroy() method starts running.
-				var odh = advise.before(this, "destroy", function (preserveDom) {
-					handle[destroyMethodName](preserveDom);
+				var odh = advise.before(this, "destroy", function () {
+					handle[destroyMethodName]();
 				});
 
 				// If handle is destroyed manually before this.destroy() is called,
@@ -51,7 +51,7 @@ define([
 				var hdh = advise.after(handle, destroyMethodName, function () {
 					odh.destroy();
 					hdh.destroy();
-				}, true);
+				});
 			}, this);
 
 			return ary;		// [handle]

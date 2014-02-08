@@ -47,9 +47,9 @@ define([
 			assert.deepEqual("your", Widget.prototype.getEnclosingWidget(document.getElementById("three.one")).name, "three.one");
 			assert.deepEqual("your", Widget.prototype.getEnclosingWidget(document.getElementById("three.one.one")).name, "three.one.one");
 		},
-		"findWidgets" : function () {
-			assert.deepEqual(3, Widget.prototype.findWidgets(container).length);
-			assert.deepEqual(1, Widget.prototype.findWidgets(document.getElementById("threeWrapper")).length);
+		"findCustomElements" : function () {
+			assert.deepEqual(3, Widget.prototype.findCustomElements(container).length);
+			assert.deepEqual(1, Widget.prototype.findCustomElements(document.getElementById("threeWrapper")).length);
 		},
 		teardown : function () {
 			container.parentNode.removeChild(container);
