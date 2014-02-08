@@ -1,22 +1,17 @@
 define([
-	"require", // require.toUrl
 	"dcl/dcl",
-	"dojo/aspect",
-	"dojo/Deferred",
 	"dojo/dom", // dom.byId
 	"dojo/dom-class", // domClass.add domClass.replace
-	"dojo/dom-construct", // domConstruct.destroy domConstruct.place
+	"dojo/dom-construct", // domConstruct.place
 	"dojo/dom-geometry", // isBodyLtr
 	"dojo/dom-style", // domStyle.set, domStyle.get
 	"dojo/has",
 	"dojo/_base/lang", // mixin(), hitch(), etc.
-	"dojo/on",
-	"./Destroyable",
-	"./Stateful",
+	"./CustomElement",
 	"./register",
 	"dojo/has!dojo-bidi?./Bidi"
-], function (require, dcl, aspect, Deferred, dom, domClass, domConstruct, domGeometry, domStyle,
-			 has, lang, on, Destroyable, Stateful, register, Bidi) {
+], function (dcl, dom, domClass, domConstruct, domGeometry, domStyle,
+			 has, lang, CustomElement, register, Bidi) {
 
 	// module:
 	//		delite/Widget
@@ -24,17 +19,12 @@ define([
 	// Flag to enable support for textdir attribute
 	has.add("dojo-bidi", false);
 
-	var div = document.createElement("div");
-
-	var Widget = dcl([Stateful, Destroyable], {
+	var Widget = dcl(CustomElement, {
 		// summary:
-		//		Base class for all widgets.
+		//		Base class for all widgets, i.e. custom elements that appear visually.
 		//
 		//		Provides stubs for widget lifecycle methods for subclasses to extend, like  buildRendering(),
 		//		postCreate(), startup(), and destroy(), and also public API methods like watch().
-		//
-		//		Widgets can provide custom setters/getters for widget attributes, which are called automatically
-		//		by set(name, value).  For an attribute XXX, define methods _setXXXAttr() and/or _getXXXAttr().
 
 		// baseClass: [protected] String
 		//		Root CSS class of the widget (ex: d-text-box)
@@ -58,46 +48,17 @@ define([
 		 //		(like ContentPane or BorderContainer or even Button), and conversely
 		 //		is undefined for widgets that don't, like TextBox.
 		 containerNode: undefined,
+		 =====*/
 
 		 // _started: [readonly] Boolean
 		 //		startup() has completed.
 		 _started: false,
-		 =====*/
 
 		// register: delite/register
 		//		Convenience pointer to register class.   Used by buildRendering() functions produced from
 		//		handlebars! / template.
 		register: register,
 
-		_getProps: function () {
-			// Override _Stateful._getProps() to ignore properties from the HTML*Element superclasses, like "style".
-			// You would need to explicitly declare style: "" in your widget to get it here.
-			// Intentionally skips privates and methods, because it seems wasteful to have a custom
-			// setter for every method; not sure that would work anyway.
-			//
-			// Also sets up this._propCaseMap, a mapping from lowercase property name to actual name,
-			// ex: iconclass --> iconClass, which does include the methods, but again doesn't
-			// include props like "style" that are merely inherited from HTMLElement.
-
-			var list = [], proto = this, ctor,
-				pcm = this._propCaseMap = {};
-
-			do {
-				Object.keys(proto).forEach(function (prop) {
-					if (!/^_/.test(prop)) {
-						if (typeof proto[prop] !== "function") {
-							list.push(prop);
-						}
-						pcm[prop.toLowerCase()] = prop;
-					}
-				});
-
-				proto = Object.getPrototypeOf(proto);
-				ctor = proto && proto.constructor;
-			} while (proto && ctor !== this._baseElement);
-
-			return list;
-		},
 
 		//////////// INITIALIZATION METHODS ///////////////////////////////////////
 
@@ -105,20 +66,13 @@ define([
 			// summary:
 			//		Kick off the life-cycle of a widget
 			// description:
-			//		Create calls a number of widget methods (buildRendering, postCreate,
-			//		etc.), some of which of you'll want to override.
+			//		Create calls a number of widget methods (preCreate, buildRendering, and postCreate),
+			//		some of which of you'll want to override.
 			//
-			//		Of course, adventurous developers could override create entirely, but this should
+			//		Of course, adventurous developers could override createdCallback entirely, but this should
 			//		only be done as a last resort.
-			// params: Object|null
-			//		Hash of initialization parameters for widget, including scalar values (like title, duration etc.)
-			//		and functions, typically callbacks like onClick.
-			//		The hash can contain any of the widget's properties, excluding read-only properties.
 			// tags:
-			//		private
-
-			// Get parameters that were specified declaratively on the widget DOMNode.
-			var params = this.mapAttributes();
+			//		protected
 
 			this.preCreate();
 
@@ -126,12 +80,6 @@ define([
 			this.buildRendering();
 
 			this.postCreate();
-
-			this._created = true;
-
-			// Now that creation has finished, apply parameters that were specified declaratively.
-			// This is consistent with the timing that parameters are applied for programmatic creation.
-			dcl.mix(this, params);
 		},
 
 		enteredViewCallback: function () {
@@ -189,101 +137,11 @@ define([
 			}
 		},
 
-		/**
-		 * Get declaratively specified attributes to widget properties
-		 */
-		mapAttributes: function () {
-			var pcm = this._propCaseMap,
-				attr,
-				idx = 0,
-				props = {};
-
-			// inner functions useful to reduce cyclomatic complexity when using jshint
-			function stringToObject(value) {
-				var obj;
-
-				try {
-					// TODO: remove this code if it isn't being used, so we don't scare people that are afraid of eval.
-					/* jshint evil:true */
-					// This will only be executed when complex parameters are used in markup
-					// <my-tag constraints="max: 3, min: 2"></my-tag>
-					// This can be avoided by using such complex parameters only programmatically or by not using
-					// them at all.
-					// This is harmless if you make sure the JavaScript code that is passed to the attribute
-					// is harmless.
-					obj = eval("(" + (value[0] === "{" ? "" : "{") + value + (value[0] === "{" ? "" : "}") + ")");
-				}
-				catch (e) {
-					throw new SyntaxError("Error in attribute conversion to object: " + e.message +
-						"\nAttribute Value: '" + value + "'");
-				}
-				return obj;
-			}
-
-			function setTypedValue(widget, name, value) {
-				switch (typeof widget[name]) {
-				case "string":
-					props[name] = value;
-					break;
-				case "number":
-					props[name] = value - 0;
-					break;
-				case "boolean":
-					props[name] = value !== "false";
-					break;
-				case "object":
-					var obj = lang.getObject(value, false);
-					if (obj) {
-						// it's a global, ex: store="myStore"
-						props[name] = obj;
-					} else {
-						// it's an expression, ex: constraints="min: 10, max: 100"
-						props[name] = (widget[name] instanceof Array)
-							? (value
-							? value.split(/\s+/)
-							: [])
-							: stringToObject(value);
-					}
-					break;
-				case "function":
-					/* jshint evil:true */
-					// This will only be executed if you have properties that are of function type if your widget
-					// and that you set them in your tag attributes:
-					// <my-tag whatever="myfunc"></my-tag>
-					// This can be avoided by setting the function progammatically or by not setting it at all.
-					// This is harmless if you make sure the JavaScript code that is passed to the attribute
-					// is harmless.
-					props[name] = lang.getObject(value, false) || new Function(value);
-				}
-				delete widget[name]; // make sure custom setters fire
-			}
-
-			var attrsToRemove = [];
-			while ((attr = this.attributes[idx++])) {
-				// Map all attributes except for things like onclick="..." since the browser already handles them.
-				var name = attr.name.toLowerCase();	// note: will be lower case already except for IE9
-				if (name in pcm) {
-					setTypedValue(this, pcm[name]/* convert to correct case for widget */, attr.value);
-					attrsToRemove.push(name);
-				}
-			}
-
-			// Remove attributes that were processed, but do it in a separate loop so we don't modify this.attributes
-			// while we are looping through it.   (See Widget-attr.html test failure on IE10.)
-			attrsToRemove.forEach(this.removeAttribute, this);
-
-			return props;
-		},
-
 		preCreate: function () {
 			// summary:
 			//		Processing before buildRendering()
 			// tags:
 			//		protected
-
-			// FF has a native watch() method that overrides our Stateful.watch() method and breaks custom setters,
-			// so that any command like this.label = "hello" sets label to undefined instead.  Try to workaround.
-			this.watch = Stateful.prototype.watch;
 		},
 
 		buildRendering: function () {
@@ -335,105 +193,14 @@ define([
 		},
 
 		//////////// DESTROY FUNCTIONS ////////////////////////////////
-		destroy: function (/*Boolean*/ preserveDom) {
+		destroy: function () {
 			// summary:
 			//		Destroy this widget and its descendants.
-			// preserveDom: Boolean
-			//		If true, this method will leave the original DOM structure alone.
-
-			this._beingDestroyed = true;
-
-			// Destroy child widgets
-			this.findWidgets(this).forEach(function (w) {
-				if (w.destroy) {
-					w.destroy();
-				}
-			});
-
-			// Destroy this widget
-			this.destroyRendering(preserveDom);
-			this._destroyed = true;
-		},
-
-		destroyRendering: function (/*Boolean?*/ preserveDom) {
-			// summary:
-			//		Destroys the DOM nodes associated with this widget.
-			// preserveDom:
-			//		If true, this method will leave the original DOM structure alone
-			//		during tear-down. Note: this will not work with _Templated
-			//		widgets yet.
-			// tags:
-			//		protected
 
 			if (this.bgIframe) {
-				this.bgIframe.destroy(preserveDom);
+				this.bgIframe.destroy();
 				delete this.bgIframe;
 			}
-
-			if (!preserveDom) {
-				domConstruct.destroy(this);
-			}
-		},
-
-		emit: function (/*String*/ type, /*Object?*/ eventObj) {
-			// summary:
-			//		Used by widgets to signal that a synthetic event occurred, ex:
-			//	|	myWidget.emit("attrmodified-selectedChildWidget", {}).
-			//
-			//		Emits an event of specified type, based on eventObj.
-			//		Also calls onType() method, if present, and returns value from that method.
-			//		Modifies eventObj by adding missing parameters (bubbles, cancelable, widget).
-			// tags:
-			//		protected
-
-			// Specify fallback values for bubbles, cancelable in case they are not set in eventObj.
-			// Also set pointer to widget, although since we can't add a pointer to the widget for native events
-			// (see #14729), maybe we shouldn't do it here?
-			eventObj = eventObj || {};
-			if (eventObj.bubbles === undefined) {
-				eventObj.bubbles = true;
-			}
-			if (eventObj.cancelable === undefined) {
-				eventObj.cancelable = true;
-			}
-
-			// Emit event, but avoid spurious emit()'s as parent sets properties on child during startup/destroy
-			if (this._started && !this._beingDestroyed) {
-				// Call onType() method if one exists.   But skip functions like onchange and onclick
-				// because the browser will call them automatically when the event is emitted.
-				var ret, callback = this["on" + type];
-				if (callback && !("on" + type.toLowerCase() in div)) {
-					ret = callback.call(this, eventObj);
-				}
-
-				// Emit the event
-				on.emit(this, type, eventObj);
-			}
-
-			return ret;
-		},
-
-		on: function (/*String|Function*/ type, /*Function*/ func) {
-			// summary:
-			//		Call specified function when event occurs, ex: myWidget.on("click", function () { ... }).
-			// type:
-			//		Name of event (ex: "click") or extension event like touch.press.
-			// description:
-			//		Call specified function when event `type` occurs, ex: `myWidget.on("click", function () { ... })`.
-			//		Note that the function is not run in any particular scope, so if (for example) you want it to run
-			//		in the widget's scope you must do `myWidget.on("click", myWidget.func.bind(myWidget))`.
-
-			return this.own(on(this, type, func))[0];
-		},
-
-		toString: function () {
-			// summary:
-			//		Returns a string that represents the widget.
-			// description:
-			//		When a widget is cast to a string, this method will be used to generate the
-			//		output. Currently, it does not implement any sort of reversible
-			//		serialization.
-			return "[Widget " + this.nodeName.toLowerCase() + ", " + (this.id || "NO ID") + "]"; // String
 		},
 
 		getChildren: function () {
@@ -532,65 +299,6 @@ define([
 			return this;
 		},
 
-		defer: function (fcn, delay) {
-			// summary:
-			//		Wrapper to setTimeout to avoid deferred functions executing
-			//		after the originating widget has been destroyed.
-			//		Returns an object handle with a remove method (that returns null) (replaces clearTimeout).
-			// fcn: Function
-			//		Function reference.
-			// delay: Number?
-			//		Delay, defaults to 0.
-			// tags:
-			//		protected
-
-			var timer = setTimeout(
-				(function () {
-					if (!timer) {
-						return;
-					}
-					timer = null;
-					if (!this._destroyed) {
-						lang.hitch(this, fcn)();
-					}
-				}).bind(this),
-				delay || 0
-			);
-			return {
-				remove: function () {
-					if (timer) {
-						clearTimeout(timer);
-						timer = null;
-					}
-					return null; // so this works well: handle = handle.remove();
-				}
-			};
-		},
-
-		// Utility functions previously in registry.js
-
-		findWidgets: function (root) {
-			// summary:
-			//		Search subtree under root returning widgets found.
-			//		Doesn't search for nested widgets (ie: widgets inside other widgets).
-			// root: DOMNode
-			//		Node to search under.
-
-			var outAry = [];
-
-			function getChildrenHelper(root) {
-				for (var node = root.firstChild; node; node = node.nextSibling) {
-					if (node.nodeType === 1 && node.buildRendering) {
-						outAry.push(node);
-					} else {
-						getChildrenHelper(node);
-					}
-				}
-			}
-
-			getChildrenHelper(root || this.ownerDocument.body);
-			return outAry;
-		},
 
 		getEnclosingWidget: function (/*DOMNode*/ node) {
 			// summary:
@@ -647,11 +355,11 @@ define([
 		Widget = dcl(Widget, Bidi);
 	}
 
-	// Setup automatic chaining for lifecycle methods, except for buildRendering()
+	// Setup automatic chaining for lifecycle methods, except for buildRendering().
+	// destroy() is chained in Destroyable.js.
 	dcl.chainAfter(Widget, "preCreate");
 	dcl.chainAfter(Widget, "postCreate");
 	dcl.chainAfter(Widget, "startup");
-	dcl.chainBefore(Widget, "destroy");
 
 	return Widget;
 });
