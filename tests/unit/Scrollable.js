@@ -32,16 +32,10 @@ define([
 				// correct value when refreshRendering() gets called.
 				scrollableNodeInRefreshRendering: null,
 				
-				buildRendering: dcl.superCall(function (sup) {
-					return function () {
-						sup.apply(this, arguments);
-					};
-				}),
-				
 				refreshRendering: dcl.superCall(function (sup) {
 					return function () {
 						// Store the value at the moment refreshRendering() was called,
-						// such that we can later check it.
+						// such that the test can later check it.
 						this.scrollableNodeInRefreshRendering = this.scrollableNode;
 						sup.apply(this, arguments);
 					};

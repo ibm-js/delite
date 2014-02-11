@@ -21,7 +21,8 @@ define([
 		//		based on the overflow: scroll CSS property.
 		//		By default, the scrolling capabilities are added to the widget
 		//		node itself. The host widget can chose the node thanks to the property
-		//		'scrollableNode'.
+		//		'scrollableNode' which must be set at latest in its buildRendering()
+		//		method.
 		//		During interactive or programmatic scrolling, native "scroll"
 		//		events are emitted, and can be listen as follows (here,
 		//		'scrollWidget' is the widget into which this mixin is mixed):
@@ -56,23 +57,23 @@ define([
 		},
 
 		postCreate: function () {
-			// Do it in postCreate to give a chance to a custom widget to set the 
-			// scrollableNode at latest in buildRendering().
+			this.invalidateRendering("scrollDirection");
+		},
+		
+		buildRendering: dcl.after(function () {
+			// Do it using after advice to give a chance to a custom widget to
+			// set the scrollableNode at latest in an overridden buildRendering().
 			if (!this.scrollableNode) {
 				this.scrollableNode = this; // If unspecified, defaults to 'this'.
 			}
 			dom.setSelectable(this.scrollableNode, false);
-			this.invalidateProperty("scrollDirection");
-			this.invalidateRendering(); // must be done after scrollableNode is set
-		},
+		}),
 		
 		refreshRendering: dcl.superCall(function (sup) {
 			return function (props) {
-				sup.apply(this, props);
-
+				sup.call(this, props);
 				if (props && props.scrollDirection) {
 					domClass.toggle(this.scrollableNode, "d-scrollable", this.scrollDirection !== "none");
-
 					domStyle.set(this.scrollableNode, "overflowX",
 						/^(both|horizontal)$/.test(this.scrollDirection) ? "scroll" : "");
 					domStyle.set(this.scrollableNode, "overflowY",
