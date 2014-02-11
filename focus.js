@@ -226,9 +226,8 @@ define([
 						// if this node is the root node of a widget, then add widget id to stack,
 						// except ignore clicks on disabled widgets (actually focusing a disabled widget still works,
 						// to support MenuItem)
-						var id = node.buildRendering && node.id;
-						if (id && !(by === "mouse" && node.disabled)) {
-							newStack.unshift(id);
+						if (node.buildRendering && !(by === "mouse" && node.disabled)) {
+							newStack.unshift(node);
 						}
 						node = node.parentNode;
 					}
@@ -270,11 +269,11 @@ define([
 			this.set("curNode", node);
 		},
 
-		_setStack: function (/*String[]*/ newStack, /*String*/ by) {
+		_setStack: function (/*delite/Widget[]*/ newStack, /*String*/ by) {
 			// summary:
 			//		The stack of active widgets has changed.  Send out appropriate events and records new stack.
 			// newStack:
-			//		array of widget id's, starting from the top (outermost) widget
+			//		array of widgets, starting from the top (outermost) widget
 			// by:
 			//		"mouse" if the focus/touch was caused by a mouse down event
 
@@ -291,7 +290,7 @@ define([
 
 			// for all elements that have gone out of focus, set focused=false
 			for (i = lastOldIdx; i >= 0 && oldStack[i] !== newStack[i]; i--) {
-				widget = dom.byId(oldStack[i]);
+				widget = oldStack[i];
 				if (widget) {
 					widget._hasBeenBlurred = true;		// TODO: used by form widgets, should be moved there
 					widget.focused = false;
@@ -304,7 +303,7 @@ define([
 
 			// for all element that have come into focus, set focused=true
 			for (i++; i <= lastNewIdx; i++) {
-				widget = dom.byId(newStack[i]);
+				widget = newStack[i];
 				if (widget) {
 					widget.focused = true;
 					if (widget._onFocus) {
