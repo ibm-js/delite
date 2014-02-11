@@ -160,9 +160,9 @@ require([
 			runTest: function () {
 				var d = new doh.Deferred();
 
-				var watchedActiveStack, activeStackWatchNotifications = 0;
+				var watchedActiveStackIds, activeStackWatchNotifications = 0;
 				focus.watch("activeStack", function (attr, oldVal, newVal) {
-					watchedActiveStack = newVal;
+					watchedActiveStackIds = newVal.map(function(node){ return node.id; });
 					activeStackWatchNotifications++;
 				});
 
@@ -175,12 +175,12 @@ require([
 						doh.is(dom.byId("select"), focus.curNode);
 
 						// The focus stack should show the ComboBox plus all parent widgets
-						var stack = focus.activeStack;
-						doh.is("form, fieldset1, select", stack.join(", "), "active stack");
+						var activeStackIds = focus.activeStack.map(function(node){ return node.id; });
+						doh.is("form, fieldset1, select", activeStackIds.join(", "), "active stack");
 
 						// Also check that we got (exactly) one watch notification about active stack
 						doh.is(1, activeStackWatchNotifications, "one watch() on activeStack");
-						doh.is("form, fieldset1, select", watchedActiveStack.join(", "), "watched active stack");
+						doh.is("form, fieldset1, select", watchedActiveStackIds.join(", "), "watched active stack");
 
 						// _onFocus()/_onBlur was called appropriately
 						doh.f(focusEvents["form"], "form was already focused, no duplicate event");
@@ -237,8 +237,8 @@ require([
 
 				setTimeout(d.getTestCallback(function () {
 					// The focus stack should show the Editor plus all parent widgets
-					var stack = focus.activeStack;
-					doh.is("form, editor", stack.join(", "), "active stack");
+					var activeStackIds = focus.activeStack.map(function(node){ return node.id; });
+					doh.is("form, editor", activeStackIds.join(", "), "active stack");
 
 					// _onFocus()/_onBlur was called appropriately
 					doh.f(focusEvents["form"], "form was already focused, no duplicate event");
@@ -271,8 +271,8 @@ require([
 
 				setTimeout(d.getTestCallback(function () {
 					// The focus stack should show the Spinner plus all parent widgets
-					var stack = focus.activeStack;
-					doh.is("form, fieldset2, spinner", stack.join(", "), "active stack");
+					var activeStackIds = focus.activeStack.map(function(node){ return node.id; });
+					doh.is("form, fieldset2, spinner", activeStackIds.join(", "), "active stack");
 
 					// check watch callbacks
 					doh.f(focusedWatchLog["form"], "grandparent of spinner stayed focused, so no new watch event (watch)");
@@ -352,8 +352,8 @@ require([
 		 doh.is(dom.byId("mi1").id, focus.curNode.id);
 
 		 // The focus stack should show the ComboBox plus all parent widgets
-		 var stack = focus.activeStack;
-		 console.log("menu stack is ", stack);
+		 var activeStackIds = focus.activeStack.map(function(node){ return node.id; });
+		 console.log("menu stack is ", activeStackIds.join(", "));
 		 doh.is("form, fieldset2, button, menu, mil", stack.join(", "), "active stack");
 		 }), 500);
 
@@ -383,8 +383,8 @@ require([
 
 		 // The focus stack should show the two submenus and then upwards
 		 // to the ComboButton, and the rest
-		 var stack = focus.activeStack;
-		 console.log("menu stack is ", stack);
+		 var activeStackIds = focus.activeStack.map(function(node){ return node.id; });
+		 console.log("menu stack is ", activeStackIds.join(", "));
 		 doh.is("form, fieldset2, button, menu, mil, submenu, smil", stack.join(", "), "active stack");
 		 }), 1000);
 
