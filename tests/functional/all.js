@@ -2,5 +2,6 @@
 define([
 	"./TabIndex",
 	"./KeyNav",
-	"./polymer"
+	"./polymer",
+	"./popup"
 ]);
