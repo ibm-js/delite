@@ -1,14 +1,13 @@
 define([
 	"dcl/dcl",
 	"dojo/dom",
-	"dojo/dom-style",
 	"dojo/dom-class",
 	"dojo/_base/fx",
 	"dojo/fx/easing",
 	"delite/Widget",
 	"delite/Invalidating",
 	"delite/themes/load!./Scrollable/themes/{{theme}}/Scrollable_css"
-], function (dcl, dom, domStyle, domClass, baseFx, easing, Widget, Invalidating) {
+], function (dcl, dom, domClass, baseFx, easing, Widget, Invalidating) {
 
 	// module:
 	//		delite/Scrollable
@@ -74,10 +73,10 @@ define([
 				sup.call(this, props);
 				if (props && props.scrollDirection) {
 					domClass.toggle(this.scrollableNode, "d-scrollable", this.scrollDirection !== "none");
-					domStyle.set(this.scrollableNode, "overflowX",
-						/^(both|horizontal)$/.test(this.scrollDirection) ? "scroll" : "");
-					domStyle.set(this.scrollableNode, "overflowY",
-						/^(both|vertical)$/.test(this.scrollDirection) ? "scroll" : "");
+					domClass.toggle(this.scrollableNode, "d-scrollable-h",
+						/^(both|horizontal)$/.test(this.scrollDirection));
+					domClass.toggle(this.scrollableNode, "d-scrollable-v",
+						/^(both|vertical)$/.test(this.scrollDirection));
 				}
 			};
 		}),
