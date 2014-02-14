@@ -95,6 +95,16 @@ define([
 			assert.strictEqual("8", simpleDeclarative.getAttribute("tabindex"), "declarative set");
 		},
 
+		widgetId : function() {
+			var TestWidget = register("test-lifecycle-widget", [HTMLElement, Widget], { });
+			var w1 = new TestWidget(),
+				w2 = new TestWidget();
+
+			assert(w1.widgetId, "w1.widgetId");
+			assert(w2.widgetId, "w2.widgetId");
+			assert.notStrictEqual(w1.widgetId, w2.widgetId, "id's are different");
+		},
+
 		baseClass : function() {
 			// First check that baseClass specified in prototype gets set
 			var TestWidget = register("test-lifecycle-widget2", [HTMLElement, Widget], {
