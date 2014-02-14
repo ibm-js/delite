@@ -19,6 +19,9 @@ define([
 	// Flag to enable support for textdir attribute
 	has.add("dojo-bidi", false);
 
+	// Used to generate unique id for each widget
+	var cnt = 0;
+
 	var Widget = dcl(CustomElement, {
 		// summary:
 		//		Base class for all widgets, i.e. custom elements that appear visually.
@@ -59,6 +62,11 @@ define([
 		//		handlebars! / template.
 		register: register,
 
+
+		// widgetId: [const readonly] Number
+		//		Unique id for this widget, separate from id attribute (which may or may not be set).
+		//		Useful when widget creates subnodes that need unique id's.
+		widgetId: 0,
 
 		//////////// INITIALIZATION METHODS ///////////////////////////////////////
 
@@ -142,6 +150,8 @@ define([
 			//		Processing before buildRendering()
 			// tags:
 			//		protected
+
+			this.widgetId = ++cnt;
 		},
 
 		buildRendering: function () {
