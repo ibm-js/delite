@@ -102,14 +102,14 @@ define([
 			var TestList = register("test-ul", [ HTMLUListElement, Widget], {
 				label: "bill'\\",
 				buildRendering: handlebars.compile(
-					"<ul><li foo=\"a.b('c,d')\" bar='\\\"hello\"'>\"\\{{label}}'</li></ul>")
+					"<ul><li foo=\"a.b('c,d')\" bar='\\\"hello\"'>\"\\{{label}}\n\twas \n\there'</li></ul>")
 			});
 			myList = new TestList();
 			assert.strictEqual(myList.tagName.toLowerCase(), "ul", "root node exists");
 			assert.strictEqual(myList.firstChild.tagName.toLowerCase(), "li", "child exists");
 			assert.strictEqual(myList.firstChild.getAttribute("foo"), "a.b('c,d')", "single quotes prop");
 			assert.strictEqual(myList.firstChild.getAttribute("bar"), "\\\"hello\"", "double quotes, backslash prop");
-			assert.strictEqual(myList.firstChild.textContent, "\"\\bill'\\'", "node text");
+			assert.strictEqual(myList.firstChild.textContent, "\"\\bill'\\ was here'", "node text");
 		},
 		events : function () {
 			// Test that listeners like onclick work.
