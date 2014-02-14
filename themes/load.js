@@ -19,13 +19,12 @@ define([
 		//
 		//		You can also pass an additional URL parameter string
 		//		theme={theme widget} to force a specific theme through the browser
-		//		URL input. The available theme ids are bootstrap, holodark (theme introduced in Android 3.0),
-		//		blackberry, and bootstrap. The theme names are case-sensitive. If the given
+		//		URL input. The available theme ids are bootstrap, holodark (theme introduced in Android 3.0)
+		//		and ios. The theme names are case-sensitive. If the given
 		//		theme does not match, the bootstrap theme is used.
 		//
 		//	|	http://your.server.com/yourapp.html // automatic detection
 		//	|	http://your.server.com/yourapp.html?theme=holodark // forces Holodark theme
-		//	|	http://your.server.com/yourapp.html?theme=blackberry // forces Blackberry theme
 		//	|	http://your.server.com/yourapp.html?theme=ios // forces iPhone theme
 		//
 		//		You can also specify a particular user agent through the ua=... URL parameter.
@@ -42,9 +41,7 @@ define([
 		//		first match.
 		themeMap: config.themeMap || [
 			[/Holodark|Android/, "holodark"],
-			[/BlackBerry|BB10/, "blackberry"],
 			[/iPhone|iPad/, "ios"],
-			[/Windows Phone/, "windows"],
 			[/.*/, "bootstrap"]			// chrome, firefox, IE
 		],
 
