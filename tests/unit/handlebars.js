@@ -167,6 +167,7 @@ define([
 			assert.strictEqual(node.tagName.toLowerCase(), "test-svg", "root node exists");
 			node = node.firstChild;
 			assert.strictEqual(node.tagName.toLowerCase(), "svg", "svg node exists");
+			assert.strictEqual(node.getAttribute("class"), "svg-root-class", "svg node class attribute");
 			assert.strictEqual(node.namespaceURI, "http://www.w3.org/2000/svg", "svg.namespaceURI");
 			node = node.firstChild;
 			assert.strictEqual(node.tagName.toLowerCase(), "rect", "rect node exists");

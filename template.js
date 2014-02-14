@@ -25,10 +25,11 @@ define(["./register"], function (register) {
 		// summary:
 		//		Given a tag and attribute name, return the associated property name,
 		//		or undefined if no such property exists, for example:
-		//		Ex:
-		//			- getProp("div", "class") --> "className"
-		//			- getProp("div", "tabindex") --> "tabIndex"
-		//			- getProp("div", "role") --> undefined
+		//
+		//		- getProp("div", "tabindex") --> "tabIndex"
+		//		- getProp("div", "role") --> undefined
+		//
+		//		Note that in order to support SVG, getProp("svg", "class") returns null instead of className.
 
 		if (!(tag in attrMap)) {
 			var proto = getElement(tag),
@@ -36,7 +37,6 @@ define(["./register"], function (register) {
 			for (var prop in proto) {
 				map[prop.toLowerCase()] = prop;
 			}
-			map["class"] = "className";
 			map.style = "style.cssText";
 		}
 		return attrMap[tag][attrName];
