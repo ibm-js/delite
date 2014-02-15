@@ -68,7 +68,7 @@ define(["intern!object",
 			return this.remote.execute("grid.focus();")
 				.execute("return document.activeElement.textContent")
 					.then(function (value) {
-						assert.equal(value, "apple", "tab");
+						assert.equal(value, "apple", "focus");
 					})
 				.keys("\uE015") // arrow down
 				.execute("return document.activeElement.textContent")
@@ -110,32 +110,82 @@ define(["intern!object",
 			return this.remote.execute("grid.focus();")
 				.execute("return document.activeElement.textContent")
 				.then(function (value) {
-					assert.equal(value, "apple", "tab");
+					assert.equal(value, "apple", "focus");
 				})
 				.keys("b") // search for word starting with b
 				.execute("return document.activeElement.textContent")
 				.then(function (value) {
 					assert.equal(value, "banana", "b");
 				})
-				.wait(1000)		// clear timer so next keystroke taken as new search rather than continuation
+				.wait(100)		// clear timer so next keystroke taken as new search rather than continuation
 				.keys("b") // search for next word starting with b
 				.execute("return document.activeElement.textContent")
 				.then(function (value) {
 					assert.equal(value, "blueberry", "b again");
 				})
-				.wait(1000)		// clear timer so next keystroke taken as new search rather than continuation
+				.wait(100)		// clear timer so next keystroke taken as new search rather than continuation
 				.keys("r") // search for word starting with r
 				.execute("return document.activeElement.textContent")
 				.then(function (value) {
 					assert.equal(value, "raspberry", "right");
 				})
-				.wait(1000)		// clear timer so next keystroke taken as new search rather than continuation
+				.wait(100)		// clear timer so next keystroke taken as new search rather than continuation
 				.keys("bl") // search for word starting with bl
 				.execute("return document.activeElement.textContent")
 				.then(function (value) {
 					assert.equal(value, "blueberry", "bl");
 				});
-		}
+		},
 
+		"embedded form controls": function () {
+			if (/safari|iPhone/.test(this.remote.environmentType.browserName)) {
+				// SafariDriver apparently doesn't support arrow keys either
+				return;
+			}
+			return this.remote.execute("testContainer2.focus();")
+				.execute("return document.activeElement.textContent")
+				.then(function (value) {
+					assert.equal(value, "four", "focus");
+				})
+				.keys("\uE015") // arrow down
+				.execute("return document.activeElement.id")
+				.then(function (value) {
+					assert.equal(value, "input", "down");
+				})
+				.keys("fo")		// should write to the <input> rather than letter searching to <div>four</div>
+				.execute("return document.activeElement.id")
+				.then(function (value) {
+					assert.equal(value, "input", "still input1");
+				})
+				.execute("return document.activeElement.value")
+				.then(function (value) {
+					assert.equal(value, "fo", "input works");
+				})
+				.keys("\uE012l") // arrow left then type "l"
+				.execute("return document.activeElement.value")
+				.then(function (value) {
+					assert.equal(value, "flo", "left arrow worked");
+				})
+				.keys("\uE015") // arrow down should exit the <input> and go to the next node
+				.execute("return document.activeElement.textContent")
+				.then(function (value) {
+					assert.equal(value, "five", "down to five");
+				})
+				.keys("\uE015") // arrow down again to checkbox
+				.execute("return document.activeElement.id")
+				.then(function (value) {
+					assert.equal(value, "checkbox", "down to checkbox");
+				})
+				.keys(" ") // check the checkbox using keyboard
+				.execute("return document.activeElement.checked")
+				.then(function (value) {
+					assert.equal(value, true, "checked the checkbox");
+				})
+				.keys("f") // keyboard search should go to "four" node
+				.execute("return document.activeElement.textContent")
+				.then(function (value) {
+					assert.equal(value, "four", "keyboard searched to 'four'");
+				})
+		}
 	});
 });
