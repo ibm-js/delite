@@ -10,6 +10,16 @@ define([
 	// module:
 	//		delite/KeyNav
 
+	function takesInput(/*Element*/ node){
+		// summary:
+		//		Return true if node is an <input> or similar that responds to keyboard input
+
+		var tag = node.nodeName.toLowerCase();
+
+		return !node.readOnly && (tag === "textarea" || (tag === "input" &&
+			/^(color|email|number|password|search|tel|text|url|range)$/.test(node.type)));
+	}
+
 	return dcl(Widget, {
 		// summary:
 		//		A mixin to allow arrow key and letter key navigation of child Elements.
@@ -293,6 +303,13 @@ define([
 			// tags:
 			//		private
 
+			// Ignore left, right, home, and end on <input> controls
+			if ( takesInput(evt.target) &&
+				(evt.keyCode == keys.LEFT_ARROW || evt.keyCode == keys.RIGHT_ARROW ||
+					evt.keyCode == keys.HOME || evt.keyCode == keys.END)) {
+				return;
+			}
+				
 			var func = this._keyNavCodes[evt.keyCode];
 			if (func) {
 				func(evt, this.focusedChild);
@@ -316,12 +333,19 @@ define([
 			// tags:
 			//		private
 
-			if (evt.charCode < keys.SPACE || evt.ctrlKey || evt.altKey || evt.metaKey ||
+			if (takesInput(evt.target) || evt.charCode < keys.SPACE || evt.ctrlKey || evt.altKey || evt.metaKey ||
 				(evt.charCode === keys.SPACE && this._searchTimer)) {
-				// Avoid duplicate events on firefox (ex: arrow key that will be handled by keydown handler),
+				// Ignore characters typed on <input> controls.
+				// Also, avoid duplicate events on firefox (ex: arrow key that will be handled by keydown handler),
 				// and also control sequences like CMD-Q
 				return;
 			}
+			if (/^(checkbox|radio)$/.test(evt.target.type) &&
+				(evt.charCode === keys.SPACE || evt.charCode === keys.ENTER)){
+				// Ignore keyboard clicks on checkbox controls
+				return;
+			}
+
 			evt.preventDefault();
 			evt.stopPropagation();
 
@@ -399,7 +423,6 @@ define([
 		_getNextFocusableChild: function (child, dir) {
 			// summary:
 			//		Returns the next or previous focusable child, compared to "child".
-			//		Implements and extends _KeyNavMixin._getNextFocusableChild() for a Container.
 			// child: Element
 			//		The current element
 			// dir: Integer
@@ -418,7 +441,7 @@ define([
 				} else {
 					child = this._getNext(child, dir);
 				}
-				if (child !== null && child !== wrappedValue && this.isFocusable.call(child)) {
+				if (child && child !== wrappedValue && this.isFocusable.call(child)) {
 					return child;	// Element
 				}
 			} while (child !== wrappedValue);
@@ -459,7 +482,7 @@ define([
 
 			var children = this._getNavigableChildren(),
 				index = children.indexOf(child);
-			return children[index + dir];
+			return children[(index + children.length + dir) % children.length];
 		},
 
 		_getNavigableChildren: function(){

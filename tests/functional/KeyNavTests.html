@@ -31,6 +31,9 @@
 			// Specifies which descendants can be navigated to
 			childSelector: "my-cell",
 
+			// Reduce from default of 1000 to speed up testing
+			multiCharSearchDuration: 100,
+
 			// Home/End key support
 			_getFirst: function(){
 				// first item in first list widget
@@ -211,8 +214,11 @@
 	<h3 id="testContainer2Label">Declarative KeyNav with tabindex=3 setting:</h3>
 	<input id="secondInput" type="text" tabindex=2 value="tabindex=2"><br>
 	<my-list id="testContainer2" tabindex=3 aria-labelledby="testContainer2Label">
+		<!-- add some <input> controls to make sure KeyNav doesn't interfere with them -->
 		<div>four</div>
+		<input id="input">
 		<div>five</div>
+		<input id="checkbox" type="checkbox">
 		<div>six</div>
 	</my-list>
 
