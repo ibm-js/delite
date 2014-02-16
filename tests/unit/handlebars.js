@@ -161,20 +161,48 @@ define([
 			assert.strictEqual(headingWidget.textContent, "new heading", "heading changed");
 			assert.strictEqual(buttonWidget.textContent.trim(), "new button label", "button changed");
 		},
+
+		html: function () {
+			// Testing that parsing still works if ending tags are missing
+
+			var TestHtml = register("test-html", [HTMLUListElement, Widget], {
+				buildRendering: handlebars.compile("<ul><li>1</li><li><input></ul>")
+			});
+
+			var node = new TestHtml();
+			assert.strictEqual(node.tagName.toLowerCase(), "ul", "root node exists");
+
+			node = node.firstChild;
+			assert.strictEqual(node.tagName.toLowerCase(), "li", "first li exists");
+			assert.strictEqual(node.textContent, "1", "first li value");
+
+			node = node.nextSibling;
+			assert.strictEqual(node.tagName.toLowerCase(), "li", "second li exists");
+
+			node = node.firstChild;
+			assert.strictEqual(node.tagName.toLowerCase(), "input", "input exists");
+		},
+
 		svg: function () {
 			// Testing template with embedded SVG, for:
 			//		1. xmlns attribute recognized, calls createElementNS() not createElement()
 			//		2. class attribute still works
 			//		3. tags of SVG nodes are lowercase
+			//		4. attribute names are case sensitive
+
 			var TestSvg = register("test-svg", [HTMLElement, Widget], {
 				buildRendering: svgTmpl
 			});
+
 			var node = new TestSvg();
 			assert.strictEqual(node.tagName.toLowerCase(), "test-svg", "root node exists");
+
 			node = node.firstChild;
 			assert.strictEqual(node.tagName, "svg", "svg node exists");
 			assert.strictEqual(node.getAttribute("class"), "svg-root-class", "svg node class attribute");
+			assert.strictEqual(node.getAttribute("viewBox"), "0 0 30 30", "viewBox");
 			assert.strictEqual(node.namespaceURI, "http://www.w3.org/2000/svg", "svg.namespaceURI");
+
 			node = node.firstChild;
 			assert.strictEqual(node.tagName, "rect", "rect node exists");
 			assert.strictEqual(node.namespaceURI, "http://www.w3.org/2000/svg", "rect.namespaceURI");

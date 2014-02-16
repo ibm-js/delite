@@ -18,6 +18,9 @@ define(["./template"], function (template) {
 		return parts;
 	}
 
+	var parser = new DOMParser(),					// for SVG parsing
+		container = document.createElement("div");	// for HTML parsing
+
 	var handlebars = {
 		// summary:
 		//		Plugin that loads a Handlebars template from a specified MID, and returns a function to
@@ -97,15 +100,21 @@ define(["./template"], function (template) {
 			// Regex designed to match <foo> but not <!-- comment -->.
 			adjustedTemplate = adjustedTemplate.replace(/(<\/? *)([-a-zA-Z0-9]+)/g, "$1template-$2");
 
-			// Create DOM tree from template
-			var container = document.createElement("div");
-			container.innerHTML = adjustedTemplate;
-
-			// Skip optional top comment node and find root node of template.
-			// Note that template needs to have a single root node.
-			var root = container.firstChild;
-			while (root.nodeType !== 1) {
-				root = root.nextSibling;
+			// Create DOM tree from template.
+			// If template contains SVG nodes then parse as XML, to preserve case of attributes like viewBox.
+			// Otherwise parse as HTML, to allow for missing closing tags, ex: <ul> <li>1 <li>2 </ul>.
+			var root;
+			if (/<svg/.test(templateText)) {
+				root = parser.parseFromString(adjustedTemplate, "text/xml").firstChild;
+				while ( root.nodeType !== 1) {
+					// Skip top level comment and move to "real" template root node.
+					// Needed since there's no .firstElementChild or .nextElementSibling for SVG nodes on FF.
+					root = root.nextSibling;
+				}
+			} else {
+				// Note that Safari doesn't support DOMParser.parseFromString(str, "text/html")
+				container.innerHTML = adjustedTemplate;
+				root = container.firstElementChild; // use .firstElementChild to skip possible top level comment
 			}
 
 			return handlebars.parseNode(root);
