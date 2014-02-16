@@ -8,7 +8,7 @@ define([
 	"delite/handlebars!./templates/SimpleHandleBarsButton.html",
 	"delite/handlebars!./templates/HandlebarsButton.html",
 	"delite/handlebars!./templates/SvgWidget.html"
-], function (registerSuite, assert,  on, handlebars,register, Widget, simpleHBTmpl, buttonHBTmpl, svgTmpl) {
+], function (registerSuite, assert,  on, handlebars, register, Widget, simpleHBTmpl, buttonHBTmpl, svgTmpl) {
 	var container, myButton;
 	registerSuite({
 		name: "handlebars",
@@ -16,7 +16,7 @@ define([
 			container = document.createElement("div");
 			document.body.appendChild(container);
 		},
-		"load" : function () {
+		load: function () {
 			// Test that function returned from delite/handlebars! creates the template correctly
 			var TestButton = register("test-button", [HTMLButtonElement, Widget], {
 				iconClass: "originalClass",
@@ -29,7 +29,7 @@ define([
 			assert.strictEqual(myButton.firstChild.className, "duiReset originalClass", "icon class set");
 			assert.strictEqual(myButton.textContent.trim(), "original label", "label set");
 		},
-		"update" : function () {
+		update: function () {
 			myButton.label = "new label";
 			assert.strictEqual(myButton.textContent.trim(), "new label", "label updated");
 
@@ -37,7 +37,7 @@ define([
 			assert.strictEqual(myButton.firstChild.className, "duiReset newClass", "icon class set");
 
 		},
-		"branching" : function () {
+		branching: function () {
 			var NoLabelButton = register("no-label-button", [HTMLButtonElement, Widget], {
 				iconClass: "originalClass",
 				showLabel: false,
@@ -70,13 +70,14 @@ define([
 			assert.strictEqual(myButton.textContent.trim(), "new label", "label updated");
 
 		},
-		"Special props" : function () {
+		"special props": function () {
 			var SpecialPropsWidget = register("special-props", [HTMLElement, Widget], {
 				inputClass: "originalClass",	// attribute called "class" but property called "className"
 				inputValue: "original value",	// must be set as property
 				role: "originalRole",			// must be set as attribute
 				buildRendering: handlebars.compile(
-					'<special-props><input class="{{inputClass}}" value="{{inputValue}}" role="{{role}}"/></special-props>'
+					"<special-props><input class='{{inputClass}}' value='{{inputValue}}' " +
+						"role='{{role}}'/></special-props>"
 				)
 			});
 			var mySpecialPropsWidget = new SpecialPropsWidget();
@@ -98,33 +99,34 @@ define([
 
 			// TODO: implement and then test reverse binding, from input.value --> widget.value?
 		},
-		"special characters" : function () {
+		"special characters": function () {
 			// Test that special characters are escaped.  This is actually testing template.js.
 			var TestList = register("test-ul", [ HTMLUListElement, Widget], {
 				label: "bill'\\",
 				buildRendering: handlebars.compile(
 					"<ul><li foo=\"a.b('c,d')\" bar='\\\"hello\"'>\"\\{{label}}\n\twas \n\there'</li></ul>")
 			});
-			myList = new TestList();
+			var myList = new TestList();
 			assert.strictEqual(myList.tagName.toLowerCase(), "ul", "root node exists");
 			assert.strictEqual(myList.firstChild.tagName.toLowerCase(), "li", "child exists");
 			assert.strictEqual(myList.firstChild.getAttribute("foo"), "a.b('c,d')", "single quotes prop");
 			assert.strictEqual(myList.firstChild.getAttribute("bar"), "\\\"hello\"", "double quotes, backslash prop");
 			assert.strictEqual(myList.firstChild.textContent, "\"\\bill'\\ was here'", "node text");
 		},
-		events : function () {
+		events: function () {
 			// Test that listeners like onclick work.
-			global = 1;
+			/* global g:true */
+			g = 1;
 			var TestClick = register("test-events", [ HTMLElement, Widget], {
 				buildRendering: handlebars.compile(
-					"<span><span onclick='global = 2;'>click me</span></span>")
+					"<span><span onclick='g = 2;'>click me</span></span>")
 			});
 			var myClick = new TestClick();
 			myClick.placeAt(container);
 			on.emit(myClick.firstChild, "click", {});
-			assert.strictEqual(global, 2, "click handler fired");
+			assert.strictEqual(g, 2, "click handler fired");
 		},
-		"Widgets in Template" : function () {
+		"widgets in templates": function () {
 			register("simple-heading", [HTMLElement, Widget], {
 				text: "",
 				buildRendering: handlebars.compile("<simple-heading>{{text}}</simple-heading>")
@@ -136,11 +138,11 @@ define([
 				content: "original content",
 				buttonLabel: "original button label",
 				buildRendering: handlebars.compile(
-					'<widgets-in-template>' +
-						'<simple-heading text="{{heading}}"></simple-heading>' +
-						'<span>{{content}}</span>' +
-						'<button is="test-button" label="{{buttonLabel}}"></button>' +
-						'</widgets-in-template>'
+					"<widgets-in-template>" +
+						"<simple-heading text='{{heading}}'></simple-heading>" +
+						"<span>{{content}}</span>" +
+						"<button is='test-button' label='{{buttonLabel}}'></button>" +
+						"</widgets-in-template>"
 				)
 			});
 
@@ -208,7 +210,7 @@ define([
 			assert.strictEqual(node.namespaceURI, "http://www.w3.org/2000/svg", "rect.namespaceURI");
 		},
 
-		teardown : function () {
+		teardown: function () {
 			container.parentNode.removeChild(container);
 		}
 	});
