@@ -50,7 +50,7 @@ define(["./template"], function (template) {
 			}
 
 			return {
-				tag: templateNode.getAttribute("is") || templateNode.tagName.replace(/^template-/i, ""),
+				tag: templateNode.getAttribute("is") || templateNode.tagName.replace(/^template-/i, "").toLowerCase(),
 				xmlns: xmlns,
 				attributes: attributes,
 				children: handlebars.parseChildren(templateNode, xmlns)

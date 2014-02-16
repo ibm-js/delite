@@ -162,18 +162,21 @@ define([
 			assert.strictEqual(buttonWidget.textContent.trim(), "new button label", "button changed");
 		},
 		svg: function () {
-			// Test that function returned from delite/handlebars! creates the template correctly
+			// Testing template with embedded SVG, for:
+			//		1. xmlns attribute recognized, calls createElementNS() not createElement()
+			//		2. class attribute still works
+			//		3. tags of SVG nodes are lowercase
 			var TestSvg = register("test-svg", [HTMLElement, Widget], {
 				buildRendering: svgTmpl
 			});
 			var node = new TestSvg();
 			assert.strictEqual(node.tagName.toLowerCase(), "test-svg", "root node exists");
 			node = node.firstChild;
-			assert.strictEqual(node.tagName.toLowerCase(), "svg", "svg node exists");
+			assert.strictEqual(node.tagName, "svg", "svg node exists");
 			assert.strictEqual(node.getAttribute("class"), "svg-root-class", "svg node class attribute");
 			assert.strictEqual(node.namespaceURI, "http://www.w3.org/2000/svg", "svg.namespaceURI");
 			node = node.firstChild;
-			assert.strictEqual(node.tagName.toLowerCase(), "rect", "rect node exists");
+			assert.strictEqual(node.tagName, "rect", "rect node exists");
 			assert.strictEqual(node.namespaceURI, "http://www.w3.org/2000/svg", "rect.namespaceURI");
 		},
 
