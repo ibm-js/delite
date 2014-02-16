@@ -24,17 +24,17 @@ define([
 				buildRendering: simpleHBTmpl
 			});
 			myButton = new TestButton();
-			assert.deepEqual("button", myButton.tagName.toLowerCase(), "root node exists");
-			assert.deepEqual("span", myButton.firstChild.tagName.toLowerCase(), "icon node exists too");
-			assert.deepEqual("duiReset originalClass", myButton.firstChild.className, "icon class set");
-			assert.deepEqual("original label", myButton.textContent.trim(), "label set");
+			assert.strictEqual(myButton.tagName.toLowerCase(), "button", "root node exists");
+			assert.strictEqual(myButton.firstChild.tagName.toLowerCase(), "span", "icon node exists too");
+			assert.strictEqual(myButton.firstChild.className, "duiReset originalClass", "icon class set");
+			assert.strictEqual(myButton.textContent.trim(), "original label", "label set");
 		},
 		"update" : function () {
 			myButton.label = "new label";
-			assert.deepEqual("new label", myButton.textContent.trim(), "label updated");
+			assert.strictEqual(myButton.textContent.trim(), "new label", "label updated");
 
 			myButton.iconClass = "newClass";
-			assert.deepEqual("duiReset newClass", myButton.firstChild.className, "icon class set");
+			assert.strictEqual(myButton.firstChild.className, "duiReset newClass", "icon class set");
 
 		},
 		"branching" : function () {
@@ -45,12 +45,12 @@ define([
 				buildRendering: buttonHBTmpl
 			});
 			myButton = new NoLabelButton();
-			assert.deepEqual("button", myButton.tagName.toLowerCase(), "root node exists");
-			assert.deepEqual("span", myButton.firstChild.tagName.toLowerCase(), "icon node exists too");
-			assert.deepEqual("duiReset originalClass", myButton.firstChild.className, "icon class set");
-			assert.deepEqual("", myButton.textContent.trim(), "no label");
+			assert.strictEqual(myButton.tagName.toLowerCase(), "button", "root node exists");
+			assert.strictEqual(myButton.firstChild.tagName.toLowerCase(), "span", "icon node exists too");
+			assert.strictEqual(myButton.firstChild.className, "duiReset originalClass", "icon class set");
+			assert.strictEqual(myButton.textContent.trim(), "", "no label");
 			myButton.label = "new label";
-			assert.deepEqual("", myButton.textContent.trim(), "still no label");
+			assert.strictEqual(myButton.textContent.trim(), "", "still no label");
 
 			// Test true if condition
 			var LabelButton = register("label-button", [HTMLButtonElement, Widget], {
@@ -60,14 +60,14 @@ define([
 				buildRendering: buttonHBTmpl
 			});
 			myButton = new LabelButton();
-			assert.deepEqual("button", myButton.tagName.toLowerCase(), "root node exists");
-			assert.deepEqual("span", myButton.firstChild.tagName.toLowerCase(), "icon node exists too");
-			assert.deepEqual("duiReset originalClass", myButton.firstChild.className, "icon class set");
-			assert.deepEqual("original label", myButton.textContent.trim(), "label");
+			assert.strictEqual(myButton.tagName.toLowerCase(), "button", "root node exists");
+			assert.strictEqual(myButton.firstChild.tagName.toLowerCase(), "span", "icon node exists too");
+			assert.strictEqual(myButton.firstChild.className, "duiReset originalClass", "icon class set");
+			assert.strictEqual(myButton.textContent.trim(), "original label", "label");
 
 			// Make sure that changes still work
 			myButton.label = "new label";
-			assert.deepEqual("new label", myButton.textContent.trim(), "label updated");
+			assert.strictEqual(myButton.textContent.trim(), "new label", "label updated");
 
 		},
 		"Special props" : function () {
@@ -82,18 +82,19 @@ define([
 			var mySpecialPropsWidget = new SpecialPropsWidget();
 			var input = mySpecialPropsWidget.children[0];
 
-			assert.deepEqual("original value", input.value, "value set as property");
-			assert.deepEqual("originalClass", input.className, "class set even though property is called className, not class");
-			assert.deepEqual("originalRole", input.getAttribute("role"), "role set as attribute");
+			assert.strictEqual(input.value, "original value", "value set as property");
+			assert.strictEqual(input.className, "originalClass",
+				"class set even though property is called className, not class");
+			assert.strictEqual(input.getAttribute("role"), "originalRole", "role set as attribute");
 
 			mySpecialPropsWidget.mix({
 				inputClass: "newClass",
 				inputValue: "new value",
 				role: "newRole"
 			});
-			assert.deepEqual("new value", input.value, "value changed");
-			assert.deepEqual("newClass", input.className, "class changed");
-			assert.deepEqual("newRole", input.getAttribute("role"), "role changed");
+			assert.strictEqual(input.value, "new value", "value changed");
+			assert.strictEqual(input.className, "newClass", "class changed");
+			assert.strictEqual(input.getAttribute("role"), "newRole", "role changed");
 
 			// TODO: implement and then test reverse binding, from input.value --> widget.value?
 		},
@@ -147,16 +148,18 @@ define([
 				headingWidget = myComplexWidget.getElementsByTagName("simple-heading")[0],
 				buttonWidget = myComplexWidget.getElementsByTagName("button")[0];
 			assert.ok(headingWidget.buildRendering, "heading widget was instantiated");
-			assert.deepEqual("original heading", headingWidget.textContent, "heading widget got title from main widget");
+			assert.strictEqual(headingWidget.textContent, "original heading",
+				"heading widget got title from main widget");
 			assert.ok(buttonWidget.buildRendering, "button widget was instantiated");
-			assert.deepEqual("original button label", buttonWidget.textContent.trim(), "button widget got label from main widget");
+			assert.strictEqual(buttonWidget.textContent.trim(), "original button label",
+				"button widget got label from main widget");
 
 			myComplexWidget.mix({
 				heading: "new heading",
 				buttonLabel: "new button label"
 			});
-			assert.deepEqual("new heading", headingWidget.textContent, "heading changed");
-			assert.deepEqual("new button label", buttonWidget.textContent.trim(), "button changed");
+			assert.strictEqual(headingWidget.textContent, "new heading", "heading changed");
+			assert.strictEqual(buttonWidget.textContent.trim(), "new button label", "button changed");
 		},
 		svg: function () {
 			// Test that function returned from delite/handlebars! creates the template correctly
