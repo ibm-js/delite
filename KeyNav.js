@@ -81,7 +81,7 @@ define([
 				on(this, "keypress", lang.hitch(this, "_onContainerKeypress")),
 				on(this, "keydown", lang.hitch(this, "_onContainerKeydown")),
 				on(this, "focus", lang.hitch(this, "_onContainerFocus")),
-				on(this.containerNode, on.selector(childSelector, "focusin"), function (evt) {
+				on(this.containerNode || this, on.selector(childSelector, "focusin"), function (evt) {
 					// "this" refers to the Element that matched the selector
 					self._onChildFocus(this, evt);
 				})
