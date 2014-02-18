@@ -20,14 +20,6 @@
 
 		// Complex KeyNav subclass with string childSelector
 		register("my-grid", [HTMLElement, KeyNav], {
-			buildRendering: function(){
-				// This is a behavioral widget so we'll just use the existing DOM.
-				// Alternately we could have a template.
-
-				// Set containerNode.   Usually this is set in the template.
-				this.containerNode = this;
-			},
-
 			// Specifies which descendants can be navigated to
 			childSelector: "my-cell",
 
