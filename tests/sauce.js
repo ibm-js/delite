@@ -33,15 +33,18 @@ define({
 		// { browserName: "internet explorer", version: "9", platform: "Windows 7" },
 		{ browserName: "firefox", version: "25", platform: [ /*"OS X 10.6", "Linux", */ "Windows 7" ] },
 		{ browserName: "chrome", version: "", platform: [ /*"OS X 10.6", "Linux", */ "Windows 7" ] },
-		{ browserName: "safari", version: "6", platform: [ "OS X 10.8" ] },
+		{ browserName: "safari", version: "6", platform: [ "OS X 10.8" ] }
 
 		// Mobile
+		// Commented out until we can get the runsauce.sh to stop hanging.  Both android and iOS seem problematic.
+		/*
 		{ browserName: "android", platform: "Android" },
 		{ browserName: "iphone",
 			platform: "OS X 10.8",
 			version: "6.1",
 			"device-orientation": "portrait",
 			"selenium-version": "" }
+			*/
 	],
 
 	// Maximum number of simultaneous integration tests that should be executed on the remote WebDriver service

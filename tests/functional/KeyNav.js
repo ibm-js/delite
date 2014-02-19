@@ -9,7 +9,7 @@ define(["intern!object",
 		"setup": function () {
 			return this.remote
 				.get(require.toUrl("./KeyNavTests.html"))
-				.waitForCondition("ready", 10000);
+				.waitForCondition("ready", 40000);
 		},
 
 		"tabindex": function () {
