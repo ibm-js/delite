@@ -172,7 +172,7 @@ define([
 			// For IE focus outline to appear, must set tabIndex before focus.
 			// If this._savedTabIndex is set, use it instead of this.tabIndex, because it means
 			// the container's tabIndex has already been changed to -1.
-			child.tabIndex = this._savedTabIndex || this.tabIndex;
+			child.tabIndex = "_savedTabIndex" in this ? this._savedTabIndex : this.tabIndex;
 			child.focus(last ? "end" : "start");
 
 			// Don't set focusedChild here, because the focus event should trigger a call to _onChildFocus(), which will
