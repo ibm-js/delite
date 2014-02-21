@@ -24,8 +24,8 @@ define([
 		}
 	};
 
-	// Does platform have native support for document.register() or a polyfill to simulate it?
-	has.add("document-register", !!document.register);
+	// Does platform have native support for document.registerElement() or a polyfill to simulate it?
+	has.add("document-register-element", !!document.registerElement);
 
 	// Can we use __proto__ to reset the prototype of DOMNodes?
 	// It's not available on IE<11, and even on IE11 it makes the node's attributes
@@ -67,7 +67,7 @@ define([
 	 */
 	function createElement(tag) {
 		var base = registry[tag] ? registry[tag].extends : null;
-		if (has("document-register")) {
+		if (has("document-register-element")) {
 			return base ? doc.createElement(base, tag) : doc.createElement(tag);
 		} else {
 			var element = doc.createElement(base || tag);
@@ -107,7 +107,7 @@ define([
 	 * @param {Element} inElement The DOMNode
 	 */
 	function upgrade(element) {
-		if (!has("document-register") && /*jshint camelcase: false*/!element.__upgraded__/*jshint camelcase: true*/) {
+		if (!has("document-register-element") && /*jshint camelcase: false*/!element.__upgraded__/*jshint camelcase: true*/) {
 			var widget = registry[element.getAttribute("is") || element.nodeName.toLowerCase()];
 			if (widget) {
 				if (has("dom-proto-set")) {
@@ -234,8 +234,8 @@ define([
 			}
 		}
 
-		if (has("document-register")) {
-			doc.register(tag, config);
+		if (has("document-register-element")) {
+			doc.registerElement(tag, config);
 		} else {
 			if (!has("dom-proto-set")) {
 				// Get descriptors for all the properties in the prototype.  This is needed on IE<=10 in upgrade().
@@ -348,7 +348,7 @@ define([
 	 * @param {Element?} Root DOMNode to parse from
 	 */
 	function parse(root) {
-		// Note that upgrade() will be a no-op when has("document-register") is true, but we still
+		// Note that upgrade() will be a no-op when has("document-register-element") is true, but we still
 		// need to calculate nodes[] for the startup() call below.
 		var node, idx = 0, nodes = (root || doc).querySelectorAll(selectors.join(", "));
 		while ((node = nodes[idx++])) {

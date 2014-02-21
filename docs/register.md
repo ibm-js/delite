@@ -27,7 +27,7 @@ widget, you could have used the following:
 ```
 
 You can think of `register` as a combination of a class declaration system (internally it uses [dcl](http://dcljs.org),
-and [document.register](http://www.w3.org/TR/custom-elements/) from the new custom elements proposed standards.
+and [document.registerElement](http://www.w3.org/TR/custom-elements/) from the new custom elements proposed standards.
 
 Note that the `register` module has a `createElement()` method, and new MyWidget() calls that method.
 
@@ -141,14 +141,14 @@ Eventually browsers will support custom elements natively, and then this step wi
 
 ## Standards
 
-`register()` tries to conform to the proposed custom elements standard.   Internally, it will call `document.register()`
-on platforms that support it.
+`register()` tries to conform to the proposed custom elements standard.
+Internally, it will call `document.registerElement()` on platforms that support it.
 
 ## Implementation details
 
 delite/register shims custom element support in a manner similar to Polymer.
 
-If the browser supports `document.register()`, then delite/register just uses that.
+If the browser supports `document.registerElement()`, then delite/register just uses that.
 
 Otherwise:
 
