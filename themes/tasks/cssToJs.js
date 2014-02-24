@@ -9,7 +9,9 @@ module.exports = function(grunt) {
 	// creation: http://gruntjs.com/creating-tasks
 
 	grunt.registerMultiTask("cssToJs", "Convert CSS files to JS files", function() {
-			this.files.forEach(function(file) {
+		var options = this.options();
+
+		this.files.forEach(function(file) {
 			grunt.log.writeln("Processing " + file.src.length + " files.");
 
 			file.src.forEach(function(f){
@@ -22,8 +24,11 @@ module.exports = function(grunt) {
 				var destFile = f.replace(/\.css$/, "_css.js");
 				grunt.log.writeln(f + " --> " + destFile);
 				fs.writeFileSync(destFile, "define(function(){ return '\\\n" +
-					contents.replace(/\n/mg, "\\\n") + "'; } );\n");
-				fs.unlinkSync(f);
+					contents.replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/\n/mg, "\\\n") + "'; } );\n");
+
+				if(options.remove){
+					fs.unlinkSync(f);
+				}
 			});
 		});
 	});

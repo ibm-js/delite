@@ -34,7 +34,9 @@ define([
 				"<div class=test1 id=test1></div>" +
 				"<div class='test1 test2' id=test2></div>" +
 				"<div class='test1 test2 test3' id=test3></div>" +
-				"<div class='test1 test2 test3 userDefined' id=userDefined></div>";
+				"<div class='test1 test2 test3 userDefined' id=userDefined></div>" +
+				"<span class=native></span>" +
+				"<span class=encoded></span>";
 			document.body.appendChild(container);
 		},
 
@@ -122,6 +124,24 @@ define([
 					assert.equal(domStyle.get("test2", "borderLeftWidth"), "2", "test2 border-width");
 					assert.equal(domStyle.get("test3", "borderLeftWidth"), "3", "test3 border-width");
 					assert.equal(domStyle.get("userDefined", "borderLeftWidth"), "4", "userDefined border-width");
+				}), 10);
+			}));
+
+			return d;
+		},
+
+		javascript: function () {
+			var d = new this.async(1000);
+
+			// Test loading JS file generated from CSS file
+			require(["delite/css!delite/tests/unit/css/specialChars_css"], d.callback(function () {
+				setTimeout(d.callback(function () {
+					// specialChars defines the .native and .encoded classes with the same ::before content.
+					// Check that content is defined correctly for each of those classes.
+					// Hard to test directly, but we can check that each class produces the same width <span>.
+					assert(window.native.offsetWidth > 0, "native content appears");
+					assert(window.encoded.offsetWidth > 0, "encoded content appears");
+					assert.strictEqual(window.native.offsetWidth, window.encoded.offsetWidth, "same width");
 				}), 10);
 			}));
 

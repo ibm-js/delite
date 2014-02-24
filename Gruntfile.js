@@ -62,10 +62,21 @@ module.exports = function (grunt) {
 
 		// Convert CSS files to JS files
 		cssToJs : {
-			src: [
-				"themes/*/*.css", "!themes/common/*.css", "themes/common/transitions/*.css",	// infrastructure
-				"*/themes/*/*.css", "!{dijit,mobile}/themes/*/*.css"	// widgets
-			]
+			// convert CSS files generated from LESS files
+			intermediate: {
+				src: [
+					"themes/*/*.css", "!themes/common/*.css", "themes/common/transitions/*.css",	// infrastructure
+					"*/themes/*/*.css", "!{dijit,mobile}/themes/*/*.css"	// widgets
+				],
+				options: {
+					remove: true
+				}
+			},
+
+			// convert files originally authored as CSS, without removing the original CSS files
+			original: {
+				src: [ "tests/unit/css/*.css" ]
+			}
 		},
 
 		// Copied from grunt web site but not tested
