@@ -7,10 +7,6 @@ define(["dojo/dom-construct", "dojo/has"], function (domConstruct, has) {
 		lastInsertedStylesheet,
 		sheets = {};		// map of which stylesheets have already been inserted
 
-	// Reverse feature test to infer if document.createElement("style") works on this platform.
-	// Will be true except for IE6 - IE10.
-	has.add("dom-create-style-element", !doc.createStyleSheet);
-
 	function insertCss(/*String*/ css) {
 		// summary:
 		//		Inserts the specified CSS into the document, after any CSS previously inserted
@@ -19,20 +15,12 @@ define(["dojo/dom-construct", "dojo/has"], function (domConstruct, has) {
 
 		// Creates a new stylesheet on each call.  Could alternately just add CSS to the old stylesheet.
 		// Maybe the current implementation is faster.
-		if (has("dom-create-style-element")) {
-			// we can use standard <style> element creation
-			styleSheet = doc.createElement("style");
-			styleSheet.setAttribute("type", "text/css");
-			styleSheet.appendChild(doc.createTextNode(css));
-			domConstruct.place(styleSheet, lastInsertedStylesheet || head, lastInsertedStylesheet ? "after" : "first");
-			lastInsertedStylesheet = styleSheet;
-			return styleSheet;
-		} else {
-			// IE6 - 10
-			var styleSheet = doc.createStyleSheet();
-			styleSheet.cssText = css;
-			return styleSheet.owningElement;
-		}
+		var styleSheet = doc.createElement("style");
+		styleSheet.setAttribute("type", "text/css");
+		styleSheet.appendChild(doc.createTextNode(css));
+		domConstruct.place(styleSheet, lastInsertedStylesheet || head, lastInsertedStylesheet ? "after" : "first");
+		lastInsertedStylesheet = styleSheet;
+		return styleSheet;
 	}
 
 	return {

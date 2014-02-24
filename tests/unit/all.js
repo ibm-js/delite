@@ -1,5 +1,6 @@
 // Listing of all the infrastructure unit tests
 define([
+	"./css",
 	"./Destroyable",
 	"./DisplayContainer",
 	"./register",
