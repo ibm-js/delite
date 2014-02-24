@@ -51,8 +51,22 @@ define([
 		//		in the buildRendering() method of the widget into which this class is mixed.
 		scrollableNode: null,
 
+		// defaultHorizontalClipping: boolean
+		//		Defines if the overflow on the horizontal axis is clipped when this axis is not scrollable.
+		//		if true, the overflow is clipped.
+		//		if false (default), the overflow is visible.
+		defaultHorizontalClipping: false,
+		
+		// defaultVerticalClipping: boolean
+		//		Defines if the overflow on the vertical axis is clipped when this axis is not scrollable.
+		//		if true, the overflow is clipped.
+		//		if false (default), the overflow is visible.
+		defaultVerticalClipping: false,
+		
 		preCreate: function () {
-			this.addInvalidatingProperties("scrollDirection");
+			this.addInvalidatingProperties("scrollDirection",
+					"defaultHorizontalClipping",
+					"defaultVerticalClipping");
 		},
 
 		postCreate: function () {
@@ -71,12 +85,16 @@ define([
 		refreshRendering: dcl.superCall(function (sup) {
 			return function (props) {
 				sup.call(this, props);
-				if (props && props.scrollDirection) {
+				if (props && (props.scrollDirection || props.defaultHorizontalClipping || props.defaultVerticalClipping)) {
 					domClass.toggle(this.scrollableNode, "d-scrollable", this.scrollDirection !== "none");
 					domClass.toggle(this.scrollableNode, "d-scrollable-h",
 						/^(both|horizontal)$/.test(this.scrollDirection));
 					domClass.toggle(this.scrollableNode, "d-scrollable-v",
 						/^(both|vertical)$/.test(this.scrollDirection));
+					domClass.toggle(this.scrollableNode, "d-scrollable-h-clipping",
+						/^(none|vertical)$/.test(this.scrollDirection) && this.defaultHorizontalClipping);
+					domClass.toggle(this.scrollableNode, "d-scrollable-v-clipping",
+							/^(none|horizontal)$/.test(this.scrollDirection) && this.defaultVerticalClipping);
 				}
 			};
 		}),

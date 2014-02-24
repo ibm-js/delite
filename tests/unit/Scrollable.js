@@ -84,7 +84,55 @@ define([
 			assert.isTrue(domClass.contains(w.scrollableNode, "d-scrollable"),
 				"Expecting d-scrollable CSS class on my-scrollable-widget-sn!");
 		},
-			
+
+		"defaultHorizontalClipping true" : function () {
+			var def = this.async(1000);
+			try {
+				var w = (new MyScrollableWidget({id: "mysw"})).placeAt(container);
+				w.defaultHorizontalClipping = true;
+				w.scrollDirection = "vertical";
+				w.startup();
+				w.validateRendering();
+				assert.equal(w.scrollableNode.className, "d-scrollable d-scrollable-v d-scrollable-h-clipping");
+				w.scrollDirection = "none";
+				setTimeout(function () {
+					try {
+						assert.equal(w.scrollableNode.className, "d-scrollable-h-clipping");
+						def.resolve();
+					} catch (error) {
+						def.reject(error);
+					}
+				}, 0);
+			} catch (error) {
+				def.reject(error);
+			}
+			return def;
+		},
+
+		"defaultVerticalClipping true" : function () {
+			var def = this.async(1000);
+			try {
+				var w = (new MyScrollableWidget({id: "mysw"})).placeAt(container);
+				w.defaultVerticalClipping = true;
+				w.scrollDirection = "horizontal";
+				w.startup();
+				w.validateRendering();
+				assert.equal(w.scrollableNode.className, "d-scrollable d-scrollable-h d-scrollable-v-clipping");
+				w.scrollDirection = "none";
+				setTimeout(function () {
+					try {
+						assert.equal(w.scrollableNode.className, "d-scrollable-v-clipping");
+						def.resolve();
+					} catch (error) {
+						def.reject(error);
+					}
+				}, 0);
+			} catch (error) {
+				def.reject(error);
+			}
+			return def;
+		},
+
 		// The remaining of the API of the mixin delite/Scrollable is tested
 		// in tests/ScrollableTestContainer-markup and tests/ScrollableTestContainer-prog
 		// via an ad-hoc widget (tests/ScrollableTestContainer) which uses the mixin.
