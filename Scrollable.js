@@ -16,8 +16,8 @@ define([
 		// summary:
 		//		A mixin which adds scrolling capabilities to a widget.
 		// description:
-		//		When mixed into a widget, this mixin adds to it scrolling capabilities
-		//		based on the overflow: scroll CSS property.
+		//		When mixed into a widget, this mixin brings scrolling capabilities
+		//		based on the overflow: auto CSS property.
 		//		By default, the scrolling capabilities are added to the widget
 		//		node itself. The host widget can chose the node thanks to the property
 		//		'scrollableNode' which must be set at latest in its buildRendering()
