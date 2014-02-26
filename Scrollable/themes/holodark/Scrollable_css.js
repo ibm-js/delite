@@ -7,9 +7,11 @@ define(function(){ return '\
   -webkit-transform: translate3d(0, 0, 0);\
 }\
 .d-scrollable-h {\
-  overflow-x: scroll;\
+  /* enable horizontal scrolling: */\
+  overflow-x: auto;\
 }\
 .d-scrollable-v {\
-  overflow-y: scroll;\
+  /* enable vertical scrolling: */\
+  overflow-y: auto;\
 }\
 '; } );
