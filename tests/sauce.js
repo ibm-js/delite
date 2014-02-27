@@ -18,33 +18,23 @@ define({
 	// Note that the `build` capability will be filled in with the current commit ID from the Travis CI environment
 	// automatically
 	capabilities: {
-		"selenium-version": "2.37.0",
-		"idle-timeout": 30
 	},
 
 	// Browsers to run integration testing against. Note that version numbers must be strings if used with Sauce
 	// OnDemand. Options that will be permutated are browserName, version, platform, and platformVersion; any other
 	// capabilities options specified for an environment will be copied as-is
 	environments: [
-		// Desktop.
-		// Not running on IE9 since Widget-attr test depends on domClass methods only available in IE10_
+		// Desktop
 		{ browserName: "internet explorer", version: "11", platform: "Windows 8.1" },
 		{ browserName: "internet explorer", version: "10", platform: "Windows 8" },
 		// { browserName: "internet explorer", version: "9", platform: "Windows 7" },
-		{ browserName: "firefox", version: "25", platform: [ /*"OS X 10.6", "Linux", */ "Windows 7" ] },
-		{ browserName: "chrome", version: "", platform: [ /*"OS X 10.6", "Linux", */ "Windows 7" ] },
-		{ browserName: "safari", version: "6", platform: [ "OS X 10.8" ] }
+		{ browserName: "firefox", version: "25", platform: "Windows 7" },
+		{ browserName: "chrome", version: "", platform: "Windows 7" },
+		{ browserName: "safari", version: "6", platform: "OS X 10.8" },
 
 		// Mobile
-		// Commented out until we can get the runsauce.sh to stop hanging.  Both android and iOS seem problematic.
-		/*
-		{ browserName: "android", platform: "Android" },
-		{ browserName: "iphone",
-			platform: "OS X 10.8",
-			version: "6.1",
-			"device-orientation": "portrait",
-			"selenium-version": "" }
-			*/
+		{ browserName: "iphone", platform: "OS X 10.9", version: "7"}
+		// , { browserName: "android", platform: "Android" }		not currently working
 	],
 
 	// Maximum number of simultaneous integration tests that should be executed on the remote WebDriver service

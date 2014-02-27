@@ -13,7 +13,7 @@ define(["intern!object",
 		},
 
 		"default tab indices": function () {
-			if ( /safari|iPhone/.test(this.remote.environmentType.browserName) ) {
+			if ( /safari|iOS/.test(this.remote.environmentType.browserName) ) {
 				// SafariDriver doesn't support tabbing, see https://code.google.com/p/selenium/issues/detail?id=5403
 				return;
 			}
@@ -46,7 +46,7 @@ define(["intern!object",
 		},
 
 		"specified tab indices": function () {
-			if ( /safari|iPhone/.test(this.remote.environmentType.browserName) ) {
+			if ( /safari|iOS/.test(this.remote.environmentType.browserName) ) {
 				// SafariDriver doesn't support tabbing, see https://code.google.com/p/selenium/issues/detail?id=5403
 				return;
 			}
@@ -79,7 +79,7 @@ define(["intern!object",
 		},
 
 		"changed tab indices": function () {
-			if ( /safari|iPhone/.test(this.remote.environmentType.browserName) ) {
+			if ( /safari|iOS/.test(this.remote.environmentType.browserName) ) {
 				// SafariDriver doesn't support tabbing, see https://code.google.com/p/selenium/issues/detail?id=5403
 				return;
 			}
