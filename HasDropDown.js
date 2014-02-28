@@ -152,7 +152,7 @@ define([
 				if (!(e.pageX >= c.x && e.pageX <= c.x + c.w) || !(e.pageY >= c.y && e.pageY <= c.y + c.h)) {
 					var t = e.target;
 					while (t && !overMenu) {
-						if (domClass.contains(t, "duiPopup")) {
+						if (domClass.contains(t, "d-popup")) {
 							overMenu = true;
 						} else {
 							t = t.parentNode;
