@@ -135,7 +135,7 @@ define([
 				// This is done early because of IE bugs where creating/moving DOM nodes causes focus
 				// to go wonky, see tests/robot/Toolbar.html to reproduce
 				wrapper = domConstruct.create("div", {
-					"class": "duiPopup",	// TODO: rename to d-popup
+					"class": "d-popup",
 					style: { display: "none"},
 					role: "region",
 					"aria-label": widget["aria-label"] || widget.label || widget.name || widget.id
@@ -283,7 +283,7 @@ define([
 				style: {
 					zIndex: this._beginZIndex + stack.length
 				},
-				"class": "duiPopup " + (widget.baseClass || widget["class"] || "").split(" ")[0] + "Popup",
+				"class": "d-popup " + (widget.baseClass || widget["class"] || "").split(" ")[0] + "Popup",
 				duiPopupParent: args.parent ? args.parent.id : ""
 			});
 

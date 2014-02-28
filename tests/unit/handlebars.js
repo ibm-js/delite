@@ -26,7 +26,7 @@ define([
 			myButton = new TestButton();
 			assert.strictEqual(myButton.tagName.toLowerCase(), "button", "root node exists");
 			assert.strictEqual(myButton.firstChild.tagName.toLowerCase(), "span", "icon node exists too");
-			assert.strictEqual(myButton.firstChild.className, "duiReset originalClass", "icon class set");
+			assert.strictEqual(myButton.firstChild.className, "d-reset originalClass", "icon class set");
 			assert.strictEqual(myButton.textContent.trim(), "original label", "label set");
 		},
 		update: function () {
@@ -34,7 +34,7 @@ define([
 			assert.strictEqual(myButton.textContent.trim(), "new label", "label updated");
 
 			myButton.iconClass = "newClass";
-			assert.strictEqual(myButton.firstChild.className, "duiReset newClass", "icon class set");
+			assert.strictEqual(myButton.firstChild.className, "d-reset newClass", "icon class set");
 
 		},
 		branching: function () {
@@ -47,7 +47,7 @@ define([
 			myButton = new NoLabelButton();
 			assert.strictEqual(myButton.tagName.toLowerCase(), "button", "root node exists");
 			assert.strictEqual(myButton.firstChild.tagName.toLowerCase(), "span", "icon node exists too");
-			assert.strictEqual(myButton.firstChild.className, "duiReset originalClass", "icon class set");
+			assert.strictEqual(myButton.firstChild.className, "d-reset originalClass", "icon class set");
 			assert.strictEqual(myButton.textContent.trim(), "", "no label");
 			myButton.label = "new label";
 			assert.strictEqual(myButton.textContent.trim(), "", "still no label");
@@ -62,7 +62,7 @@ define([
 			myButton = new LabelButton();
 			assert.strictEqual(myButton.tagName.toLowerCase(), "button", "root node exists");
 			assert.strictEqual(myButton.firstChild.tagName.toLowerCase(), "span", "icon node exists too");
-			assert.strictEqual(myButton.firstChild.className, "duiReset originalClass", "icon class set");
+			assert.strictEqual(myButton.firstChild.className, "d-reset originalClass", "icon class set");
 			assert.strictEqual(myButton.textContent.trim(), "original label", "label");
 
 			// Make sure that changes still work

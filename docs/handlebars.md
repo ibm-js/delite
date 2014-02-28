@@ -5,7 +5,7 @@ so a template like below would automatically adjust the
 DOM as the widget's `iconClass` and `label` properties were changed:
 
 	<button>
-		<span class="duiReset {{iconClass}}"></span>
+		<span class="d-reset {{iconClass}}"></span>
 		{{#if showLabel}}
 			{{label}}
 		{{/if}}
@@ -27,7 +27,7 @@ Handlebars can also be used as a plain AMD module, via the `compile()` method:
 	define([..., "delite/handlebars"], function(..., handlebars){
 		...
 		buildRendering: handlebars.compile(
-			'<span class="duiReset {{iconClass}}">{{label}}</span>'
+			'<span class="d-reset {{iconClass}}">{{label}}</span>'
 		),
 		...
 	}
@@ -36,7 +36,7 @@ Handlebars can also be used as a plain AMD module, via the `compile()` method:
 
 Supported constructs:
 
-1. {{ text }} - substitution variables in DOMNode attributes (ex: `class="duiReset {{iconClass}}"`)
+1. {{ text }} - substitution variables in DOMNode attributes (ex: `class="d-reset {{iconClass}}"`)
    and as a DOMNode child (ex: `<span>Hello {{name}}</span>`.
 2. `{{#if condition}} ... {{/if}}` - However, no plans to support `{{else}}`, and no plans for the IF blocks to be
    reactive.
@@ -66,7 +66,7 @@ Therefore, rather than using the plugin syntax, it must use the `compile()` meth
 	define([..., "delite/handlebars", "acme/SupportingWidget"], function(..., handlebars){
 		...
 		buildRendering: handlebars.compile(
-			'<supporting-widget class="duiReset {{iconClass}}">{{label}}</supporting-widget>'
+			'<supporting-widget class="d-reset {{iconClass}}">{{label}}</supporting-widget>'
 		),
 		...
 	}
