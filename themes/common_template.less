@@ -4,7 +4,7 @@
 //
 // Rules originally from dijit.css
 //
-.duiReset {
+.d-reset {
 	// Use this style to null out padding, margin, border in your template elements
 	// so that page specific styles don't break them.
 	// Use in all TABLE, TR and TD tags.
@@ -15,11 +15,11 @@
 	line-height: normal;
 	color: inherit;
 }
-.dj_a11y .duiReset {
+.dj_a11y .d-reset {
 	-moz-appearance: none; // remove predefined high-contrast styling in Firefox
 }
 
-.duiInline {
+.d-inline {
 	//  To inline block elements.
 	display: inline-block;
 	border: 0;
@@ -27,32 +27,32 @@
 	vertical-align: middle;
 }
 
-table.duiInline {
+table.d-inline {
 	// To inline tables with a given width set
 	display: inline-table;
 	box-sizing: content-box;
 	-moz-box-sizing: content-box;
 }
 
-.duiHidden {
+.d-hidden {
 	// To hide unselected panes in StackContainer etc.
 	display: none !important;
 }
 
-.duiVisible {
+.d-visible {
 	// To show selected pane in StackContainer etc.
 	display: block !important;	// override user's display:none setting via style setting or indirectly via class
 	position: relative;			// to support setting width/height, see #2033
 }
 
-.duiOffScreen {
+.d-offscreen {
 		// these class attributes should supercede any inline positioning style
 	position: absolute !important;
 	left: -10000px !important;
 	top: -10000px !important;
 }
 
-.duiBackgroundIframe {
+.d-background-iframe {
 	// iframe used to prevent problems with PDF or other applets overlaying menus etc
 	position: absolute;
 	left: 0;
@@ -65,7 +65,7 @@ table.duiInline {
 	margin: 0;
 }
 
-.duiContainer {
+.d-container {
 	// for all layout containers
 
 	// needed on IE so something can be reduced in size, and so scrollbars aren't temporarily displayed when resizing
@@ -76,16 +76,16 @@ table.duiInline {
 // A11Y
 //
 
-.dj_a11y .duiIcon,
-.dj_a11y div.duiArrowButtonInner, // is this only for Spinner?  if so, it should be deleted
-.dj_a11y span.duiArrowButtonInner,
-.dj_a11y img.duiArrowButtonInner {
+.dj_a11y .d-icon,
+.dj_a11y div.d-arrow-button-inner, // is this only for Spinner?  if so, it should be deleted
+.dj_a11y span.d-arrow-button-inner,
+.dj_a11y img.d-arrow-button-inner {
 	// hide icon nodes in high contrast mode; when necessary they will be replaced by character equivalents
-	// exception for input.duiArrowButtonInner, because the icon and character are controlled by the same node
+	// exception for input.d-arrow-button-inner, because the icon and character are controlled by the same node
 	display: none;
 }
 
-.dj_a11y .duiA11ySideArrow {
+.dj_a11y .d-a11y-side-arrow {
 	display: inline !important; // display text instead
 	cursor: pointer;
 }
@@ -93,39 +93,39 @@ table.duiInline {
 // Layout widgets. This is essential CSS to make layout work (it isn't "styling" CSS)
 // make sure that the position:absolute in duiAlign* overrides other classes
 
-.duiLayoutContainer {
+.d-layout-container {
 	position: relative;
 	display: block;
 	overflow: hidden;
 }
 
-.duiAlignTop,
-.duiAlignBottom,
-.duiAlignLeft,
-.duiAlignRight {
+.d-align-top,
+.d-align-bottom,
+.d-align-left,
+.d-align-right {
 	position: absolute;
 	overflow: hidden;
 }
 
-body .duiAlignClient { position: absolute; }
+body .d-align-client { position: absolute; }
 
 
-.duiNoIcon {
+.d-noicon {
 	// applied to <img>/<span> node when there is no icon specified
 	display: none;
 }
 
 // Disabled cursor
-.duiReadOnly *,
-.duiDisabled *,
-.duiReadOnly,
-.duiDisabled {
+.d-readonly *,
+.d-disabled *,
+.d-readonly,
+.d-disabled {
 	// a region the user would be able to click on, but it's disabled
 	cursor: default;
 }
 
-.dj_gecko .duiArrowButtonInner INPUT,
-.dj_gecko INPUT.duiArrowButtonInner {
+.dj_gecko .d-arrow-button-inner INPUT,
+.dj_gecko INPUT.d-arrow-button-inner {
 	-moz-user-focus:ignore;
 }
 
@@ -135,8 +135,8 @@ body .duiAlignClient { position: absolute; }
 //
 
 
-// Popup items have a wrapper div (duiPopup) with the real popup inside, and maybe an iframe too
-.duiPopup {
+// Popup items have a wrapper div (d-popup) with the real popup inside, and maybe an iframe too
+.d-popup {
 	position: absolute;
 	background-color: transparent;
 	margin: 0;
@@ -146,17 +146,17 @@ body .duiAlignClient { position: absolute; }
 	.box-shadow(0 1px 5px rgba(0,0,0,0.25));
 }
 
-.duiTooltipDialogPopup {
+.d-tooltip-dialog-popup {
 	// exception popups: do not use a shadow on these because they aren't rectangular
 	.box-shadow(none);
 }
 
 // The highlight is shown in the ComboBox menu.
-.duiComboBoxHighlightMatch {
+.d-combobox-highlight-match {
 	background-color: @select-matchedtext-background-color;
 }
 
-.duiFocusedLabel {
+.d-focused-label {
 	// for checkboxes or radio buttons, hatch border around the corresponding label, to indicate focus
 	outline: 1px dotted @focus-outline-color;
 }
@@ -176,43 +176,43 @@ html.mobile, .mobile body {
 	.mobile-body-styles;
 }
 
-.duiBackground {
-	.duiBackground-styles;
+.d-background {
+	.d-background-styles;
 }
 
 // Button Colors
-.duiColorBlue {
-	.duiColorBlue-styles;
+.d-color-blue {
+	.d-color-blue-styles;
 }
 
-.duiColorBlue45 {
+.d-color-blue-45 {
 	.dui-color-blue-45();
 }
 
 // Default Button Colors
-.duiColorDefault {
-	.duiColorDefault-styles;
+.d-default-color {
+	.d-default-color-styles;
 }
 
-.duiColorDefault45 {
+.d-default-color-45 {
 	.dui-color-default-45();
 }
 
-.duiColorDefaultSel {
-	.duiColorDefaultSel-styles;
+.d-default-color-sel {
+	.d-default-color-sel-styles;
 }
 
-.duiColorDefaultSel45 {
+.d-default-color-sel-45 {
 	.dui-color-default-sel-45();
 }
 
-.duiSpriteIcon {
+.d-sprite-icon {
 	position: absolute;
 }
-.duiSpriteIconParent {
+.d-sprite-icon-parent {
 	position: relative;
 	font-size: 1px;
 }
-.duiImageIcon {
+.d-image-icon {
 	vertical-align: top;
 }
