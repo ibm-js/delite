@@ -59,7 +59,7 @@ define(["./register"], function (register) {
 		//	|		tag: "button",
 		//	|		attributes: {
 		//	|			// concatenate values in array to get attr value
-		//	|			"class": ["duiReset ", {property: "baseClass"}]
+		//	|			"class": ["d-reset ", {property: "baseClass"}]
 		//	|		},
 		//	|		children: [
 		//	|			{ tag: "span", ... },

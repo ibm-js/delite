@@ -40,7 +40,7 @@ define([
 				} else {
 					iframe = domConstruct.create("iframe");
 					iframe.src = "javascript:''";
-					iframe.className = "duiBackgroundIframe";
+					iframe.className = "d-background-iframe";
 					iframe.setAttribute("role", "presentation");
 					domStyle.set(iframe, "opacity", 0.1);
 				}
