@@ -1,6 +1,4 @@
-// Test file to run infrastructure tests against SauceLabs.
-// Run using "runsauce.sh"
-
+// run grunt --help for help on how to run
 // Learn more about configuring this file at <https://github.com/theintern/intern/wiki/Configuring-Intern>.
 // These default settings work OK for most people. The options that *must* be changed below are the
 // packages, suites, excludeInstrumentation, and (if you want functional tests) functionalSuites.
@@ -8,23 +6,11 @@ define({
 	// The port on which the instrumenting proxy will listen
 	proxyPort: 9000,
 
-	// A fully qualified URL to the Intern proxy
-	proxyUrl: "http://localhost:9000/",
-
-	// Default desired capabilities for all environments. Individual capabilities can be overridden by any of the
-	// specified browser environments in the `environments` array below as well. See
-	// https://code.google.com/p/selenium/wiki/DesiredCapabilities for standard Selenium capabilities and
-	// https://saucelabs.com/docs/additional-config#desired-capabilities for Sauce Labs capabilities.
-	// Note that the `build` capability will be filled in with the current commit ID from the Travis CI environment
-	// automatically
-	capabilities: {
-	},
 
 	// Browsers to run integration testing against. Note that version numbers must be strings if used with Sauce
 	// OnDemand. Options that will be permutated are browserName, version, platform, and platformVersion; any other
 	// capabilities options specified for an environment will be copied as-is
 	environments: [
-		// Desktop
 		{ browserName: "internet explorer", version: "11", platform: "Windows 8.1" },
 		{ browserName: "internet explorer", version: "10", platform: "Windows 8" },
 		// { browserName: "internet explorer", version: "9", platform: "Windows 7" },
@@ -50,6 +36,9 @@ define({
 		host: "localhost",
 		port: 4444
 	},
+	loader: {
+		baseUrl: ".."
+	},
 
 	// Non-functional test suite(s) to run in each browser
 	suites: [ "delite/tests/unit/all" ],
@@ -58,5 +47,5 @@ define({
 	functionalSuites: [ "delite/tests/functional/all" ],
 
 	// A regular expression matching URLs to files that should not be included in code coverage analysis
-	excludeInstrumentation: /^(requirejs|dcl|dojo|platform|delite\/tests|.*\/themes)/
+	excludeInstrumentation: /^(?:node_modules|tests|dcl|dojo|deliteful|requirejs|platform|dpointer|delite\/tests|.*\/themes)\//
 });
