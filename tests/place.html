@@ -49,6 +49,19 @@ require([
 	// The popup (aka dropdown)
 	var popup = dom.byId("popup");
 
+	function toTheLeftOrRight(anchor){
+		var textboxPos = domGeometry.position(anchor);
+		var popupContainerPos = domGeometry.position(popup);
+
+		var xDiff = textboxPos.x - popupContainerPos.x - popupContainerPos.w;
+		var toTheLeft = xDiff >= -1 && xDiff < 2;
+
+		xDiff = popupContainerPos.x - textboxPos.x - textboxPos.w;
+		var toTheRight = xDiff >= -1 && xDiff < 2;
+
+		doh.t(toTheLeft || toTheRight, "The popup was not to the left or right");
+	}
+
 	doh.register("at", [
 		function atTL(t) {
 			// Place popup at (10,7)... place.at() should choose the top-left corner, because
@@ -232,6 +245,19 @@ require([
 					"right aligned with around node");
 			doh.is(Math.round(popupPos.y + popupPos.h), Math.round(aroundPos.y),
 					"above around node");
+		},
+		function svgAnchor(){
+			document.body.insertAdjacentHTML("beforeend",
+							"<div id='svgWrapper' style='position: relative; top: 100px; left: 100px;'>" +
+							"<svg xmlns='http://www.w3.org/2000/svg' version='1.1'>" +
+							"<rect id='theRectangle' width='300' height='100' " +
+							"style='fill:rgb(0,0,255);stroke-width:1;stroke:rgb(0,0,0)' />" +
+							"</svg>" +
+							"</div>"
+			);
+
+			var ret = place.around(popup, "theRectangle", ["before", "after"], true);
+			toTheLeftOrRight(document.getElementById("theRectangle"));
 		}
 	]);
 
