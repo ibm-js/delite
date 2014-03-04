@@ -51,17 +51,23 @@ $ java -jar selenium-server-standalone-2.37.0.jar
 
 2) Edit local.js to list which browsers to test
 
-3) Run the tests:
+## Running tests
+In the delite directory run the following targets on the `test` task e.g.
 
-```
-$ ./runlocal.sh
-```
+    $ grunt test:local
+    $ grunt test:remote
 
-Or on Windows (untested):
+Optional reports can be added via grunt flags e.g.
 
-```
-cd ..\..\..
-node delite\node_modules\intern\runner.js config=delite\tests\local.js
-```
+    $ grunt test:local:console // run the console reporter for a local test
+    $ grunt test:remote:lcovhtml // run the console reporter for a remote (saucelabs) test with the lcovhtml coverage reporter
+    $ grunt test:local:console:lcovhtml // multiple reporters can be specified
+
+Currently only the reporters are provided as optional flags
+   * lcovhtml
+   * console
+
+
+
 
 
