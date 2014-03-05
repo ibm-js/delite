@@ -61,12 +61,17 @@
                 //		Supply popup as parameter when instantiating this widget.
 
                 label: "show popup",
+				_setLabelAttr: function(label){
+					this.textContent = label;
+					this._set("label", label);
+				},
+
                 orient: ["below"],
 
                 buildRendering: function () {
-                    this.textContent = this.label;
                     this.own(on(this, "click", lang.hitch(this, "onClick")));
                 },
+
                 onClick: function (e) {
                     this._openPopup();
                 },
@@ -414,7 +419,11 @@
 <h1>popup functional tests</h1>
 <label for="inputAtStart">input at start:</label><input id="inputAtStart">
 
-<button id="stub-for-blurring">a stub node to execute blur events for wd.js</button> <!-- button needs to be after inputAtStart and before inputAtEnd but not be overlaid by popups -->
+<!-- button needs to be after inputAtStart and before inputAtEnd but not be overlaid by popups -->
+<button id="stub-for-blurring" style="float: right">
+	a stub node to execute blur events for wd.js
+</button>
+
 <div style="height: 150px; overflow: auto; margin: 10px 0px;">
     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis cursus odio eu nisl ultrices dictum. Sed tincidunt
         metus et magna placerat eget vehicula dolor faucibus. Nunc nec augue ac mi rutrum congue. Donec at augue felis.
@@ -436,26 +445,30 @@
 
 </iframe>
 
-<button type="button" onclick="openAt1015();" id="openAt1015Button">
-	Open popup at (10,15)
-</button>
-<button type="button" onclick="closeAt1015();" id="closeAt1015Button">
-	Close popup at (10,15)
-</button>
+<div style="float: right">
+	<button type="button" onclick="openAt1015();" id="openAt1015Button">
+		Open popup at (10,15)
+	</button>
+	<button type="button" onclick="closeAt1015();" id="closeAt1015Button">
+		Close popup at (10,15)
+	</button>
+	<br>
 
-<button type="button" onclick="openTooltipAt1015();" id="openTooltipAt1015Button">
-	Open tooltip at (10,15)
-</button>
-<button type="button" onclick="closeTooltipAt1015();" id="closeTooltipAt1015Button">
-	Close tooltip at (10,15)
-</button>
+	<button type="button" onclick="openTooltipAt1015();" id="openTooltipAt1015Button">
+		Open tooltip at (10,15)
+	</button>
+	<button type="button" onclick="closeTooltipAt1015();" id="closeTooltipAt1015Button">
+		Close tooltip at (10,15)
+	</button>
+	<br>
 
-<button type="button" onclick="openLotsOfChoicesPopup();" id="openLotsOfChoicesPopupButton">
-	Open lots of choices popup at (10,15)
-</button>
-<button type="button" onclick="closeLotsOfChoicesPopup();" id="closeLotsOfChoicesPopupButton">
-	Close lots of choices popup at (10,15)
-</button>
+	<button type="button" onclick="openLotsOfChoicesPopup();" id="openLotsOfChoicesPopupButton">
+		Open lots of choices popup at (10,15)
+	</button>
+	<button type="button" onclick="closeLotsOfChoicesPopup();" id="closeLotsOfChoicesPopupButton">
+		Close lots of choices popup at (10,15)
+	</button>
+</div>
 
 <label for="inputAtEnd">input at end:</label><input id="inputAtEnd">
 

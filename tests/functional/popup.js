@@ -178,21 +178,26 @@ define(["intern!object",
 			at: function () {
 				return this.remote
 					.elementById("openLotsOfChoicesPopupButton")
-					.click()
-					.end()
+						.click()
+						.end()
 					.execute(
 						"return [domStyleGlobal.get(lotsOfChoicesPopup, 'height'), " +
 							"winUtilsGlobal.getBox().h, domStyleGlobal.get(lotsOfChoicesPopup.parentNode, 'height')];")
 					.then(function (value) {
 						assert.isTrue(value[0] > value[1], "lotsOfChoicesPopup popup is not taller than the viewport");
 						assert.isTrue(value[2] < value[1], "lotsOfChoicesPopup wrapper is not shorter than viewport");
-					});
+					})
+					.elementById("closeLotsOfChoicesPopupButton")
+						.click()
+						.end();
+
 			},
 
 			around: function () {
 				return this.remote
-					// cant use .click() here because it fails in chrome, see http://stackoverflow.com/questions/11908249/debugging-element-is-not-clickable-at-point-error
-					.execute("tallChoiceDropDownButton.click();")
+					.elementById("tallChoiceDropDownButton")
+						.click()
+						.end()
 					.execute("return [domStyleGlobal.get(tallChoiceDropDown, 'height'), " +
 						"winUtilsGlobal.getBox().h, domStyleGlobal.get(tallChoiceDropDown.parentNode, 'height')];")
 					.then(function (value) {
