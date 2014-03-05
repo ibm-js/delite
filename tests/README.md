@@ -28,34 +28,30 @@ Note that this won't run the functional tests.
 
 ## Running the unit and functional tests in Sauce Labs
 
-On Mac/Linux:
+In the delite directory:
 
 ```
-$ ./runsauce.sh
-```
-
-Or on Windows (untested):
-
-```
-cd ..\..\..
-node delite\node_modules\intern\runner.js config=delite\tests\sauce.js
+$ grunt test:remote
 ```
 
 ## Running the unit and functional tests locally
 
-1) Download selenium server 2.37.0 (http://www.seleniumhq.org/download/) and start it on the default port (4444):
+1) Download selenium server (http://www.seleniumhq.org/download/) and start it on the default port (4444):
 
 ```
 $ java -jar selenium-server-standalone-2.37.0.jar
 ```
 
-2) Edit local.js to list which browsers to test
+2) Edit intern.local.js to list which browsers to test
 
-## Running tests
-In the delite directory run the following targets on the `test` task e.g.
+3) In the delite directory:
 
-    $ grunt test:local
-    $ grunt test:remote
+   ```
+   $ grunt test:local
+   ```
+
+
+## Adjusting reports
 
 Optional reports can be added via grunt flags e.g.
 
