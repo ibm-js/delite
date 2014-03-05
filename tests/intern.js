@@ -47,5 +47,5 @@ define({
 	functionalSuites: [ "delite/tests/functional/all" ],
 
 	// A regular expression matching URLs to files that should not be included in code coverage analysis
-	excludeInstrumentation: /^(?:node_modules|tests|dcl|dojo|deliteful|requirejs|platform|dpointer|delite\/tests|.*\/themes)\//
+	excludeInstrumentation: /^(?:tests|dcl|dojo|requirejs|platform|dpointer|delite\/tests|.*\/themes)\//
 });
