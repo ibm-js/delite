@@ -15,8 +15,9 @@ define(["intern!object",
 		"repeat move off screen": function () {
 			// In old version of code, calling moveOffScreen twice would cause an exception.
 			// No actual assert here, we're relying on the browser throwing an exception to wd?
-			var js = "glblPopupUtil.moveOffScreen(document.getElementById('spw')); glblPopupUtil.moveOffScreen(document.getElementById('spw'));";
-			return this.remote.execute(js);
+			return this.remote
+				.execute("glblPopupUtil.moveOffScreen(document.getElementById('spw'));")
+				.execute("glblPopupUtil.moveOffScreen(document.getElementById('spw'));");
 		},
 
 		"open popup on the edge of another widget": function () {
@@ -28,7 +29,15 @@ define(["intern!object",
 					.isDisplayed(function (err, displayed) {
 						assert.isTrue(displayed, "choiceDropDown popup visible");
 					})
-					.end();
+				.end()
+				.elementById("choiceDropDownButton_dropdown")	// parent of choiceDropDown
+				.getAttribute("role").then(function (role) {
+					assert.strictEqual(role, "region", "popup's wrapper node needs role=region");
+				})
+				.getAttribute("aria-label").then(function (label) {
+					assert.strictEqual(label, "choiceDropDown", "popup's wrapper node needs aria-label");
+				})
+				.end();
 		},
 
 		"close popup on the edge of another widget": function () {
@@ -99,26 +108,22 @@ define(["intern!object",
 		},
 
 		"x/y placement": function () {
-			var js = "xyPopup = new SimpleChoiceWidget({id : 'SimpleChoiceWidgetId'}); \
-			glblPopupUtil.open({ \
-				popup: xyPopup, \
-				orient: 'R', \
-				x: 10, \
-				y: 15 \
-			}); return domGeometryGlobal.position(xyPopup)"; // return popup.getBoundingClientRect()
 			return this.remote
-				.execute(js).then(function (value) {
+				.elementById("openAt1015Button")
+				.click()
+				.end()
+				.execute("return domGeometryGlobal.position(xyPopup)").then(function (value) {
 					assert.strictEqual(value.x, 10, "popup x coord");
 					assert.strictEqual(value.y, 15, "popup y coord");
 				})
-				.execute("glblPopupUtil.close(xyPopup)");
+				.elementById("closeAt1015Button")
+				.click()
+				.end()
 		},
 
 		"orient callback": {
 			setup: function () {
-				// TODO: don't like this calling setup functions on the client. Not much different to the x / y placement test though??
 				return this.remote
-					.execute("setupOrientCallback()")
 					.elementById("tooltipDropDownButton")
 						.click()
 						.end()
@@ -144,20 +149,17 @@ define(["intern!object",
 			},
 
 			at: function () {
-				var js1 = "tooltipGlobal.orientCalls = []; delete tooltipGlobal.onOpenArg; \
-								glblPopupUtil.open({ \
-								popup: tooltipGlobal, \
-								orient: 'R', \
-								x: 10, \
-								y: 15 \
-								});";
 				return this.remote
-					.execute(js1).then(function (value) {
-						// The final call to orient(), as well as the call to onOpen(), should have been for the final
-						// position of the node, where corner == TL and aroundCorner == BR (they are caddy-corner).
+					.execute("tooltipGlobal.orientCalls = []; delete tooltipGlobal.onOpenArg;")
+					.elementById("openTooltipAt1015Button")
+					.click()
+					.end()
+					.execute("return tooltipGlobal.orientCalls.length").then(function (value) {
 						assert.notStrictEqual(value, 0, "tooltipGlobal.orientCalls.length");
 					})
 					.execute("return tooltipGlobal.orientCalls.pop()").then(function (value) {
+						// The final call to orient(), as well as the call to onOpen(), should have been for the final
+						// position of the node, where corner == TL and aroundCorner == BR (they are caddy-corner).
 						assert.strictEqual(value.corner, "TL", "popup corner");
 						assert.strictEqual(value.aroundCorner, "BR", "aroundNode corner");
 					})
@@ -165,50 +167,35 @@ define(["intern!object",
 						assert.ok(value, "onOpen called");
 						assert.strictEqual(value.corner, "TL", "popup corner");
 						assert.strictEqual(value.aroundCorner, "BR", "aroundNode corner");
-					});
+					})
+					.elementById("closeTooltipAt1015Button")
+					.click()
+					.end();
 			}
-		},
-
-		a11y: function () {
-			var js = "allyPopup = new SimpleChoiceWidget({id: 'scwPopup'});\
-				glblPopupUtil.open({ \
-				popup: allyPopup, \
-				orient: 'R', \
-				x: 10, \
-				y: 15 \
-				}); return [allyPopup.parentNode.getAttribute('role'), allyPopup.parentNode.getAttribute('aria-label')]";
-
-			return this.remote
-				.execute(js).then(function (value) {
-					assert.strictEqual(value[0], "region", "popup's wrapper node needs role=region");
-					assert.strictEqual(value[1], "scwPopup", "popup's wrapper node needs aria-label");
-				});
 		},
 
 		scrollbar: {
 			at: function () {
-				var js = "lotsOfChoicesPopup = new LotsOfChoicesWidget({id: 'tallPopup1'});\
-				glblPopupUtil.open({ \
-				popup: lotsOfChoicesPopup, \
-				orient: 'R', \
-				x: 10, \
-				y: 15 \
-				}); return [domStyleGlobal.get(lotsOfChoicesPopup, 'height'), winUtilsGlobal.getBox().h, domStyleGlobal.get(lotsOfChoicesPopup.parentNode, 'height')]";
-				
 				return this.remote
-					.execute(js).then(function (value) {
+					.elementById("openLotsOfChoicesPopupButton")
+					.click()
+					.end()
+					.execute(
+						"return [domStyleGlobal.get(lotsOfChoicesPopup, 'height'), " +
+							"winUtilsGlobal.getBox().h, domStyleGlobal.get(lotsOfChoicesPopup.parentNode, 'height')];")
+					.then(function (value) {
 						assert.isTrue(value[0] > value[1], "lotsOfChoicesPopup popup is not taller than the viewport");
 						assert.isTrue(value[2] < value[1], "lotsOfChoicesPopup wrapper is not shorter than viewport");
 					});
 			},
 
 			around: function () {
-				// cant use .click() here because it fails in chrome, see http://stackoverflow.com/questions/11908249/debugging-element-is-not-clickable-at-point-error
-				var js = "tallChoiceDropDownButton.click();\
-				return [domStyleGlobal.get(tallChoiceDropDown, 'height'), winUtilsGlobal.getBox().h, domStyleGlobal.get(tallChoiceDropDown.parentNode, 'height')]";
-				
 				return this.remote
-					.execute(js).then(function (value) {
+					// cant use .click() here because it fails in chrome, see http://stackoverflow.com/questions/11908249/debugging-element-is-not-clickable-at-point-error
+					.execute("tallChoiceDropDownButton.click();")
+					.execute("return [domStyleGlobal.get(tallChoiceDropDown, 'height'), " +
+						"winUtilsGlobal.getBox().h, domStyleGlobal.get(tallChoiceDropDown.parentNode, 'height')];")
+					.then(function (value) {
 						assert.isTrue(value[0] > value[1], "tallChoiceDropDown popup is not taller than the viewport");
 						assert.isTrue(value[2] < value[1], "tallChoiceDropDown wrapper is not shorter than viewport");
 					});
