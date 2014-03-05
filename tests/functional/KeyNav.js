@@ -13,7 +13,7 @@ define(["intern!object",
 		},
 
 		"tabindex": function () {
-			if (/safari|iOS/.test(this.remote.environmentType.browserName)) {
+			if (/safari|iphone/.test(this.remote.environmentType.browserName)) {
 				// SafariDriver doesn't support tabbing, see https://code.google.com/p/selenium/issues/detail?id=5403
 				return;
 			}
@@ -61,7 +61,7 @@ define(["intern!object",
 
 		},
 		"arrow navigation": function () {
-			if (/safari|iOS/.test(this.remote.environmentType.browserName)) {
+			if (/safari|iphone/.test(this.remote.environmentType.browserName)) {
 				// SafariDriver apparently doesn't support arrow keys either
 				return;
 			}
@@ -103,7 +103,7 @@ define(["intern!object",
 		},
 
 		"letter search": function () {
-			if (/safari|iOS/.test(this.remote.environmentType.browserName)) {
+			if (/safari|iphone/.test(this.remote.environmentType.browserName)) {
 				// SafariDriver just doesn't work testing keystrokes ...
 				return;
 			}
@@ -138,7 +138,7 @@ define(["intern!object",
 		},
 
 		"embedded form controls": function () {
-			if (/safari|iOS/.test(this.remote.environmentType.browserName)) {
+			if (/safari|iphone/.test(this.remote.environmentType.browserName)) {
 				// SafariDriver apparently doesn't support arrow keys either
 				return;
 			}
