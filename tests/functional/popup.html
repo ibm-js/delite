@@ -1,0 +1,398 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title>popup and BackgroundIFrame functional test</title>
+
+    <script src="../boilerplate.js"></script>
+
+    <style type="text/css">
+        body {
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+
+        div {
+            background: white;
+            border: solid 1px gray;
+        }
+        /* the menu type test widgets */
+        .choice {
+            display: block;
+        }
+
+        .choice div {
+            width: 200px;
+            cursor: pointer;
+        }
+
+        .choice div:hover {
+            background: #ccc;
+        }
+
+    </style>
+
+	<script language="JavaScript" type="text/javascript">
+		var ready = false; // set to true when the test page is ready
+		var val = 0;
+        // globals
+        var SimpleDropDownButton, SimplePopup, Tooltip, SimpleChoiceWidget, LotsOfChoicesWidget, choiceDropDown,
+                tallChoiceDropDown, DialogWithPopupWidget, dialogDropDownButton, NestedPopupOpener, nestedOpener,
+                nestedDropDownButton, dialogNestedChoice1, dialogNestedChoice2, dialogNestedPopupOpener,
+                dialogWithNestedPopup, nestedChoice1, nestedChoice2, tabOrder, glblPopupUtil, tooltipDropDownButton,
+                tooltip, setupOrientCallback, domGeometry, tooltipGlobal, choiceDropDownButton;
+        setupOrientCallback = function () {
+            tooltipGlobal = new Tooltip({});
+            (tooltipDropDownButton = new SimpleDropDownButton({
+                id: "tooltipDropDownButton",
+                label: "show tooltip",
+                popup: tooltipGlobal
+            })).placeAt(document.getElementById("widgets"));
+        };
+        require([
+            "dojo/dom", "dojo/dom-construct", "dojo/dom-geometry", "dojo/dom-style", "dojo/_base/lang",
+            "dojo/on", "dojo/sniff", "dojo/_base/window", "dojo/window",
+            "delite/popup", "delite/register", "delite/Widget",
+            "delite/tests/helpers", "delite/focus", "dojo/domReady!"
+        ], function (dom, domConstruct, domGeometry, domStyle, lang, on, has, win, winUtils, popupUtil, register, Widget, helpers, focus) {
+            tabOrder = helpers.tabOrder;
+            domGeometryGlobal = domGeometry;
+            glblPopupUtil = popupUtil;
+            domStyleGlobal = domStyle;
+            winUtilsGlobal = winUtils;
+
+            SimpleDropDownButton = register("simple-dropdown-button", [HTMLButtonElement, Widget], {
+                // summary:
+                //		A button that shows a popup.
+                //		Supply popup as parameter when instantiating this widget.
+
+                label: "show popup",
+                orient: ["below"],
+
+                buildRendering: function () {
+                    this.textContent = this.label;
+                    this.own(on(this, "click", lang.hitch(this, "onClick")));
+                },
+                onClick: function (e) {
+                    this._openPopup();
+                },
+                _openPopup: function () {
+                    var self = this;
+
+                    popupUtil.open({
+                        popup: this.popup,
+                        parent: this,
+                        around: this,
+                        orient: this.orient,
+                        onCancel: function () {
+                            console.log(self.id + ": cancel of child");
+                        },
+                        onExecute: function () {
+                            console.log(self.id + ": execute of child");
+                            popupUtil.close(self.popup);
+                            self.open = false;
+                        }
+                    });
+
+                    this.open = true;
+                    console.log(this.popup.id, JSON.stringify(domGeometryGlobal.position(this.popup)));
+                },
+
+                closePopup: function () {
+                    if (this.open) {
+                        popupUtil.close(this.popup);
+                        this.open = false;
+                    }
+                },
+
+                _onBlur: function () {
+                    // summary:
+                    //		This is called from focus manager and when we get the signal we
+                    //		need to close the drop down
+                    console.log(this.id + ": close popup due to blur");
+                    this.closePopup();
+                }
+            });
+
+            SimplePopup = register("simple-popup", [HTMLElement, Widget], {
+                // summary:
+                //		A trivial popup widget
+
+                buildRendering: function () {
+                    this.textContent = "i'm a popup";
+                }
+            });
+
+            Tooltip = register("test-tooltip", [HTMLElement, Widget], {
+                // summary:
+                //		A popup with an orient() method to adjust arrows
+
+                postCreate: function () {
+                    this.orientCalls = [];
+                },
+
+                buildRendering: function () {
+                    this.textContent = "i'm a popup";
+                },
+
+                orient: function (node, aroundCorner, corner, spaceAvailable, aroundNodeCoords) {
+                    this.orientCalls.push({
+                        node: node,
+                        aroundCorner: aroundCorner,
+                        corner: corner,
+                        spaceAvailable: spaceAvailable,
+                        aroundNodeCoords: aroundNodeCoords
+                    });
+                },
+                onOpen: function (pos) {
+                    // should be called with pos.corner and pos.aroundCorner set
+                    this.onOpenArg = pos;
+                }
+            });
+
+            SimpleChoiceWidget = register("simple-choice-widget", [HTMLElement, Widget], {
+                // summary:
+                //		A list of values; select a value by pressing an entry in the list.
+
+                choice1: "1",
+                choice2: "2",
+                choice3: "3",
+
+                buildRendering: function () {
+                    this.className = "choice";
+                    this.own(on(this, "click", lang.hitch(this, "onClick")));
+
+                    for (var i = 1; i < 4; i++) {
+                        domConstruct.place("<div>choice #" + this["choice" + i] + "</div>", this);
+                    }
+                },
+
+                onClick: function (e) {
+                    this.onChange(e.target.innerHTML);
+                },
+
+                onChange: function (val) {
+                    // summary:
+                    //		When this widget is used as a popup, popup monitors calls
+                    //		to onChange and then closes the popup
+                    console.log(this.id + ": selected " + val);
+                }
+            });
+
+            LotsOfChoicesWidget = register("lots-of-choices-widget", [HTMLElement, Widget], {
+                // summary:
+                //		A list of values; select a value by pressing an entry in the list.
+
+                length: 100,
+
+                buildRendering: function () {
+                    this.className = "choice";
+                    for (var i = 0; i < this.length; i++) {
+                        domConstruct.place("<div>choice #" + i + "</div>", this);
+                    }
+                }
+            });
+
+            // Create a button that displays a simple drop down
+            choiceDropDown = new SimpleChoiceWidget({id: "choiceDropDown"});
+            choiceDropDownButton = new SimpleDropDownButton({
+                id: "choiceDropDownButton",
+                label: "show choice drop down",
+                popup: choiceDropDown
+            }).placeAt(dom.byId("widgets"));
+
+            // Create a tall drop down, should get scroll bar
+            tallChoiceDropDown = new LotsOfChoicesWidget({length: 100, id: "tallChoiceDropDown"});
+            tallChoiceDropDownButton = new SimpleDropDownButton({
+                id: "tallChoiceDropDownButton",
+                label: "show tall drop down",
+                popup: tallChoiceDropDown
+            }).placeAt(dom.byId("widgets"));
+            // Workaround problem using dcl() on native DOMNodes on FF and IE,
+            // see https://github.com/uhop/dcl/issues/9.
+            // After that's fixed, this should be a single register() statement.
+            var DialogWithPopupWidgetMixin = register.dcl(Widget, {
+                title: "I'm a dialog"
+            });
+            DialogWithPopupWidget = register("dialog-with-popup-widget", [HTMLElement, DialogWithPopupWidgetMixin], {
+                // summary:
+                //		This is a dialog that contains a button that spawns a drop down.
+                //		Supply popup as an argument to this widget.
+                label: "click me",
+
+                buildRendering: function () {
+                    domConstruct.place("<div>" + this.title + "</div>", this);
+                    domConstruct.place("<input>", this);
+                    domConstruct.place("<br>", this);
+
+                    this.button = domConstruct.place("<button>" + this.label + "</button>", this);
+                    // Convert the plain button into a SimpleDropDownButton widget.
+                    // Having it be a widget is important because that's how the popup
+                    // code knows where a stack of nested popups (typically menus) ends.
+                    // (In this case closing a stack of menus shouldn't close the dialog.)
+                    new SimpleDropDownButton({
+                        id: this.id + "PopupButton",
+                        label: this.label,
+                        popup: this.popup,
+                        orient: ["after"]	// so popup doesn't cover OK button
+                    }, this.button);
+
+                    domConstruct.place("<br>", this);
+                    var ok = domConstruct.place("<button>OK</button>", this);
+                    this.own(on(ok, "click", lang.hitch(this, "onExecute")));
+                },
+
+                onExecute: function () {
+                    // summary:
+                    //		Called when OK button is pressed.
+                    //		If this is used as a popup this signals to the parent that
+                    //		Dialog can be closed.
+                    console.log(this.id + ": executed");
+                }
+            });
+
+            // Create a button that displays a dialog that displays a choice widget
+            dialogDropDownButton = new SimpleDropDownButton({
+                id: "showSimpleDialogButton",
+                label: "show dialog",
+                popup: new DialogWithPopupWidget({
+                    id: "simpleDialog",
+                    label: 'show simple choice drop down',
+                    popup: new SimpleChoiceWidget({
+                        id: "choiceFromDialog"
+                    })
+                })
+            }).placeAt(dom.byId("widgets"));
+
+            NestedPopupOpener = register("nested-popup-opener", [HTMLElement, Widget], {
+                // summary:
+                //		Clicking a value in this list will open a nested popup.
+                //		Specify popup1 and popup2 as parameters to this widget.
+
+                buildRendering: function () {
+                    this.className = "choice";
+                    this.own(on(this, "click", lang.hitch(this, "onClick")));
+
+                    for (var i = 1; i < 3; i++) {
+                        domConstruct.place("<div>popup" + i + "</div>", this);
+                    }
+                },
+
+                onClick: function (e) {
+                    var id = this.id,
+                            popup = this[e.target.innerHTML];
+                    console.log(id + ": opening popup " + popup.id);
+                    this._openPopup(popup);
+                },
+
+                _openPopup: function (popup) {
+                    popupUtil.open({
+                        popup: popup,
+                        parent: this,
+                        around: this,
+                        orient: ["after", "before"],
+                        onCancel: function () {
+                            console.log(id + ": cancel of child " + popup.id);
+                        },
+                        onExecute: function () {
+                            console.log(id + ": execute of child " + popup.id);
+                            popupUtil.close(popup);
+                        }
+                    });
+                    console.log(popup.id, JSON.stringify(domGeometryGlobal.position(popup)));
+                },
+
+                closePopup: function (popup) {
+                    popupUtil.close(popup);
+                },
+                _onBlur: function () {
+                    // summary:
+                    //		This is called from focus manager and when we get the signal we
+                    //		need to close the drop down
+                    console.log(this.id + ": close popup due to blur");
+                    this.closePopup();
+                }
+            });
+
+            // Create a button that displays a nested drop down.
+            nestedOpener = new NestedPopupOpener({
+                id: 'nestedPopupOpener',
+                popup1: (nestedChoice1 = new SimpleChoiceWidget({
+                    id: "nestedChoice1"
+                })),
+                popup2: (nestedChoice2 = new SimpleChoiceWidget({
+                    id: "nestedChoice2",
+                    choice1: "4",
+                    choice2: "5",
+                    choice3: "6"
+                }))
+            });
+            nestedDropDownButton = new SimpleDropDownButton({
+                id: "showNestedMenuButton",
+                label: "show nested drop down",
+                popup: nestedOpener
+            }).placeAt(dom.byId("widgets"));
+
+            // Create a button that displays a dialog that displays a nested drop down
+            dialogNestedChoice1 = new SimpleChoiceWidget({
+                id: "dialogNestedChoice1"
+            });
+            dialogNestedChoice2 = new SimpleChoiceWidget({
+                id: "dialogNestedChoice2",
+                choice1: "4",
+                choice2: "5",
+                choice3: "6"
+            });
+            dialogNestedPopupOpener = new NestedPopupOpener({
+                id: "nestedPopupOpenerFromDialog",
+                popup1: dialogNestedChoice1,
+                popup2: dialogNestedChoice2
+            });
+            dialogWithNestedPopup = new DialogWithPopupWidget({
+                id: "buttonInComplexDialog",
+                label: 'show nested menu',
+                popup: dialogNestedPopupOpener
+            });
+            dialogDropDownButton = new SimpleDropDownButton({
+                id: "showComplexDialogButton",
+                label: "show dialog w/nested menu",
+                popup: dialogWithNestedPopup
+            }).placeAt(dom.byId("widgets"));
+
+            // For testing, create an unattached widget and unattached DOMNode
+            new SimplePopup({id: "spw"}).placeAt(win.body());
+            domConstruct.place("<span id='sdn'>simple dom node</span>", win.body());
+            ready = true;
+
+        });
+
+	</script>
+</head>
+<body>
+<h1>popup functional tests</h1>
+<label for="inputAtStart">label:</label><input id="inputAtStart">
+<button id="stub-for-blurring">a stub node to execute blur events for wd.js</button> <!-- button needs to be after inputAtStart and before inputAtEnd but not be overlaid by popups -->
+<div style="height: 150px; overflow: auto; margin: 10px 0px;">
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis cursus odio eu nisl ultrices dictum. Sed tincidunt
+        metus et magna placerat eget vehicula dolor faucibus. Nunc nec augue ac mi rutrum congue. Donec at augue felis.
+        Proin et lectus at mauris adipiscing pulvinar tempor vitae lacus. Aliquam erat volutpat. Sed eget sem eu turpis
+        ultrices ullamcorper sed ut augue. Nunc in augue lectus. Curabitur ac posuere libero. Duis luctus dignissim nisl
+        suscipit vehicula. Cras ut augue odio. Integer blandit ligula congue erat pellentesque nec egestas mi
+        hendrerit</p>
+    <span id="widgets"></span>
+
+    <p>Nunc sollicitudin nisl sed est porta vitae viverra nulla rutrum. Praesent erat tortor, scelerisque sit amet
+        gravida a, sodales a libero. Pellentesque nec arcu nulla, id laoreet orci. Vivamus sit amet quam eu ante
+        pulvinar rhoncus sit amet non ipsum. Sed mattis felis sed risus tincidunt in sagittis justo rhoncus. Praesent ut
+        justo feugiat neque gravida convallis eget mattis felis. Vestibulum vitae velit ante, sed convallis sem.
+        Curabitur gravida volutpat odio eget tincidunt. Mauris pellentesque placerat massa ut venenatis. Mauris ultrices
+        hendrerit dui vel fermentum.</p>
+</div>
+<label for="inputAtEnd">label:</label><input id="inputAtEnd">
+
+<!-- <iframe id="testiframeforcedhidden" style="display: none;"> -->
+
+</iframe>
+</body>
+</html>

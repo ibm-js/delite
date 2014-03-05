@@ -66,7 +66,7 @@ define([
 				});
 			}
 
-			walkTree(root || dojo.body());
+			walkTree(root || document.body);
 
 			elems.sort(function (a, b) {
 				return a.tabIndex != b.tabIndex ? a.tabIndex - b.tabIndex : a.pos - b.pos;
