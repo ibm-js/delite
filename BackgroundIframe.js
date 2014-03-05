@@ -8,8 +8,6 @@ define([
 	// A background iframe is useful to prevent problems with popups appearing behind applets/pdf files.
 	has.add("config-bgIframe", false);
 
-	// TODO: remove _frames, it isn't being used much, since popups never release their
-	// iframes (see [22236])
 	/**
 	 * Cache of iframes.
 	 * @constructor
@@ -66,6 +64,7 @@ define([
 				this._conn = null;
 			}
 			if (this.iframe) {
+				this.iframe.parentNode.removeChild(this.iframe);
 				_frames.push(this.iframe);
 				delete this.iframe;
 			}
