@@ -41,8 +41,8 @@ define([
 				createdCallback: function () {
 					this._createdCallbackCalled = true;
 				},
-				enteredViewCallback: function () {
-					this._enteredViewCallbackCalled = true;
+				attachedCallback: function () {
+					this._attachedCallbackCalled = true;
 				},
 				fooFunc: function () {
 					this._fooCalled = true;
@@ -60,7 +60,7 @@ define([
 
 			// lifecycle methods
 			assert.ok(tsw._createdCallbackCalled, "createdCallback called");
-			assert.ok(tsw._enteredViewCallbackCalled, "enteredViewCallback called");
+			assert.ok(tsw._attachedCallbackCalled, "attachedCallback called");
 
 			// property exists
 			assert.ok(tsw.foo, "foo");
