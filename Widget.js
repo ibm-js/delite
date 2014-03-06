@@ -90,12 +90,12 @@ define([
 			this.postCreate();
 		},
 
-		enteredViewCallback: function () {
+		attachedCallback: function () {
 			// summary:
 			//		Called when the widget is first inserted into the document.
 			//		If widget is created programatically then app must call startup() to trigger this method.
 
-			this._enteredView = true;
+			this._attached = true;
 
 			// When Widget extends Invalidating some/all of this code should probably be moved to refreshRendering()
 
@@ -189,8 +189,8 @@ define([
 				return;
 			}
 
-			if (!this._enteredView) {
-				this.enteredViewCallback();
+			if (!this._attached) {
+				this.attachedCallback();
 			}
 
 			this._started = true;

@@ -107,7 +107,8 @@ define([
 	 * @param {Element} inElement The DOMNode
 	 */
 	function upgrade(element) {
-		if (!has("document-register-element") && /*jshint camelcase: false*/!element.__upgraded__/*jshint camelcase: true*/) {
+		if (!has("document-register-element") &&
+				/*jshint camelcase: false*/ !element.__upgraded__/*jshint camelcase: true*/) {
 			var widget = registry[element.getAttribute("is") || element.nodeName.toLowerCase()];
 			if (widget) {
 				if (has("dom-proto-set")) {
@@ -129,9 +130,9 @@ define([
 				if (element.createdCallback) {
 					element.createdCallback.call(element, widget.prototype);
 				}
-				if (element.enteredViewCallback && doc.documentElement.contains(element)) {
-					// Note: if app inserts an element manually it needs to call enteredViewCallback() manually
-					element.enteredViewCallback.call(element, widget.prototype);
+				if (element.attachedCallback && doc.documentElement.contains(element)) {
+					// Note: if app inserts an element manually it needs to call attachedCallback() manually
+					element.attachedCallback.call(element, widget.prototype);
 				}
 			}
 		}
