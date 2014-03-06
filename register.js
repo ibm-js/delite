@@ -349,23 +349,25 @@ define([
 	 * @param {Element?} Root DOMNode to parse from
 	 */
 	function parse(root) {
-		// Note that upgrade() will be a no-op when has("document-register-element") is true, but we still
-		// need to calculate nodes[] for the startup() call below.
-		var node, idx = 0, nodes = (root || doc).querySelectorAll(selectors.join(", "));
-		while ((node = nodes[idx++])) {
-			upgrade(node);
-		}
+		// Note: if() statement to avoid calling querySelectorAll(""), which fails on Chrome.
+		if (selectors.length) {
+			// Note that upgrade() will be a no-op when has("document-register-element") is true, but we still
+			// need to calculate nodes[] for the startup() call below.
+			var node, idx = 0, nodes = (root || doc).querySelectorAll(selectors.join(", "));
+			while ((node = nodes[idx++])) {
+				upgrade(node);
+			}
 
-		// Call startup() on top level nodes.  Since I don't know which nodes are top level,
-		// just call startup on all widget nodes.  Most of the calls will be ignored since the nodes
-		// have already been started.
-		idx = 0;
-		while ((node = nodes[idx++])) {
-			if (node.startup && !node._started) {
-				node.startup();
+			// Call startup() on top level nodes.  Since I don't know which nodes are top level,
+			// just call startup on all widget nodes.  Most of the calls will be ignored since the nodes
+			// have already been started.
+			idx = 0;
+			while ((node = nodes[idx++])) {
+				if (node.startup && !node._started) {
+					node.startup();
+				}
 			}
 		}
-
 	}
 
 	// Setup return value as register() method, with other methods hung off it.
