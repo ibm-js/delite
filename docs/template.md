@@ -13,7 +13,7 @@ An AST would look like:
 			{
 				tag: "SPAN",
 				attributes: {
-					class: ["duiReset ", {property: "iconClass"}]
+					class: ["d-reset ", {property: "iconClass"}]
 				},
 				children: []
 			},
@@ -26,7 +26,7 @@ It gets compiled into a function like:
 	function buildRendering(root) {
 		var widget = this, doc = this.ownerDocument;
 		var rootc1 = doc.createElement('SPAN');
-		function rootc1_setattr_class(){ rootc1.setAttribute('class', 'duiReset ' + widget.iconClass); }
+		function rootc1_setattr_class(){ rootc1.setAttribute('class', 'd-reset ' + widget.iconClass); }
 		rootc1_setattr_class();
 		this.watch('iconClass', rootc1_setattr_class);
 		this.appendChild(rootc1);

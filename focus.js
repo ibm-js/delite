@@ -202,7 +202,7 @@ define([
 
 			// if the click occurred on the scrollbar of a dropdown, treat it as a click on the dropdown,
 			// even though the scrollbar is technically on the popup wrapper (see #10631)
-			if (domClass.contains(node, "duiPopup")) {
+			if (domClass.contains(node, "d-popup")) {
 				node = node.firstChild;
 			}
 
