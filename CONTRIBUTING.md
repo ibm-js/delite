@@ -41,7 +41,7 @@ that you are listed under your companies authorised contributors).
 
 ## Coding Style and Linting
 
-The project has a very specific coding style that are checked using this [jshintrc].  All pull requests should adhere to this.
+All pull requests should adhere to the [coding guidelines]. 
 
 ## Inline Documentation
 
@@ -203,7 +203,7 @@ request.
 [claCheck]: http://dojofoundation.org/about/claCheck
 [Creating a Pull Request]: https://help.github.com/articles/creating-a-pull-request
 [Fork a Repo]: https://help.github.com/articles/fork-a-repo
-[jshintrc]: ./.jshintrc
+[coding guidelines]: https://github.com/ibm-js/sdk/blob/master/GUIDELINES.md
 [DojoDoc]: http://dojotoolkit.org/reference-guide/developer/markup.html
 [Intern]: http://theintern.io/
 [interactive rebase]: http://git-scm.com/book/en/Git-Tools-Rewriting-History#Changing-Multiple-Commit-Messages
