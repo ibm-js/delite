@@ -2,7 +2,7 @@ define([
 	"./register",
 	"./CssState",
 	"./handlebars!./ExampleWidget/ExampleWidget.html",
-	"./themes/load!./ExampleWidget/themes/{{theme}}/ExampleWidget_css",
+	"./themes/load!delite/themes/{{theme}}/common_css,./ExampleWidget/themes/{{theme}}/ExampleWidget_css",
 	"dojo/has!dojo-bidi?./themes/load!./ExampleWidget/themes/{{theme}}/ExampleWidget_rtl_css"
 ], function (register, CssState, renderer) {
 
