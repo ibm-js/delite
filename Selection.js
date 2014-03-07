@@ -1,7 +1,7 @@
-define(["dcl/dcl", "dojo/_base/lang", "./Widget"], function (dcl, lang, Widget) {
+define(["dcl/dcl", "dojo/sniff", "./Widget"], function (dcl, has, Widget) {
 	return dcl(Widget, {
 		// summary:
-		//		Mixin for classes for widgets that manage a list of selected data items. 
+		//		Mixin for classes for widgets that manage a list of selected data items.
 
 		preCreate: function () {
 			this._set("selectedItems", []);
@@ -13,19 +13,22 @@ define(["dcl/dcl", "dojo/_base/lang", "./Widget"], function (dcl, lang, Widget) 
 		//		1. "none": No selection can be done.
 		//		2. "single": Only one item can be selected at a time.
 		//		3. "multiple": Several item can be selected using the control key modifier.
+		//		Changing this value impacts the current selected items to adapt the selection to the new mode. However
+		//		whatever the selection mode is you can always set several selected items usign the selectItem(s) API.
+		//		The mode will be enforced only when using setSelected and/or selectFromEvent APIs.
 		//		Default value is "single".
 		selectionMode: "single",
 
 		_setSelectionModeAttr: function (value) {
 			if (value !== "none" && value !== "single" && value !== "multiple") {
-				throw new Error("selectionModel invalid value");
+				throw new TypeError("selectionMode invalid value");
 			}
 			if (value !== this.selectionMode) {
 				this._set("selectionMode", value);
 				if (value === "none") {
 					this.selectedItems = null;
 				} else if (value === "single") {
-					this.selectedItem = this.selectedItem; // null or last selected item
+					this.selectedItems = [this.selectedItem]; // null or last selected item
 				}
 			}
 		},
@@ -64,6 +67,20 @@ define(["dcl/dcl", "dojo/_base/lang", "./Widget"], function (dcl, lang, Widget) 
 			return this._get("selectedItems") == null ? [] : this._get("selectedItems").concat();
 		},
 
+		hasSelectionModifier: function (event) {
+			// summary:
+			//		Tests if an event has a selection modifier. If it has a selection modifier, that means that:
+			//			* if selectionMode is "single", the event will be able to deselect a selected item
+			//			* if selectionMode is "multiple", the event will trigger the selection state of the item
+			//		The default implementation of this method returns true if the event.ctrlKey attribute is
+			//		true, which means that:
+			//			* if selectionMode is "single", the Ctrl (or Command on MacOS) key must be pressed for the
+			//			event to deselect the currently selected item
+			//			* if selectionMode is "multiple", the Ctrl (or Command on MacOS) key must be pressed for the
+			//			event to toggle the selection status of the item.
+			return !has("mac") ? event.ctrlKey : event.metaKey;
+		},
+
 		isSelected: function (item) {
 			// summary:
 			//		Returns whether an item is selected or not.
@@ -72,10 +89,10 @@ define(["dcl/dcl", "dojo/_base/lang", "./Widget"], function (dcl, lang, Widget) 
 			if (this.selectedItems == null || this.selectedItems.length === 0) {
 				return false;
 			}
-
-			return this.selectedItems.some(lang.hitch(this, function (sitem) {
-				return this.getIdentity(sitem) === this.getIdentity(item);
-			}));
+			var identity = this.getIdentity(item);
+			return this.selectedItems.some(function (sitem) {
+				return this.getIdentity(sitem) === identity;
+			}, this);
 		},
 
 		getIdentity: function (/*jshint unused: vars */item) {
@@ -102,7 +119,7 @@ define(["dcl/dcl", "dojo/_base/lang", "./Widget"], function (dcl, lang, Widget) 
 
 		_setSelected: function (item, value) {
 			// copy is returned
-			var sel = this.selectedItems;
+			var sel = this.selectedItems, res, identity;
 
 			if (this.selectionMode === "single") {
 				if (value) {
@@ -122,9 +139,10 @@ define(["dcl/dcl", "dojo/_base/lang", "./Widget"], function (dcl, lang, Widget) 
 					}
 					this.selectedItems = sel;
 				} else {
-					var res = sel ? sel.filter(lang.hitch(this, function (sitem) {
-						return this.getIdentity(sitem) !== this.getIdentity(item);
-					})) : [];
+					identity = this.getIdentity(item);
+					res = sel ? sel.filter(function (sitem) {
+						return this.getIdentity(sitem) !== identity;
+					}, this) : [];
 					if (res == null || res.length === sel.length) {
 						return; // already not selected
 					}
@@ -133,7 +151,7 @@ define(["dcl/dcl", "dojo/_base/lang", "./Widget"], function (dcl, lang, Widget) 
 			}
 		},
 
-		selectFromEvent: function (e, item, renderer, dispatch) {
+		selectFromEvent: function (event, item, renderer, dispatch) {
 			// summary:
 			//		Applies selection triggered by an user interaction
 			// e: Event
@@ -153,21 +171,22 @@ define(["dcl/dcl", "dojo/_base/lang", "./Widget"], function (dcl, lang, Widget) 
 				return false;
 			}
 
-			return this._selectFromEvent(e, item, renderer, dispatch);
+			return this._selectFromEvent(event, item, renderer, dispatch);
 		},
 
-		_selectFromEvent: function (e, item, renderer, dispatch) {
+		_selectFromEvent: function (event, item, renderer, dispatch) {
 			var changed;
 			var oldSelectedItem = this.selectedItem;
 			var selected = item == null ? false : this.isSelected(item);
 
 			if (item == null) {
-				if (!e.ctrlKey && this.selectedItem != null) {
+				if ((this.selectionMode === "multiple" && !this.hasSelectionModifier(event))
+					&& this.selectedItem != null) {
 					this.selectedItem = null;
 					changed = true;
 				}
 			} else if (this.selectionMode === "multiple") {
-				if (e.ctrlKey) {
+				if (this.hasSelectionModifier(event)) {
 					this.setSelected(item, !selected);
 					changed = true;
 				} else {
@@ -175,7 +194,7 @@ define(["dcl/dcl", "dojo/_base/lang", "./Widget"], function (dcl, lang, Widget) 
 					changed = true;
 				}
 			} else { // single
-				if (e.ctrlKey) {
+				if (this.hasSelectionModifier(event)) {
 					//if the object is selected deselects it.
 					this.selectedItem = (selected ? null : item);
 					changed = true;
@@ -188,7 +207,7 @@ define(["dcl/dcl", "dojo/_base/lang", "./Widget"], function (dcl, lang, Widget) 
 			}
 
 			if (dispatch && changed) {
-				this.dispatchSelectionChange(oldSelectedItem, this.selectedItem, renderer, e);
+				this.dispatchSelectionChange(oldSelectedItem, this.selectedItem, renderer, event);
 			}
 
 			return changed;
