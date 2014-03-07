@@ -193,7 +193,7 @@ define(["dcl/dcl", "dojo/_base/lang", "dojo/when", "./Invalidating"], function (
 			//		protected
 			// we want to keep the same item object and mixin new values into old object
 			this.itemRemoved(previousIndex, renderItems);
-			this.itemAdded(previousIndex, renderItem, renderItems);
+			this.itemAdded(newIndex, renderItem, renderItems);
 		},
 
 		_itemRemoved: function (event) {
