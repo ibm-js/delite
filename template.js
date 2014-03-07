@@ -1,6 +1,5 @@
 define(["./register"], function (register) {
 
-
 	var elementCache = {};
 	function getElement(tag) {
 		// summary:
@@ -17,7 +16,7 @@ define(["./register"], function (register) {
 
 		// Unfortunately since onclick is null, typeof button.onclick returns "object" not "function".
 		// Need heuristic (or hardcoded list) to tell which attributes are handlers.
-		return /^on/.test(attrName) && attrName in getElement(tag);
+		return (/^on/).test(attrName) && attrName in getElement(tag);
 	}
 
 	var attrMap = {};
@@ -62,13 +61,12 @@ define(["./register"], function (register) {
 		//	|			"class": ["d-reset ", {property: "baseClass"}]
 		//	|		},
 		//	|		children: [
-		//	|			{ tag: "span", ... },
+		//	|			{ tag: "span", attachPoints: ["iconNode"], ... },
 		//	|			"some boilerplate text",
 		//	|			{ property: "label" }	// text node bound to this.label
 		//	|		]
 		//	|	}
 
-		// TODO: possibly add data-dojo-attach-point support
 		// TODO: possibly add support to control which properties are / aren't bound (for performance)
 
 		// Note: this is generating actual JS code since:
@@ -129,11 +127,19 @@ define(["./register"], function (register) {
 
 			var text = "";
 
+			// Helper string for setting up data-attach-point(s), ex: "this.foo = this.bar = ".
+			var ap = (templateNode.attachPoints || []).map(function (n) {
+				return  "this." + n + " = ";
+			}).join("");
+
 			// Create node
 			if (nodeName !== "this") {
-				text += "var " + nodeName + " = " + (templateNode.xmlns ?
+				text += "var " + nodeName + " = " + ap + (templateNode.xmlns ?
 					"doc.createElementNS('" + templateNode.xmlns + "', '" + templateNode.tag + "');\n" :
 					"register.createElement('" + templateNode.tag + "');\n");
+			} else if (ap) {
+				// weird case that someone set data-attach-point on root node
+				text += ap + "this;";
 			}
 
 			// Set attributes/properties
@@ -144,7 +150,7 @@ define(["./register"], function (register) {
 				if (isFuncAttr(templateNode.tag, attr)) {
 					// Functional property setting, ex: onclick="console.log('hi');".
 					// Bind variables not currently supported.  That would require using new Function().
-					text += nodeName + "." + attr + " = function(){" + parts.join("") + "};"
+					text += nodeName + "." + attr + " = function(){" + parts.join("") + "};";
 				} else {
 					// Get expression for the value of this property, ex: 'duiReset ' + this.baseClass.
 					// Also get list of properties that we need to watch for changes.

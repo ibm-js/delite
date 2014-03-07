@@ -41,22 +41,36 @@ define(["./template"], function (template) {
 			// summary:
 			//		Scan a single Element (not text node, not branching node like {{#if}}, but regular DOMNode
 
-			// Scan attributes
-			var attributes = {};
+			// Get tag name, reversing the tag renaming done in parse()
+			var tag = templateNode.tagName.replace(/^template-/i, "").toLowerCase();
+
+			// Process attributes
+			var attributes = {}, attachPoints;
 			var i = 0, item, attrs = templateNode.attributes;
 			for (i = 0; (item = attrs[i]); i++) {
-				if (item.name == "xmlns") {
-					xmlns = item.value;
-				} else if (item.name !== "is" && item.value) {
-					attributes[item.name] = tokenize(item.value);
+				if (item.value) {
+					switch (item.name) {
+					case "xmlns":
+						xmlns = item.value;
+						break;
+					case "is":
+						tag = item.value;
+						break;
+					case "data-attach-point":
+						attachPoints = item.value.split(/, */);
+						break;
+					default:
+						attributes[item.name] = tokenize(item.value);
+					}
 				}
 			}
 
 			return {
-				tag: templateNode.getAttribute("is") || templateNode.tagName.replace(/^template-/i, "").toLowerCase(),
+				tag: tag,
 				xmlns: xmlns,
 				attributes: attributes,
-				children: handlebars.parseChildren(templateNode, xmlns)
+				children: handlebars.parseChildren(templateNode, xmlns),
+				attachPoints: attachPoints
 			};
 		},
 
@@ -106,7 +120,7 @@ define(["./template"], function (template) {
 			var root;
 			if (/<svg/.test(templateText)) {
 				root = parser.parseFromString(adjustedTemplate, "text/xml").firstChild;
-				while ( root.nodeType !== 1) {
+				while (root.nodeType !== 1) {
 					// Skip top level comment and move to "real" template root node.
 					// Needed since there's no .firstElementChild or .nextElementSibling for SVG nodes on FF.
 					root = root.nextSibling;

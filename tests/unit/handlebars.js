@@ -29,6 +29,7 @@ define([
 			assert.strictEqual(myButton.firstChild.className, "d-reset originalClass", "icon class set");
 			assert.strictEqual(myButton.textContent.trim(), "original label", "label set");
 		},
+
 		update: function () {
 			myButton.label = "new label";
 			assert.strictEqual(myButton.textContent.trim(), "new label", "label updated");
@@ -37,6 +38,26 @@ define([
 			assert.strictEqual(myButton.firstChild.className, "d-reset newClass", "icon class set");
 
 		},
+
+		"data-attach-point": function () {
+			// Testing that data-attach-point works
+
+			var TestHtml = register("test-data-attach-point", [HTMLElement, Widget], {
+				buildRendering: handlebars.compile(
+					"<div data-attach-point='root,root2'>" +
+						"<button data-attach-point='myButton, myButton2'>hi</button>" +
+						"</div>"
+				)
+			});
+
+			var node = new TestHtml();
+
+			assert.strictEqual(node.root.tagName.toLowerCase(), "test-data-attach-point", "node.root");
+			assert.strictEqual(node.root2.tagName.toLowerCase(), "test-data-attach-point", "node.root");
+			assert.strictEqual(node.myButton.tagName.toLowerCase(), "button", "node.myButton");
+			assert.strictEqual(node.myButton2.tagName.toLowerCase(), "button", "node.myButton2");
+		},
+
 		branching: function () {
 			var NoLabelButton = register("no-label-button", [HTMLButtonElement, Widget], {
 				iconClass: "originalClass",
@@ -70,6 +91,7 @@ define([
 			assert.strictEqual(myButton.textContent.trim(), "new label", "label updated");
 
 		},
+
 		"special props": function () {
 			var SpecialPropsWidget = register("special-props", [HTMLElement, Widget], {
 				inputClass: "originalClass",	// attribute called "class" but property called "className"
@@ -99,6 +121,7 @@ define([
 
 			// TODO: implement and then test reverse binding, from input.value --> widget.value?
 		},
+
 		"special characters": function () {
 			// Test that special characters are escaped.  This is actually testing template.js.
 			var TestList = register("test-ul", [ HTMLUListElement, Widget], {
@@ -113,6 +136,7 @@ define([
 			assert.strictEqual(myList.firstChild.getAttribute("bar"), "\\\"hello\"", "double quotes, backslash prop");
 			assert.strictEqual(myList.firstChild.textContent, "\"\\bill'\\ was here'", "node text");
 		},
+
 		events: function () {
 			// Test that listeners like onclick work.
 			/* global g:true */
@@ -126,6 +150,7 @@ define([
 			on.emit(myClick.firstChild, "click", {});
 			assert.strictEqual(g, 2, "click handler fired");
 		},
+
 		"widgets in templates": function () {
 			register("simple-heading", [HTMLElement, Widget], {
 				text: "",
