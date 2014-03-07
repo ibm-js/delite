@@ -87,7 +87,7 @@ define(["./register"], function (register) {
 			var text = "";
 
 			children.forEach(function (child, idx) {
-				var childName = nodeName + "c" + (idx + 1);
+				var childName = (nodeName === "this" ? "" : nodeName) + "c" + (idx + 1);
 				if (child.branch) {
 					// {{#if ...}} in Handlebars syntax
 					text += "if(this." + child.branch + "){\n";
