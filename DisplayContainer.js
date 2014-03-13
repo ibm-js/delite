@@ -42,22 +42,77 @@ define(["dcl/dcl", "dojo/on", "dojo/Deferred", "dojo/when", "delite/Container"],
 					self.addChild(value.child, value.index);
 				}
 				// the child is here, actually perform the display
-				when(self.performDisplay(value.child, event), function () {
-					event = {
-						dest: dest,
-						bubbles: true,
-						cancelable: false
-					};
-					dcl.mix(event, params);
-					dcl.mix(event, value);
-					self.emit("delite-display-complete", event);
+				// notify everyone we are going to proceed
+				event = {
+					dest: dest,
+					bubbles: true,
+					cancelable: false
+				};
+				dcl.mix(event, params);
+				dcl.mix(event, value);
+				self.emit("delite-before-show", event);
+				when(self.changeDisplay(value.child, event), function () {
+					self.emit("delite-after-show", event);
 					displayDeferred.resolve(value);
 				});
 			});
 			return displayDeferred.promise;
 		},
 
-		performDisplay: function (widget, /*jshint unused: vars*/params) {
+		hide: function (dest, params) {
+			// summary:
+			//		This method must be called to hide a particular destination child on this container.
+			// dest:
+			//		Widget or HTMLElement or id that points to the child this container must hide.
+			// params:
+			//		Optional params that might be taken into account when removing the child. This can be the
+			//		type of visual transitions involved. This might vary from one DisplayContainer to another.
+			// returns:
+			//		A promise that will be resolved when the display & transition effect will have been
+			//		performed.
+
+			// we need to warn potential app controller we are going to load a view & transition
+			var event = {
+				dest: dest,
+				loadDeferred: new Deferred(),
+				bubbles: true,
+				cancelable: true,
+				hide: true
+			};
+			var self = this, displayDeferred = new Deferred();
+			dcl.mix(event, params);
+			// we now need to warn potential app controller we need to load a child (this is needed to be able to 
+			// get a hand on it)
+			// when the controller told us it will handle child loading use the deferred from the event
+			// otherwise call the container load method
+			// we should probably be using event.defaultPrevented here but dojo/on does not return the native event
+			// when it has been prevented but false value instead...
+			var loadDeferred = on.emit(this, "delite-display-load", event) ? this.load(dest) : event.loadDeferred;
+			when(loadDeferred, function (value) {
+				// the child is here, actually perform the display
+				// notify everyone we are going to proceed
+				event = {
+					dest: dest,
+					bubbles: true,
+					cancelable: false,
+					hide: true
+				};
+				dcl.mix(event, params);
+				dcl.mix(event, value);
+				self.emit("delite-before-hide", event);
+				when(self.changeDisplay(value.child, event), function () {
+					// if view is not already removed, remove it
+					if (self.getIndexOfChild(value.child) !== -1) {
+						self.removeChild(value.child);
+					}
+					self.emit("delite-after-hide", event);
+					displayDeferred.resolve(value);
+				});
+			});
+			return displayDeferred.promise;
+		},
+
+		changeDisplay: function (widget, /*jshint unused: vars*/params) {
 			// summary:
 			//		This method must perform the display and possible transition effect. It is meant to be
 			//		specialized by subclasses.
@@ -65,14 +120,21 @@ define(["dcl/dcl", "dojo/on", "dojo/Deferred", "dojo/when", "delite/Container"],
 			//		The child widget or HTMLElement to display.
 			// params:
 			//		Optional params that might be taken into account when displaying the child. This can be the
-			//		type of visual transitions involved. This might vary from one DisplayContainer to another.
+			//		type of visual transitions involved. This might vary from one DisplayContainer to another. 
+			//		By default on the "hide" param is supporting meaning that the transition should hide the widget
+			//		not display it.
 			// returns:
 			//		Optionally a promise that will be resolved when the display & transition effect will have
 			//		been performed.
 			// tags:
 			//		protected
-			widget.style.visibility = "visible";
-			widget.style.display = "";
+			if (params.hide === true) {
+				widget.style.visibility = "hidden";
+				widget.style.display = "none";
+			} else {
+				widget.style.visibility = "visible";
+				widget.style.display = "";
+			}
 		},
 
 		load: function (dest) {
