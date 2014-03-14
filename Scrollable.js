@@ -16,7 +16,7 @@ define([
 		// summary:
 		//		A mixin which adds scrolling capabilities to a widget.
 		// description:
-		//		When mixed into a widget, this mixin brings scrolling capabilities
+		//		When mixed into a host widget, this mixin brings scrolling capabilities
 		//		based on the overflow: auto CSS property.
 		//		By default, the scrolling capabilities are added to the widget
 		//		node itself. The host widget can chose the node thanks to the property
@@ -45,10 +45,12 @@ define([
 
 		// scrollableNode: [readonly] DomNode
 		//		Designates the descendant node of this widget which is made scrollable.
-		//		The default value is 'null'. If not set, defaults to this widget
+		//		The default value is 'null'. If not set otherwise before the buildRendering()
+		//		method of the mixin is executed, it is set by default to this widget
 		//		itself ('this').
 		//		Note that this property can be set only at construction time, at latest
-		//		in the buildRendering() method of the widget into which this class is mixed.
+		//		in the buildRendering() method of the host widget into which this class is mixed.
+		//		It should not be changed afterwards.
 		scrollableNode: null,
 
 		preCreate: function () {
