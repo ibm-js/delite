@@ -118,7 +118,7 @@ define([
 			store.store = myStore;
 			return d;
 		},
-		"StoreFunc" : function () {
+		"StoreFuncRange" : function () {
 			var d = this.async(2000);
 			var store = new C();
 			store.processStore = function (store) {
@@ -142,6 +142,38 @@ define([
 				myStore.remove("bar");
 				//assert.equal(store.renderItems.length, 1);
 				//assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo2" });
+			}));
+			store.startup();
+			// use empty model to easy comparison
+			var myStore = new M({ data: myData, model: null });
+			store.store = myStore;
+			return d;
+		},
+		"StoreFuncSort" : function () {
+			var d = this.async(2000);
+			var store = new C();
+			store.processStore = function (store) {
+				return store.sort("index");
+			};
+			var myData = [
+				{ id: "foo", name: "Foo", index: 0 },
+				{ id: "bar", name: "Bar", index: 1 }
+			];
+			store.on("query-success", d.callback(function () {
+				assert(store.renderItems instanceof Array);
+				assert.equal(store.renderItems.length, 2);
+				assert.deepEqual(store.renderItems[0], myData[0]);
+				assert.deepEqual(store.renderItems[1], myData[1]);
+				var item = myStore.get("foo");
+				item.index = 2;
+				myStore.put(item);
+				assert.deepEqual(store.renderItems[0], { id: "bar", name: "Bar", index: 1 });
+				assert.deepEqual(store.renderItems[1], { id: "foo", name: "Foo", index: 2 });
+				item = myStore.get("foo");
+				item.index = 0;
+				myStore.put(item);
+				assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo", index: 0 });
+				assert.deepEqual(store.renderItems[1], { id: "bar", name: "Bar", index: 1 });
 			}));
 			store.startup();
 			// use empty model to easy comparison
