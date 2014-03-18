@@ -1,6 +1,6 @@
 # delite/template
 
-`Delite/template` is a utility that takes an AST representing a widget template, and compiles it into
+`delite/template` is a utility that takes an AST representing a widget template, and compiles it into
 a function for creating a reactive template.   It's used by [delite/handlerbars!](handlebars.md) and designed
 so it can be used with other template syntax parsers too.
 
@@ -25,14 +25,14 @@ It gets compiled into a function like:
 
 	function buildRendering(root) {
 		var widget = this, doc = this.ownerDocument;
-		var rootc1 = doc.createElement('SPAN');
-		function rootc1_setattr_class(){ rootc1.setAttribute('class', 'd-reset ' + widget.iconClass); }
+		var rootc1 = doc.createElement("SPAN");
+		function rootc1_setattr_class(){ rootc1.setAttribute("class", "d-reset " + widget.iconClass); }
 		rootc1_setattr_class();
-		this.watch('iconClass', rootc1_setattr_class);
+		this.watch("iconClass", rootc1_setattr_class);
 		this.appendChild(rootc1);
 		var rootc1t2 = doc.createTextNode(this.label);
 		this.appendChild(rootc1t2);
-		this.watch('label', function(a,o,n){ rootc1t2.nodeValue = n; });
+		this.watch("label", function(a,o,n){ rootc1t2.nodeValue = n; });
 	}
 
 ## Notes on AST format

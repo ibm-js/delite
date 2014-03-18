@@ -54,20 +54,20 @@ where the widget should be positioned.
 
 ```js
 // Place as last child of someNode
-mywidget.placeAt('someNode');
+mywidget.placeAt("someNode");
 
 // Place as third child of someNode
-mywidget.placeAt('someNode', 3);
+mywidget.placeAt("someNode", 3);
 
 // Place before someNode
-mywidget.placeAt('someNode', "before");
+mywidget.placeAt("someNode", "before");
 ```
 
 ## Events
 
 Assigning listeners to widget events is accomplished via the `.on()` function.  This function takes two arguments:
 
-* `type` - The type of event being listened for.  (e.g. `'click'`)
+* `type` - The type of event being listened for.  (e.g. `"click"`)
 
 * `listener` - The listener function to be called when the event is detected.
 
@@ -85,7 +85,7 @@ wanted to log click events to the console, you would do something like:
 ```js
 {
 	events: {
-		'click': function (e) {
+		"click": function (e) {
 			console.log(e);
 		}
 	}
@@ -98,7 +98,7 @@ to do something like:
 ```js
 {
 	events: {
-		'button:click': '_onClick'
+		"button:click": "_onClick"
 	},
 	_onClick: function (e) {
 		console.log(e);
@@ -109,7 +109,7 @@ to do something like:
 Synthetic events can be emitted on the widget or its sub-nodes via the `.emit()` function.  The function takes two
 arguments:
 
-* `type` - The type of the event being emitted. (e.g. `'click'`)
+* `type` - The type of the event being emitted. (e.g. `"click"`)
 
 * `event` - The synthetic event object.
 
