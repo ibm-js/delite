@@ -10,9 +10,9 @@ You declare a new widget that is based off a DOM object that either is
 To register the most basic of widgets, you would do the following:
 
 ```js
-require(['delite/register', 'delite/Widget'], function (register, Widget) {
-	var MyWidget = register('my-widget', [HTMLElement, Widget], {
-		foo: 'bar'
+require(["delite/register", "delite/Widget"], function (register, Widget) {
+	var MyWidget = register("my-widget", [HTMLElement, Widget], {
+		foo: "bar"
 	});
 
 	var mywidget1 = new MyWidget();
@@ -57,9 +57,9 @@ should consider utilising a different base for your widget.  This will ensure yo
 root HTML element.  For example, to create something that extends a `<button>`, you would do something like this:
 
 ```js
-require(['delite/register', 'delite/Widget'], function (register, _Widget) {
-	var MyButton = register('my-widget', [HTMLButtonElement, Widget], {
-		foo: 'bar'
+require(["delite/register", "delite/Widget"], function (register, _Widget) {
+	var MyButton = register("my-widget", [HTMLButtonElement, Widget], {
+		foo: "bar"
 	});
 
 	var mywidget1 = new MyButton();
@@ -79,9 +79,9 @@ prototype chain.  If you are descending from another widget, you should just use
 `HTML*` elements.  For example, to create your own descendant of `deliteful/Button`:
 
 ```js
-require(['delite/register', 'deliteful/Button'], function (register, Button) {
-	var MyButtonSubClass = register('my-button-subclass', Button, {
-		foo: 'bar'
+require(["delite/register", "deliteful/Button"], function (register, Button) {
+	var MyButtonSubClass = register("my-button-subclass", Button, {
+		foo: "bar"
 	});
 
 	var mybutton1 = new MyButtonSubClass();
