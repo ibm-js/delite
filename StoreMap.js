@@ -44,7 +44,7 @@ define(["dcl/dcl", "dojo/_base/lang", "./Store"], function (dcl, lang, Store) {
 		//				fooFunc(item, store, value)
 		//			* if none of this is provided the mapping is looking into store item "foo" property
 		//		Mapping property are meant to be added to the widget class using the mixin. One can directly add the
-		// 		mapping properties to an instance but in this cases there are two limitations:
+		// 		mapping properties to an instance but in this case there are two limitations:
 		//			* The property must be added before the widget is started
 		//			* If the property is added in the markup only fully lower case properties are supported
 		// 				(e.g. foobar not fooBar)
