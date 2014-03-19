@@ -14,7 +14,7 @@ define(["dcl/dcl", "dojo/sniff", "./Widget"], function (dcl, has, Widget) {
 		//		2. "single": Only one item can be selected at a time.
 		//		3. "multiple": Several item can be selected using the control key modifier.
 		//		Changing this value impacts the current selected items to adapt the selection to the new mode. However
-		//		whatever the selection mode is you can always set several selected items usign the selectItem(s) API.
+		//		whatever the selection mode is you can always set several selected items using the selectItem(s) API.
 		//		The mode will be enforced only when using setSelected and/or selectFromEvent APIs.
 		//		Default value is "single".
 		selectionMode: "single",
@@ -55,11 +55,11 @@ define(["dcl/dcl", "dojo/sniff", "./Widget"], function (dcl, has, Widget) {
 			this._set("selectedItem", null);
 
 			if (oldSelectedItems != null && oldSelectedItems.length > 0) {
-				this.updateRenderers(oldSelectedItems, true);
+				this.updateRenderers(oldSelectedItems);
 			}
 			if (this.selectedItems && this.selectedItems.length > 0) {
 				this._set("selectedItem", this.selectedItems[0]);
-				this.updateRenderers(this.selectedItems, true);
+				this.updateRenderers(this.selectedItems);
 			}
 		},
 
@@ -100,6 +100,15 @@ define(["dcl/dcl", "dojo/sniff", "./Widget"], function (dcl, has, Widget) {
 			//		This function must be implemented to return the id of a item.
 			// item: Object
 			//		The item to query the identity for.
+		},
+
+		updateRenderers: function (/*jshint unused: vars */items) {
+			// summary:
+			//		This function must be implemented to update the rendering of the items based on whether they are
+			//		selected or not. The implementation must check for their new selection state and update 
+			//		accordingly.
+			// items: Array
+			//		The array of items changing their selection state
 		},
 
 		setSelected: function (item, value) {
@@ -154,7 +163,7 @@ define(["dcl/dcl", "dojo/sniff", "./Widget"], function (dcl, has, Widget) {
 		selectFromEvent: function (event, item, renderer, dispatch) {
 			// summary:
 			//		Applies selection triggered by an user interaction
-			// e: Event
+			// event: Event
 			//		The source event of the user interaction.
 			// item: Object
 			//		The render item that has been selected/deselected.

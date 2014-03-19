@@ -101,7 +101,7 @@ define(["dcl/dcl", "dojo/_base/lang", "./Stateful", "./Destroyable"], function (
 			// name: String?
 			//		The name of the property to invalidate. If absent, the revalidation
 			//		is performed without a particular property being invalidated, that is
-			//		the argument passed to refreshProperties() does not contain is called without any argument.
+			//		the argument passed to refreshProperties() is called without any argument.
 			// tags:
 			//		protected
 			if (name) {
