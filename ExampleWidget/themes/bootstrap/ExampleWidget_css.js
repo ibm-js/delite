@@ -1,7 +1,7 @@
 define(function(){ return '\
 .d-example-widget {\
-  color: #000000;\
-  background: #a4a4a4;\
+  color: #dff0d8;\
+  background: #3c763d;\
 }\
 .d-example-widget:after {\
   content: " (ExampleWidget/bootstrap theme)";\
