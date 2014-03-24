@@ -35,6 +35,11 @@ define([
 			assert.deepEqual(o.selectedItems, ["2", "3"]);
 			o.selectionMode = "single";
 			assert.deepEqual(o.selectedItems, ["2"]);
+			o.selectionMode = "multiple";
+			o.selectedItems = [];
+			assert.deepEqual(o.selectedItems, []);
+			o.selectionMode = "single";
+			assert.deepEqual(o.selectedItems, []);
 		},
 		"singletonone" : function () {
 			var o = new C();

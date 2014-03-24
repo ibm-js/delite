@@ -27,8 +27,8 @@ define(["dcl/dcl", "dojo/sniff", "./Widget"], function (dcl, has, Widget) {
 				this._set("selectionMode", value);
 				if (value === "none") {
 					this.selectedItems = null;
-				} else if (value === "single") {
-					this.selectedItems = [this.selectedItem]; // null or last selected item
+				} else if (value === "single" && this.selectedItem) {
+					this.selectedItems = [this.selectedItem];
 				}
 			}
 		},
