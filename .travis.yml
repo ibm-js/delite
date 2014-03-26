@@ -1,0 +1,17 @@
+language: node_js
+node_js:
+  - "0.10"
+env:
+  global:
+    - secure: "QurZPkBBPuzahiSTqOo+Hp2DVNuajp6IlDjUcdiPBMbxXPZ+73ejbXG2m78ixyTPSLEpGkxPA4mCPPcGrJoKViYTZQ5f2bZzVOZ7XfqLqaFWiFcRIgI9gt/v15erQ7Q6Vtn8SgbpCiFrj0OdruDO7/fIOElOHZCCb0bh04Ya7Ow="
+    - secure: "G1WCqYa8ETm92bGRZO1GFpJDjnDq/AssEsVNf/D5bqi6kmc5ho/xj6jehzvwV7NzXqZyh+xXRvG0h5Sraf9C1ddpCVOnzJGhE7BuZlAvkWbJaRN5069AUb9DdQpiPvvU0FlmTfZqc2pHBD2qaFn2TGxosTU36ex4LQl927AtoSI="
+
+install:
+   - npm install -g grunt-cli
+   - npm -g install bower
+   - npm install
+   - bower install
+
+script:
+   - grunt test:remote
+

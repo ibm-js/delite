@@ -4,9 +4,8 @@ define([
 	"dojo/dom-class",
 	"delite/register",
 	"delite/Widget",
-	"deliteful/Button",		// TODO: remove dependency on deliteful
 	"dojo/domReady!"
-], function (registerSuite, assert, domClass, register, Widget, Button) {
+], function (registerSuite, assert, domClass, register, Widget) {
 	var container;
 	registerSuite({
 		name: "Widget misc",
@@ -134,6 +133,7 @@ define([
 		name: "Widget#placeAt",
 		setup: function () {
 			container = document.createElement("div");
+			container.id = "container-id";
 			document.body.appendChild(container);
 			SimpleWidget = register("simple-widget-place-at", [HTMLElement, Widget], {
 				buildRendering: function () {
@@ -161,11 +161,13 @@ define([
 			assert.deepEqual(pane1, simple.getChildren()[1], "pane1 is now second child of SimpleWidget");
 		},
 		"Place before" : function () {
-			var button = (new Button({})).placeAt(container, "before");
+			var TestWidget = register("test-place-before-widget", [HTMLElement, Widget], { });
+			var button = (new TestWidget({})).placeAt(container, "before");
 			assert.deepEqual(container, button.nextSibling, "button is before tab container");
 		},
 		"Place before id" : function () {
-			var button = (new Button({})).placeAt(container, "before");
+			var TestWidget = register("test-place-after-widget", [HTMLElement, Widget], { });
+			var button = (new TestWidget({})).placeAt("container-id", "before");
 			assert.deepEqual(container, button.nextSibling, "button is before tab container");
 		},
 		"Place first widget" : function () {
