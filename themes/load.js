@@ -88,6 +88,9 @@ define([
 			//		Callback function which will be called when the loading finishes
 			//		and the stylesheet has been inserted.
 
+			// Add CSS file which contains definitions global to the theme.
+			logicalPaths = "./{{theme}}/global_css" + (logicalPaths ? "," + logicalPaths : "");
+
 			// Convert list of logical paths into list of actual paths
 			// ex: Button/css/{{theme}}/Button --> Button/css/ios/Button
 			var actualPaths = logicalPaths.replace(/{{theme}}/g, load.getTheme());
