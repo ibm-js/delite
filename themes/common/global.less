@@ -1,0 +1,33 @@
+// ----------------------------------------------
+// Content:
+//  - CSS classes common to all themes
+// ----------------------------------------------
+
+// Disabled cursor
+.d-readonly *,
+.d-disabled *,
+.d-readonly,
+.d-disabled {
+  // a region the user would be able to click on, but it's disabled
+  cursor: default;
+}
+
+.d-reset {
+  // Use this style to null out padding, margin, border in your template elements
+  // so that page specific styles don't break them.
+  // Use in all TABLE, TR and TD tags.
+  margin: 0;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  line-height: normal;
+  color: inherit;
+}
+
+.d-inline {
+  //  To inline block elements.
+  display: inline-block;
+  border: 0;
+  padding: 0;
+  vertical-align: middle;
+}
