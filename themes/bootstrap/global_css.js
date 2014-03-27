@@ -1,4 +1,24 @@
 define(function(){ return '\
+.d-readonly *,\
+.d-disabled *,\
+.d-readonly,\
+.d-disabled {\
+  cursor: default;\
+}\
+.d-reset {\
+  margin: 0;\
+  border: 0;\
+  padding: 0;\
+  font: inherit;\
+  line-height: normal;\
+  color: inherit;\
+}\
+.d-inline {\
+  display: inline-block;\
+  border: 0;\
+  padding: 0;\
+  vertical-align: middle;\
+}\
 html {\
   font-size: 62.5%;\
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);\
