@@ -9,17 +9,17 @@ title: delite/Invalidating
 in order to add the ability to watch a set of invalidating properties and delay to the next execution frame the refresh 
 following the changes of the values of these properties. 
 
-For that purpose the mixin is adding two lifecycle phases to the class. 
+For that purpose the mixin adds two lifecycle phases to the class.
 
-The first phase is the refresh properties phase. It is used to reconcialate instances properties after they have been 
+The first phase is the refresh properties phase. It is used to reconciliate instances properties after they have been
 set. A typical example is making sure the value of a range component is correctly set between min and max values and 
-that max value is bigger than min value. This phase is optional and not all classes leveraging `delite/Invalidating`
+that the max value is bigger than min value. This phase is optional and not all classes leveraging `delite/Invalidating`
 will need it.
 
 The second phase is the refresh rendering phase. It is used to refresh the rendering of the class (usually a 
-`delite/Widget`) based on the new values of the changed properties. The advantage compare doing that is a custom setter
+`delite/Widget`) based on the new values of the changed properties. The advantage compared to doing that in a custom setter
 or through template binding is that for several properties changes the refresh rendering phase will be called only once
-making sure the rendering is not modified several times in a row leading to better performances. 
+leading to better performance by making sure the rendering is not modified several times in a row
 
 Depending on the complexity of your widget you might or might not need to rely on `delite/Invalidating`.
 
