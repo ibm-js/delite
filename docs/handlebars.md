@@ -12,6 +12,10 @@ DOM as the widget's `iconClass` and `label` properties were changed:
 	</button>
 
 
+Note that the binding is one-directional.  Changes to DOM node values, such as when a user types
+into an `<input>`, are not automatically reflected back to the widget.
+A library like [Liaison](https://github.com/ibm-js/liaison) supports two way binding.
+
 The delite/handlebars! plugin returns a function to operate in the widget's context, so
 for widgets to leverage the template engine, you put your template in a separate file,
 and then define the widget like:
@@ -36,23 +40,23 @@ Handlebars can also be used as a plain AMD module, via the `compile()` method:
 
 Supported constructs:
 
-1. {{ text }} - substitution variables in DOMNode attributes (ex: `class="d-reset {{iconClass}}"`)
+1. `{{text}}` - substitution variables in DOMNode attributes (ex: `class="d-reset {{iconClass}}"`)
    and as a DOMNode child (ex: `<span>Hello {{name}}</span>`.
 2. `{{#if condition}} ... {{/if}}` - However, no plans to support `{{else}}`, and no plans for the IF blocks to be
    reactive.
 
-Will support in the future:
+May support in the future:
 
-1. `{{#each array}} ... {{/each}}` - However, the {{#each}} must be the only child of its parent node, for example
-   `<ul> {{#each array}} <li>name {{/each}} </ul>`.   Also, no plans to support ``{{else}}`.  Reactive support for
+1. `{{#each array}} ... {{/each}}` - However, the `{{#each}}` must be the only child of its parent node, for example
+   `<ul> {{#each array}} <li>name {{/each}} </ul>`.   Also, no plans to support `{{else}}`.  Reactive support for
    `{{#each}}` is complex as the array data could be changed like `this.array = newArray` or `this.array.push(...)`
    or `this.array[1].name = "Bob"`.
 
 Unsupported constructs:
 
-1. `{{{ HTML }}}` - We only support insertion of plain text like {{ text }}.
-2. Paths like `{{ foo.bar }}`
-3. Helpers like `{{fullName author}}``
+1. `{{{HTML}}}` - We only support insertion of plain text like `{{text}}`.
+2. Paths like `{{foo.bar}}`
+3. Helpers like `{{fullName author}}`
 
 Partly these are unsupported because they are difficult for reactive templates,
 and partly to keep the code size of the Handlebars and template engine minimal.
@@ -93,7 +97,7 @@ There were a number of possible syntaxes proposed for the templates, including:
 * [MDV](http://www.polymer-project.org/platform/template.html) -
   Pure HTML version of templates, possibly will become a new standard, supported natively by browsers
 * [Mustache](http://mustache.github.io/mustache.5.html) / [Handlebars](http://handlebarsjs.com/) -
-  What our users are used to.  Note that the Mustach and Handlebars syntaxes are the same except
+  What our users are used to.  Note that the Mustache and Handlebars syntaxes are the same except
   for complicated things like branching/looping.
 * [JADE](http://jade-lang.com/)-like syntax based on Kris' put-selector code
 
