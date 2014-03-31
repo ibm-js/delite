@@ -4,8 +4,10 @@
 // ----------------------------------------------
 
 .user-select (@v) {
+  user-select: @v;
   -webkit-user-select: @v;
   -ms-user-select: @v;
+  -moz-user-select: @v;
 }
 
 .box-shadow (@v) {
@@ -28,11 +30,41 @@
   -webkit-text-size-adjust: @v;
 }
 
+.touch-callout (@v) {
+  -webkit-touch-callout: @v;
+}
+
 .border-radius (@radius) {
   -moz-border-radius: @radius;
   border-radius: @radius;
 }
+// ----------------------------------------------
+// flex
+// ----------------------------------------------
+.display-flex () {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+}
 
+.flex-direction-column () {
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  -webkit-box-orient: vertical;
+  -moz-box-orient: vertical;
+  -ms-box-orient: vertical;
+  flex-direction: column;
+}
+
+.flex (@v) {
+  -webkit-box-flex: @v;
+  -moz-box-flex: @v;
+  -webkit-flex: @v;
+  -ms-flex: @v;
+  flex: @v;
+}
 // ----------------------------------------------
 // transitions
 // ----------------------------------------------
@@ -40,6 +72,11 @@
 .transition (@value) {
   -webkit-transition: @value;
   transition: @value;
+}
+
+.transition-transform (@value1, @value2) {
+  -webkit-transition: -webkit-transform @value1 @value2;
+  transition: transform @value1 @value2;
 }
 
 .transition-property (@value) {
