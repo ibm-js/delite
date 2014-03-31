@@ -12,8 +12,6 @@ install:
    - npm install
    - bower install
 
-# currently we're having to use a script git clone install rather than bower because of the .. bowerrc overwriting delite
-# need to address later in a separate issue i.e. are we misusing bowerrc for sibling package deps
 script:
    - grunt test:remote
 
