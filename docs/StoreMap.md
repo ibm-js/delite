@@ -11,7 +11,7 @@ create render items for this widget based on the store items and perform some au
 on the store items and the properties on the render items.
 
 This is particularly useful for a widget that needs to create items (or render items) based on store entries
-(like a data list, grid or calendar schedule etc...). Using this mixin the widget will benefit from a standard 
+(like a data list, grid or calendar schedule etc.). Using this mixin the widget will benefit from a standard
 API and way of doing things. You will also benefit from the ability to map data from the store item to the properties
 your widget is expecting on the render items.
 
@@ -23,40 +23,41 @@ render item. You can define that mapping directly by attributes (from a property
 of the render item) or through a function (in which case the function can perform any type of mapping between the store
 item and the render item).
 
-In order to configure the mapping of a `foo` property to be present on each render item, the class using this 
+In order to configure the mapping of a `name` property to be present on each render item, the class using this
 mixin must declare: 
-  * either a `fooAttr` property in which case the mapping is looking into the store item property specified by the value of `fooAttr`
-  * or a `fooFunc` property function in which case the mapping is delegated to the `fooFunc` function.
+  * either a `nameAttr` property in which case the mapping is looking into the store item property specified by the value of `nameAttr`
+  * or a `nameFunc` property function in which case the mapping is delegated to the `nameFunc` function.
 
-For example if `fooAttr` is set to `"bar"`, when creating or updating the render items, the `delite/StoreMap` mixin will
-use the value of the `bar` property in the store item to set the value of the `foo` property in the render item.
+For example if `nameAttr` is set to `"firstname"`, when creating or updating the render items, the `delite/StoreMap` mixin will
+use the value of the `firstname` property in the store item to set the value of the `name` property in the render item.
  
-If `fooFunc` is set to:
+If `nameFunc` is set to:
 
 ```js
-function fooFunc(item, store, value) {
-  return item.foo + item.bar;
+function nameFunc(item, store, value) {
+  return item.firstname + " " + item.lastname;
 }
 ```
 
-the value of the `foo` property on the render item will be a concatenation of the values of the `foo` and `bar` 
+the value of the `name` property on the render item will be a concatenation of the values of the `firstname` and `lastname`
 properties on the store item.
 
 Note that the function definition when present takes precedences over the attribute mapping definition.
 
-The mapping can occur both ways, so if the `foo` property value on the render item is modified, in the first case, the `bar`
+The mapping can occur both ways, so if the `name` property value on the render item is modified, in the first case, the `firstname`
 property will be modified accordingly in the store item. When using mapping by function, the function must take into
 account the converse operation if needed as follows:
 
 ```js
-function fooFunc(item, store, value) {
+function nameFunc(item, store, value) {
   if (arguments.length === 3) {
      // value is passed that is a setter
      // for example:
-     item.foo = value;
-     item.bar = "";
+     var names = value.split(" ");
+     item.firstname = names[0];
+     item.lastname = names[1];
   } else {
-    return item.foo + item.bar;
+    return item.firstname + " " + item.lastname;
   }
 }
 ```
@@ -66,17 +67,18 @@ Here is an example of how the receiving class can declare the various mapping pr
 ```js
 define(["delite/register", "delite/Widget", "delite/StoreMap"/*, ...*/], 
   function (register, Widget, StoreMap/*, ...*/) {
-  return register("my-widget", [HTMElement, Widget, StoreMap], {
-    labelAttr: "text", // by default the label mapping will occur from text to label
-    descriptionAttr: null, // by default no description mapping by attribute but let the user use one
-    descriptionFunc: null, // by default no description mapping by function but let the user use one
+  return register("employees-list", [HTMElement, Widget, StoreMap], {
+    nameAttr: "firstname", // by default the label mapping will occur from firstname to name
+    jobtitleAttr: null, // by default no jobtitle mapping by attribute but let the user use one
+    jobtitleFunc: null, // by default no jobtitle mapping by function but let the user use one
     preCreate: function () {
        this.addInvalidatingProperties("renderItems");
     }
     refreshRendering: function (props) {
        if (props.renderItems) {
          // render item has changed, do something to reflect that in the rendering
-         // you should find the label & possibly description property on the render item instances
+         // you should find the name & possibly jobtitle property on the render item instances
+         // and modify the DOM accordingly
        }
     }
   });
@@ -86,28 +88,26 @@ define(["delite/register", "delite/Widget", "delite/StoreMap"/*, ...*/],
 A user of this class can then leverage this either in markup to specify particular mapping:
 
 ```html
-<my-widget labelAttr="title" description="details">
+<employees-list nameAttr="lastname" jobtitle="title">
 ```
 
-In this case the default mapping from "text" to "label" has been overridden to use the "title" attribute instead, and
-the mapping for description is using the "details" attribute.
+In this case the default mapping from "firstname" to "name" has been overridden to use the "lastname" attribute instead, and
+the mapping for jobtitle is using the "title" attribute.
 
 or in JavaScript:
 
 ```js
-require(["MyWidget"/*, ...*/], function (MyWidget/*, ...*/) {
+require(["EmployeesList"/*, ...*/], function (EmployeesList/*, ...*/) {
   var widget = new MyWidget();
-  widget.labelAttr = "title";
-  widget.descriptionFunc = function (item, store, value) {
+  widget.nameAttr = "lastname";
+  widget.jobtitleFunc = function (item, store, value) {
      if (arguments.length === 3) {
         // value is passed that is a setter
-        var rawDescription = unformat(value);
-        item.description = rawDescription; 
+        var array = value.split(" ");
+        item.title = array[0];
+        item.jobDescription = array[1];
      } else {
-       var rawDescription = item.description;
-       // apply some formatting
-       var description = formatting(rawDescription);
-       return description;
+       return item.title + " " + items.jobDescription;
      } 
     
   }

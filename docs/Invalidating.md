@@ -23,7 +23,7 @@ leading to better performance by making sure the rendering is not modified sever
 
 Depending on the complexity of your widget you might or might not need to rely on `delite/Invalidating`.
 
-Before proceeding checkout [setup page](setup.md) on how to setup a project using delite. This will be required to leverage the samples from this page.
+Before proceeding, checkout [setup page](setup.md) on how to setup a project using delite. This will be required to leverage the samples from this page.
 
 ##### Table of Contents
 [Setting Up Invalidating](#setting)  
@@ -46,9 +46,9 @@ require(["delite/register", "delite/Widget", "delite/Invalidating"/*, ...*/],
 });
 ```
 
-Once done you can specificy which properties will be subject to invalidation. As described above there are two invalidation
-phases. By default properties are only registered to target the refresh rendering phase. The can be done simply by listing
-the properties to consider in a call to the `addInvalidatingProperties()` function. For a `delite/Widget` is typically
+Once done you can specify which properties will be subject to invalidation. As described above there are two invalidation
+phases. By default properties are only registered to target the refresh rendering phase. That can be done simply by listing
+the properties to consider in a call to the `addInvalidatingProperties()` function. For a `delite/Widget` this is typically
 done during the `preCreate()` function of its lifecycle as follows:
 
 ```js
@@ -131,7 +131,7 @@ define(["delite/register", "delite/Widget", "delite/Invalidating"/*, ...*/],
 ```
 
 In `refreshProperties()` you have the opportunity to modify the properties hash object in order to notify the refresh
-rendering phase that some properties are of no interest of it. For example you might want to do:
+rendering phase that some properties are of no interest to it. For example you might want to do:
 
 ```js
 refreshProperties (props) {
@@ -142,7 +142,7 @@ refreshProperties (props) {
 }
 ```
 
-In which case the "a" property won't be part of the hash object passed to `refreshRendering()` function.
+In which case the "a" property won't be part of the hash object passed to the `refreshRendering()` function.
 
 <a name="using"></a>
 ## Using Invalidating
@@ -155,7 +155,7 @@ If for some reason you want to invalidate a particular property without setting 
   * `invalidateRendering()` to invalidate for refresh rendering phase
 You will need to pass the name of the property to invalidate to the invalidation function.
 
-In some cases you might want to force the rendering to occur right after a given property has been set. For that use can
+In some cases you might want to force the rendering to occur right after a given property has been set. For that you can
 use one of the following function:
   * `validateRendering()` to only trigger the refresh rendering phase
   * `validateProperties()` to trigger the refresh properties phase which will itself trigger the refresh rendering phase

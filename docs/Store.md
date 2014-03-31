@@ -10,18 +10,26 @@ in order to query a store object from the [dstore](https://github.com/SitePen/ds
 create render items for this widget based on the store items.
 
 This is particularly useful for a widget that needs to create items (or render items) based on store entries
-(like a data list, grid or calendar schedule etc...),  Using this mixin the widget will benefit from a standard will 
-benefit from a standard API and way of doing things.
+(like a data list, grid or calendar schedule etc...). Using this mixin the widget will benefit from a standard API and
+way of doing things.
 
-The querying of the store happens each time one of the following properties is set on the instance:
+The store is queried each time one of the following properties is set on the instance:
   * store: references a `dstore/api/Store` implementation
-  * query: a query object to be passe to the store `filter()` function
-  * processStore: a `Function` that allows one to process the store once the filter query has been run. 
+  * query: a query object to be passed to the store `filter()` function
+  * processStore: a `Function` that allows one to process the store to sort or slice it once the filter query has been run.
    
-When the store is queried, render items are created using the `itemToRenderItem()` which by default just returns the 
-store item. Classes using the mixin might override this to create there own render items. Alternatively one can use the
-[`delite/StoreMap`](StoreMap.md) mixin which is adding mapping functionalities to the store mixin. Once created the
-render items array is passed into the `initItems()` function and by default store in the `renderItems` property.
+When the store is queried, render items are created using the `itemToRenderItem()` function which by default just returns the
+store item. Render items are typically used in widgets rendering several "data items" (arbitrary number of items
+connected to data) to specify how those "data items" have to be rendered. This means the render items are used as input
+for the various "data items" rendered in the widget. Depending on the targeted widget, render items expect several
+properties to be present like a label, an icon etc. Classes using the mixin might override `itemToRenderItem()` to create
+their own render items.
+
+Alternatively one can use the [`delite/StoreMap`](StoreMap.md) mixin which adds mapping functionality to the store
+mixin and automatically creates the render items using this mapping.
+
+Once created the render items array is passed into the `initItems()` function and by default store in the
+`renderItems` property.
 
 In addition to this, if the store is an obserable store (`dstore/Observable`) the changes to the data in the store will
 be tracked and the following functions will be called on each type of modification:
@@ -29,9 +37,9 @@ be tracked and the following functions will be called on each type of modificati
   * `itemAdded` if an item has been added
   * `itemUpdated` if an item has been updated (its properties have changed)
   * `itemMoved` if an item has been moved in an ordered store.
-By default those functions are updating the `renderItems` accordingly.
+By default those functions update the `renderItems` accordingly.
 
-The classes using the mixin has two ways of leveraging the work of `delite/Store`. It can either listen to the changes
+Classes extending the mixin have two ways of leveraging the work of `delite/Store`. They can either listen to the changes
 to the `renderItems` property or redefine the various functions of the mixin to be notified of changes made to the render
 items.
 

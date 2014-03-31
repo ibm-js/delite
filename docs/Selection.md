@@ -11,7 +11,7 @@ selection state of its internal items.
 This is typically used in conjunction with [`delite/StoreMap`](StoreMap.md) to manage the selection of the render items 
 created by the store mixin.
 
-Before proceeding checkout [setup page](setup.md) on how to setup a project using delite. This will be required to leverage the samples from this page.
+Before proceeding, checkout [setup page](setup.md) on how to setup a project using delite. This will be required to leverage the samples from this page.
 
 ##### Table of Contents
 [Using Selection](#using)  
@@ -24,25 +24,25 @@ Before proceeding checkout [setup page](setup.md) on how to setup a project usin
 On a widget extending `delite/Selection` one can choose several selection modes through the `selectionMode` property:
   * `"multiple"` which means the application user can select interactively several items at the same time
   * `"single"` which means the application user can only select interactively a single item at the time, this is the default.
-  * `"none"` which means the application user can not interactively selection an item
+  * `"none"` which means the application user can not interactively select an item
 Note that this mode does not impact selection by the `selectedItem(s)` APIs which are always available and always allow 
 several items to be selected. If you want to restrict selection by those APIs you have to make sure code calling the 
 selection method is doing that accordingly to the `selectionMode` or to specialize `delite/Selection` for that purpose.
 
 Once a selection mode has been set there are three ways to modify the selection on the instance:
  
-  * setting the `selectItem` property to the an item to select it and only it
-  * setting the `selectedItems` to an array of items to select all those items on only them
+  * setting the `selectedItem` property to the an item to select it and only it
+  * setting the `selectedItems` to an array of items to select all those items and on only them
   * use the `setSelected()` function to toggle on or off the selection state of a particular item
 
 You can know the selection state by querying either:
   * the `selectedItem` property to get the last selected item
-  * the `selectecItems` property to get all the selected items
+  * the `selectedItems` property to get all the selected items
 
 <a name="extending"></a>
 ## Extending Selection
 
-In order for a widget to leverage `delite/Selection` it must extends from it and implements the `getIdentity()` and
+In order for a widget to leverage `delite/Selection` it must extend it and implement the `getIdentity()` and
 `updateRenderers()` functions as follows:
 
 ```js
@@ -86,11 +86,11 @@ require(["delite/register", "delite/Selection", "delite/StoreMap"/*, ...*/],
 
 The `getIdentity()` function is in charge of returning a unique identifier for an item to be selected. The
 `updateRenderers()` function is in charge of updating the visual rendering in the DOM based on whether the passed
-item are selected or not. Only items for which the selection state has changed are passed to this function. This is 
+item are selected or not. Only items for which the selection state has changed are passed to this function. It is
 possible to check whether an item is selected or not by calling the `isSelected()` function on the selection instance.
 
-If the widget is providing a user interaction that leads to select some items, the implementation should call the 
-`selectFromEvent()` function in order to adapt the selection and propagate the notification accordingly.
+If the widget provides a user interaction that leads to select some items, the implementation should call the
+`selectFromEvent()` function in order to update the selection and propagate the notification accordingly.
 
 ```js
 require(["delite/register", "delite/Selection", "delite/StoreMap"/*, ...*/], 
