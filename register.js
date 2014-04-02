@@ -118,8 +118,7 @@ define([
 					element.__proto__ = widget.prototype;
 					/*jshint camelcase: true*/
 					/*jshint proto: false*/
-				}
-				else {
+				} else {
 					// Mixin all the widget's methods etc. into Element
 					Object.defineProperties(element, widget.props);
 				}

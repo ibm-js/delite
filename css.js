@@ -1,4 +1,4 @@
-define(["dojo/dom-construct", "dojo/has"], function (domConstruct, has) {
+define(["dojo/dom-construct"], function (domConstruct) {
 	"use strict";
 
 	var

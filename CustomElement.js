@@ -241,7 +241,7 @@ define([
 			//		protected
 
 			var timer = setTimeout(
-				(function () {
+				function () {
 					if (!timer) {
 						return;
 					}
@@ -249,7 +249,7 @@ define([
 					if (!this._destroyed) {
 						lang.hitch(this, fcn)();
 					}
-				}).bind(this),
+				}.bind(this),
 				delay || 0
 			);
 			return {
