@@ -1,4 +1,4 @@
-# delite
+# delite [![Build Status](https://travis-ci.org/ibm-js/delite.png?branch=master)](https://travis-ci.org/ibm-js/delite)
 
 This project provides a UI Widget framework working both on desktop and mobile platforms.
 
