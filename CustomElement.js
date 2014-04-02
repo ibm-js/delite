@@ -111,7 +111,12 @@ define([
 					props[name] = value !== "false";
 					break;
 				case "object":
-					var obj = lang.getObject(value, false);
+					// Search for value as global variable.  Need to pass in "global" parameter to workaround
+					// https://bugs.dojotoolkit.org/ticket/17829
+					var global = (function () {
+							return this;
+						})(),
+						obj = lang.getObject(value, false, global);
 					if (obj) {
 						// it's a global, ex: store="myStore"
 						props[name] = obj;
