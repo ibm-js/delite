@@ -134,13 +134,14 @@ module.exports = function (grunt) {
 			value.push(reporter);
 			grunt.config.set(property, value);
 		}
-		 if (this.flags.lcovhtml) {
-		    addReporter("lcovhtml");
-		 }
 
-		 if (this.flags.console) {
-		    addReporter("console");
-		 }
+		if (this.flags.lcovhtml) {
+			addReporter("lcovhtml");
+		}
+
+		if (this.flags.console) {
+			addReporter("console");
+		}
 		grunt.task.run("intern:" + target);
 	});
 };

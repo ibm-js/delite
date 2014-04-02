@@ -53,9 +53,9 @@ define([
 		 containerNode: undefined,
 		 =====*/
 
-		 // _started: [readonly] Boolean
-		 //		startup() has completed.
-		 _started: false,
+		// _started: [readonly] Boolean
+		//		startup() has completed.
+		_started: false,
 
 		// register: delite/register
 		//		Convenience pointer to register class.   Used by buildRendering() functions produced from
@@ -195,7 +195,7 @@ define([
 
 			this._started = true;
 			this.getChildren().forEach(function (obj) {
-				if (!obj._started && !obj._destroyed && typeof obj.startup == "function") {
+				if (!obj._started && !obj._destroyed && typeof obj.startup === "function") {
 					obj.startup();
 					obj._started = true;
 				}

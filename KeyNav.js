@@ -10,7 +10,7 @@ define([
 	// module:
 	//		delite/KeyNav
 
-	function takesInput(/*Element*/ node){
+	function takesInput(/*Element*/ node) {
 		// summary:
 		//		Return true if node is an <input> or similar that responds to keyboard input
 
@@ -52,14 +52,14 @@ define([
 		=====*/
 
 		// childSelector: [protected abstract] Function||String
-		//		Selector (passed to on.selector()) to identify what to treat as a navigable descendant. Used to monitor
-		//		focus events and set this.focusedChild.   Must be set by implementing class.  If this is a string
-		//		(ex: "> *"), then the implementing class must require dojo/query.
+		//		Selector (passed to on.selector()) to identify what to treat as a navigable descendant. Used to
+		//		monitor focus events and set this.focusedChild.  Must be set by implementing class.  If this is
+		//		a string (ex: "> *"), then the implementing class must require dojo/query.
 		childSelector: null,
 
 		postCreate: function () {
 			// If the user hasn't specified a tabindex declaratively, then set to default value.
-			if (!this.hasAttribute("tabindex")){
+			if (!this.hasAttribute("tabindex")) {
 				this.tabIndex = "0";
 			}
 
@@ -304,9 +304,9 @@ define([
 			//		private
 
 			// Ignore left, right, home, and end on <input> controls
-			if ( takesInput(evt.target) &&
-				(evt.keyCode == keys.LEFT_ARROW || evt.keyCode == keys.RIGHT_ARROW ||
-					evt.keyCode == keys.HOME || evt.keyCode == keys.END)) {
+			if (takesInput(evt.target) &&
+				(evt.keyCode === keys.LEFT_ARROW || evt.keyCode === keys.RIGHT_ARROW ||
+					evt.keyCode === keys.HOME || evt.keyCode === keys.END)) {
 				return;
 			}
 				
@@ -341,7 +341,7 @@ define([
 				return;
 			}
 			if (/^(checkbox|radio)$/.test(evt.target.type) &&
-				(evt.charCode === keys.SPACE || evt.charCode === keys.ENTER)){
+				(evt.charCode === keys.SPACE || evt.charCode === keys.ENTER)) {
 				// Ignore keyboard clicks on checkbox controls
 				return;
 			}
@@ -485,11 +485,11 @@ define([
 			return children[(index + children.length + dir) % children.length];
 		},
 
-		_getNavigableChildren: function(){
+		_getNavigableChildren: function () {
 			// summary:
 			//		Helper method to get list of navigable children (navigable via arrow keys and letter keys).
 
-			if (typeof this.childSelector == "function"){
+			if (typeof this.childSelector === "function") {
 				return Array.prototype.filter.call(this.querySelectorAll("*"), this.childSelector);
 			} else {
 				return Array.prototype.slice.call(this.querySelectorAll(this.childSelector));	// convert to array
