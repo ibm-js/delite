@@ -4,8 +4,8 @@ define(function(){ return '\
   -webkit-touch-callout: none;\
   -webkit-user-select: none;\
   border-color: rgba(0, 0, 0, 0);\
-  -moz-transition-duration: 0.25s;\
   -webkit-transition-duration: 0.25s;\
+  -moz-transition-duration: 0.25s;\
   transition-duration: 0.25s;\
   -webkit-transition-property: background-color, border-color;\
   -moz-transition-property: background-color, border-color;\
@@ -38,9 +38,7 @@ define(function(){ return '\
 .dojoDndItemOver {\
   cursor: pointer;\
   background-color: #abd6ff;\
-  background-image: -moz-linear-gradient(rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0) 100%);\
   background-image: -webkit-linear-gradient(rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0) 100%);\
-  background-image: -o-linear-gradient(rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0) 100%);\
   background-image: linear-gradient(rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0) 100%);\
   padding: 1px;\
   border: solid 1px #759dc0;\
@@ -49,9 +47,7 @@ define(function(){ return '\
 .dojoDndItemAnchor,\
 .dojoDndItemSelected {\
   background-color: #cfe5fa;\
-  background-image: -moz-linear-gradient(rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0) 100%);\
   background-image: -webkit-linear-gradient(rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0) 100%);\
-  background-image: -o-linear-gradient(rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0) 100%);\
   background-image: linear-gradient(rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0) 100%);\
   padding: 1px;\
   border: solid 1px #759dc0;\

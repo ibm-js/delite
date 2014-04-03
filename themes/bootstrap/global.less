@@ -1,0 +1,81 @@
+@import "common";
+@import "../common/global";
+// ----------------------------------------------
+// themes/bootstrap/global.less
+// ----------------------------------------------
+// Content:
+//  - Tag selectors
+//  - Custom CSS classes
+// ----------------------------------------------
+
+// ----------------------------------------------
+// Tag selectors
+// ----------------------------------------------
+html {
+  font-size: 62.5%;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+body {
+  font-family: @font-family-base;
+  font-size: @font-size-base;
+  line-height: @line-height-base;
+  color: @text-color;
+  background-color: @body-bg;
+}
+
+input,
+button,
+select,
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+a {
+  color: @link-color;
+  text-decoration: none;
+
+  &:hover,
+  &:focus {
+    color: @link-hover-color;
+    text-decoration: underline;
+  }
+
+  //content extracted from bootstrap mixins.less => .tab-focus()
+  &:focus {
+    // Default
+    outline: thin dotted;
+    // WebKit
+    outline: 5px auto -webkit-focus-ring-color;
+    outline-offset: -2px;
+  }
+}
+
+hr {
+  margin-top: @line-height-computed;
+  margin-bottom: @line-height-computed;
+  border: 0;
+  border-top: 1px solid @hr-border;
+}
+
+// ----------------------------------------------
+// Custom CSS classes
+// ----------------------------------------------
+// Popup items have a wrapper div (d-popup) with the real popup inside, and maybe an iframe too
+.d-popup {
+  position: absolute;
+  background-color: transparent;
+  margin: 0;
+  border: 0;
+  padding: 0;
+  -webkit-overflow-scrolling: touch;
+  .box-shadow(0 1px 5px rgba(0,0,0,0.25));
+}
+
+.d-tooltip-dialog-popup {
+  // exception popups: do not use a shadow on these because they aren't rectangular
+  .box-shadow(none);
+}
+// EOF
