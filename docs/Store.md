@@ -25,13 +25,35 @@ for the various "data items" rendered in the widget. Depending on the targeted w
 properties to be present like a label, an icon etc. Classes using the mixin might override `itemToRenderItem()` to create
 their own render items.
 
-Alternatively one can use the [`delite/StoreMap`](StoreMap.md) mixin which adds mapping functionality to the store
-mixin and automatically creates the render items using this mapping.
+For example the store item (typically coming from a data server) might contain:
+
+```js
+{
+    lastName: "Smith"
+    firstName: "John",
+    department: "marketing",
+    title: "head of department",
+    jobDescription: "in charge of defining the marketing strategy for the company"
+}
+```
+
+while the widget render item requires and contains exactly what the widget needs to consume, in this case for example:
+
+```js
+{
+    name: "John Smith"
+    jobtitle: "head of department"
+}
+```
+
+The `itemToRenderItem()` function is in charge of doing that transformation. Alternatively one can use the 
+[`delite/StoreMap`](StoreMap.md) mixin which adds mapping functionality to the store mixin and automatically creates the 
+render items using this mapping.
 
 Once created the render items array is passed into the `initItems()` function and by default store in the
 `renderItems` property.
 
-In addition to this, if the store is an obserable store (`dstore/Observable`) the changes to the data in the store will
+In addition to this, if the store is an obsvervable store (`dstore/Observable`) the changes to the data in the store will
 be tracked and the following functions will be called on each type of modification:
   * `itemRemoved` if an item has been removed
   * `itemAdded` if an item has been added
@@ -49,13 +71,20 @@ invalidation using [`delite/Invalidating`](Invalidating.md). This can be done as
 ```js
 define(["delite/register", "delite/Widget", "delite/Store"/*, ...*/], 
   function (register, Widget, Store/*, ...*/) {
-  return register("my-widget", [HTMElement, Widget, Store], {
+  return register("employees-list", [HTMElement, Widget, Store], {
     preCreate: function () {
        this.addInvalidatingProperties("renderItems");
-    }
+    },
+   	itemToRenderItem: function (item) {
+   	   return {
+   	     name: item.firstName + " " + item.lastName,
+   	     jobtitle: item.title
+   	   }
+	},
     refreshRendering: function (props) {
        if (props.renderItems) {
-         // render item has changed, do something to reflect that in the rendering
+         // render item has changed, do something to reflect that in the rendering by adding for example
+         // a DOM element per item using the properties on the render item 
        }
     }
   });

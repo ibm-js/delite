@@ -23,28 +23,51 @@ render item. You can define that mapping directly by attributes (from a property
 of the render item) or through a function (in which case the function can perform any type of mapping between the store
 item and the render item).
 
+For example the store item (typically coming from a data server) might contain:
+
+```js
+{
+    lastName: "Smith"
+    firstName: "John",
+    department: "marketing",
+    title: "head of department",
+    jobDescription: "in charge of defining the marketing strategy for the company"
+}
+```
+
+while the widget render item requires and contains exactly what the widget needs to consume, in this case for example:
+
+```js
+{
+    name: "John Smith"
+    jobtitle: "head of department"
+}
+```
+
+The mapping operation allows to easily go from the store item to the render item and conversely.
+
 In order to configure the mapping of a `name` property to be present on each render item, the class using this
 mixin must declare: 
   * either a `nameAttr` property in which case the mapping is looking into the store item property specified by the value of `nameAttr`
   * or a `nameFunc` property function in which case the mapping is delegated to the `nameFunc` function.
 
-For example if `nameAttr` is set to `"firstname"`, when creating or updating the render items, the `delite/StoreMap` mixin will
-use the value of the `firstname` property in the store item to set the value of the `name` property in the render item.
+For example if `nameAttr` is set to `"firstName"`, when creating or updating the render items, the `delite/StoreMap` mixin will
+use the value of the `firstName` property in the store item to set the value of the `name` property in the render item.
  
 If `nameFunc` is set to:
 
 ```js
 function nameFunc(item, store, value) {
-  return item.firstname + " " + item.lastname;
+  return item.firstName + " " + item.lastName;
 }
 ```
 
-the value of the `name` property on the render item will be a concatenation of the values of the `firstname` and `lastname`
+the value of the `name` property on the render item will be a concatenation of the values of the `firstName` and `lastName`
 properties on the store item.
 
-Note that the function definition when present takes precedences over the attribute mapping definition.
+Note that the function definition, when present, takes precedences over the attribute mapping definition.
 
-The mapping can occur both ways, so if the `name` property value on the render item is modified, in the first case, the `firstname`
+The mapping can occur both ways, so if the `name` property value on the render item is modified, in the first case, the `firstName`
 property will be modified accordingly in the store item. When using mapping by function, the function must take into
 account the converse operation if needed as follows:
 
@@ -54,10 +77,10 @@ function nameFunc(item, store, value) {
      // value is passed that is a setter
      // for example:
      var names = value.split(" ");
-     item.firstname = names[0];
-     item.lastname = names[1];
+     item.firstName = names[0];
+     item.lastName = names[1];
   } else {
-    return item.firstname + " " + item.lastname;
+    return item.firstName + " " + item.lastName;
   }
 }
 ```
@@ -68,7 +91,7 @@ Here is an example of how the receiving class can declare the various mapping pr
 define(["delite/register", "delite/Widget", "delite/StoreMap"/*, ...*/], 
   function (register, Widget, StoreMap/*, ...*/) {
   return register("employees-list", [HTMElement, Widget, StoreMap], {
-    nameAttr: "firstname", // by default the label mapping will occur from firstname to name
+    nameAttr: "firstName", // by default the label mapping will occur from firstName to name
     jobtitleAttr: null, // by default no jobtitle mapping by attribute but let the user use one
     jobtitleFunc: null, // by default no jobtitle mapping by function but let the user use one
     preCreate: function () {
@@ -88,10 +111,10 @@ define(["delite/register", "delite/Widget", "delite/StoreMap"/*, ...*/],
 A user of this class can then leverage this either in markup to specify particular mapping:
 
 ```html
-<employees-list nameAttr="lastname" jobtitle="title">
+<employees-list nameAttr="lastName" jobtitle="title">
 ```
 
-In this case the default mapping from "firstname" to "name" has been overridden to use the "lastname" attribute instead, and
+In this case the default mapping from "firstName" to "name" has been overridden to use the "lastName" attribute instead, and
 the mapping for jobtitle is using the "title" attribute.
 
 or in JavaScript:
@@ -99,7 +122,7 @@ or in JavaScript:
 ```js
 require(["EmployeesList"/*, ...*/], function (EmployeesList/*, ...*/) {
   var widget = new MyWidget();
-  widget.nameAttr = "lastname";
+  widget.nameAttr = "lastName";
   widget.jobtitleFunc = function (item, store, value) {
      if (arguments.length === 3) {
         // value is passed that is a setter
