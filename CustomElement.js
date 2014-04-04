@@ -228,41 +228,6 @@ define([
 			return this.own(on(this, type, func))[0];
 		},
 
-		defer: function (fcn, delay) {
-			// summary:
-			//		Wrapper to setTimeout to avoid deferred functions executing
-			//		after the originating widget has been destroyed.
-			//		Returns an object handle with a remove method (that returns null) (replaces clearTimeout).
-			// fcn: Function
-			//		Function reference.
-			// delay: Number?
-			//		Delay, defaults to 0.
-			// tags:
-			//		protected
-
-			var timer = setTimeout(
-				function () {
-					if (!timer) {
-						return;
-					}
-					timer = null;
-					if (!this._destroyed) {
-						lang.hitch(this, fcn)();
-					}
-				}.bind(this),
-				delay || 0
-			);
-			return {
-				remove: function () {
-					if (timer) {
-						clearTimeout(timer);
-						timer = null;
-					}
-					return null; // so this works well: handle = handle.remove();
-				}
-			};
-		},
-
 		// Utility functions previously in registry.js
 
 		findCustomElements: function (root) {
