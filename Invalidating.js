@@ -1,6 +1,6 @@
-define(["dcl/dcl", "dojo/_base/lang", "./Stateful"], function (dcl, lang, Stateful) {
+define(["dcl/dcl", "dojo/_base/lang", "./Stateful", "./Destroyable"], function (dcl, lang, Stateful, Destroyable) {
 
-	return dcl(Stateful, {
+	return dcl([Stateful, Destroyable], {
 		// summary:
 		//		Mixin for classes (usually widgets) that watch a set of invalidating properties
 		//		and delay to the next execution frame the refresh following the changes of
@@ -110,15 +110,11 @@ define(["dcl/dcl", "dojo/_base/lang", "./Stateful"], function (dcl, lang, Statef
 				this.invalidProperties = true;
 				// if we have a pending render, let's cancel it to execute it post properties refresh
 				if (this._renderHandle) {
-					// TODO: if we switch to defer() use remove() here
-					clearTimeout(this._renderHandle);
+					this._renderHandle.remove();
 					this.invalidRendering = false;
 					this._renderHandle = null;
 				}
-				// TODO: should be defer but we might change this mechanism to a centralized one, so keep it like
-				// that for now. If we don't come up with a centralized one, move defer to Destroyable and require
-				// the Destroyable mixin.
-				setTimeout(lang.hitch(this, "validateProperties"), 0);
+				this.defer(this.validateProperties, 0);
 			}
 		},
 		
@@ -136,10 +132,7 @@ define(["dcl/dcl", "dojo/_base/lang", "./Stateful"], function (dcl, lang, Statef
 			}
 			if (!this.invalidRendering) {
 				this.invalidRendering = true;
-				// TODO: should be defer but we might change this mechanism to a centralized one, so keep it like
-				// that for now. If we don't come up with a centralized one, move defer to Destroyable and require
-				// the Destroyable mixin.
-				this._renderHandle = setTimeout(lang.hitch(this, "validateRendering"), 0);
+				this._renderHandle = this.defer(this.validateRendering, 0);
 			}
 		},
 		

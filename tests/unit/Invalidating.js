@@ -19,6 +19,7 @@ define([
 				},
 				refreshRendering: d.rejectOnError(function (props) {
 					assert.deepEqual(props, {"b": true});
+					assert.equal(this, o, "this should be the object instance");
 				})
 			});
 			var o = new C();
@@ -228,6 +229,27 @@ define([
 			var o = new C();
 			o.startup();
 			o.b = "foo";
+			return d;
+		},
+		"Destroy": function () {
+			var d = this.async(1000);
+			var C = register("test-invalidating-destroy", [HTMLElement, Widget, Invalidating], {
+				preCreate: function () {
+					this.addInvalidatingProperties("a");
+				},
+				a: null,
+				refreshRendering:  function () {
+					d.reject("refreshRendering should not be called");
+				}
+			});
+			var o = new C();
+			o.startup();
+			o.a = "foo";
+			o.destroy();
+			// let some time to verify we are not called in refreshRendering despite the destroy
+			setTimeout(function () {
+				d.resolve();
+			}, 500);
 			return d;
 		}
 	});
