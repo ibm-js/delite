@@ -63,7 +63,7 @@ define(["dcl/dcl", "dojo/on", "dojo/Deferred", "dojo/when", "delite/Container"],
 			// summary:
 			//		This method must be called to hide a particular destination child on this container.
 			// dest:
-			//		Widget or HTMLElement or id that points to the child this container must hidden.
+			//		Widget or HTMLElement or id that points to the child this container must hide.
 			// params:
 			//		Optional params that might be taken into account when removing the child. This can be the
 			//		type of visual transitions involved. This might vary from one DisplayContainer to another.
