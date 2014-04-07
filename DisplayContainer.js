@@ -50,8 +50,8 @@ define(["dcl/dcl", "dojo/on", "dojo/Deferred", "dojo/when", "delite/Container"],
 				};
 				dcl.mix(event, params);
 				dcl.mix(event, value);
-				self.emit("delite-display-before", event);
-				when(self.performDisplay(value.child, event), function () {
+				self.emit("delite-display-before-change", event);
+				when(self.changeDisplay(value.child, event), function () {
 					self.emit("delite-display-complete", event);
 					displayDeferred.resolve(value);
 				});
@@ -99,8 +99,8 @@ define(["dcl/dcl", "dojo/on", "dojo/Deferred", "dojo/when", "delite/Container"],
 				};
 				dcl.mix(event, params);
 				dcl.mix(event, value);
-				self.emit("delite-display-before", event);
-				when(self.performDisplay(value.child, event), function () {
+				self.emit("delite-display-before-change", event);
+				when(self.changeDisplay(value.child, event), function () {
 					// if view is not already removed, remove it
 					if (self.getIndexOfChild(value.child) !== -1) {
 						self.removeChild(value.child);
@@ -112,7 +112,7 @@ define(["dcl/dcl", "dojo/on", "dojo/Deferred", "dojo/when", "delite/Container"],
 			return displayDeferred.promise;
 		},
 
-		performDisplay: function (widget, /*jshint unused: vars*/params) {
+		changeDisplay: function (widget, /*jshint unused: vars*/params) {
 			// summary:
 			//		This method must perform the display and possible transition effect. It is meant to be
 			//		specialized by subclasses.

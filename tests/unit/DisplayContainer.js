@@ -115,7 +115,7 @@ define([
 			container.appendChild(dcontainer);
 			dcontainer.startup();
 			var beforeDisplayCalled = false;
-			dcontainer.on("delite-display-before", function () {
+			dcontainer.on("delite-display-before-change", function () {
 				beforeDisplayCalled = true;
 			});
 			// by node
