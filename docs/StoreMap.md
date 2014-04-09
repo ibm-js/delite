@@ -111,7 +111,7 @@ define(["delite/register", "delite/Widget", "delite/StoreMap"/*, ...*/],
 A user of this class can then leverage this either in markup to specify particular mapping:
 
 ```html
-<employees-list nameAttr="lastName" jobtitle="title">
+<employees-list nameAttr="lastName" jobtitle="title"></employees-list>
 ```
 
 In this case the default mapping from "firstName" to "name" has been overridden to use the "lastName" attribute instead, and
