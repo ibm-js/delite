@@ -43,8 +43,8 @@ define([
 			transitionDeferred.then(function () {
 				testView(view1);
 				// by id
-				// test that a delite-display-complete event is fired, if is not fired the test will fail by timeout
-				on.once(dcontainer, "delite-display-complete", function () {
+				// test that a delite-after-show event is fired, if is not fired the test will fail by timeout
+				on.once(dcontainer, "delite-after-show", function () {
 					// test is finished
 					deferred.resolve(true);
 				});
@@ -76,17 +76,22 @@ define([
 			initView(view2);
 			container.appendChild(dcontainer);
 			dcontainer.startup();
+			var beforeDisplayCalled = false;
+			dcontainer.on("delite-before-hide", function () {
+				beforeDisplayCalled = true;
+			});
 			// by node
 			var transitionDeferred = dcontainer.hide(view1);
 			transitionDeferred.then(function () {
+				assert(beforeDisplayCalled, "before-hide event must be dispatched");
 				testView(view1);
 				// by id
-				// test that a delite-display-complete event is fired, if is not fired the test will fail by timeout
-				on.once(dcontainer, "delite-display-complete", function () {
+				// test that a delite-after-show event is fired, if is not fired the test will fail by timeout
+				on.once(dcontainer, "delite-after-hide", function () {
 					// test is finished
 					deferred.resolve(true);
 				});
-				transitionDeferred = dcontainer.show("view");
+				transitionDeferred = dcontainer.hide("view");
 				transitionDeferred.then(function () {
 					testView(view2);
 				});
@@ -115,13 +120,13 @@ define([
 			container.appendChild(dcontainer);
 			dcontainer.startup();
 			var beforeDisplayCalled = false;
-			dcontainer.on("delite-display-before-change", function () {
+			dcontainer.on("delite-before-show", function () {
 				beforeDisplayCalled = true;
 			});
 			// by node
 			var transitionDeferred = dcontainer.show("view1-event");
 			transitionDeferred.then(function () {
-				assert(beforeDisplayCalled, "added event must be dispatched");
+				assert(beforeDisplayCalled, "before show event must be dispatched");
 				document.removeEventListener("delite-display-load", handler);
 				deferred.resolve(true);
 			});
