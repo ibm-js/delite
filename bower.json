@@ -4,11 +4,11 @@
 	"dependencies": {
 		"dojo": ">=1.9.1",
 		"requirejs": "2.1.x",
-		"dcl": "1.1.x",
-		"dstore" : "git://github.com/SitePen/dstore.git"
+		"dcl": "1.1.x"
 	},
 	"devDependencies": {
-		"platform": "Polymer/platform#~0.1.4"
+		"platform": "Polymer/platform#~0.1.4",
+		"dstore" : ">=0.1.0-dev"
 	},
 	"ignore": [
 		".jshintrc",
