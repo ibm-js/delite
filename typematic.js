@@ -28,7 +28,8 @@ define([
 			this._timer = setTimeout(lang.hitch(this, "_fireEventAndReload"), this._currentTimeout);
 		},
 
-		trigger: function (/*Event*/ evt, /*Object*/ _this, /*DOMNode*/ node, /*Function*/ callback, /*Object*/ obj, /*Number?*/ subsequentDelay, /*Number?*/ initialDelay, /*Number?*/ minDelay) {
+		trigger: function (/*Event*/ evt, /*Object*/ _this, /*DOMNode*/ node, /*Function*/ callback, /*Object*/ obj,
+				/*Number?*/ subsequentDelay, /*Number?*/ initialDelay, /*Number?*/ minDelay) {
 			// summary:
 			//		Start a timed, repeating callback sequence.
 			//		If already started, the function call is ignored.
@@ -93,7 +94,8 @@ define([
 			}
 		},
 
-		addKeyListener: function (/*DOMNode*/ node, /*Object*/ keyObject, /*Object*/ _this, /*Function*/ callback, /*Number*/ subsequentDelay, /*Number*/ initialDelay, /*Number?*/ minDelay) {
+		addKeyListener: function (/*DOMNode*/ node, /*Object*/ keyObject, /*Object*/ _this, /*Function*/ callback,
+				/*Number*/ subsequentDelay, /*Number*/ initialDelay, /*Number?*/ minDelay) {
 			// summary:
 			//		Start listening for a specific typematic key.
 			//		See also the trigger method for other parameters.
@@ -143,7 +145,8 @@ define([
 			} };
 		},
 
-		addMouseListener: function (/*DOMNode*/ node, /*Object*/ _this, /*Function*/ callback, /*Number*/ subsequentDelay, /*Number*/ initialDelay, /*Number?*/ minDelay) {
+		addMouseListener: function (/*DOMNode*/ node, /*Object*/ _this, /*Function*/ callback,
+				/*Number*/ subsequentDelay, /*Number*/ initialDelay, /*Number?*/ minDelay) {
 			// summary:
 			//		Start listening for a typematic mouse click.
 			//		See the trigger method for other parameters.
@@ -181,7 +184,8 @@ define([
 			} };
 		},
 
-		addListener: function (/*Node*/ mouseNode, /*Node*/ keyNode, /*Object*/ keyObject, /*Object*/ _this, /*Function*/ callback, /*Number*/ subsequentDelay, /*Number*/ initialDelay, /*Number?*/ minDelay) {
+		addListener: function (/*Node*/ mouseNode, /*Node*/ keyNode, /*Object*/ keyObject, /*Object*/ _this,
+				/*Function*/ callback, /*Number*/ subsequentDelay, /*Number*/ initialDelay, /*Number?*/ minDelay) {
 			// summary:
 			//		Start listening for a specific typematic key and mouseclick.
 			//		This is a thin wrapper to addKeyListener and addMouseListener.

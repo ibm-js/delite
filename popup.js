@@ -14,7 +14,8 @@ define([
 	"./BackgroundIframe",
 	"./Viewport",
 	"./themes/load!" // d-popup class
-], function (aspect, dcl, dom, domAttr, domConstruct, domGeometry, domStyle, has, keys, lang, on, place, BackgroundIframe, Viewport) {
+], function (aspect, dcl, dom, domAttr, domConstruct, domGeometry, domStyle, has, keys, lang, on,
+			 place, BackgroundIframe, Viewport) {
 
 	// module:
 	//		delite/popup
