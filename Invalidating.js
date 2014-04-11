@@ -50,10 +50,11 @@ define(["dcl/dcl", "dojo/_base/lang", "./Stateful", "./Destroyable"], function (
 
 		_initializeInvalidating: function () {
 			if (this._invalidatingProperties) {
-				var props = Object.keys(this._invalidatingProperties);
-				for (var i = 0; i < props.length; i++) {
-					this.watch(props[i], lang.hitch(this, this._invalidatingProperties[props[i]]));
-				}
+				Object.keys(this._invalidatingProperties).forEach(function (prop) {
+					// Do late binding to support AOP on invalidateProperty() and invalidateRendering()
+					var funcName = this._invalidatingProperties[prop];
+					this.watch(prop, function (p, o, n) { this[funcName](p, o, n); });
+				}, this);
 			}
 			this._invalidatedProperties = {};
 		},

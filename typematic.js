@@ -1,8 +1,6 @@
 define([
-	"dojo/_base/lang", // lang.mixin, lang.hitch
-	"dojo/on",
-	"dojo/sniff" // has("ie")
-], function (lang, on, has) {
+	"dojo/on"
+], function (on) {
 
 	// module:
 	//		delite/typematic
@@ -25,7 +23,7 @@ define([
 					(this._subsequentDelay > 1 ? this._subsequentDelay :
 						Math.round(this._currentTimeout * this._subsequentDelay)),
 				this._minDelay);
-			this._timer = setTimeout(lang.hitch(this, "_fireEventAndReload"), this._currentTimeout);
+			this._timer = setTimeout(this._fireEventAndReload.bind(this), this._currentTimeout);
 		},
 
 		trigger: function (/*Event*/ evt, /*Object*/ _this, /*DOMNode*/ node, /*Function*/ callback, /*Object*/ obj,
@@ -67,7 +65,7 @@ define([
 				this._node = node;
 				this._currentTimeout = -1;
 				this._count = -1;
-				this._callback = lang.hitch(_this, callback);
+				this._callback = callback.bind(_this);
 				this._evt = { faux: true };
 				for (var attr in evt) {
 					if (attr !== "layerX" && attr !== "layerY") { // prevent WebKit warnings
@@ -118,7 +116,7 @@ define([
 				attr = "keyCode" in keyObject ? "keyCode" : "charCode";
 
 			var handles = [
-				on(node, type, lang.hitch(this, function (evt) {
+				on(node, type, function (evt) {
 					if (evt[attr] === keyObject[attr] &&
 						(keyObject.ctrlKey === undefined || keyObject.ctrlKey === evt.ctrlKey) &&
 						(keyObject.altKey === undefined || keyObject.altKey === evt.altKey) &&
@@ -131,12 +129,12 @@ define([
 					} else if (typematic._obj === keyObject) {
 						typematic.stop();
 					}
-				})),
-				on(node, "keyup", lang.hitch(this, function () {
+				}),
+				on(node, "keyup", function () {
 					if (typematic._obj === keyObject) {
 						typematic.stop();
 					}
-				}))
+				})
 			];
 			return { remove: function () {
 				handles.forEach(function (h) {
@@ -153,29 +151,25 @@ define([
 			// returns:
 			//		a connection handle
 			var handles = [
-				on(node, "mousedown", lang.hitch(this, function (evt) {
+				on(node, "mousedown", function (evt) {
 					evt.preventDefault();
 					typematic.trigger(evt, _this, node, callback, node, subsequentDelay, initialDelay, minDelay);
-				})),
-				on(node, "mouseup", lang.hitch(this, function (evt) {
+				}),
+				on(node, "mouseup", function (evt) {
 					if (this._obj) {
 						evt.preventDefault();
 					}
 					typematic.stop();
-				})),
-				on(node, "mouseout", lang.hitch(this, function (evt) {
+				}.bind(this)),
+				on(node, "mouseout", function (evt) {
 					if (this._obj) {
 						evt.preventDefault();
 					}
 					typematic.stop();
-				})),
-				on(node, "dblclick", lang.hitch(this, function (evt) {
+				}.bind(this)),
+				on(node, "dblclick", function (evt) {
 					evt.preventDefault();
-					if (has("ie") < 9) {
-						typematic.trigger(evt, _this, node, callback, node, subsequentDelay, initialDelay, minDelay);
-						setTimeout(lang.hitch(this, typematic.stop), 50);
-					}
-				}))
+				})
 			];
 			return { remove: function () {
 				handles.forEach(function (h) {

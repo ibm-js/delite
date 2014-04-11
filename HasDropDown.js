@@ -8,13 +8,12 @@ define([
 	"dojo/dom-style", // domStyle.set
 	"dojo/has", // has("touch")
 	"dojo/keys", // keys.DOWN_ARROW keys.ENTER keys.ESCAPE
-	"dojo/_base/lang", // lang.hitch lang.isFunction
 	"dojo/on",
 	"dojo/touch",
 	"./focus",
 	"./popup",
 	"./Widget"
-], function (dcl, Deferred, dom, domAttr, domClass, domGeometry, domStyle, has, keys, lang, on, touch,
+], function (dcl, Deferred, dom, domAttr, domClass, domGeometry, domStyle, has, keys, on, touch,
 			 focus, popup, Widget) {
 
 	// module:
@@ -115,8 +114,7 @@ define([
 				e.preventDefault();
 			}
 
-			this._docHandler = this.own(on(this.ownerDocument, touch.release,
-				lang.hitch(this, "_onDropDownMouseUp")))[0];
+			this._docHandler = this.own(on(this.ownerDocument, touch.release, this._onDropDownMouseUp.bind(this)))[0];
 
 			this.toggleDropDown();
 		},
@@ -228,10 +226,10 @@ define([
 
 			var keyboardEventNode = this.focusNode || this;
 			this.own(
-				on(this._buttonNode, touch.press, lang.hitch(this, "_onDropDownMouseDown")),
-				on(this._buttonNode, "click", lang.hitch(this, "_onDropDownClick")),
-				on(keyboardEventNode, "keydown", lang.hitch(this, "_onKey")),
-				on(keyboardEventNode, "keyup", lang.hitch(this, "_onKeyUp"))
+				on(this._buttonNode, touch.press, this._onDropDownMouseDown.bind(this)),
+				on(this._buttonNode, "click", this._onDropDownClick.bind(this)),
+				on(keyboardEventNode, "keydown", this._onKey.bind(this)),
+				on(keyboardEventNode, "keyup", this._onKeyUp.bind(this))
 			);
 		},
 
@@ -297,7 +295,7 @@ define([
 				this.toggleDropDown();
 				var d = this.dropDown;	// drop down may not exist until toggleDropDown() call
 				if (d && d.focus) {
-					this.defer(lang.hitch(d, "focus"), 1);
+					this.defer(d.focus.bind(d), 1);
 				}
 			}
 		},
@@ -345,15 +343,16 @@ define([
 			//		fires when drop down is created and loaded
 			// tags:
 			//		protected
-			var d = new Deferred(),
-				afterLoad = lang.hitch(this, function () {
-					this.openDropDown();
-					d.resolve(this.dropDown);
-				});
+			var d = new Deferred();
+
+			function afterLoad() {
+				this.openDropDown();
+				d.resolve(this.dropDown);
+			}
 			if (!this.isLoaded()) {
-				this.loadDropDown(afterLoad);
+				this.loadDropDown(afterLoad.bind(this));
 			} else {
-				afterLoad();
+				afterLoad.call(this);
 			}
 			return d;
 		},
@@ -413,7 +412,7 @@ define([
 				var resizeArgs = {
 					w: aroundNode.offsetWidth - (dropDown._popupWrapper.offsetWidth - dropDown.offsetWidth)
 				};
-				if (lang.isFunction(dropDown.resize)) {
+				if (typeof dropDown.resize === "function") {
 					dropDown.resize(resizeArgs);
 				} else {
 					domGeometry.setMarginBox(dropDown, resizeArgs);

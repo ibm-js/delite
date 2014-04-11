@@ -8,13 +8,12 @@ define([
 	"dojo/dom-style", // domStyle.set
 	"dojo/has", // has("config-bgIframe")
 	"dojo/keys",
-	"dojo/_base/lang", // lang.hitch
 	"dojo/on",
 	"./place",
 	"./BackgroundIframe",
 	"./Viewport",
 	"./theme!" // d-popup class
-], function (aspect, dcl, dom, domAttr, domConstruct, domGeometry, domStyle, has, keys, lang, on,
+], function (aspect, dcl, dom, domAttr, domConstruct, domGeometry, domStyle, has, keys, on,
 			 place, BackgroundIframe, Viewport) {
 
 	// module:
@@ -121,7 +120,7 @@ define([
 					}
 				}
 
-				this._aroundMoveListener = setTimeout(lang.hitch(this, "_repositionAll"), dx || dy ? 10 : 50);
+				this._aroundMoveListener = setTimeout(this._repositionAll.bind(this), dx || dy ? 10 : 50);
 			}
 		},
 
@@ -299,7 +298,7 @@ define([
 				// First element on stack. Save position of aroundNode and setup listener for changes to that position.
 				this._firstAroundNode = around;
 				this._firstAroundPosition = domGeometry.position(around, true);
-				this._aroundMoveListener = setTimeout(lang.hitch(this, "_repositionAll"), 50);
+				this._aroundMoveListener = setTimeout(this._repositionAll.bind(this), 50);
 			}
 
 			if (has("config-bgIframe") && !widget.bgIframe) {
@@ -308,7 +307,7 @@ define([
 			}
 
 			// position the wrapper node and make it visible
-			var layoutFunc = widget.orient ? lang.hitch(widget, "orient") : null,
+			var layoutFunc = widget.orient ? widget.orient.bind(widget) : null,
 				best = around ?
 					place.around(wrapper, around, orient, ltr, layoutFunc) :
 					place.at(wrapper, args, orient === "R" ? ["TR", "BR", "TL", "BL"] : ["TL", "BL", "TR", "BR"],
@@ -321,7 +320,7 @@ define([
 
 			// provide default escape and tab key handling
 			// (this will work for any widget, not just menu)
-			handlers.push(on(wrapper, "keydown", lang.hitch(this, function (evt) {
+			handlers.push(on(wrapper, "keydown", function (evt) {
 				if (evt.keyCode === keys.ESCAPE && args.onCancel) {
 					evt.stopPropagation();
 					evt.preventDefault();
@@ -334,7 +333,7 @@ define([
 						topPopup.onCancel();
 					}
 				}
-			})));
+			}));
 
 			// watch for cancel/execute events on the popup and notify the caller
 			// (for a menu, "execute" means clicking an item)
@@ -342,12 +341,12 @@ define([
 				handlers.push(widget.on("cancel", args.onCancel));
 			}
 
-			handlers.push(widget.on(widget.onExecute ? "execute" : "change", lang.hitch(this, function () {
+			handlers.push(widget.on(widget.onExecute ? "execute" : "change", function () {
 				var topPopup = this.getTopPopup();
 				if (topPopup && topPopup.onExecute) {
 					topPopup.onExecute();
 				}
-			})));
+			}));
 
 			stack.push({
 				widget: widget,

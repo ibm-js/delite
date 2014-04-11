@@ -1,5 +1,4 @@
 define([
-	"dojo/_base/lang", // lang.hitch
 	"dojo/aspect", // aspect.after
 	"dojo/dom-attr", // domAttr.set
 	"dojo/dom-style", // domStyle.getComputedStyle
@@ -9,7 +8,7 @@ define([
 	"./Widget",
 	"./BackgroundIframe",
 	"./Viewport"
-], function (lang, aspect, domAttr, domStyle, on, winUtils, register, Widget, BackgroundIframe, Viewport) {
+], function (aspect, domAttr, domStyle, on, winUtils, register, Widget, BackgroundIframe, Viewport) {
 
 	// module:
 	//		delite/DialogUnderlay
@@ -65,13 +64,12 @@ define([
 			// Append the underlay to the body
 			this.ownerDocument.body.appendChild(this);
 
-			this.own(on(this, "keydown", lang.hitch(this, "_onKeyDown")));
+			this.own(on(this, "keydown", this._onKeyDown.bind(this)));
 		},
 
 		layout: function () {
 			// summary:
 			//		Sets the background to the size of the viewport
-			//
 			// description:
 			//		Sets the background to the size of the viewport (rather than the size
 			//		of the document) since we need to cover the whole browser window, even
@@ -106,8 +104,8 @@ define([
 
 			var win = winUtils.get(this.ownerDocument);
 			this._modalConnects = [
-				Viewport.on("resize", lang.hitch(this, "layout")),
-				on(win, "scroll", lang.hitch(this, "layout"))
+				Viewport.on("resize", this.layout.bind(this)),
+				on(win, "scroll", this.layout.bind(this))
 			];
 
 		},
