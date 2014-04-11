@@ -137,6 +137,8 @@ define([
 			//		2. move mouse to a menu item while holding down the mouse button
 			//		3. mouse up.  this selects the menu item as though the user had clicked it.
 
+			/* jshint maxcomplexity:14 */	// TODO: simplify this method?
+
 			if (e && this._docHandler) {
 				this._docHandler.remove();
 				this._docHandler = null;
@@ -253,6 +255,8 @@ define([
 		_onKey: function (/*Event*/ e) {
 			// summary:
 			//		Callback when the user presses a key while focused on the button node
+
+			/* jshint maxcomplexity:14 */
 
 			if (this.disabled || this.readOnly) {
 				return;

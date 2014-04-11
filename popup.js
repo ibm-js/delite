@@ -26,7 +26,8 @@ define([
 	 // parent: Widget
 	 //		the button etc. that is displaying this popup
 	 // around: DomNode
-	 //		DOM node (typically a button); place popup relative to this node.  (Specify this *or* "x" and "y" parameters.)
+	 //		DOM node (typically a button); place popup relative to this node.
+	 //		(Specify this *or* "x" and "y" parameters.)
 	 // x: Integer
 	 //		Absolute horizontal position (in pixels) to place node at.  (Specify this *or* "around" parameter.)
 	 // y: Integer
@@ -111,7 +112,7 @@ define([
 					for (var i = 0; i < this._stack.length; i++) {
 						var style = this._stack[i].wrapper.style;
 						style.top = (parseInt(style.top, 10) + dy) + "px";
-						if (style.right == "auto") {
+						if (style.right === "auto") {
 							style.left = (parseInt(style.left, 10) + dx) + "px";
 						} else {
 							style.right = (parseInt(style.right, 10) - dx) + "px";
@@ -228,8 +229,11 @@ define([
 			//		opening the widget as a dropdown
 			//		|		popup.open({parent: this, popup: menuWidget, around: this, onClose: function(){...}});
 			//
-			//		Note that whatever widget called delite/popup.open() should also listen to its own _onBlur callback
-			//		(fired from _base/focus.js) to know that focus has moved somewhere else and thus the popup should be closed.
+			//		Note that whatever widget called delite/popup.open() should also listen to its
+			//		own _onBlur callback (fired from _base/focus.js) to know that focus has moved somewhere
+			//		else and thus the popup should be closed.
+
+			/* jshint maxcomplexity:24 */
 
 			var stack = this._stack,
 				widget = args.popup,
@@ -257,11 +261,14 @@ define([
 			// room), adding scrollbar if necessary. Can't add scrollbar to widget because it may be a <table> (ex:
 			// deliteful/Menu), so add to wrapper, and then move popup's border to wrapper so scroll bar inside border.
 			var maxHeight, popupSize = domGeometry.position(widget);
-			if ("maxHeight" in args && args.maxHeight != -1) {
-				maxHeight = args.maxHeight || Infinity;	// map 0 --> infinity for back-compat of HasDropDown.maxHeight
+			if ("maxHeight" in args && args.maxHeight !== -1) {
+				maxHeight = args.maxHeight || Infinity;
 			} else {
 				var viewport = Viewport.getEffectiveBox(this.ownerDocument),
-					aroundPos = around ? domGeometry.position(around, false) : {y: args.y - (args.padding || 0), h: (args.padding || 0) * 2};
+					aroundPos = around ? domGeometry.position(around, false) : {
+						y: args.y - (args.padding || 0),
+						h: (args.padding || 0) * 2
+					};
 				maxHeight = Math.floor(Math.max(aroundPos.y, viewport.h - (aroundPos.y + aroundPos.h)));
 			}
 			if (popupSize.h > maxHeight) {
@@ -287,7 +294,7 @@ define([
 				duiPopupParent: args.parent ? args.parent.id : ""
 			});
 
-			if (stack.length == 0 && around) {
+			if (stack.length === 0 && around) {
 				// First element on stack. Save position of aroundNode and setup listener for changes to that position.
 				this._firstAroundNode = around;
 				this._firstAroundPosition = domGeometry.position(around, true);
@@ -303,8 +310,8 @@ define([
 			var layoutFunc = widget.orient ? lang.hitch(widget, "orient") : null,
 				best = around ?
 					place.around(wrapper, around, orient, ltr, layoutFunc) :
-					place.at(wrapper, args, orient == 'R' ? ['TR', 'BR', 'TL', 'BL'] : ['TL', 'BL', 'TR', 'BR'], args.padding,
-						layoutFunc);
+					place.at(wrapper, args, orient === "R" ? ["TR", "BR", "TL", "BL"] : ["TL", "BL", "TR", "BR"],
+						args.padding, layoutFunc);
 
 			wrapper.style.visibility = "visible";
 			widget.style.visibility = "visible";	// counteract effects from HasDropDown
@@ -314,11 +321,11 @@ define([
 			// provide default escape and tab key handling
 			// (this will work for any widget, not just menu)
 			handlers.push(on(wrapper, "keydown", lang.hitch(this, function (evt) {
-				if (evt.keyCode == keys.ESCAPE && args.onCancel) {
+				if (evt.keyCode === keys.ESCAPE && args.onCancel) {
 					evt.stopPropagation();
 					evt.preventDefault();
 					args.onCancel();
-				} else if (evt.keyCode == keys.TAB) {
+				} else if (evt.keyCode === keys.TAB) {
 					evt.stopPropagation();
 					evt.preventDefault();
 					var topPopup = this.getTopPopup();
@@ -369,10 +376,10 @@ define([
 			// Basically work backwards from the top of the stack closing popups
 			// until we hit the specified popup, but IIRC there was some issue where closing
 			// a popup would cause others to close too.  Thus if we are trying to close B in [A,B,C]
-			// closing C might close B indirectly and then the while() condition will run where stack==[A]...
+			// closing C might close B indirectly and then the while() condition will run where stack===[A]...
 			// so the while condition is constructed defensively.
 			while ((popup && stack.some(function (elem) {
-				return elem.widget == popup;
+				return elem.widget === popup;
 			})) ||
 				(!popup && stack.length)) {
 				var top = stack.pop(),
@@ -387,11 +394,11 @@ define([
 				}
 
 				var h;
-				while (h = top.handlers.pop()) {
+				while ((h = top.handlers.pop())) {
 					h.remove();
 				}
 
-				// Hide the widget and it's wrapper unless it has already been destroyed in above onClose() etc.
+				// Hide the widget and its wrapper unless it has already been destroyed in above onClose() etc.
 				this.hide(widget);
 
 				if (onClose) {
@@ -399,7 +406,7 @@ define([
 				}
 			}
 
-			if (stack.length == 0 && this._aroundMoveListener) {
+			if (stack.length === 0 && this._aroundMoveListener) {
 				clearTimeout(this._aroundMoveListener);
 				this._firstAroundNode = this._firstAroundPosition = this._aroundMoveListener = null;
 			}

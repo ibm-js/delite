@@ -13,5 +13,5 @@ install:
    - bower install
 
 script:
-   - grunt test:remote
+   - grunt jshint test:remote
 
