@@ -6,7 +6,7 @@ define([
 	"dojo/fx/easing",
 	"delite/Widget",
 	"delite/Invalidating",
-	"delite/themes/load!./Scrollable/themes/{{theme}}/Scrollable_css"
+	"delite/theme!./Scrollable/themes/{{theme}}/Scrollable_css"
 ], function (dcl, dom, domClass, baseFx, easing, Widget, Invalidating) {
 
 	// module:
@@ -60,7 +60,7 @@ define([
 		postCreate: function () {
 			this.invalidateRendering("scrollDirection");
 		},
-		
+
 		buildRendering: dcl.after(function () {
 			// Do it using after advice to give a chance to a custom widget to
 			// set the scrollableNode at latest in an overridden buildRendering().
@@ -69,7 +69,7 @@ define([
 			}
 			dom.setSelectable(this.scrollableNode, false);
 		}),
-		
+
 		refreshRendering: dcl.superCall(function (sup) {
 			return function (props) {
 				sup.call(this, props);
@@ -82,7 +82,7 @@ define([
 				}
 			};
 		}),
-		
+
 		destroy: function () {
 			this._stopAnimation();
 		},

@@ -1,10 +1,10 @@
-# delite/themes/load!
+# delite/theme!
 
-Delite/themes/load! is a high level plugin for loading CSS files based on the theme of the page.
+Delite/theme! is a high level plugin for loading CSS files based on the theme of the page.
 
 The plugin is similar to the CSS loader, but will substitute {{theme}} with the page's theme.
 
-	themes/load!./a/b/{{theme}}/file1.css,./a/b/{{theme}}/file2.css
+	theme!./a/b/{{theme}}/file1.css,./a/b/{{theme}}/file2.css
 
 The requirements are that:
 
