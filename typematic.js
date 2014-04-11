@@ -22,7 +22,8 @@ define([
 			// browser overload (particularly avoiding starving DOH robot so it never gets to send a mouseup)
 			this._currentTimeout = Math.max(
 				this._currentTimeout < 0 ? this._initialDelay :
-					(this._subsequentDelay > 1 ? this._subsequentDelay : Math.round(this._currentTimeout * this._subsequentDelay)),
+					(this._subsequentDelay > 1 ? this._subsequentDelay :
+						Math.round(this._currentTimeout * this._subsequentDelay)),
 				this._minDelay);
 			this._timer = setTimeout(lang.hitch(this, "_fireEventAndReload"), this._currentTimeout);
 		},
@@ -56,7 +57,7 @@ define([
 			//		the number of milliseconds until the 2nd event occurs, default=500ms
 			// minDelay:
 			//		the maximum delay in milliseconds for event to fire, default=10ms
-			if (obj != this._obj) {
+			if (obj !== this._obj) {
 				this.stop();
 				this._initialDelay = initialDelay || 500;
 				this._subsequentDelay = subsequentDelay || 0.90;
@@ -68,10 +69,10 @@ define([
 				this._callback = lang.hitch(_this, callback);
 				this._evt = { faux: true };
 				for (var attr in evt) {
-					if (attr != "layerX" && attr != "layerY") { // prevent WebKit warnings
+					if (attr !== "layerX" && attr !== "layerY") { // prevent WebKit warnings
 						var v = evt[attr];
-						if (typeof v != "function" && typeof v != "undefined") {
-							this._evt[attr] = v
+						if (typeof v !== "function" && typeof v !== "undefined") {
+							this._evt[attr] = v;
 						}
 					}
 				}
@@ -116,20 +117,21 @@ define([
 
 			var handles = [
 				on(node, type, lang.hitch(this, function (evt) {
-					if (evt[attr] == keyObject[attr] &&
-						(keyObject.ctrlKey === undefined || keyObject.ctrlKey == evt.ctrlKey) &&
-						(keyObject.altKey === undefined || keyObject.altKey == evt.altKey) &&
-						(keyObject.metaKey === undefined || keyObject.metaKey == (evt.metaKey || false)) && // IE doesn't even set metaKey
-						(keyObject.shiftKey === undefined || keyObject.shiftKey == evt.shiftKey)) {
+					if (evt[attr] === keyObject[attr] &&
+						(keyObject.ctrlKey === undefined || keyObject.ctrlKey === evt.ctrlKey) &&
+						(keyObject.altKey === undefined || keyObject.altKey === evt.altKey) &&
+						(keyObject.metaKey === undefined || keyObject.metaKey === evt.metaKey) &&
+						(keyObject.shiftKey === undefined || keyObject.shiftKey === evt.shiftKey)) {
 						evt.stopPropagation();
 						evt.preventDefault();
-						typematic.trigger(evt, _this, node, callback, keyObject, subsequentDelay, initialDelay, minDelay);
-					} else if (typematic._obj == keyObject) {
+						typematic.trigger(evt, _this, node, callback, keyObject,
+							subsequentDelay, initialDelay, minDelay);
+					} else if (typematic._obj === keyObject) {
 						typematic.stop();
 					}
 				})),
 				on(node, "keyup", lang.hitch(this, function () {
-					if (typematic._obj == keyObject) {
+					if (typematic._obj === keyObject) {
 						typematic.stop();
 					}
 				}))

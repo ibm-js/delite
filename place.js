@@ -261,6 +261,8 @@ define([
 			//		(ie, put node above aroundNode, with right edges aligned)
 			//
 
+			/* jshint maxcomplexity:11 */
+
 			// If around is a DOMNode (or DOMNode id), convert to coordinates.
 			var aroundNodePos;
 			if (typeof anchor === "string" || "offsetWidth" in anchor) {
@@ -342,6 +344,7 @@ define([
 			}
 
 			positions.forEach(function (pos) {
+				/* jshint maxcomplexity:25 */	// TODO: rewrite to avoid 25 max complexity
 				var ltr = leftToRight;
 				switch (pos) {
 				case "above-centered":

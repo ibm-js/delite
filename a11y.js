@@ -7,23 +7,23 @@ define([
 	// module:
 	//		delite/a11y
 
-	var undefined;
-
 	var a11y = {
 		// summary:
 		//		Accessibility utility functions (keyboard, tab stops, etc.)
 
 		_isElementShown: function (/*Element*/ elem) {
 			var s = domStyle.get(elem);
-			return (s.visibility != "hidden")
-				&& (s.visibility != "collapsed")
-				&& (s.display != "none")
-				&& (domAttr.get(elem, "type") != "hidden");
+			return (s.visibility !== "hidden")
+				&& (s.visibility !== "collapsed")
+				&& (s.display !== "none")
+				&& (domAttr.get(elem, "type") !== "hidden");
 		},
 
 		hasDefaultTabStop: function (/*Element*/ elem) {
 			// summary:
 			//		Tests if element is tab-navigable even without an explicit tabIndex setting
+
+			/* jshint maxcomplexity:11 */
 
 			// No explicit tabIndex setting, need to investigate node type
 			switch (elem.nodeName.toLowerCase()) {
@@ -41,20 +41,21 @@ define([
 			case "iframe":
 				// If it's an editor <iframe> then it's tab navigable.
 				var contentDocument = elem.contentDocument;
-				if ("designMode" in contentDocument && contentDocument.designMode == "on") {
+				if ("designMode" in contentDocument && contentDocument.designMode === "on") {
 					return true;
 				}
 				var body = contentDocument.body;
-				return body && (body.contentEditable == 'true' ||
-					(body.firstChild && body.firstChild.contentEditable == 'true'));
+				return body && (body.contentEditable === "true" ||
+					(body.firstChild && body.firstChild.contentEditable === "true"));
 			default:
-				return elem.contentEditable == 'true';
+				return elem.contentEditable === "true";
 			}
 		},
 
 		effectiveTabIndex: function (/*Element*/ elem) {
 			// summary:
-			//		Returns effective tabIndex of an element, either a number, or undefined if element isn't focusable.
+			//		Returns effective tabIndex of an element, either a number,
+			//		or undefined if element isn't focusable.
 
 			if (domAttr.get(elem, "disabled")) {
 				return undefined;
@@ -99,22 +100,24 @@ define([
 
 			function radioName(node) {
 				// If this element is part of a radio button group, return the name for that group.
-				return node && node.tagName.toLowerCase() == "input" &&
-					node.type && node.type.toLowerCase() == "radio" &&
+				return node && node.tagName.toLowerCase() === "input" &&
+					node.type && node.type.toLowerCase() === "radio" &&
 					node.name && node.name.toLowerCase();
 			}
 
 			var shown = a11y._isElementShown, effectiveTabIndex = a11y.effectiveTabIndex;
-			var walkTree = function (/*DOMNode*/ parent) {
+
+			function walkTree(/*DOMNode*/ parent) {
+				/* jshint maxcomplexity:14 */
 				for (var child = parent.firstChild; child; child = child.nextSibling) {
 					// Skip text elements, hidden elements
-					if (child.nodeType != 1 || !shown(child)) {
+					if (child.nodeType !== 1 || !shown(child)) {
 						continue;
 					}
 
 					var tabindex = effectiveTabIndex(child);
 					if (tabindex >= 0) {
-						if (tabindex == 0) {
+						if (tabindex === 0) {
 							if (!first) {
 								first = child;
 							}
@@ -134,11 +137,12 @@ define([
 							radioSelected[rn] = child;
 						}
 					}
-					if (child.nodeName.toUpperCase() != 'SELECT') {
+					if (child.nodeName.toUpperCase() !== "SELECT") {
 						walkTree(child);
 					}
 				}
-			};
+			}
+
 			if (shown(root)) {
 				walkTree(root);
 			}

@@ -20,11 +20,13 @@ define([
 	 },
 	 press: function(node, listener){
 	 // summary:
-	 //		Mousedown (left button), touchstart, or keydown (space or enter) corresponding to logical click operation.
+	 //		Mousedown (left button), touchstart, or keydown (space or enter)
+	 //		corresponding to logical click operation.
 	 },
 	 release: function(node, listener){
 	 // summary:
-	 //		Mouseup (left button), touchend, or keyup (space or enter) corresponding to logical click operation.
+	 //		Mouseup (left button), touchend, or keyup (space or enter)
+	 //		corresponding to logical click operation.
 	 },
 	 move: function(node, listener){
 	 // summary:
@@ -52,7 +54,8 @@ define([
 	var lastKeyDownNode;
 
 	on(document, "keydown", function (e) {
-		//console.log("a11yclick: onkeydown, e.target = ", e.target, ", lastKeyDownNode was ", lastKeyDownNode, ", equality is ", (e.target === lastKeyDownNode));
+		//console.log("a11yclick: onkeydown, e.target = ", e.target, ", lastKeyDownNode was ",
+		// lastKeyDownNode, ", equality is ", (e.target === lastKeyDownNode));
 		if (clickKey(e)) {
 			// needed on IE for when focus changes between keydown and keyup - otherwise dropdown menus do not work
 			lastKeyDownNode = e.target;
@@ -62,9 +65,10 @@ define([
 	});
 
 	on(document, "keyup", function (e) {
-		//console.log("a11yclick: onkeyup, e.target = ", e.target, ", lastKeyDownNode was ", lastKeyDownNode, ", equality is ", (e.target === lastKeyDownNode));
-		if (clickKey(e) && e.target == lastKeyDownNode) {	// === breaks greasemonkey
-			//need reset here or have problems in FF when focus returns to trigger element after closing popup/alert
+		//console.log("a11yclick: onkeyup, e.target = ", e.target, ", lastKeyDownNode was ",
+		// lastKeyDownNode, ", equality is ", (e.target === lastKeyDownNode));
+		if (clickKey(e) && e.target === lastKeyDownNode) {
+			// need reset here or have problems in FF when focus returns to trigger element after closing popup/alert
 			lastKeyDownNode = null;
 
 			on.emit(e.target, "click", {
@@ -92,7 +96,7 @@ define([
 
 	click.press = function (node, listener) {
 		var touchListener = on(node, touch.press, function (evt) {
-			if (evt.type == "mousedown" && !mouse.isLeft(evt)) {
+			if (evt.type === "mousedown" && !mouse.isLeft(evt)) {
 				// Ignore right click
 				return;
 			}
@@ -112,7 +116,7 @@ define([
 
 	click.release = function (node, listener) {
 		var touchListener = on(node, touch.release, function (evt) {
-			if (evt.type == "mouseup" && !mouse.isLeft(evt)) {
+			if (evt.type === "mouseup" && !mouse.isLeft(evt)) {
 				// Ignore right click
 				return;
 			}
