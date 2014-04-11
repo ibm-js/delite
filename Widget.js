@@ -6,12 +6,10 @@ define([
 	"dojo/dom-geometry", // isBodyLtr
 	"dojo/dom-style", // domStyle.set, domStyle.get
 	"dojo/has",
-	"dojo/_base/lang", // mixin(), hitch(), etc.
 	"./CustomElement",
 	"./register",
 	"dojo/has!dojo-bidi?./Bidi"
-], function (dcl, dom, domClass, domConstruct, domGeometry, domStyle,
-			 has, lang, CustomElement, register, Bidi) {
+], function (dcl, dom, domClass, domConstruct, domGeometry, domStyle, has, CustomElement, register, Bidi) {
 
 	// module:
 	//		delite/Widget

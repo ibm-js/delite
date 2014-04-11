@@ -6,15 +6,13 @@ define([
 	"dojo/dom-class",
 	"dojo/dom-construct", // connect to domConstruct.empty, domConstruct.destroy
 	"dojo/Evented",
-	"dojo/_base/lang", // lang.hitch
 	"dojo/on",
 	"dojo/domReady",
 	"dojo/Stateful",
 	"dojo/_base/window", // win.body
 	"dojo/window", // winUtils.get
 	"./a11y"	// a11y.isTabNavigable
-], function (aspect, dcl, dom, domAttr, domClass, domConstruct, Evented,
-			 lang, on, domReady, Stateful, win, winUtils, a11y) {
+], function (aspect, dcl, dom, domAttr, domClass, domConstruct, Evented, on, domReady, Stateful, win, winUtils, a11y) {
 
 	// module:
 	//		delite/focus
@@ -42,6 +40,7 @@ define([
 
 		// curNode: DomNode
 		//		Currently focused item on screen
+		// TODO: get rid of curNode and prevNode?   App can just use document.activeElement.
 		curNode: null,
 
 		// activeStack: delite/Widget[]
@@ -50,16 +49,17 @@ define([
 
 		constructor: function () {
 			// Don't leave curNode/prevNode pointing to bogus elements
-			var check = lang.hitch(this, function (node) {
+			function check(node) {
 				if (dom.isDescendant(this.curNode, node)) {
 					this.set("curNode", null);
 				}
 				if (dom.isDescendant(this.prevNode, node)) {
 					this.set("prevNode", null);
 				}
-			});
-			aspect.before(domConstruct, "empty", check);
-			aspect.before(domConstruct, "destroy", check);
+			}
+
+			aspect.before(domConstruct, "empty", check.bind(this));
+			aspect.before(domConstruct, "destroy", check.bind(this));
 		},
 
 		registerIframe: function (/*DomNode*/ iframe) {
@@ -168,19 +168,19 @@ define([
 			if (this._clearFocusTimer) {
 				clearTimeout(this._clearFocusTimer);
 			}
-			this._clearFocusTimer = setTimeout(lang.hitch(this, function () {
+			this._clearFocusTimer = setTimeout(function () {
 				this.set("prevNode", this.curNode);
 				this.set("curNode", null);
-			}), 0);
+			}.bind(this), 0);
 
 			// If the blur event isn't followed by a focus or touch event then mark all widgets as inactive.
 			if (this._clearActiveWidgetsTimer) {
 				clearTimeout(this._clearActiveWidgetsTimer);
 			}
-			this._clearActiveWidgetsTimer = setTimeout(lang.hitch(this, function () {
+			this._clearActiveWidgetsTimer = setTimeout(function () {
 				delete this._clearActiveWidgetsTimer;
 				this._setStack([]);
-			}), 0);
+			}.bind(this), 0);
 		},
 
 		_onTouchNode: function (/*DomNode*/ node, /*String*/ by) {

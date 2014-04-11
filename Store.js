@@ -1,4 +1,4 @@
-define(["dcl/dcl", "dojo/_base/lang", "dojo/when", "./Invalidating"], function (dcl, lang, when, Invalidating) {
+define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalidating) {
 
 	var isStoreInvalidated = function (props) {
 		return props.store || props.query || props.processStore;
@@ -27,7 +27,7 @@ define(["dcl/dcl", "dojo/_base/lang", "dojo/when", "./Invalidating"], function (
 		// query: Object
 		//		A query filter to apply to the store. Default is {}.
 		query: {},
-		
+
 		// processStore: Function
 		//		An optional function that processes the store and returns a new one (to sort it, range it etc...). 
 		//		Default is null.
@@ -82,7 +82,7 @@ define(["dcl/dcl", "dojo/_base/lang", "dojo/when", "./Invalidating"], function (
 			this.renderItems = renderItems;
 			this.emit("query-success", { renderItems: renderItems, cancelable: false, bubbles: true });
 		},
-		
+
 		refreshProperties: function (props) {
 			// summary:
 			//		Query the store, create the render items and call initItems() when ready. If an error occurs
@@ -107,7 +107,7 @@ define(["dcl/dcl", "dojo/_base/lang", "dojo/when", "./Invalidating"], function (
 					// if we have a mapping function between store item and some intermediary items use it
 					when(store.map(function (item) {
 						return this.itemToRenderItem(item);
-					}, this), lang.hitch(this, this.initItems), lang.hitch(this, "_queryError"));
+					}, this), this.initItems.bind(this), this._queryError.bind(this));
 				} else {
 					this.initItems([]);
 				}
@@ -142,7 +142,7 @@ define(["dcl/dcl", "dojo/_base/lang", "dojo/when", "./Invalidating"], function (
 			//		protected
 			renderItems.splice(index, 1);
 		},
-		
+
 		itemAdded: function (index, renderItem, renderItems) {
 			// summary:
 			//		This method is called when an item is added in an observable store. The default 
@@ -159,7 +159,7 @@ define(["dcl/dcl", "dojo/_base/lang", "dojo/when", "./Invalidating"], function (
 			renderItems.splice(index, 0, renderItem);
 		},
 
-		itemUpdated: function (index,  renderItem, renderItems) {
+		itemUpdated: function (index, renderItem, renderItems) {
 			// summary:
 			//		This method is called when an item is updated in an observable store. The default 
 			//		implementation actually updates the renderItem in the renderItems array. This can be redefined but
@@ -175,7 +175,7 @@ define(["dcl/dcl", "dojo/_base/lang", "dojo/when", "./Invalidating"], function (
 			// we want to keep the same item object and mixin new values into old object
 			dcl.mix(renderItems[index], renderItem);
 		},
-		
+
 		itemMoved: function (previousIndex, newIndex, renderItem, renderItems) {
 			// summary:
 			//		This method is called when an item is moved in an observable store. The default 
