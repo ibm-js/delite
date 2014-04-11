@@ -98,5 +98,5 @@ TODO: more on lifecycle, especially custom setters
 Resources are loaded through `i18n!` plugin rather than a loadResource() type method.
 
 ### CSS
-A widget should use [delite/themes/load!](load.md) or [delite/css!](css.md) to load its own CSS.
+A widget should use [delite/theme!](load.md) or [delite/css!](css.md) to load its own CSS.
 

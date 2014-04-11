@@ -1,9 +1,8 @@
 define([
 	"require",
 	"intern!object",
-	"intern/chai!assert",
-	"dojo/dom-style"
-], function (require, registerSuite, assert, domStyle) {
+	"intern/chai!assert"
+], function (require, registerSuite, assert) {
 	
 	function getStyles() {
 		// summary:
@@ -17,7 +16,7 @@ define([
 		name: "theme",
 		"load global_css": function () {
 			var d = new this.async(1000);
-			// Load one module that use delite/themes/load! to load global_css
+			// Load one module that use delite/theme! to load global_css
 			require([
 				"./resources/TestThemeWidget1"
 			], d.callback(function () {

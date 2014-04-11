@@ -2,7 +2,7 @@ define([
 	"require",
 	"dojo/has",
 	"dojo/_base/config",
-	"../css"		// listed here for benefit of builder, so delite/css is included into the layer
+	"./css"		// listed here for builder, so delite/css is included into the layer
 ], function (req, has, config) {
 
 	"use strict";
@@ -89,14 +89,14 @@ define([
 			//		and the stylesheet has been inserted.
 
 			// Add CSS file which contains definitions global to the theme.
-			logicalPaths = "./{{theme}}/global_css" + (logicalPaths ? "," + logicalPaths : "");
+			logicalPaths = "./themes/{{theme}}/global_css" + (logicalPaths ? "," + logicalPaths : "");
 
 			// Convert list of logical paths into list of actual paths
 			// ex: Button/css/{{theme}}/Button --> Button/css/ios/Button
 			var actualPaths = logicalPaths.replace(/{{theme}}/g, load.getTheme());
 
 			// Make single call to css! plugin to load resources in order specified
-			req([ "../css!" + actualPaths ], function () {
+			req([ "./css!" + actualPaths ], function () {
 				onload(arguments);
 			});
 		}
