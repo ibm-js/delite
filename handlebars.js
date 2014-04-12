@@ -1,4 +1,4 @@
-define(["./template"], function (template) {
+define(["requirejs-text/text", "./template"], function (text, template) {
 	function tokenize(/*String*/ text) {
 		// Given a string like "hello {{foo}} world", split it into static text and property references,
 		//  and return array representing the parts, ex: ["hello ", {property: "foo"}, " world"]
@@ -17,9 +17,6 @@ define(["./template"], function (template) {
 		}
 		return parts;
 	}
-
-	var parser = new DOMParser(),					// for SVG parsing
-		container = document.createElement("div");	// for HTML parsing
 
 	var handlebars = {
 		// summary:
@@ -102,7 +99,8 @@ define(["./template"], function (template) {
 
 		parse: function (/*String*/ templateText) {
 			// summary:
-			//		Given a template, returns the tree representing that template
+			//		Given a template, returns the tree representing that template.
+			//		Will only run in a browser, or in node.js with https://github.com/tmpvar/jsdom.
 
 			// Adjust the template, putting if statements and looping statements inside their own
 			// <each> and <if> blocks.
@@ -119,6 +117,7 @@ define(["./template"], function (template) {
 			// Otherwise parse as HTML, to allow for missing closing tags, ex: <ul> <li>1 <li>2 </ul>.
 			var root;
 			if (/<svg/.test(templateText)) {
+				var parser = new DOMParser();
 				root = parser.parseFromString(adjustedTemplate, "text/xml").firstChild;
 				while (root.nodeType !== 1) {
 					// Skip top level comment and move to "real" template root node.
@@ -126,7 +125,8 @@ define(["./template"], function (template) {
 					root = root.nextSibling;
 				}
 			} else {
-				// Note that Safari doesn't support DOMParser.parseFromString(str, "text/html")
+				// Use innerHTML because Safari doesn't support DOMParser.parseFromString(str, "text/html")
+				var container = document.createElement("div");
 				container.innerHTML = adjustedTemplate;
 				root = container.firstElementChild; // use .firstElementChild to skip possible top level comment
 			}
@@ -150,7 +150,7 @@ define(["./template"], function (template) {
 			return func;
 		},
 
-		load: function (mid, require, onload) {
+		load: function (mid, require, onload, config) {
 			// summary:
 			//		Returns a function to generate the DOM specified by the template.
 			//		This is the function run when you use this module as a plugin.
@@ -161,10 +161,22 @@ define(["./template"], function (template) {
 			// onload: Function
 			//		Callback function which will be called, when the loading finishes
 			//		and the stylesheet has been inserted.
+			// config: Object
+			//		A configuration object with isLoad=true when doing a build.
 
-			require(["dojo/text!" + mid], function (template) {
-				onload(handlebars.compile(template));
+			require(["requirejs-text/text!" + mid], function (template) {
+				if (config && config.isBuild) {
+					onload();
+				} else {
+					onload(handlebars.compile(template));
+				}
 			});
+		},
+
+		write: function (pluginName, moduleName, write, config) {
+			// summary:
+			//		Used by builds
+			text.write(pluginName, moduleName, write, config);
 		}
 	};
 
