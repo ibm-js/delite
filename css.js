@@ -33,7 +33,7 @@ define(["dojo/dom-construct"], function (domConstruct) {
 		//		The CSS files or modules are specified as a comma separated list, for example
 		//		delite/css!../foo.css,../bar.css or for modules, delite/css!../foo,../bar.
 		//
-		//		Similar to dojo/text!, this plugin won't resolve until it has completed loading the specified CSS.
+		//		Similar to text!, this plugin won't resolve until it has completed loading the specified CSS.
 		//		
 		//		This loader has the following limitations:
 		//
