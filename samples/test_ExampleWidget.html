@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+
+	<title>Delite - ExampleWidget test page</title>
+
+	<!--
+		Normally would just include require.js directly, but using boilerplate.js
+		to parse URL parameters such as dir=rtl.
+	-->
+	<script type="text/javascript" src="../tests/boilerplate.js"></script>
+
+	<script type="text/javascript">
+		require([
+			"delite/register",
+			"delite/samples/ExampleWidget",
+			"dojo/domReady!"
+		], function (register) {
+			register.parse();
+		});
+	</script>
+
+</head>
+<body>
+	<d-example></d-example>
+
+	<br>
+	<a href="./test_ExampleWidget.html?dir=ltr">force LTR mode</a>
+	<a href="./test_ExampleWidget.html?dir=rtl">force RTL mode</a>
+	<a href="./test_ExampleWidget.html?theme=ios">force iOS theme</a>
+</body>
+
+</html>
