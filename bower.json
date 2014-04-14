@@ -4,7 +4,7 @@
 	"dependencies": {
 		"dojo": ">=1.9.1",
 		"requirejs": "2.1.x",
-		"requirejs-text": ">=2.0.10",
+		"requirejs-text": ">=2.0.11",
 		"dcl": "1.1.x"
 	},
 	"devDependencies": {
