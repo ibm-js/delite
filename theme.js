@@ -1,11 +1,13 @@
 define([
 	"require",
 	"dojo/has",
-	"dojo/_base/config",
+	"module",
 	"./css"		// listed here for builder, so delite/css is included into the layer
-], function (req, has, config) {
+], function (req, has, module) {
 
 	"use strict";
+
+	var config = module.config();
 
 	var load = {
 		// summary:
