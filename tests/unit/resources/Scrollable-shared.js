@@ -5,9 +5,11 @@ define([
 	"dojo/dom-class"
 ], function (registerSuite, assert, domGeom, domClass) {
 
-	// This object, used by the tests of delite/Scrollable, is reused by
-	// the tests of deliteful/ScrollableContainer.
-
+	// Test cases for both delite/Scrollable and deliteful/ScrollableContainer.
+	// Since we can not reuse test files accross projects, there are two copies of
+	// this file, one in delite/unit/tests/resources and another in 
+	// deliteful/unit/tests/resources. They need to be kept in sync.
+	
 	var shared = {
 		// This is to allow the tests of deliteful/ScrollableContainer
 		// to modify the class name.
