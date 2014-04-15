@@ -18,7 +18,7 @@ module.exports = function(grunt) {
 				var contents = fs.readFileSync(f, {encoding: "utf-8"});
 
 				// Replace {{theme}} with name of current theme; used by ExampleWidget
-				var theme = f.replace(/themes\//, "").replace(/\/[^/]+$/, "");
+				var theme = f.replace(/.*\/themes\//, "").replace(/\/[^/]+$/, "");
 				contents = contents.replace(/{{theme}}/g, theme);
 
 				var destFile = f.replace(/\.css$/, "_css.js");

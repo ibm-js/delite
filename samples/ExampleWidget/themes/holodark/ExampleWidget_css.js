@@ -4,6 +4,6 @@ define(function(){ return '\
   background: #333333;\
 }\
 .d-example-widget:after {\
-  content: " (ExampleWidget/holodark theme)";\
+  content: " (holodark theme)";\
 }\
 '; } );

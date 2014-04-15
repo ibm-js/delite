@@ -43,7 +43,11 @@ module.exports = function (grunt) {
 				files: [
 					{
 						expand: true,
-						src: ["*/themes/*/*.less", "!{dijit,mobile}/themes/*/*.less"],
+						src: [
+							"*/themes/*/*.less",
+							"samples/ExampleWidget/themes/*/*.less",
+							"!{dijit,mobile}/themes/*/*.less"
+						],
 						ext: ".css"
 					}
 				]
@@ -55,8 +59,15 @@ module.exports = function (grunt) {
 			// convert CSS files generated from LESS files
 			intermediate: {
 				src: [
-					"themes/*/*.css", "!themes/common/*.css", "themes/common/transitions/*.css",	// infrastructure
-					"*/themes/*/*.css", "!{dijit,mobile}/themes/*/*.css"	// widgets
+					// infrastructure
+					"themes/*/*.css",
+					"!themes/common/*.css",
+					"themes/common/transitions/*.css",
+
+					// widgets
+					"*/themes/*/*.css",
+					"samples/ExampleWidget/themes/*/*.css",
+					"!{dijit,mobile}/themes/*/*.css"
 				],
 				options: {
 					remove: true
@@ -103,7 +114,8 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks("grunt-contrib-uglify");
 	grunt.loadTasks("themes/tasks");// Custom cssToJs task to convert CSS to JS
 
-	grunt.registerTask("default", ["less", "cssToJs"]);
+	grunt.registerTask("css", ["less", "cssToJs"]);
+
 	// always specify the target e.g. grunt test:remote, grunt test:remote
 	// then add on any other flags afterwards e.g. console, lcovhtml
 	var testTaskDescription = "Run this task instead of the intern task directly! \n" +

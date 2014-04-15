@@ -4,6 +4,6 @@ define(function(){ return '\
   background: #3c763d;\
 }\
 .d-example-widget:after {\
-  content: " (ExampleWidget/bootstrap theme)";\
+  content: " (bootstrap theme)";\
 }\
 '; } );
