@@ -1,12 +1,7 @@
 define([
-	"require",			// require.toUrl
-	"dojo/_base/config",
-	"dojo/dom-construct", // domConstruct.create
-	"dojo/dom-style", // domStyle.set
 	"dojo/_base/lang", // lang.extend
-	"dojo/on",
-	"dojo/sniff" // has("ie"), has("mozilla"), has("quirks")
-], function (require, config, domConstruct, domStyle, lang, on, has) {
+	"dojo/has"
+], function (lang, has) {
 
 	// module:
 	//		delite/BackgroundIFrame
@@ -29,21 +24,10 @@ define([
 				iframe = queue.pop();
 				iframe.style.display = "";
 			} else {
-				// transparency needed for DialogUnderlay and for tooltips on IE (to see screen near connector)
-				if (has("ie") < 9) {
-					var burl = config.dojoBlankHtmlUrl || require.toUrl("dojo/resources/blank.html") ||
-						"javascript:\"\"";
-					var html = "<iframe src='" + burl + "' role='presentation'"
-						+ " style='position: absolute; left: 0px; top: 0px;"
-						+ "z-index: -1; filter:Alpha(Opacity=\"0\");'>";
-					iframe = document.createElement(html);
-				} else {
-					iframe = domConstruct.create("iframe");
-					iframe.src = "javascript:''";
-					iframe.className = "d-background-iframe";
-					iframe.setAttribute("role", "presentation");
-					domStyle.set(iframe, "opacity", 0.1);
-				}
+				iframe = document.createElement("iframe");
+				iframe.src = "javascript:''";
+				iframe.className = "d-background-iframe";
+				iframe.setAttribute("role", "presentation");
 
 				// Magic to prevent iframe from getting focus on tab keypress - as style didn't work.
 				iframe.tabIndex = -1;
@@ -69,16 +53,11 @@ define([
 		//		Makes a background iframe as a child of node, that fills
 		//		area (and position) of node
 
-		if (!node.id) {
-			throw new Error("no id");
-		}
 		if (has("config-bgIframe")) {
 			var iframe = (this.iframe = _frames.pop());
 			node.appendChild(iframe);
-			domStyle.set(iframe, {
-				width: "100%",
-				height: "100%"
-			});
+			iframe.style.width = "100%";
+			iframe.style.height = "100%";
 		}
 	};
 
