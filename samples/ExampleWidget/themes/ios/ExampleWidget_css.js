@@ -8,6 +8,6 @@ define(function () {
   background: #5877a2;\
 }\
 .d-example-widget:after {\
-  content: \" (ios theme)\";\
+  content: \" (iOS theme)\";\
 }";
 });
