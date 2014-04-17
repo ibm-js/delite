@@ -12,9 +12,9 @@ Before proceeding, checkout [setup page](setup.md) on how to setup a project usi
 
 ##### Table of Contents
 [Using DisplayContainer](#using)  
-[Extending DisplayContainer](#extending)
-[Events](#events)
-[Writing a Controller for DisplayContainer](#controller)  
+[Extending DisplayContainer](#extending)  
+[Events](#events)  
+[Writing a Controller for DisplayContainer](#controller)    
 
 <a name="using"></a>
 ## Using DisplayContainer
