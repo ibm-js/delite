@@ -1,4 +1,8 @@
-define(function(){ return '\
+define(function () {
+	/* jshint multistr: true */
+	/* jshint -W015 */
+	/* jshint -W033 */
+	return "\
 .d-readonly *,\
 .d-disabled *,\
 .d-readonly,\
@@ -24,7 +28,7 @@ html {\
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);\
 }\
 body {\
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;\
+  font-family: \"Helvetica Neue\", Helvetica, Arial, sans-serif;\
   font-size: 14px;\
   line-height: 1.428571429;\
   color: #333333;\
@@ -73,5 +77,5 @@ hr {\
   -webkit-box-shadow: none;\
   -moz-box-shadow: none;\
   box-shadow: none;\
-}\
-'; } );
+}";
+});

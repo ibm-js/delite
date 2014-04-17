@@ -1,4 +1,8 @@
-define(function(){ return '\
+define(function () {
+	/* jshint multistr: true */
+	/* jshint -W015 */
+	/* jshint -W033 */
+	return "\
 .d-scrollable {\
   display: block;\
   /* enable momentum: */\
@@ -13,5 +17,5 @@ define(function(){ return '\
 .d-scrollable-v {\
   /* enable vertical scrolling: */\
   overflow-y: auto;\
-}\
-'; } );
+}";
+});

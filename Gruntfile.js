@@ -7,8 +7,8 @@ module.exports = function (grunt) {
 
 		jshint: {
 			src: [
-				// only doing top level files for now, to avoid old files in dijit/, form/, layout/, and mobile
-				"*.js"
+				"**/*.js",
+				"!{node_modules,nls,tests,dijit,form,layout,mobile}/**/*.js"	// TODO: enable for tests
 			],
 			options: {
 				jshintrc: ".jshintrc"
