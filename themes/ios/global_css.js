@@ -1,4 +1,8 @@
-define(function(){ return '\
+define(function () {
+	/* jshint multistr: true */
+	/* jshint -W015 */
+	/* jshint -W033 */
+	return "\
 .d-readonly *,\
 .d-disabled *,\
 .d-readonly,\
@@ -47,5 +51,5 @@ body {\
   -webkit-box-shadow: none;\
   -moz-box-shadow: none;\
   box-shadow: none;\
-}\
-'; } );
+}";
+});

@@ -1,4 +1,8 @@
-define(function(){ return '\
+define(function () {
+	/* jshint multistr: true */
+	/* jshint -W015 */
+	/* jshint -W033 */
+	return "\
 .dojoDndItem {\
   padding: 2px;\
   -webkit-touch-callout: none;\
@@ -67,7 +71,7 @@ table.dojoDndAvatar {\
 }\
 .dojoDndMove .dojoDndAvatarHeader,\
 .dojoDndCopy .dojoDndAvatarHeader {\
-  background-image: url("images/dnd.png");\
+  background-image: url(\"images/dnd.png\");\
   background-repeat: no-repeat;\
   background-position: 2px -122px;\
 }\
@@ -97,5 +101,5 @@ table.dojoDndAvatar {\
 .d-rtl .dojoDndHorizontal .dojoDndItemAfter {\
   border-width: 0 0 0 2px;\
   padding: 2px 2px 2px 0;\
-}\
-'; } );
+}";
+});

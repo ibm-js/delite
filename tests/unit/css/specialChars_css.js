@@ -1,4 +1,8 @@
-define(function(){ return '\
+define(function () {
+	/* jshint multistr: true */
+	/* jshint -W015 */
+	/* jshint -W033 */
+	return "\
 /*\
  * This file is to test CSS --> JS conversion for:\
  *	- UTF-8 characters\
@@ -6,8 +10,9 @@ define(function(){ return '\
  *	- single and double quotes\
  */\
 .native::before {\
-	content: "☑"	/* ballot box with check */\
+	content: \"☑\"	/* ballot box with check */\
 }\
 .encoded::before {\
-	content: \'\\2611\'	/* ballot box with check */\
-}'; } );
+	content: '\\2611'	/* ballot box with check */\
+}";
+});

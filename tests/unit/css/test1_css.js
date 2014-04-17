@@ -1,7 +1,12 @@
-define(function(){ return '\
+define(function () {
+	/* jshint multistr: true */
+	/* jshint -W015 */
+	/* jshint -W033 */
+	return "\
 /* For testing of delite/css! plugin */\
 .test1 {\
 	color: red;\
 	border: 1px solid black;\
-	background-image: url("../images/plus.gif");	/* for testing path correction */\
-}'; } );
+	background-image: url(\"../images/plus.gif\");	/* for testing path correction */\
+}";
+});
