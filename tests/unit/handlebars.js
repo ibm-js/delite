@@ -8,7 +8,7 @@ define([
 	"delite/handlebars!./templates/SimpleHandleBarsButton.html",
 	"delite/handlebars!./templates/HandlebarsButton.html",
 	"delite/handlebars!./templates/SvgWidget.html"
-], function (registerSuite, assert,  on, handlebars, register, Widget, simpleHBTmpl, buttonHBTmpl, svgTmpl) {
+], function (registerSuite, assert, on, handlebars, register, Widget, simpleHBTmpl, buttonHBTmpl, svgTmpl) {
 	var container, myButton;
 	registerSuite({
 		name: "handlebars",
@@ -44,7 +44,7 @@ define([
 
 			var TestHtml = register("test-data-attach-point", [HTMLElement, Widget], {
 				buildRendering: handlebars.compile(
-					"<div data-attach-point='root,root2'>" +
+						"<div data-attach-point='root,root2'>" +
 						"<button data-attach-point='myButton, myButton2'>hi</button>" +
 						"</div>"
 				)
@@ -98,7 +98,7 @@ define([
 				inputValue: "original value",	// must be set as property
 				role: "originalRole",			// must be set as attribute
 				buildRendering: handlebars.compile(
-					"<special-props><input class='{{inputClass}}' value='{{inputValue}}' " +
+						"<special-props><input class='{{inputClass}}' value='{{inputValue}}' " +
 						"role='{{role}}'/></special-props>"
 				)
 			});
@@ -163,7 +163,7 @@ define([
 				content: "original content",
 				buttonLabel: "original button label",
 				buildRendering: handlebars.compile(
-					"<widgets-in-template>" +
+						"<widgets-in-template>" +
 						"<simple-heading text='{{heading}}'></simple-heading>" +
 						"<span>{{content}}</span>" +
 						"<button is='test-button' label='{{buttonLabel}}'></button>" +

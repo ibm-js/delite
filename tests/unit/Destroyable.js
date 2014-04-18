@@ -37,7 +37,7 @@ define([
 				}),
 
 				// watch external watchMe class (to be unwatch()'d when I'm destroyed)
-				watchMe.watch("x", function (name, oVal, nVal) {
+				watchMe.watch("x", function () {
 					self.watches++;
 				})
 			);
@@ -55,16 +55,16 @@ define([
 			destroyable1 = new DestroyableSubClass();
 			container.appendChild(destroyable1.domNode);
 		},
-		"one click" : function () {
+		"one click": function () {
 			destroyable1.domNode.click();
 			assert.strictEqual(1, destroyable1.clicks);
 		},
-		"one watch notification" : function () {
+		"one watch notification": function () {
 			// make sure watch handler was setup
 			watchMe.set("x", 1);
 			assert.strictEqual(1, destroyable1.watches);
 		},
-		"destroy one of the supporting widgets" : function () {
+		"destroy one of the supporting widgets": function () {
 			// manually destroy one of the supporting widgets
 			destroyable1.sw1.destroy();
 			assert.strictEqual(1, destroyable1.sw1.destroyCalls);
@@ -74,24 +74,24 @@ define([
 		// 		- destroy the sw2 supporting widget, but not try to re-destroy sw1
 		//		- disconnect the watch() listener on watchMe
 		//		- disconnect the click event handler on destroyable1.domNode
-		"sw1 wasn't redestroyed" : function () {
+		"sw1 wasn't redestroyed": function () {
 			destroyable1.destroy();
 			assert.strictEqual(1, destroyable1.sw1.destroyCalls);
 
 		},
-		"sw2 was destroyed" : function () {
+		"sw2 was destroyed": function () {
 			destroyable1.domNode.click();
 			assert.strictEqual(1, destroyable1.sw2.destroyCalls);
 		},
-		"no new click notification" : function () {
+		"no new click notification": function () {
 			destroyable1.domNode.click();
 			assert.strictEqual(1, destroyable1.clicks);
 		},
-		"no new watch notification" : function () {
+		"no new watch notification": function () {
 			watchMe.set("x", 2);
 			assert.strictEqual(1, destroyable1.watches);
 		},
-		teardown : function () {
+		teardown: function () {
 			container.parentNode.removeChild(container);
 		}
 	});

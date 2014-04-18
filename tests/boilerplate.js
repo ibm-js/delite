@@ -24,7 +24,7 @@ if (window.location.href.indexOf("?") > -1) {
 	for (var i = 0; i < ary.length; i++) {
 		var split = ary[i].split("="),
 			key = split[0],
-			value = (split[1] || '').replace(/[^\w]/g, "");	// replace() to prevent XSS attack
+			value = (split[1] || "").replace(/[^\w]/g, "");	// replace() to prevent XSS attack
 		switch (key) {
 		case "locale":
 			// locale string | null
@@ -43,21 +43,22 @@ if (window.location.href.indexOf("?") > -1) {
 	}
 }
 
-// Find the <script src="boilerplate.js"> tag, to get test directory and data-dojo-config argument
-var scripts = document.getElementsByTagName("script"), script, overrides = {};
-for (i = 0; script = scripts[i]; i++) {
+// Find the <script src="boilerplate.js"> tag, to get test directory and data-config argument
+var scripts = document.getElementsByTagName("script"), script, overrides = {}, testDir;
+for (i = 0; (script = scripts[i]); i++) {
 	var src = script.getAttribute("src"),
 		match = src && src.match(/(.*|^)boilerplate\.js/i);
 	if (match) {
-		// Sniff location of delite/tests directory relative to this test file.   testDir will be an empty string if it's
-		// the same directory, or a string including a slash, ex: "../", if the test is in a subdirectory.
+		// Sniff location of delite/tests directory relative to this test file.  testDir will be an empty string if
+		// it's the same directory, or a string including a slash, ex: "../", if the test is in a subdirectory.
 		testDir = match[1];
 
 		// Sniff configuration on attribute in script element.
 		// Allows syntax like <script src="boilerplate.js data-dojo-config="parseOnLoad: true">, where the settings
 		// specified override the default settings.
-		var attr = script.getAttribute("data-dojo-config");
+		var attr = script.getAttribute("data-config");
 		if (attr) {
+			/* jshint evil:true */
 			overrides = eval("({ " + attr + " })");
 		}
 		break;
@@ -65,20 +66,21 @@ for (i = 0; script = scripts[i]; i++) {
 }
 
 // Setup configuration options for the loader
+/* global require:true */
 require = {
 	baseUrl: testDir + "../../",
 	packages: [
-		{name: 'dcl', location: 'dcl'},
-		{name: 'dojo', location: 'dojo'},
-		{name: 'delite', location: 'delite'},
-		{name: 'deliteful', location: 'deliteful'},
-		{name: 'dojox', location: 'dojox'},
-		{name: 'doh', location: 'util/doh'}
+		{name: "dcl", location: "dcl"},
+		{name: "dojo", location: "dojo"},
+		{name: "delite", location: "delite"},
+		{name: "deliteful", location: "deliteful"},
+		{name: "dojox", location: "dojox"},
+		{name: "doh", location: "util/doh"}
 	],
 	locale: locale || "en-us",
 	config: {
-		'dojo/has': {
-			'dojo-bidi': dir == "rtl"
+		"dojo/has": {
+			"dojo-bidi": dir === "rtl"
 		}
 	}
 };
@@ -87,14 +89,15 @@ for (var key in overrides) {
 }
 
 // Output the boilerplate text to load the loader.
-document.write('<script type="text/javascript" src="' + testDir + '../../requirejs/require.js"></script>');
+document.write("<script type='text/javascript' src='" + testDir + "../../requirejs/require.js'></script>");
 
 // On IE9 the following inlined script will run before dojo has finished loading, leading to an error because require()
 // isn't defined yet.  Workaround it by putting the code in a separate file.
 //document.write('<script type="text/javascript">require(["dojo/domReady!"], boilerplateOnLoad);</script>');
-document.write('<script type="text/javascript" src="' + testDir + 'boilerplateOnload.js"></script>');
+document.write("<script type='text/javascript' src='" + testDir + "boilerplateOnload.js'></script>");
 
-function boilerplateOnLoad() {
+/* global boilerplateOnLoad:true */
+boilerplateOnLoad = function () {
 	// This function is the first registered domReady() callback.
 
 	// a11y (flag for faux high-contrast testing)
@@ -103,7 +106,7 @@ function boilerplateOnLoad() {
 	}
 
 	// BIDI
-	if (dir == "rtl") {
+	if (dir === "rtl") {
 		// set dir=rtl on <html> node
 		document.body.parentNode.setAttribute("dir", "rtl");
 
@@ -113,4 +116,4 @@ function boilerplateOnLoad() {
 			query("label").attr("dir", "rtl");
 		});
 	}
-}
+};

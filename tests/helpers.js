@@ -18,8 +18,8 @@ define([
 			//		Return true if node/widget is visible
 			var p;
 
-			return (domStyle.get(node, "display") != "none") &&
-				(domStyle.get(node, "visibility") != "hidden") &&
+			return (domStyle.get(node, "display") !== "none") &&
+				(domStyle.get(node, "visibility") !== "hidden") &&
 				(p = domGeometry.position(node, true), p.y + p.h >= 0 && p.x + p.w >= 0 && p.h && p.w);
 		},
 
@@ -28,8 +28,8 @@ define([
 			//		Return true if node/widget is hidden
 			var p;
 
-			return (domStyle.get(node, "display") == "none") ||
-				(domStyle.get(node, "visibility") == "hidden") ||
+			return (domStyle.get(node, "display") === "none") ||
+				(domStyle.get(node, "visibility") === "hidden") ||
 				(p = domGeometry.position(node, true), p.y + p.h < 0 || p.x + p.w < 0 || p.h <= 0 || p.w <= 0);
 		},
 
@@ -60,7 +60,7 @@ define([
 							pos: elems.length
 						});
 					}
-					if (child.nodeName.toUpperCase() != 'SELECT') {
+					if (child.nodeName.toUpperCase() !== "SELECT") {
 						walkTree(child);
 					}
 				});
@@ -69,7 +69,7 @@ define([
 			walkTree(root || document.body);
 
 			elems.sort(function (a, b) {
-				return a.tabIndex != b.tabIndex ? a.tabIndex - b.tabIndex : a.pos - b.pos;
+				return a.tabIndex !== b.tabIndex ? a.tabIndex - b.tabIndex : a.pos - b.pos;
 			});
 			return elems.map(function (elem) {
 				return elem.elem;
@@ -80,15 +80,16 @@ define([
 		onFocus: function onFocus(func, delay) {
 			// summary:
 			//		Wait for the next change of focus, and then delay ms (so widget has time to react to focus event),
-			//		then call func(node) with the currently focused node.  Note that if focus changes again during delay,
-			//		newest focused node is passed to func.
+			//		then call func(node) with the currently focused node.  Note that if focus changes again during
+			//		delay, newest focused node is passed to func.
 
 			if (!focusListener) {
-				focusListener = on(dojo.doc, "focusin", function (evt) {
+				focusListener = on(document, "focusin", function (evt) {
 					// Track most recently focused node; note it may change again before delay completes
 					curFocusNode = evt.target;
 
-					// If a handler was specified to fire after the next focus event (plus delay), set timeout to run it.
+					// If a handler was specified to fire after the next focus event (plus delay),
+					// set timeout to run it.
 					if (focusCallback) {
 						var callback = focusCallback;
 						focusCallback = null;
@@ -118,10 +119,10 @@ define([
 					return w.onLoadDeferred;
 				});
 			console.log("Waiting for " + widgets.length + " widgets: " +
-				array.map(widgets,function (w) {
+				widgets.map(function (w) {
 					return w.id;
 				}).join(", "));
-			new all(deferreds).then(function () {
+			all(deferreds).then(function () {
 				console.log("All widgets loaded.");
 				d.resolve(widgets);
 			});

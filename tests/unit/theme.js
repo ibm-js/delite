@@ -3,15 +3,15 @@ define([
 	"intern!object",
 	"intern/chai!assert"
 ], function (require, registerSuite, assert) {
-	
+
 	function getStyles() {
 		// summary:
 		//		Debugging method to get all the styles in the document.
-		return Array.prototype.map.call(document.getElementsByTagName("style"),function (s) {
+		return Array.prototype.map.call(document.getElementsByTagName("style"), function (s) {
 			return "<style>\n" + s.innerHTML.substr(0, 100) + "\n</style>";
 		}).join("\n");
 	}
-	
+
 	registerSuite({
 		name: "theme",
 		"load global_css": function () {

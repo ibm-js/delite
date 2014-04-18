@@ -32,10 +32,10 @@ define([
 			TestContainer = register("test-container", [HTMLElement, Widget, Container], {});
 			TestContained = register("test-contained", [HTMLElement, Widget], {});
 		},
-		"parse" : function () {
+		"parse": function () {
 			register.parse(container);
 		},
-		"basic tests getChildren" : function () {
+		"basic tests getChildren": function () {
 			var c = document.getElementById("container");
 			var children = c.getChildren();
 			assert.deepEqual(5, children.length);
@@ -45,7 +45,7 @@ define([
 			assert.deepEqual("three", children[3].id);
 			assert.deepEqual("four", children[4].id);
 		},
-		"basic tests getIndexOfChild" : function () {
+		"basic tests getIndexOfChild": function () {
 			var c = document.getElementById("container");
 			assert.deepEqual(0, c.getIndexOfChild(document.getElementById("zero")), "zero test");
 			assert.deepEqual(1, c.getIndexOfChild(document.getElementById("one")), "one test");
@@ -56,17 +56,17 @@ define([
 			assert.deepEqual(-1, c.getIndexOfChild(document.getElementById("outsideCont")), "outsideCont test");
 
 		},
-		"basic tests getNextSibling" : function () {
+		"basic tests getNextSibling": function () {
 			var c = document.getElementById("container");
 			assert.deepEqual("one", c.getNextSibling(document.getElementById("zero")).id, "zero next");
 			assert(!c.getNextSibling(document.getElementById("four")), "four next");
 		},
-		"basic tests getPreviousSibling" : function () {
+		"basic tests getPreviousSibling": function () {
 			var c = document.getElementById("container");
 			assert.deepEqual("zero", c.getPreviousSibling(document.getElementById("one")).id, "one prev");
 			assert(!c.getPreviousSibling(document.getElementById("zero")), "zero prev");
 		},
-		"basic tests removeChild" : function () {
+		"basic tests removeChild": function () {
 			var c = document.getElementById("container");
 			var children = c.getChildren();
 			assert.deepEqual(5, children.length);
@@ -81,7 +81,7 @@ define([
 			assert.deepEqual("one", children[0].id);
 			assert.deepEqual("three", children[1].id);
 		},
-		"basic tests addChild" : function () {
+		"basic tests addChild": function () {
 			var c = document.getElementById("container");
 			// Add child at beginning
 			c.addChild(zero, 0);

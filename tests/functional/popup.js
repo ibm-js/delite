@@ -29,7 +29,7 @@ define(["intern!object",
 					.isDisplayed(function (err, displayed) {
 						assert.isTrue(displayed, "choiceDropDown popup visible");
 					})
-				.end()
+					.end()
 				.elementById("choiceDropDownButton_dropdown")	// parent of choiceDropDown
 				.getAttribute("role").then(function (role) {
 					assert.strictEqual(role, "region", "popup's wrapper node needs role=region");
@@ -110,15 +110,15 @@ define(["intern!object",
 		"x/y placement": function () {
 			return this.remote
 				.elementById("openAt1015Button")
-				.click()
-				.end()
+					.click()
+					.end()
 				.execute("return domGeometryGlobal.position(xyPopup)").then(function (value) {
 					assert.strictEqual(value.x, 10, "popup x coord");
 					assert.strictEqual(value.y, 15, "popup y coord");
 				})
 				.elementById("closeAt1015Button")
-				.click()
-				.end()
+					.click()
+					.end();
 		},
 
 		"orient callback": {
@@ -137,7 +137,7 @@ define(["intern!object",
 					.execute("return tooltipGlobal.orientCalls.length").then(function (value) {
 						assert.notStrictEqual(value, 0, "tooltipGlobal.orientCalls.length");
 					})
-					.execute("return tooltipGlobal.orientCalls.pop();").then(function (final){
+					.execute("return tooltipGlobal.orientCalls.pop();").then(function (final) {
 						assert.strictEqual(final.corner, "TL", "popup corner");
 						assert.strictEqual(final.aroundCorner, "BL", "aroundNode corner");
 					})
@@ -152,8 +152,8 @@ define(["intern!object",
 				return this.remote
 					.execute("tooltipGlobal.orientCalls = []; delete tooltipGlobal.onOpenArg;")
 					.elementById("openTooltipAt1015Button")
-					.click()
-					.end()
+						.click()
+						.end()
 					.execute("return tooltipGlobal.orientCalls.length").then(function (value) {
 						assert.notStrictEqual(value, 0, "tooltipGlobal.orientCalls.length");
 					})
@@ -169,8 +169,8 @@ define(["intern!object",
 						assert.strictEqual(value.aroundCorner, "BR", "aroundNode corner");
 					})
 					.elementById("closeTooltipAt1015Button")
-					.click()
-					.end();
+						.click()
+						.end();
 			}
 		},
 

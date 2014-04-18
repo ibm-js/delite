@@ -163,7 +163,7 @@ define([
 			o.b = "foo";
 			return d;
 		},
-		"NonWidget" : function () {
+		"NonWidget": function () {
 			var d = this.async(1000);
 			var C = dcl([Invalidating, Stateful, Evented], {
 				constructor: function () {
@@ -238,7 +238,7 @@ define([
 					this.addInvalidatingProperties("a");
 				},
 				a: null,
-				refreshRendering:  function () {
+				refreshRendering: function () {
 					d.reject("refreshRendering should not be called");
 				}
 			});

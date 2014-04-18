@@ -16,19 +16,25 @@ define([
 			container = document.createElement("div");
 			document.body.appendChild(container);
 		},
-		"declarative attributes" : function () {
-			global = 0;		// create intentional global
+		"declarative attributes": function () {
+			/* global global:true */
+			global = 0;
+
+			/* global global2:true */
 			global2 = { text: "global var" };
-			var Declarative = register("test-ce-declarative", [HTMLElement, CustomElement], {
+
+			register("test-ce-declarative", [HTMLElement, CustomElement], {
 				boolProp: false,
 				numProp: 0,
 				stringProp: "",
-				funcProp : function () { },
+				funcProp: function () {
+				},
 				objProp1: { },
 				objProp2: { }
 			});
 			container.innerHTML +=
-				"<test-ce-declarative id='d' boolProp='boolProp' numProp='5' stringProp='hello' funcProp='global=123;' objProp1='foo:1,bar:2' objProp2='global2'/>";
+				"<test-ce-declarative id='d' boolProp='boolProp' numProp='5' stringProp='hello' " +
+				"funcProp='global=123;' objProp1='foo:1,bar:2' objProp2='global2'/>";
 			var d = document.getElementById("d");
 			register.upgrade(d);
 			assert.isTrue(d.boolProp, "d.boolProp");
@@ -42,7 +48,7 @@ define([
 			assert.strictEqual(d.objProp2.text, "global var", "d.objProp2.text");
 		},
 
-		"setter not called on creation" : function () {
+		"setter not called on creation": function () {
 			// Setters are no longer called on creation except for parameters sent to new Foo(...)
 			var fooSetterCalled = false;
 			var MyCustomElement = register("my-custom-element", [HTMLElement, CustomElement], {
@@ -52,11 +58,12 @@ define([
 					this._set("foo", val);
 				}
 			});
-			new MyCustomElement();
+			var instance = new MyCustomElement();
+			assert(instance, "instance created");
 			assert.strictEqual(fooSetterCalled, false, "fooSetterCalled");
 		},
 
-		teardown : function () {
+		teardown: function () {
 			container.parentNode.removeChild(container);
 		}
 	});
@@ -74,7 +81,7 @@ define([
 			document.body.appendChild(container);
 		},
 		"#own": function () {
-			TestWidget = register("test-ce-lifecycle-custom-element", [HTMLElement, CustomElement], {
+			register("test-ce-lifecycle-custom-element", [HTMLElement, CustomElement], {
 				createdCallback: function () {
 					// Rather odd call to this.own() for testing the connections are dropped on destroy()
 					this.own(advise.after(obj, "foo", function () {
@@ -86,24 +93,24 @@ define([
 			document.body.appendChild(container);
 			container.innerHTML +=
 				"<test-ce-lifecycle-custom-element id='w1'></test-ce-lifecycle-custom-element>" +
-					"<test-ce-lifecycle-custom-element id='w2'></test-ce-lifecycle-custom-element>";
+				"<test-ce-lifecycle-custom-element id='w2'></test-ce-lifecycle-custom-element>";
 			register.parse(container);
-	
+
 			// test the connection
 			assert.strictEqual(calls, 0, "foo() not called yet");
 			obj.foo();
 			assert.strictEqual(calls, 2, "foo() called from each custom element");
 		},
-		"#destroy" : function () {
+		"#destroy": function () {
 			var w = document.getElementById("w1");
 			w.destroy();
 			assert.ok(!document.getElementById("w1"), "custom element no longer exists");
-	
+
 			// test the connection from w1 was destroyed (w2 still there)
 			calls = 0;
 			obj.foo();
 			assert.strictEqual(calls, 1, "connection was deleted");
-	
+
 			// test the DOM node was removed
 			assert.ok(!document.getElementById("w1"), "DOM Node removed");
 		}
@@ -118,7 +125,7 @@ define([
 				"<my-custom-element-on id='MyCustomElement' onclick='globalClicked++;' " +
 				"oncustom='globalCustom++;'>hi</my-CustomElement-on>";
 		},
-		"declarative" : function () {
+		"declarative": function () {
 			// Test that declarative instantiation (onfoo=...) works,
 			// and also that CustomElement.on() works.
 
@@ -139,7 +146,9 @@ define([
 			});
 
 			// Create variables accessed from the declarative custom element (see definition in <body>)
+			/* global globalClicked:true */
 			globalClicked = 0;
+			/* global globalCustom:true */
 			globalCustom = 0;
 
 			register.parse();
@@ -163,13 +172,14 @@ define([
 			assert.strictEqual(globalCustom, 1, "oncustom='...'");
 
 		},
-		"programmatic" : function () {
+		"programmatic": function () {
 			// Create a custom element with a custom "foo" event, plus the standard "click" event.
 			var MyCustomElement = register("my-widget2-on", [HTMLElement, CustomElement], {
 				foo: function () {
-					return this.emit('foo');
+					return this.emit("foo");
 				},
-				onfoo: function(){ },
+				onfoo: function () {
+				},
 				click: function () {
 					this.emit("click");
 				}
@@ -180,7 +190,7 @@ define([
 				onfoo: function (e) {
 					evt = e;
 				},
-				onclick: function (e) {
+				onclick: function () {
 					clicked++;
 				}
 			});
@@ -192,7 +202,7 @@ define([
 			w.click();
 			assert.strictEqual(clicked, 1, "one click event");
 		},
-		teardown : function () {
+		teardown: function () {
 			container.parentNode.removeChild(container);
 		}
 	});
@@ -233,11 +243,12 @@ define([
 			container.innerHTML = html;
 			register.parse(container);
 		},
-		"#findCustomElements" : function () {
+		"#findCustomElements": function () {
 			assert.strictEqual(CustomElement.prototype.findCustomElements(container).length, 3);
-			assert.strictEqual(CustomElement.prototype.findCustomElements(document.getElementById("threeWrapper")).length, 1);
+			assert.strictEqual(
+				CustomElement.prototype.findCustomElements(document.getElementById("threeWrapper")).length, 1);
 		},
-		teardown : function () {
+		teardown: function () {
 			container.parentNode.removeChild(container);
 		}
 	});

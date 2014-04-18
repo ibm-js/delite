@@ -162,7 +162,9 @@ require([
 
 				var watchedActiveStackIds, activeStackWatchNotifications = 0;
 				focus.watch("activeStack", function (attr, oldVal, newVal) {
-					watchedActiveStackIds = newVal.map(function(node){ return node.id; });
+					watchedActiveStackIds = newVal.map(function (node) {
+						return node.id;
+					});
 					activeStackWatchNotifications++;
 				});
 
@@ -175,7 +177,9 @@ require([
 						doh.is(dom.byId("select"), focus.curNode);
 
 						// The focus stack should show the ComboBox plus all parent widgets
-						var activeStackIds = focus.activeStack.map(function(node){ return node.id; });
+						var activeStackIds = focus.activeStack.map(function (node) {
+							return node.id;
+						});
 						doh.is("form, fieldset1, select", activeStackIds.join(", "), "active stack");
 
 						// Also check that we got (exactly) one watch notification about active stack
@@ -237,7 +241,9 @@ require([
 
 				setTimeout(d.getTestCallback(function () {
 					// The focus stack should show the Editor plus all parent widgets
-					var activeStackIds = focus.activeStack.map(function(node){ return node.id; });
+					var activeStackIds = focus.activeStack.map(function (node) {
+						return node.id;
+					});
 					doh.is("form, editor", activeStackIds.join(", "), "active stack");
 
 					// _onFocus()/_onBlur was called appropriately
@@ -271,7 +277,9 @@ require([
 
 				setTimeout(d.getTestCallback(function () {
 					// The focus stack should show the Spinner plus all parent widgets
-					var activeStackIds = focus.activeStack.map(function(node){ return node.id; });
+					var activeStackIds = focus.activeStack.map(function (node) {
+						return node.id;
+					});
 					doh.is("form, fieldset2, spinner", activeStackIds.join(", "), "active stack");
 
 					// check watch callbacks
@@ -400,64 +408,64 @@ require([
 </head>
 <body style="background-color: #fff; color: black; padding: 0; margin: 0" class="claro">
 
-<h3>delite/focus Automated Test</h3>
+	<h3>delite/focus Automated Test</h3>
 
-<label>a form ContentPane widget:</label><br>
+	<label>a form ContentPane widget:</label><br>
 
-<form id="form" data-dojo-type="delite/Widget">
-	<label for="first">simple input: </label><input id="first"/><br>
-	<label for="second">another simple input: </label><input id="second"/><br>
+	<form id="form" data-dojo-type="delite/Widget">
+		<label for="first">simple input: </label><input id="first"/><br>
+		<label for="second">another simple input: </label><input id="second"/><br>
 
-	<label>a fieldset ContentPane widget:</label><br>
-	<fieldset id=fieldset1 data-dojo-type="delite/Widget">
-		<label for="select">a ComboBox widget:</label>
-		<select id=select data-dojo-type="delite/form/ComboBox">
-			<option>this</option>
-			<option>is</option>
-			<option>a</option>
-			<option>list</option>
-		</select>
-		<label for="plain">a plain input:</label>
-		<input id=plain value=plain/>
-	</fieldset>
-	<label>Editor:</label><br>
+		<label>a fieldset ContentPane widget:</label><br>
+		<fieldset id=fieldset1 data-dojo-type="delite/Widget">
+			<label for="select">a ComboBox widget:</label>
+			<select id=select data-dojo-type="delite/form/ComboBox">
+				<option>this</option>
+				<option>is</option>
+				<option>a</option>
+				<option>list</option>
+			</select>
+			<label for="plain">a plain input:</label>
+			<input id=plain value=plain/>
+		</fieldset>
+		<label>Editor:</label><br>
 
-	<div id=editor data-dojo-type="FakeEditor">
-		Hello world, this is an <i>editor</i>
-	</div>
-	<br>
-	<label>another fieldset ContentPane:</label><br>
-	<fieldset id=fieldset2 data-dojo-type="delite/Widget">
-		<label for="date">a DateTextBox widget:</label>
-		<input id=date data-dojo-type="delite/form/DateTextBox"/><br>
+		<div id=editor data-dojo-type="FakeEditor">
+			Hello world, this is an <i>editor</i>
+		</div>
+		<br>
+		<label>another fieldset ContentPane:</label><br>
+		<fieldset id=fieldset2 data-dojo-type="delite/Widget">
+			<label for="date">a DateTextBox widget:</label>
+			<input id=date data-dojo-type="delite/form/DateTextBox"/><br>
 
-		<label for="textarea">a plain textarea:</label><br>
-		<textarea id=textarea>hello there!</textarea><br>
+			<label for="textarea">a plain textarea:</label><br>
+			<textarea id=textarea>hello there!</textarea><br>
 
-		<label for="spinner">a Spinner widget:</label>
-		<input id=spinner data-dojo-type="delite/form/NumberSpinner" data-dojo-props='value:100'/><br>
+			<label for="spinner">a Spinner widget:</label>
+			<input id=spinner data-dojo-type="delite/form/NumberSpinner" data-dojo-props='value:100'/><br>
 
-		<label>a Combobutton widget:</label>
+			<label>a Combobutton widget:</label>
 
-		<div id=button data-dojo-type="delite/form/ComboButton" data-dojo-props='tabIndex:"0"'>
-			<span>push me</span>
+			<div id=button data-dojo-type="delite/form/ComboButton" data-dojo-props='tabIndex:"0"'>
+				<span>push me</span>
 
-			<div id=menu data-dojo-type="delite/delite/Menu">
-				<div id=mi1 data-dojo-type="delite/delite/MenuItem">menu item 1</div>
-				<div id=mi2 data-dojo-type="delite/delite/MenuItem">menu item 2</div>
-				<div id=popupMenuItem data-dojo-type="delite/delite/PopupMenuItem">
-					<span>submenu</span>
+				<div id=menu data-dojo-type="delite/delite/Menu">
+					<div id=mi1 data-dojo-type="delite/delite/MenuItem">menu item 1</div>
+					<div id=mi2 data-dojo-type="delite/delite/MenuItem">menu item 2</div>
+					<div id=popupMenuItem data-dojo-type="delite/delite/PopupMenuItem">
+						<span>submenu</span>
 
-					<div id=submenu data-dojo-type="delite/delite/Menu">
-						<div id=smi1 data-dojo-type="delite/delite/MenuItem">submenu item 1</div>
-						<div id=smi2 data-dojo-type="delite/delite/MenuItem">submenu item 2</div>
+						<div id=submenu data-dojo-type="delite/delite/Menu">
+							<div id=smi1 data-dojo-type="delite/delite/MenuItem">submenu item 1</div>
+							<div id=smi2 data-dojo-type="delite/delite/MenuItem">submenu item 2</div>
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>
-	</fieldset>
-	<button tabIndex="-1" id="minusOne" type="button">non tab-navigable button</button>
-	<button id="disabledButton" type="button" disabled>disabled button</button>
-</form>
+		</fieldset>
+		<button tabIndex="-1" id="minusOne" type="button">non tab-navigable button</button>
+		<button id="disabledButton" type="button" disabled>disabled button</button>
+	</form>
 </body>
 </html>

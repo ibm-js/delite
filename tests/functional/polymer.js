@@ -15,11 +15,9 @@ define([
 
 		"widget created": function () {
 			return this.remote
-				.execute("return document.getElementById('example').textContent")
-				.then(function (value) {
-					assert(/Example Widget/.test(value), "textContent (" + value + ") contains Example Widget")
-				})
-				.end();
+				.execute("return document.getElementById('example').textContent").then(function (value) {
+					assert(/Example Widget/.test(value), "textContent (" + value + ") contains Example Widget");
+				});
 		}
 	});
 });
