@@ -1,12 +1,13 @@
-define({ root: //begin v1.x content
-	({
+define({
+	// begin v1.x content
+	root: {
 		buttonOk: "OK",
 		buttonCancel: "Cancel",
 		buttonSave: "Save",
 		itemClose: "Close"
-	})
-//end v1.x content
-	,
+	},
+	// end v1.x content
+
 	"zh": true,
 	"zh-tw": true,
 	"uk": true,

@@ -8,7 +8,11 @@ module.exports = function (grunt) {
 		jshint: {
 			src: [
 				"**/*.js",
-				"!{node_modules,nls,dijit,form,layout,mobile}/**/*.js"
+				"!{node_modules,dijit,form,layout,mobile}/**/*.js",
+
+				// Note: skip this file since it gives a JSHint error about a character being silently deleted.
+				// It will have to be fixed by the translators.
+				"!nls/he/loading.js"
 			],
 			options: {
 				jshintrc: ".jshintrc"
