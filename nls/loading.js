@@ -1,10 +1,11 @@
-define({ root: //begin v1.x content
-	({
+define({
+	// begin v1.x content
+	root: {
 		loadingState: "Loading...",
 		errorState: "Sorry, an error occurred"
-	})
-//end v1.x content
-	,
+	},
+	//end v1.x content
+
 	"zh": true,
 	"zh-tw": true,
 	"uk": true,
