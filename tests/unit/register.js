@@ -24,7 +24,7 @@ define([
 		// Test the parser doesn't fail when no widgets are registered.  It just shouldn't do anything.
 		// Unfortunately, since Intern doesn't have sandboxing, usually when this runs there are already
 		// widgets registered, so it's not actually testing anything yet.
-		"no widgets registered parse" : function () {
+		"no widgets registered parse": function () {
 			container.innerHTML = "<div>" +
 				"<button is='test-extended-button-widget' id=ebw2>hello</button>" +
 				"<span>random node</span>" +
@@ -35,7 +35,7 @@ define([
 		},
 
 		// Declare and instantiate a simple widget
-		"simple" : function () {
+		"simple": function () {
 			TestWidget = register("test-simple-widget", [HTMLElement], {
 				foo: 3,
 				createdCallback: function () {
@@ -81,7 +81,7 @@ define([
 		},
 
 		// Declare and instantiate a widget from a mixin that extends Stateful
-		"stateful" : function () {
+		"stateful": function () {
 			// Create a mixin for testing purposes.
 			// register() should call this.introspect() if it's defined, because it isn't called naturally.
 			Mixin = register.dcl(Stateful, {
@@ -216,7 +216,7 @@ define([
 		},
 
 		// Create element is like upgrade() but it also creates the element for you.
-		"createElement" : function () {
+		"createElement": function () {
 			var tw = register.createElement("test-widget");
 			assert.ok(tw.foo, "TestWidget.foo");
 
@@ -226,14 +226,14 @@ define([
 		},
 
 		// Test the new MyWidget() syntactic sugar
-		"new" : function () {
+		"new": function () {
 			var tw = new TestWidget({});
 			assert.ok(tw.foo, "TestWidget.foo");
 			assert.strictEqual("test-widget", tw.nodeName.toLowerCase(), "nodeName of TestWidget");
 		},
 
 		// Test the parser, which scans the DOM for registered widgets and upgrades them
-		"parse" : function () {
+		"parse": function () {
 			register("test-parser-widget", [HTMLElement, Mixin], {
 				createdCalls: 0,
 				startupCalls: 0,
@@ -264,22 +264,23 @@ define([
 		},
 
 		// Test error conditions
-		"errors" : function () {
+		"errors": function () {
 			var threw;
 
 			try {
-				register("test-bad-inheritance", [Stateful], { } );
+				register("test-bad-inheritance", [Stateful], { });
 			} catch (err) {
-				assert(/must have HTMLElement in prototype chain/.test(err.toString()), "err not extending HTMLElement");
+				assert(/must have HTMLElement in prototype chain/.test(err.toString()),
+					"err not extending HTMLElement");
 				threw = true;
 			}
 			assert(threw, "threw error when not extending HTMLElement");
 
 
-			register("test-repeated-tag", [HTMLElement, Mixin], { } );
+			register("test-repeated-tag", [HTMLElement, Mixin], { });
 			threw = false;
 			try {
-				register("test-repeated-tag", [HTMLElement], { } );
+				register("test-repeated-tag", [HTMLElement], { });
 			} catch (err) {
 				assert(/A widget is already registered with tag/.test(err.toString()), "err repeating tag");
 				threw = true;

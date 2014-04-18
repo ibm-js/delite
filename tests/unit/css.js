@@ -109,8 +109,8 @@ define([
 			// Also tests that the new style nodes occur before the user defined style nodes.
 			require([
 				"delite/css!delite/tests/unit/css/test2.css," +
-					"delite/tests/unit/css/test1.css," +
-					"delite/tests/unit/css/test3.css"
+				"delite/tests/unit/css/test1.css," +
+				"delite/tests/unit/css/test3.css"
 			], d.callback(function () {
 				// Test that each module loaded exactly once
 				var styles = getStyles();
@@ -148,7 +148,7 @@ define([
 			return d;
 		},
 
-		teardown : function () {
+		teardown: function () {
 			container.parentNode.removeChild(container);
 		}
 	});

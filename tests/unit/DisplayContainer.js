@@ -22,15 +22,18 @@ define([
 			var deferred = new Deferred();
 			register("test-default-display-container", [HTMLElement, Widget, DisplayContainer]);
 			var dcontainer = register.createElement("test-default-display-container");
+
 			function initView(view) {
 				dcontainer.appendChild(view);
 				view.style.visibility = "hidden";
 				view.style.display = "none";
 			}
+
 			function testView(view) {
 				assert.strictEqual(view.style.visibility, "visible", "visibility");
 				assert.strictEqual(view.style.display, "", "display");
 			}
+
 			var view1 = document.createElement("div");
 			initView(view1);
 			var view2 = document.createElement("div");
@@ -60,15 +63,18 @@ define([
 			var deferred = new Deferred();
 			register("test-hide-display-container", [HTMLElement, Widget, DisplayContainer]);
 			var dcontainer = register.createElement("test-hide-display-container");
+
 			function initView(view) {
 				dcontainer.appendChild(view);
 				view.style.visibility = "visible";
 				view.style.display = "";
 			}
+
 			function testView(view) {
 				assert.strictEqual(view.style.visibility, "hidden", "visibility");
 				assert.strictEqual(view.style.display, "none", "display");
 			}
+
 			var view1 = document.createElement("div");
 			initView(view1);
 			var view2 = document.createElement("div");
@@ -101,11 +107,13 @@ define([
 		event: function () {
 			this.timeout = 2500;
 			var deferred = new Deferred(), handler;
+
 			function initView(view, id) {
 				view.style.visibility = "hidden";
 				view.style.display = "none";
 				view.setAttribute("id", id + "-event");
 			}
+
 			document.addEventListener("delite-display-load", handler = function (event) {
 				event.preventDefault();
 				var view = document.createElement("div");
@@ -133,14 +141,16 @@ define([
 			return deferred.promise;
 		},
 		// test with a controller
-		custom : function () {
+		custom: function () {
 			this.timeout = 2500;
 			var deferred = new Deferred(), handler;
+
 			function initView(view, id) {
 				view.style.visibility = "hidden";
 				view.style.display = "none";
 				view.setAttribute("id", id);
 			}
+
 			document.addEventListener("delite-display-load", handler = function (event) {
 				event.preventDefault();
 				var view = document.createElement("div");
@@ -159,6 +169,7 @@ define([
 				assert.strictEqual(view.style.display, "", "display");
 				assert.strictEqual(view.parentNode, dcontainer, "parentNode");
 			}
+
 			// by node
 			var transitionDeferred = dcontainer.show("view1");
 			transitionDeferred.then(function () {
@@ -173,7 +184,7 @@ define([
 			});
 			return deferred.promise;
 		},
-		teardown : function () {
+		teardown: function () {
 			container.parentNode.removeChild(container);
 		}
 	});

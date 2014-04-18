@@ -13,7 +13,7 @@ define([
 	});
 	registerSuite({
 		name: "Selection",
-		"testSetGet" : function () {
+		"testSetGet": function () {
 			var o = new C();
 			o.selectedItem = "1";
 			assert.deepEqual(o.selectedItem, "1");
@@ -28,7 +28,7 @@ define([
 			assert.isFalse(o.isSelected("2"));
 
 		},
-		"multipletosingle" : function () {
+		"multipletosingle": function () {
 			var o = new C();
 			o.selectionMode = "multiple";
 			o.selectedItems = ["2", "3"];
@@ -41,7 +41,7 @@ define([
 			o.selectionMode = "single";
 			assert.deepEqual(o.selectedItems, []);
 		},
-		"singletonone" : function () {
+		"singletonone": function () {
 			var o = new C();
 			o.selectedItem = "1";
 			assert.deepEqual("1", o.selectedItem);
@@ -49,7 +49,7 @@ define([
 			assert.equal(o.selectedItem, null);
 			assert.deepEqual(o.selectedItems, []);
 		},
-		"testEvent" : function () {
+		"testEvent": function () {
 			var o = new C({selectedItem: "1"});
 			var callbackCalled = false;
 			o.on("selection-change", function (evt) {
@@ -79,7 +79,7 @@ define([
 			o.selectFromEvent({ ctrlKey: true, metaKey: true }, "1", null, true);
 			assert.deepEqual(o.selectedItems, ["2"]);
 		},
-		teardown : function () {
+		teardown: function () {
 			//container.parentNode.removeChild(container);
 		}
 	});

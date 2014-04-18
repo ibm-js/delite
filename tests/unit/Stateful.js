@@ -6,29 +6,29 @@ define([
 ], function (registerSuite, assert, Stateful, dcl) {
 	registerSuite({
 		name: "Stateful",
-		"getSetWatch" : function () {
-			var clz = dcl(Stateful, {
+		"getSetWatch": function () {
+			var Clz = dcl(Stateful, {
 					foo: 3
 				}),
-				s = new clz;
-			assert.deepEqual(3, s.foo);
+				s = new Clz();
+			assert.strictEqual(s.foo, 3);
 			var watching = s.watch("foo", function (name, oldValue, value) {
-				assert.deepEqual("foo", name);
-				assert.deepEqual(3, oldValue);
-				assert.deepEqual(4, value);
-				assert.deepEqual(4, s.foo);
+				assert.strictEqual(name, "foo");
+				assert.strictEqual(oldValue, 3);
+				assert.strictEqual(value, 4);
+				assert.strictEqual(s.foo, 4);
 			});
 			s.foo = 4;
-			assert.deepEqual(4, s.foo);
+			assert.strictEqual(s.foo, 4);
 			watching.remove();
 			s.foo = 5;
-			assert.deepEqual(5, s.foo);
+			assert.strictEqual(s.foo, 5);
 		},
-		"removeWatchHandle" : function () {
-			var clz = dcl(Stateful, {
+		"removeWatchHandle": function () {
+			var Clz = dcl(Stateful, {
 					foo: 3
 				}),
-				s = new clz,
+				s = new Clz(),
 				watched = false;
 
 			var watching = s.watch("foo", function () {
@@ -39,17 +39,17 @@ define([
 			watching.remove();
 			s.foo = 5;
 		},
-		"removeWatchHandleTwice" : function () {
-			var clz = dcl(Stateful, {
+		"removeWatchHandleTwice": function () {
+			var Clz = dcl(Stateful, {
 					foo: 3
 				}),
-				s = new clz,
+				s = new Clz(),
 				assertions = 0;
 
 			var watching = s.watch("foo", function () {
 				assertions++;
 			});
-			var watching2 = s.watch("foo", function () {
+			s.watch("foo", function () {
 				assertions++;
 			});
 			s.foo = 4;
@@ -57,44 +57,44 @@ define([
 			watching.remove();
 			s.foo = 5;
 
-			assert.deepEqual(3, assertions, "assertions");
+			assert.strictEqual(assertions, 3, "assertions");
 
 		},
-		"setHash" : function () {
-			var clz = dcl(Stateful, {
+		"setHash": function () {
+			var Clz = dcl(Stateful, {
 					foo: 0,
 					bar: 0
 				}),
-				s = new clz(),
-				fooCount = 0,
-				handle = s.watch('foo', function () {
-					fooCount++;
-				});
+				s = new Clz(),
+				fooCount = 0;
+			s.watch("foo", function () {
+				fooCount++;
+			});
 			s.mix({
 				foo: 3,
 				bar: 5
 			});
-			assert.deepEqual(3, s.foo);
-			assert.deepEqual(5, s.bar);
-			assert.deepEqual(1, fooCount);
+			assert.strictEqual(s.foo, 3);
+			assert.strictEqual(s.bar, 5);
+			assert.strictEqual(fooCount, 1);
 
-			var clz2 = dcl(Stateful, {
+			var Clz2 = dcl(Stateful, {
 					foo: 0,
 					bar: 0
 				}),
-				s2 = new clz2();
+				s2 = new Clz2();
 			s2.mix(s);
-			assert.deepEqual(3, s2.foo);
-			assert.deepEqual(5, s2.bar);
+			assert.strictEqual(s2.foo, 3);
+			assert.strictEqual(s2.bar, 5);
 			// s watchers should not be copied to s2
-			assert.deepEqual(1, fooCount);
+			assert.strictEqual(fooCount, 1);
 		},
-		"wildcard" : function () {
-			var clz = dcl(Stateful, {
+		"wildcard": function () {
+			var Clz = dcl(Stateful, {
 					foo: 0,
 					bar: 0
 				}),
-				s = new clz();
+				s = new Clz();
 			s.mix({
 				foo: 3,
 				bar: 5
@@ -109,10 +109,10 @@ define([
 			});
 			s.foo = 4;
 			s.bar = 6;
-			assert.deepEqual(2, wildcard);
-			assert.deepEqual(1, foo);
+			assert.strictEqual(wildcard, 2);
+			assert.strictEqual(foo, 1);
 		},
-		"accessors" : function () {
+		"accessors": function () {
 			var StatefulClass1 = dcl(Stateful, {
 				foo: 0,
 				bar: 0,
@@ -132,11 +132,11 @@ define([
 			attr1.bar = 2;
 			attr1.baz = "bar";
 
-			assert.deepEqual(3, attr1.foo, "attr1.foo getter works");
-			assert.deepEqual(3, attr1.bar, "attr1.bar setter works");
-			assert.deepEqual("bar", attr1.baz, "attribute set properly");
+			assert.strictEqual(attr1.foo, 3, "attr1.foo getter works");
+			assert.strictEqual(attr1.bar, 3, "attr1.bar setter works");
+			assert.strictEqual(attr1.baz, "bar", "attribute set properly");
 		},
-		"paramHandling" : function () {
+		"paramHandling": function () {
 			var StatefulClass2 = dcl(Stateful, {
 				foo: null,
 				bar: 5,
@@ -156,14 +156,15 @@ define([
 				bar: 4
 			});
 
-			assert.deepEqual("function", typeof attr2.foo, "function attribute set");
-			assert.deepEqual("baz", attr2.foo(), "function has proper return value");
-			assert.deepEqual(4, attr2.bar, "attribute has proper value");
+			assert.strictEqual(typeof attr2.foo, "function", "function attribute set");
+			assert.strictEqual(attr2.foo(), "baz", "function has proper return value");
+			assert.strictEqual(attr2.bar, 4, "attribute has proper value");
 
 			// Check if user overrides widget to not process constructor params
 			var IgnoreParamsStateful = dcl(Stateful, {
 				foo: 3,
-				processConstructorParameters: function() { }
+				processConstructorParameters: function () {
+				}
 			});
 			var ignore = new IgnoreParamsStateful({
 				foo: 4
@@ -172,9 +173,9 @@ define([
 
 			// And make sure it works even if the argument isn't a hash
 			var ignore2 = new IgnoreParamsStateful(5, 4, 3, 2, 1);
-			assert.strictEqual(ignore.foo, 3, "ignore2 created");
+			assert.strictEqual(ignore2.foo, 3, "ignore2 created");
 		},
-		"_set" : function () {
+		"_set": function () {
 			var output = [];
 			var StatefulClass4 = dcl(Stateful, {
 				foo: null,
@@ -198,26 +199,25 @@ define([
 				output.push(name, oldValue, value);
 			});
 			attr4.foo = 3;
-			assert.deepEqual(3, attr4.bar, "value set properly");
+			assert.strictEqual(attr4.bar, 3, "value set properly");
 			attr4.bar = 4;
-			assert.deepEqual(4, attr4.foo, "value set properly");
-			assert.deepEqual(["bar", null, 3, "foo", null, 3, "foo", 3, 4, "bar", 3, 4], output);
+			assert.strictEqual(attr4.foo, 4, "value set properly");
+			assert.deepEqual(output, ["bar", null, 3, "foo", null, 3, "foo", 3, 4, "bar", 3, 4]);
 		},
-		"_get" : function () {
-			var output = [];
+		"_get": function () {
 			var StatefulClass5 = dcl(Stateful, {
 				foo: "",
-				_getFooAttr: function (value) {
+				_getFooAttr: function () {
 					return this._get("foo") + "modified";
 				}
 			});
 
 			var attr5 = new StatefulClass5();
-			assert.deepEqual("modified", attr5.foo, "value get properly");
+			assert.strictEqual(attr5.foo, "modified", "value get properly");
 			attr5.foo = "further";
-			assert.deepEqual("furthermodified", attr5.foo, "");
+			assert.strictEqual(attr5.foo, "furthermodified");
 		},
-		"moreCorrelatedProperties" : function () {
+		"moreCorrelatedProperties": function () {
 			var Widget = dcl(Stateful, {
 				foo: 10,
 				_setFooAttr: function (val) {
@@ -233,18 +233,18 @@ define([
 			});
 
 			var w1 = new Widget({foo: 30});
-			assert.deepEqual(30, w1.foo, "w1.foo");
-			assert.deepEqual(31, w1.bar, "w1.bar");
+			assert.strictEqual(w1.foo, 30, "w1.foo");
+			assert.strictEqual(w1.bar, 31, "w1.bar");
 
 			var w2 = new Widget({bar: 30});
-			assert.deepEqual(30, w2.bar, "w2.bar");
-			assert.deepEqual(29, w2.foo, "w2.foo");
+			assert.strictEqual(w2.bar, 30, "w2.bar");
+			assert.strictEqual(w2.foo, 29, "w2.foo");
 
 			var w3 = new Widget({});
-			assert.deepEqual(10, w3.foo, "w3.foo");
-			assert.deepEqual(11, w3.bar, "w3.bar");
+			assert.strictEqual(w3.foo, 10, "w3.foo");
+			assert.strictEqual(w3.bar, 11, "w3.bar");
 		},
-		"subclasses1" : function () {
+		"subclasses1": function () {
 			// Test when superclass and subclass are declared first, and afterwards instantiated
 			var SuperClass = dcl(Stateful, {
 				foo: null,
@@ -264,9 +264,9 @@ define([
 				barWatchedVal = n;
 			});
 			sub.foo = 3;
-			assert.deepEqual(3, fooWatchedVal, "foo watch() on SubClass");
+			assert.strictEqual(fooWatchedVal, 3, "foo watch() on SubClass");
 			sub.bar = 4;
-			assert.deepEqual(4, barWatchedVal, "bar watch() on SubClass");
+			assert.strictEqual(barWatchedVal, 4, "bar watch() on SubClass");
 
 			var sup = new SuperClass();
 			var superFooWatchedVal;
@@ -278,15 +278,14 @@ define([
 				superBarWatchedVal = n;
 			});
 			sup.foo = 5;
-			assert.deepEqual(5, superFooWatchedVal, "foo watch() on SuperClass");
+			assert.strictEqual(superFooWatchedVal, 5, "foo watch() on SuperClass");
 			sup.bar = 6;
-			assert.deepEqual(6, superBarWatchedVal, "bar watch() on SuperClass");
-			assert.deepEqual(3, fooWatchedVal, "SubClass listener on foo not called");
-			assert.deepEqual(4, barWatchedVal, "SubClass listener on bar not called");
+			assert.strictEqual(superBarWatchedVal, 6, "bar watch() on SuperClass");
+			assert.strictEqual(fooWatchedVal, 3, "SubClass listener on foo not called");
+			assert.strictEqual(barWatchedVal, 4, "SubClass listener on bar not called");
 		},
-		"subclasses2" : function () {
+		"subclasses2": function () {
 			// Test when superclass is declared and instantiated, then subclass is declared and use later
-			var output = [];
 			var SuperClass = dcl(Stateful, {
 				foo: null,
 				bar: null
@@ -301,9 +300,9 @@ define([
 				superBarWatchedVal = n;
 			});
 			sup.foo = 5;
-			assert.deepEqual(5, superFooWatchedVal, "foo watch() on SuperClass");
+			assert.strictEqual(superFooWatchedVal, 5, "foo watch() on SuperClass");
 			sup.bar = 6;
-			assert.deepEqual(6, superBarWatchedVal, "bar watch() on SuperClass");
+			assert.strictEqual(superBarWatchedVal, 6, "bar watch() on SuperClass");
 
 			var customSetterCalled;
 			var SubClass = dcl(SuperClass, {
@@ -324,17 +323,14 @@ define([
 				barWatchedVal = n;
 			});
 			sub.foo = 3;
-			assert.deepEqual(3, fooWatchedVal, "foo watch() on SubClass");
+			assert.strictEqual(fooWatchedVal, 3, "foo watch() on SubClass");
 			sub.bar = 4;
-			assert.deepEqual(4, barWatchedVal, "bar watch() on SubClass");
+			assert.strictEqual(barWatchedVal, 4, "bar watch() on SubClass");
 			assert.ok(customSetterCalled, "SubClass custom setter called");
 
-			assert.deepEqual(5, superFooWatchedVal, "SuperClass listener on foo not called");
+			assert.strictEqual(superFooWatchedVal, 5, "SuperClass listener on foo not called");
 			sup.bar = 6;
-			assert.deepEqual(6, superBarWatchedVal, "SuperClass listener on bar not called");
-		},
-		teardown : function () {
-			//container.parentNode.removeChild(container);
+			assert.strictEqual(superBarWatchedVal, 6, "SuperClass listener on bar not called");
 		}
 	});
 });

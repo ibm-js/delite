@@ -18,25 +18,25 @@ define(["intern!object",
 				return;
 			}
 			return this.remote.execute("return document.activeElement.value")
-					.then(function (value) {
-						assert.equal(value, "auto focus", "initial element");
-					})
+				.then(function (value) {
+					assert.equal(value, "auto focus", "initial element");
+				})
 				.keys("\uE004") // tab
 				.execute("return document.activeElement.textContent")
-					.then(function (value) {
-						assert.equal(value, "apple", "tabbed to apple");
-					})
+				.then(function (value) {
+					assert.equal(value, "apple", "tabbed to apple");
+				})
 				.keys("\uE008\uE004") // shift tab
 				.execute("return document.activeElement.value")
-					.then(function (value) {
-						assert.equal(value, "auto focus", "shift tabbed back to initial element");
-					})
+				.then(function (value) {
+					assert.equal(value, "auto focus", "shift tabbed back to initial element");
+				})
 				.keys("\uE008") // release shift
 				.keys("\uE004") // tab
 				.execute("return document.activeElement.textContent")
-					.then(function (value) {
-						assert.equal(value, "apple", "tabbed to apple again");
-					})
+				.then(function (value) {
+					assert.equal(value, "apple", "tabbed to apple again");
+				})
 				.keys("\uE004") // tab
 				.execute("return document.activeElement.textContent")
 				.then(function (value) {
@@ -57,7 +57,7 @@ define(["intern!object",
 				.execute("return document.activeElement.textContent")
 				.then(function (value) {
 					assert.equal(value, "seven", "tabbed past INPUT to programmatic KeyNav with tabindex=5 setting");
-				})
+				});
 
 		},
 		"arrow navigation": function () {
@@ -67,14 +67,14 @@ define(["intern!object",
 			}
 			return this.remote.execute("grid.focus();")
 				.execute("return document.activeElement.textContent")
-					.then(function (value) {
-						assert.equal(value, "apple", "focus");
-					})
+				.then(function (value) {
+					assert.equal(value, "apple", "focus");
+				})
 				.keys("\uE015") // arrow down
 				.execute("return document.activeElement.textContent")
-					.then(function (value) {
-						assert.equal(value, "pear", "down");
-					})
+				.then(function (value) {
+					assert.equal(value, "pear", "down");
+				})
 				.keys("\uE014") // arrow right
 				.execute("return document.activeElement.textContent")
 				.then(function (value) {
@@ -92,14 +92,14 @@ define(["intern!object",
 				})
 				.keys("\uE010") // end
 				.execute("return document.activeElement.textContent")
-					.then(function (value) {
-						assert.equal(value, "raspberry", "end");
-					})
+				.then(function (value) {
+					assert.equal(value, "raspberry", "end");
+				})
 				.keys("\uE011") // home
 				.execute("return document.activeElement.textContent")
-					.then(function (value) {
-						assert.equal(value, "apple", "home");
-					});
+				.then(function (value) {
+					assert.equal(value, "apple", "home");
+				});
 		},
 
 		"letter search": function () {
@@ -185,7 +185,7 @@ define(["intern!object",
 				.execute("return document.activeElement.textContent")
 				.then(function (value) {
 					assert.equal(value, "four", "keyboard searched to 'four'");
-				})
+				});
 		}
 	});
 });

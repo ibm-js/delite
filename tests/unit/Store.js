@@ -22,7 +22,7 @@ define([
 			return d;
 		},
 */
-		"Updates" : function () {
+		"Updates": function () {
 			var d = this.async(2000);
 			var store = new C();
 			var myData = [
@@ -55,7 +55,7 @@ define([
 			store.store = myStore;
 			return d;
 		},
-		"Destroy" : function () {
+		"Destroy": function () {
 			var d = this.async(2000);
 			var store = new C();
 			var myData = [
@@ -89,7 +89,7 @@ define([
 			store.store = myStore;
 			return d;
 		},
-		"Query" : function () {
+		"Query": function () {
 			var d = this.async(2000);
 			var store = new C();
 			store.query = { id: "foo" };
@@ -118,7 +118,7 @@ define([
 			store.store = myStore;
 			return d;
 		},
-		"StoreFuncRange" : function () {
+		"StoreFuncRange": function () {
 			var d = this.async(2000);
 			var store = new C();
 			store.processStore = function (store) {
@@ -149,7 +149,7 @@ define([
 			store.store = myStore;
 			return d;
 		},
-		"StoreFuncSort" : function () {
+		"StoreFuncSort": function () {
 			var d = this.async(2000);
 			var store = new C();
 			store.processStore = function (store) {
@@ -181,7 +181,7 @@ define([
 			store.store = myStore;
 			return d;
 		},
-		teardown : function () {
+		teardown: function () {
 			//container.parentNode.removeChild(container);
 		}
 	});

@@ -7,7 +7,7 @@ define([
 ], function (registerSuite, assert, domClass, register, CssState) {
 	registerSuite({
 		name: "CssState",
-		"basic" : function () {
+		"basic": function () {
 			// Workaround problem using dcl() on native DOMNodes on FF and IE,
 			// see https://github.com/uhop/dcl/issues/9.
 			// After that's fixed, this should be a single register() statement.

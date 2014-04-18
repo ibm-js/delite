@@ -10,23 +10,25 @@ define([
 ], function (registerSuite, assert, keys, on, register, HasDropDown, Widget, helpers) {
 	var container, SimplePopup, SimpleDropDownButton, NonFocusableDropDownButton, popup, dd, ndd;
 
-	function key(node, key) {
+	function key(node, keyCode) {
 		on.emit(node, "keydown", {
-			keyCode: key,
+			keyCode: keyCode,
 			bubbles: true
 		});
 		on.emit(node, "keyup", {
-			keyCode: key,
+			keyCode: keyCode,
 			bubbles: true
 		});
 	}
 
-	function click(node){
-		on.emit(node, navigator.pointerEnabled ? "pointerdown" : navigator.msPointerEnabled ? "MSPointerDown" : "mousedown", {
+	function click(node) {
+		on.emit(node, navigator.pointerEnabled ? "pointerdown" :
+				navigator.msPointerEnabled ? "MSPointerDown" : "mousedown", {
 			button: 0,	// left button (except on IE quirks mode, when it's 1)
 			bubbles: true
 		});
-		on.emit(node, navigator.pointerEnabled ? "pointerup" : navigator.msPointerEnabled ? "MSPointerUp" : "mouseup", {
+		on.emit(node, navigator.pointerEnabled ? "pointerup" :
+				navigator.msPointerEnabled ? "MSPointerUp" : "mouseup", {
 			button: 0,	// left button (except on IE quirks mode, when it's 1)
 			bubbles: true
 		});
@@ -69,9 +71,11 @@ define([
 				})
 			});
 
-			NonFocusableDropDownButton = register("non-focusable-drop-down-button", [HTMLElement, Widget, HasDropDown], {
+			NonFocusableDropDownButton = register("non-focusable-drop-down-button",
+					[HTMLElement, Widget, HasDropDown], {
 				// summary:
-				//		A non-focusable "button" that shows a popup.   Should work for mouse, although not for keyboard.
+				//		A non-focusable "button" that shows a popup.
+				//		Should work for mouse, although not for keyboard.
 				label: "show popup (non-focusable)",
 				_setLabelAttr: function (val) {
 					this.textContent = val;
@@ -88,57 +92,57 @@ define([
 			});
 
 		},
-		"basic setup" : function () {
+		"basic setup": function () {
 			dd = new SimpleDropDownButton({id: "dd"}).placeAt(container);
 			popup = dd.dropDown;
 			assert.ok(!!popup, "popup exists");
 		},
-		"basic open" : function () {
+		"basic open": function () {
 			click(dd);
 			assert.ok(helpers.isVisible(popup), "popup visible");
 		},
-		"basic close" : function () {
+		"basic close": function () {
 			dd.closeDropDown();
 			assert.ok(helpers.isHidden(popup), "popup hidden");
 		},
-		"basic openBySpace" : function () {
+		"basic openBySpace": function () {
 			key(dd, keys.SPACE);
 			assert.ok(!!popup, "popup exists");
 			assert.ok(helpers.isVisible(popup), "popup visible again");
 		},
-		"basic close2" : function () {
+		"basic close2": function () {
 			dd.closeDropDown();
 			assert.ok(helpers.isHidden(popup), "popup hidden again");
 		},
-		"non focusable setup" : function () {
+		"non focusable setup": function () {
 			ndd = new NonFocusableDropDownButton({id: "ndd"}).placeAt(container);
 			popup = ndd.dropDown;
 			assert.ok(!!popup, "popup exists");
 		},
-		"non focusable open" : function () {
+		"non focusable open": function () {
 			click(ndd);
 			assert.ok(helpers.isVisible(popup), "popup visible");
 		},
-		"non focusable close" : function () {
+		"non focusable close": function () {
 			ndd.closeDropDown();
 		},
 
-		"destroy setup" : function () {
+		"destroy setup": function () {
 			dd = new SimpleDropDownButton({id: "dd2"}).placeAt(container);
 			popup = dd.dropDown;
 			assert.ok(!!popup, "popup exists");
 		},
-		"destroy open" : function () {
+		"destroy open": function () {
 			click(dd);
 			assert.ok(helpers.isVisible(popup), "popup visible");
 			assert.deepEqual(1, require("delite/popup")._stack.length, "in popup manager stack");
 		},
-		"destroy destroy" : function () {
+		"destroy destroy": function () {
 			dd.destroy();
 			assert.deepEqual(0, require("delite/popup")._stack.length, "popup was closed");
 		},
 
-		teardown : function () {
+		teardown: function () {
 			container.parentNode.removeChild(container);
 		}
 	});

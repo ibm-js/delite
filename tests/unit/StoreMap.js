@@ -13,7 +13,7 @@ define([
 
 	registerSuite({
 		name: "StoreMap",
-		"Regular" : function () {
+		"Regular": function () {
 			var C = register("test-storemap-1", [HTMLElement, Widget, StoreMap], {
 				fooAttr: "name",
 				barFunc: function (item) {
@@ -51,7 +51,7 @@ define([
 			store.store = myStore;
 			return d;
 		},
-		"copyAll" : function () {
+		"copyAll": function () {
 			var C = register("test-storemap-2", [HTMLElement, Widget, StoreMap], {
 				copyAllItemProps: true
 			});
@@ -87,7 +87,7 @@ define([
 			store.store = myStore;
 			return d;
 		},
-		"InCtor" : function () {
+		"InCtor": function () {
 			var C = register("test-storemap-3", [HTMLElement, Widget, StoreMap], {
 			});
 			var d = this.async(2000);
@@ -122,7 +122,7 @@ define([
 			return d;
 
 		},
-		"AllowRemap" : function () {
+		"AllowRemap": function () {
 			var value = "1";
 			var C = register("test-storemap-4", [HTMLElement, Widget, StoreMap], {
 				allowRemap: true,
@@ -157,7 +157,7 @@ define([
 			return d;
 
 		},
-		"Markup" : function () {
+		"Markup": function () {
 			register("test-storemap-5", [HTMLElement, Widget, StoreMap], {
 				fooAttr: "name"
 			});
@@ -224,7 +224,7 @@ define([
 			store.store = myStore;
 			return d;
 		},
-		teardown : function () {
+		teardown: function () {
 			//container.parentNode.removeChild(container);
 		}
 	});

@@ -1,188 +1,193 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no" />
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<title>KeyNav Tests</title>
-<script type="text/javascript" src="../boilerplate.js"></script>
-<script language="JavaScript" type="text/javascript">
-	var ready = false; // set to true when the test page is ready
-	require([
-		"delite/register",
-		"dojo/dom",
-		"delite/Widget",
-		"delite/Container",
-		"delite/KeyNav",
-		"dojo/query",		// required when childSelector is a string
-		"dojo/domReady!"
-	], function(register, dom, Widget, Container, KeyNav){
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+	<meta name="viewport"
+		  content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no"/>
+	<meta name="apple-mobile-web-app-capable" content="yes"/>
+	<title>KeyNav Tests</title>
+	<script type="text/javascript" src="../boilerplate.js"></script>
+	<script language="JavaScript" type="text/javascript">
+		var ready = false; // set to true when the test page is ready
+		require([
+			"delite/register",
+			"dojo/dom",
+			"delite/Widget",
+			"delite/Container",
+			"delite/KeyNav",
+			"dojo/query",		// required when childSelector is a string
+			"dojo/domReady!"
+		], function (register, dom, Widget, Container, KeyNav) {
 
-		// Complex KeyNav subclass with string childSelector
-		register("my-grid", [HTMLElement, KeyNav], {
-			// Specifies which descendants can be navigated to
-			childSelector: "my-cell",
+			// Complex KeyNav subclass with string childSelector
+			register("my-grid", [HTMLElement, KeyNav], {
+				// Specifies which descendants can be navigated to
+				childSelector: "my-cell",
 
-			// Reduce from default of 1000 to speed up testing
-			multiCharSearchDuration: 100,
+				// Reduce from default of 1000 to speed up testing
+				multiCharSearchDuration: 100,
 
-			// Home/End key support
-			_getFirst: function(){
-				// first item in first list widget
-				return this.firstElementChild._getFirst();
-			},
-			_getLast: function(){
-				// last item in last list widget
-				return this.lastElementChild._getLast();
-			},
+				// Home/End key support
+				_getFirst: function () {
+					// first item in first list widget
+					return this.firstElementChild._getFirst();
+				},
+				_getLast: function () {
+					// last item in last list widget
+					return this.lastElementChild._getLast();
+				},
 
-			// Simple arrow key support.
-			_onLeftArrow: function(){
-				var listItem = this.focusedChild.parentNode;
-				this.focusChild(listItem._getPrev(this.focusedChild) ||listItem._getLast());
-			},
-			_onRightArrow: function(){
-				var listItem = this.focusedChild.parentNode;
-				this.focusChild(listItem._getNext(this.focusedChild) ||listItem._getFirst());
-			},
-			_onDownArrow: function(){
-				// For simplicity I'll just go to the first field in the next row
-				var listItem = this.focusedChild.parentNode;
-				this.focusChild(listItem.nextElementSibling ? listItem.nextElementSibling._getFirst() :
-						this.firstElementChild._getFirst());
-			},
-			_onUpArrow: function(){
-				// For simplicity I'll just go to the first field in the previous row
-				var listItem = this.focusedChild.parentNode;
-				this.focusChild(listItem.previousElementSibling ? listItem.previousElementSibling._getFirst() :
-						this.lastElementChild._getFirst());
-			},
+				// Simple arrow key support.
+				_onLeftArrow: function () {
+					var listItem = this.focusedChild.parentNode;
+					this.focusChild(listItem._getPrev(this.focusedChild) || listItem._getLast());
+				},
+				_onRightArrow: function () {
+					var listItem = this.focusedChild.parentNode;
+					this.focusChild(listItem._getNext(this.focusedChild) || listItem._getFirst());
+				},
+				_onDownArrow: function () {
+					// For simplicity I'll just go to the first field in the next row
+					var listItem = this.focusedChild.parentNode;
+					this.focusChild(listItem.nextElementSibling ? listItem.nextElementSibling._getFirst() :
+							this.firstElementChild._getFirst());
+				},
+				_onUpArrow: function () {
+					// For simplicity I'll just go to the first field in the previous row
+					var listItem = this.focusedChild.parentNode;
+					this.focusChild(listItem.previousElementSibling ? listItem.previousElementSibling._getFirst() :
+							this.lastElementChild._getFirst());
+				},
 
-			// Letter key navigation support, loops through all fields of all list-items.
-			_getNext: function(child){
-				// Return either:
-				//		1. next field in current list item (if there is one)
-				//		2. first field in next list item (if there is one)
-				var listItem = child.parentNode;
-				return listItem._getNext(child) ||
-						(listItem.nextElementSibling && listItem.nextElementSibling._getFirst());
-			}
-		});
-
-		// Child of my-grid
-		register("my-row", [HTMLElement], {
-			// Interface from List to ListItem to navigate fields
-			_getFirst: function(){
-				// first field
-				return this.firstElementChild;
-			},
-			_getLast: function(){
-				// last field
-				return this.lastElementChild;
-			},
-			_getNext: function(child){
-				// field after child
-				return child.nextElementSibling;
-			},
-			_getPrev: function(child){
-				// field before child
-				return child.previousElementSibling;
-			}
-		});
-
-		// Simple KeyNav widget that extends Container. childSelector is function.
-		var TestContainer = register("my-list", [HTMLElement, Container, KeyNav], {
-			childSelector: function (child) {
-				return child !== this;
-			},
-			_getFirst: function () {
-				return this.firstElementChild;
-			},
-			_getLast: function () {
-				return this.lastElementChild;
-			},
-			_onDownArrow: function () {
-				var nextChild = this._getNext(this.focusedChild, 1);
-				if (nextChild) {
-					this.focusChild(nextChild);
+				// Letter key navigation support, loops through all fields of all list-items.
+				_getNext: function (child) {
+					// Return either:
+					//		1. next field in current list item (if there is one)
+					//		2. first field in next list item (if there is one)
+					var listItem = child.parentNode;
+					return listItem._getNext(child) ||
+							(listItem.nextElementSibling && listItem.nextElementSibling._getFirst());
 				}
-			},
-			_onUpArrow: function () {
-				var previousChild = this._getNext(this.focusedChild, -1);
-				if (previousChild) {
-					this.focusChild(previousChild);
+			});
+
+			// Child of my-grid
+			register("my-row", [HTMLElement], {
+				// Interface from List to ListItem to navigate fields
+				_getFirst: function () {
+					// first field
+					return this.firstElementChild;
+				},
+				_getLast: function () {
+					// last field
+					return this.lastElementChild;
+				},
+				_getNext: function (child) {
+					// field after child
+					return child.nextElementSibling;
+				},
+				_getPrev: function (child) {
+					// field before child
+					return child.previousElementSibling;
 				}
-			}
-		});
+			});
 
-		// Child of TestContainer
-		var TestContained = register("my-list-item", [HTMLElement, Widget], { });
+			// Simple KeyNav widget that extends Container. childSelector is function.
+			var TestContainer = register("my-list", [HTMLElement, Container, KeyNav], {
+				childSelector: function (child) {
+					return child !== this;
+				},
+				_getFirst: function () {
+					return this.firstElementChild;
+				},
+				_getLast: function () {
+					return this.lastElementChild;
+				},
+				_onDownArrow: function () {
+					var nextChild = this._getNext(this.focusedChild, 1);
+					if (nextChild) {
+						this.focusChild(nextChild);
+					}
+				},
+				_onUpArrow: function () {
+					var previousChild = this._getNext(this.focusedChild, -1);
+					if (previousChild) {
+						this.focusChild(previousChild);
+					}
+				}
+			});
 
-		// Test declarative creation
-		register.parse();
+			// Child of TestContainer
+			var TestContained = register("my-list-item", [HTMLElement, Widget], { });
 
-		// And also test programmatic creation
-		var p1 = new TestContainer({
-			"aria-labelledby": "testContainer3Label"
-		}).placeAt("testContainer3Label", "after");
-		["one", "two", "three"].forEach(function (label) {
-			var div = document.createElement("div");
-			div.textContent = label;
-			p1.appendChild(div);
-		});
-		p1.startup();
+			// Test declarative creation
+			register.parse();
 
-		var p2 = new TestContainer({
-			id: "testContainer4",
-			"aria-labelledby": "testContainer4Label",
-			tabIndex: "5"
-		}).placeAt("thirdInput", "after");
-		["seven", "eight", "nine"].forEach(function (label) {
-			var div = document.createElement("div");
-			div.textContent = label;
-			p2.appendChild(div);
-		});
-		p2.startup();
+			// And also test programmatic creation
+			var p1 = new TestContainer({
+				"aria-labelledby": "testContainer3Label"
+			}).placeAt("testContainer3Label", "after");
+			["one", "two", "three"].forEach(function (label) {
+				var div = document.createElement("div");
+				div.textContent = label;
+				p1.appendChild(div);
+			});
+			p1.startup();
 
-		// Set global variable to signal that the test page is ready
-		ready = true;
-	})
-</script>
-<style>
-	/* Grid widget KeyNav subclass */
-	my-grid {
-		display: table;
-		border-collapse: collapse;
-	}
-	my-row {
-		display: table-row;
-	}
-	my-cell {
-		display: table-cell;
-		border: solid #ccc;
-		padding: 2px;
-	}
+			var p2 = new TestContainer({
+				id: "testContainer4",
+				"aria-labelledby": "testContainer4Label",
+				tabIndex: "5"
+			}).placeAt("thirdInput", "after");
+			["seven", "eight", "nine"].forEach(function (label) {
+				var div = document.createElement("div");
+				div.textContent = label;
+				p2.appendChild(div);
+			});
+			p2.startup();
 
-	/* Container KeyNav subclass */
-	my-list {
-		display: table;
-		border: gray dotted medium;
-	}
-	my-list > * {
-		margin: 3px;
-		border: solid #ccc;
-	}
+			// Set global variable to signal that the test page is ready
+			ready = true;
+		})
+	</script>
+	<style>
+		/* Grid widget KeyNav subclass */
+		my-grid {
+			display: table;
+			border-collapse: collapse;
+		}
 
-	/* focused cells in each of my KeyNav subclasses */
-	my-cell:focus, my-list > *:focus {
-		background-color: yellow;
-	}
+		my-row {
+			display: table-row;
+		}
+
+		my-cell {
+			display: table-cell;
+			border: solid #ccc;
+			padding: 2px;
+		}
+
+		/* Container KeyNav subclass */
+		my-list {
+			display: table;
+			border: gray dotted medium;
+		}
+
+		my-list > * {
+			margin: 3px;
+			border: solid #ccc;
+		}
+
+		/* focused cells in each of my KeyNav subclasses */
+		my-cell:focus, my-list > *:focus {
+			background-color: yellow;
+		}
 
 
-</style>
+	</style>
 </head>
 <body>
 	<h1>KeyNav functional test</h1>
+
 	<h3 id="testGridLabel">Declarative KeyNav with no tabindex setting:</h3>
 	<input id="autofocusInput" type="text" autofocus="autofocus" value="auto focus">
 	<my-grid id="grid" aria-labelledby="testGridLabel">
@@ -209,8 +214,10 @@
 		<!-- add some <input> controls to make sure KeyNav doesn't interfere with them -->
 		<div>four</div>
 		<input id="input">
+
 		<div>five</div>
 		<input id="checkbox" type="checkbox">
+
 		<div>six</div>
 	</my-list>
 
@@ -219,6 +226,7 @@
 	<input type="text" tabindex=6 value="tabindex=6">
 
 	<h3>Empty KeyNav container tabindex=7</h3>
+
 	<p>Note: currently gets exceptions if you tab to it, not sure we want to support this anyway.</p>
 	<my-list id="emptyContainer" style="height: 40px; width: 40px;" tabindex="7">
 	</my-list>

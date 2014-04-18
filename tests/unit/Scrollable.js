@@ -10,7 +10,7 @@ define([
 	"./resources/Scrollable-shared"
 ], function (dcl, registerSuite, assert, domClass, register, Widget,
 	Scrollable, ScrollableTestContainer, ScrollableSharedTests) {
-		
+
 	var container, MyScrollableWidget, MyScrollableTestContainer;
 	/*jshint multistr: true */
 	var html = "<test-scrollable-container id='sc1' \
@@ -31,7 +31,7 @@ define([
 				// to be able to check that scrollableNode is already set to the 
 				// correct value when refreshRendering() gets called.
 				scrollableNodeInRefreshRendering: null,
-				
+
 				refreshRendering: dcl.superCall(function (sup) {
 					return function () {
 						// Store the value at the moment refreshRendering() was called,
@@ -42,8 +42,8 @@ define([
 				})
 			});
 		},
-		
-		"Default CSS" : function () {
+
+		"Default CSS": function () {
 			var w = (new MyScrollableWidget({id: "mysw"})).placeAt(container);
 			w.startup();
 			w.validateRendering();
@@ -56,24 +56,24 @@ define([
 			assert.isTrue(domClass.contains(w.scrollableNode, "d-scrollable"),
 				"Expecting d-scrollable CSS class!");
 		},
-		
-		"scrollableNode property" : function () {
+
+		"scrollableNode property": function () {
 			// Test case for a custom widget which sets the scrollableNode in its buildRendering().
 			var ScrollableWithCustomScrollableNode = register("my-scrollable-widget-sn",
 				[HTMLElement, Widget, Scrollable], {
-				// to be able to check that scrollableNode isn't changed afterwards,
-				// store here the instance of custom node set in buildRendering().
-				createdScrollableNode: null,
-				
-				buildRendering: dcl.superCall(function (sup) {
-					return function () {
-						this.scrollableNode = document.createElement("div");
-						this.createdScrollableNode = this.scrollableNode;
-						this.appendChild(this.scrollableNode);
-						sup.apply(this, arguments);
-					};
-				})
-			});
+					// to be able to check that scrollableNode isn't changed afterwards,
+					// store here the instance of custom node set in buildRendering().
+					createdScrollableNode: null,
+
+					buildRendering: dcl.superCall(function (sup) {
+						return function () {
+							this.scrollableNode = document.createElement("div");
+							this.createdScrollableNode = this.scrollableNode;
+							this.appendChild(this.scrollableNode);
+							sup.apply(this, arguments);
+						};
+					})
+				});
 			var w = (new ScrollableWithCustomScrollableNode()).placeAt(container);
 			w.startup();
 			w.validateRendering();
@@ -84,18 +84,18 @@ define([
 			assert.isTrue(domClass.contains(w.scrollableNode, "d-scrollable"),
 				"Expecting d-scrollable CSS class on my-scrollable-widget-sn!");
 		},
-			
+
 		// The remaining of the API of the mixin delite/Scrollable is tested
 		// in tests/ScrollableTestContainer-markup and tests/ScrollableTestContainer-prog
 		// via an ad-hoc widget (tests/ScrollableTestContainer) which uses the mixin.
-		 
+
 		teardown: function () {
 			container.parentNode.removeChild(container);
 		}
 	});
-	
+
 	// Markup use-case
-	
+
 	var suite = {
 		name: "delite/Scrollable: ScrollableTestContainer in markup",
 		setup: function () {
@@ -113,15 +113,15 @@ define([
 	dcl.mix(suite, ScrollableSharedTests.testCases);
 
 	registerSuite(suite);
-	
+
 	// Programatic creation 
-	
+
 	suite = {
 		name: "delite/Scrollable: ScrollableTestContainer programatically",
 		setup: function () {
 			container = document.createElement("div");
 			document.body.appendChild(container);
-			
+
 			MyScrollableTestContainer = register("my-sc-prog", [ScrollableTestContainer], {});
 
 			var w = new ScrollableTestContainer({ id: "sc1" });
