@@ -235,6 +235,32 @@ define([
 			assert.strictEqual(node.namespaceURI, "http://www.w3.org/2000/svg", "rect.namespaceURI");
 		},
 
+		whitespace: function () {
+			var WhiteSpaceOne = register("handlebars-whitespace-one", [HTMLElement, Widget], {
+				buildRendering: handlebars.compile(
+					"<template>\n<span>hello</span> <span>world</span>\n</template>"
+				)
+			});
+			var ws1 = new WhiteSpaceOne();
+			assert.strictEqual(ws1.childNodes.length, 3, "middle whitespace preserved, start/end whitespace deleted");
+
+			var WhiteSpaceTwo = register("handlebars-whitespace-two", [HTMLElement, Widget], {
+				buildRendering: handlebars.compile(
+					"<template>&nbsp;<span>hello</span> <span>world</span>&nbsp;</template>"
+				)
+			});
+			var ws2 = new WhiteSpaceTwo();
+			assert.strictEqual(ws2.childNodes.length, 5, "all &nbsp preserved");
+
+			var WhiteSpaceThree = register("handlebars-whitespace-three", [HTMLElement, Widget], {
+				buildRendering: handlebars.compile(
+					"<template>\n<!--stray comment-->\n<span>hello</span> <span>world</span>\n</template>"
+				)
+			});
+			var ws3 = new WhiteSpaceThree();
+			assert.strictEqual(ws3.childNodes.length, 3, "comments don't break trimming");
+		},
+
 		teardown: function () {
 			container.parentNode.removeChild(container);
 		}
