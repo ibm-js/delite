@@ -134,7 +134,7 @@ define([
 			assert.strictEqual(myList.firstChild.tagName.toLowerCase(), "li", "child exists");
 			assert.strictEqual(myList.firstChild.getAttribute("foo"), "a.b('c,d')", "single quotes prop");
 			assert.strictEqual(myList.firstChild.getAttribute("bar"), "\\\"hello\"", "double quotes, backslash prop");
-			assert.strictEqual(myList.firstChild.textContent, "\"\\bill'\\ was here'", "node text");
+			assert.strictEqual(myList.firstChild.textContent, "\"\\bill'\\\n\twas \n\there'", "node text");
 		},
 
 		events: function () {
@@ -236,29 +236,37 @@ define([
 		},
 
 		whitespace: function () {
-			var WhiteSpaceOne = register("handlebars-whitespace-one", [HTMLElement, Widget], {
+			var WhiteSpace = register("handlebars-whitespace-one", [HTMLElement, Widget], {
 				buildRendering: handlebars.compile(
 					"<template>\n<span>hello</span> <span>world</span>\n</template>"
 				)
 			});
-			var ws1 = new WhiteSpaceOne();
-			assert.strictEqual(ws1.childNodes.length, 3, "middle whitespace preserved, start/end whitespace deleted");
+			var ws = new WhiteSpace();
+			assert.strictEqual(ws.childNodes.length, 3, "middle whitespace preserved, start/end whitespace deleted");
 
-			var WhiteSpaceTwo = register("handlebars-whitespace-two", [HTMLElement, Widget], {
+			var WhiteSpaceNbsp = register("handlebars-whitespace-two", [HTMLElement, Widget], {
 				buildRendering: handlebars.compile(
 					"<template>&nbsp;<span>hello</span> <span>world</span>&nbsp;</template>"
 				)
 			});
-			var ws2 = new WhiteSpaceTwo();
-			assert.strictEqual(ws2.childNodes.length, 5, "all &nbsp preserved");
+			var wsn = new WhiteSpaceNbsp();
+			assert.strictEqual(wsn.childNodes.length, 5, "all &nbsp preserved");
 
-			var WhiteSpaceThree = register("handlebars-whitespace-three", [HTMLElement, Widget], {
+			var WhiteSpaceComments = register("handlebars-whitespace-three", [HTMLElement, Widget], {
 				buildRendering: handlebars.compile(
 					"<template>\n<!--stray comment-->\n<span>hello</span> <span>world</span>\n</template>"
 				)
 			});
-			var ws3 = new WhiteSpaceThree();
-			assert.strictEqual(ws3.childNodes.length, 3, "comments don't break trimming");
+			var wsc = new WhiteSpaceComments();
+			assert.strictEqual(wsc.childNodes.length, 3, "comments don't break trimming");
+
+			var WhiteSpacePre = register("handlebars-whitespace-pre", [HTMLElement, Widget], {
+				buildRendering: handlebars.compile(
+					"<template><pre>\thello\n\tworld </pre></template>"
+				)
+			});
+			var wsp = new WhiteSpacePre();
+			assert.strictEqual(wsp.innerHTML, "<pre>\thello\n\tworld </pre>", "pre whitespace preserved");
 		},
 
 		"self closing tags": function () {
