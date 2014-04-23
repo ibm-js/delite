@@ -261,6 +261,16 @@ define([
 			assert.strictEqual(ws3.childNodes.length, 3, "comments don't break trimming");
 		},
 
+		"self closing tags": function () {
+			var SelfClosing = register("handlebars-self-closing", [HTMLElement, Widget], {
+				buildRendering: handlebars.compile(
+					"<template>Hello <br/><input>world</template>"
+				)
+			});
+			var sc = new SelfClosing();
+			assert.strictEqual(sc.childNodes.length, 4, "# of child nodes");
+		},
+
 		teardown: function () {
 			container.parentNode.removeChild(container);
 		}
