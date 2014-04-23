@@ -1,9 +1,11 @@
 define(["requirejs-text/text", "./template"], function (text, template) {
+
 	function tokenize(/*String*/ text) {
 		// Given a string like "hello {{foo}} world", split it into static text and property references,
 		//  and return array representing the parts, ex: ["hello ", {property: "foo"}, " world"]
+
 		var inVar, parts = [];
-		text = text.trim();
+
 		if (text) {
 			text.split(/({{|}})/).forEach(function (str) {
 				if (str === "{{") {
@@ -15,6 +17,7 @@ define(["requirejs-text/text", "./template"], function (text, template) {
 				}
 			});
 		}
+
 		return parts;
 	}
 
@@ -90,8 +93,32 @@ define(["requirejs-text/text", "./template"], function (text, template) {
 					children.push(handlebars.parseNode(child, xmlns));
 				} else if (childType === 3) {
 					// Text node likely containing variables like {{foo}}.
-					children = children.concat(tokenize(child.nodeValue.trim()));
+					children = children.concat(tokenize(child.nodeValue));
 				}
+			}
+
+			// Optimization to avoid generating unnecessary createTextNode() calls:
+			// Trim starting and ending whitespace nodes, but not whitespace in the middle, so that
+			// the following example only ends up with one whitespace node between hello and world:
+			//
+			// <div>\n\t<span>hello</span>< span>world</span>\n</div>
+			//
+			// Also, avoid using trim() since that removes &nbsp; nodes.
+			if (children.length) {
+				var start = 0, end = children.length - 1;
+				while (/^[ \t\n]*$/.test(children[start]) && start < end) {
+					start++;
+				}
+				if (typeof children[start] === "string") {
+					children[start] = children[start].replace(/^[ \t\n]+/, "");
+				}
+				while (/^[ \t\n]*$/.test(children[end]) && end > start) {
+					end--;
+				}
+				if (typeof children[end] === "string") {
+					children[end] = children[end].replace(/[ \t\n]+$/, "");
+				}
+				children = children.slice(start, end + 1);
 			}
 
 			return children;
