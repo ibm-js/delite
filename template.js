@@ -44,7 +44,7 @@ define(["./register"], function (register) {
 	function singleQuote(/*String*/ text) {
 		// summary:
 		//		Helper for generating javascript; creates text strings enclosed in single quotes.
-		return "'" + text.replace(/(['\\])/g, "\\$1").replace(/[\s]+/g, " ") + "'";
+		return "'" + text.replace(/(['\\])/g, "\\$1").replace(/\n/g, "\\n").replace(/\t/g, "\\t") + "'";
 	}
 
 	return {

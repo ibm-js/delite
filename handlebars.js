@@ -104,7 +104,7 @@ define(["requirejs-text/text", "./template"], function (text, template) {
 			// <div>\n\t<span>hello</span>< span>world</span>\n</div>
 			//
 			// Also, avoid using trim() since that removes &nbsp; nodes.
-			if (children.length) {
+			if (children.length && templateNode.tagName !== "PRE") {
 				var start = 0, end = children.length - 1;
 				while (/^[ \t\n]*$/.test(children[start]) && start < end) {
 					start++;
