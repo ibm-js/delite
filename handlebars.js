@@ -134,10 +134,12 @@ define(["requirejs-text/text", "./template"], function (text, template) {
 			var adjustedTemplate = templateText.replace(/{{#(each|if) +([^}]+)}}/g,
 					"<$1 condition='$2'>").replace(/{{\/[^}]+}}/g, "</$1>");
 
-			// Also, rename all the nodes in the template so that browsers with native document.createElement() support
-			// don't start instantiating nested widgets, creating internal nodes etc.
-			// Regex designed to match <foo> but not <!-- comment -->.
-			adjustedTemplate = adjustedTemplate.replace(/(<\/? *)([-a-zA-Z0-9]+)/g, "$1template-$2");
+			// Also, rename all the custom elements in the template so that browsers with native
+			// document.createElement() support don't start instantiating nested widgets, creating internal nodes etc.
+			// Regex designed to match <foo-bar> and <button is=...> but not <!-- comment -->, and not
+			// native tags like <br>...except for <template> itself, which needs to be renamed for some reason.
+			adjustedTemplate = adjustedTemplate.replace(
+				/(<\/? *)([a-zA-Z0-9]+-[-a-zA-Z0-9]+|template|[a-zA-Z]+[^>]+is=)/g, "$1template-$2");
 
 			// Create DOM tree from template.
 			// If template contains SVG nodes then parse as XML, to preserve case of attributes like viewBox.
