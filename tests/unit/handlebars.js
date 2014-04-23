@@ -44,9 +44,9 @@ define([
 
 			var TestHtml = register("test-data-attach-point", [HTMLElement, Widget], {
 				buildRendering: handlebars.compile(
-						"<div data-attach-point='root,root2'>" +
+						"<template data-attach-point='root,root2'>" +
 						"<button data-attach-point='myButton, myButton2'>hi</button>" +
-						"</div>"
+						"</template>"
 				)
 			});
 
@@ -98,8 +98,8 @@ define([
 				inputValue: "original value",	// must be set as property
 				role: "originalRole",			// must be set as attribute
 				buildRendering: handlebars.compile(
-						"<special-props><input class='{{inputClass}}' value='{{inputValue}}' " +
-						"role='{{role}}'/></special-props>"
+						"<template><input class='{{inputClass}}' value='{{inputValue}}' " +
+						"role='{{role}}'/></template>"
 				)
 			});
 			var mySpecialPropsWidget = new SpecialPropsWidget();
@@ -124,7 +124,7 @@ define([
 
 		"special characters": function () {
 			// Test that special characters are escaped.  This is actually testing template.js.
-			var TestList = register("test-ul", [ HTMLUListElement, Widget], {
+			var TestList = register("test-ul", [HTMLUListElement, Widget], {
 				label: "bill'\\",
 				buildRendering: handlebars.compile(
 					"<ul><li foo=\"a.b('c,d')\" bar='\\\"hello\"'>\"\\{{label}}\n\twas \n\there'</li></ul>")
@@ -143,7 +143,7 @@ define([
 			g = 1;
 			var TestClick = register("test-events", [ HTMLElement, Widget], {
 				buildRendering: handlebars.compile(
-					"<span><span onclick='g = 2;'>click me</span></span>")
+					"<template><span onclick='g = 2;'>click me</span></template>")
 			});
 			var myClick = new TestClick();
 			myClick.placeAt(container);
