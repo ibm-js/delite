@@ -1,4 +1,4 @@
-define(["requirejs-text/text", "./template"], function (text, template) {
+define(["./template"], function (text, template) {
 
 	// Text plugin to load the templates and do the build.
 	var textPlugin = "requirejs-text/text";
