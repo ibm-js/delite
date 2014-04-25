@@ -4,7 +4,7 @@ define([
 ], function (dcl, has) {
 	"use strict";
 
-	var doc = document;
+	var doc = typeof document !== "undefined" && document;	// "typeof document" check so module loads in NodeJS
 
 	// Workaround problem using dcl() on native DOMNodes on FF and IE,
 	// see https://github.com/uhop/dcl/issues/9.
@@ -25,7 +25,7 @@ define([
 	};
 
 	// Does platform have native support for document.registerElement() or a polyfill to simulate it?
-	has.add("document-register-element", !!document.registerElement);
+	has.add("document-register-element", doc && !!doc.registerElement);
 
 	// Can we use __proto__ to reset the prototype of DOMNodes?
 	// It's not available on IE<11, and even on IE11 it makes the node's attributes
@@ -142,7 +142,7 @@ define([
 	 * Doesn't include newer elements not available on all browsers.
 	 * @type {Object}
 	 */
-	var tagMap = {
+	var tagMap = typeof HTMLElement !== "undefined" && {	// "typeof HTMLElement" check so module loads in NodeJS
 		a: HTMLAnchorElement,
 		// applet: HTMLAppletElement,
 		// area: HTMLAreaElement,
@@ -208,7 +208,7 @@ define([
 		// blink: HTMLUnknownElement,
 		video: HTMLVideoElement
 	};
-	var tags = Object.keys(tagMap);
+	var tags = tagMap && Object.keys(tagMap);
 
 	/**
 	 * Registers the tag with the current document, and save tag information in registry.
@@ -254,7 +254,7 @@ define([
 			// Create new widget node or upgrade existing node to widget
 			var node;
 			if (srcNodeRef) {
-				node = typeof srcNodeRef === "string" ? document.getElementById(srcNodeRef) : srcNodeRef;
+				node = typeof srcNodeRef === "string" ? doc.getElementById(srcNodeRef) : srcNodeRef;
 				upgrade(node);
 			} else {
 				node = createElement(tag);
