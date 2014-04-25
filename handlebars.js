@@ -1,5 +1,8 @@
 define(["requirejs-text/text", "./template"], function (text, template) {
 
+	// Text plugin to load the templates and do the build.
+	var textPlugin = "requirejs-text/text";
+	
 	function tokenize(/*String*/ text) {
 		// Given a string like "hello {{foo}} world", split it into static text and property references,
 		//  and return array representing the parts, ex: ["hello ", {property: "foo"}, " world"]
@@ -193,20 +196,12 @@ define(["requirejs-text/text", "./template"], function (text, template) {
 			// config: Object
 			//		A configuration object with isLoad=true when doing a build.
 
-			require(["requirejs-text/text!" + mid], function (template) {
-				if (config && config.isBuild) {
-					onload();
-				} else {
-					onload(handlebars.compile(template));
-				}
+			require([textPlugin + "!" + mid], function (template) {
+				onload(handlebars.compile(template));
 			});
 		},
 
-		write: function (pluginName, moduleName, write, config) {
-			// summary:
-			//		Used by builds
-			text.write(pluginName, moduleName, write, config);
-		}
+		pluginBuilder: textPlugin
 	};
 
 	return handlebars;
