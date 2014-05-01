@@ -71,7 +71,7 @@ define(["dojo/dom-construct"], function (domConstruct) {
 			mids = mids.split(/, */);
 
 			var dependencies = mids.map(function (path) {
-				return (/\.css$/).test(path) ? "dojo/text!" + path : path;
+				return (/\.css$/).test(path) ? "requirejs-text/text!" + path : path;
 			});
 
 			require(dependencies, function () {
