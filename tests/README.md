@@ -20,7 +20,7 @@ on https://saucelabs.com/appium/tutorial/3.
 Navigate to:
 
 ```
-http://localhost/delite/node_modules/intern/client.html?config=tests/client
+http://localhost/delite/node_modules/intern/client.html?config=tests/intern-browser
 ```
 
 Note that this won't run the functional tests.
