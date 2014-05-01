@@ -192,7 +192,7 @@ define([
 			}
 
 			this._started = true;
-			this.getChildren().forEach(function (obj) {
+			this.findCustomElements(this).forEach(function (obj) {
 				if (!obj._started && !obj._destroyed && typeof obj.startup === "function") {
 					obj.startup();
 					obj._started = true;

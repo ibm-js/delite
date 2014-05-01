@@ -124,6 +124,28 @@ define([
 			assert(domClass.contains(myWidgetCustom, "customBase"), "baseClass is customBase");
 		},
 
+		startup: function () {
+			var TestSimpleWidget = register("widget-simple", [HTMLElement, Widget], {
+			});
+			var TestStartupWidget = register("widget-startup", [HTMLElement, Widget], {
+				buildRendering: function () {
+					this.appendChild(new TestSimpleWidget());
+					this.appendChild(this.containerNode = this.ownerDocument.createElement("div"));
+					this.containerNode.appendChild(new TestSimpleWidget());
+				}
+			});
+
+			var w1 = new TestStartupWidget();
+			container.appendChild(w1);
+			w1.startup();
+
+			// Startup should be called on all widgets, not just those inside containerNode.
+			var descendants = w1.findCustomElements();
+			assert.strictEqual(descendants.length, 2, "# of custom elements");
+			assert(descendants[0]._started, "started first child");
+			assert(descendants[1]._started, "started second child");
+		},
+
 		teardown: function () {
 			container.parentNode.removeChild(container);
 		}
@@ -194,12 +216,12 @@ define([
 	var html = "<test-foo id='one' name='bob' attr1=10 attr2=10></test-foo> \
 		<test-foo id='two' name='is' attr1=5 attr2=10></test-foo> \
 		<div id='threeWrapper'> \
-		<test-bar id='three' name='your' attr1=5 attr2=5> \
-		<div id='three.one'> \
-		<div id='three.one.one'></div> \
-		<test-bar id='four' name='uncle' attr1=10 attr2=5></test-bar> \
-		</div> \
-		</test-bar> \
+			<test-bar id='three' name='your' attr1=5 attr2=5> \
+				<div id='three.one'> \
+					<div id='three.one.one'></div> \
+					<test-bar id='four' name='uncle' attr1=10 attr2=5></test-bar> \
+				</div> \
+			</test-bar> \
 		</div> \
 		<div id='not-a-widget'></div>";
 

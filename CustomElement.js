@@ -166,7 +166,7 @@ define([
 			//		and should be removed from the document.
 
 			// Destroy descendants
-			this.findCustomElements(this).forEach(function (w) {
+			this.findCustomElements().forEach(function (w) {
 				if (w.destroy) {
 					w.destroy();
 				}
@@ -236,8 +236,6 @@ define([
 			// root: Element?
 			//		Node to search under.
 
-			// TODO: In dijit this didn't search for nested widgets (ie: widgets inside other widgets).
-
 			var outAry = [];
 
 			function getChildrenHelper(root) {
@@ -250,7 +248,7 @@ define([
 				}
 			}
 
-			getChildrenHelper(root || this.ownerDocument.body);
+			getChildrenHelper(root || this);
 			return outAry;
 		}
 	});
