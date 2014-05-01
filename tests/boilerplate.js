@@ -80,7 +80,7 @@ require = {
 	locale: locale || "en-us",
 	config: {
 		"dojo/has": {
-			"dojo-bidi": dir === "rtl"
+			"bidi": dir === "rtl"
 		}
 	}
 };

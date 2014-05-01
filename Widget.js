@@ -8,14 +8,14 @@ define([
 	"dojo/has",
 	"./CustomElement",
 	"./register",
-	"dojo/has!dojo-bidi?./Bidi"
+	"dojo/has!bidi?./Bidi"
 ], function (dcl, dom, domClass, domConstruct, domGeometry, domStyle, has, CustomElement, register, Bidi) {
 
 	// module:
 	//		delite/Widget
 
 	// Flag to enable support for textdir attribute
-	has.add("dojo-bidi", false);
+	has.add("bidi", false);
 
 	// Used to generate unique id for each widget
 	var cnt = 0;
