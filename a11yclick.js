@@ -73,7 +73,8 @@ define([
 		 * @returns {Object} Handle with remove() method to stop listening.
 		 */
 		click: function (node, listener) {
-			// Set flag on node so that keydown/keyup above emits click event
+			// Set flag on node so that keydown/keyup above emits click event.
+			// Also enables fast click processing from dojo/touch.
 			node.dojoClick = true;
 
 			return on(node, "click", listener);
