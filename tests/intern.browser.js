@@ -6,9 +6,8 @@ define([
 ], function (intern) {
 
 	intern.loader = {
-		// Previously needed to set this to the location to "../../..", to be relative to client.html.
-		// Now it needs more dots.  Not sure why, presumably an intern bug.
-		baseUrl: "../../../../.."
+		// relative to client.html
+		baseUrl: "../../.."
 	};
 
 	return intern;
