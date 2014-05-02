@@ -6,7 +6,7 @@ define([
 	registerSuite({
 		name: "uacss",
 		uacss: function () {
-			if (has("ie")){
+			if (has("ie")) {
 				assert(/d-ie/.test(document.body.className), "ie");
 				assert(/d-ie-[1-9]/.test(document.body.className), "ie version");
 			}
