@@ -12,6 +12,8 @@ define([
 	"./CssState",
 	"./Container",
 	"./a11y",
+	"./sniff",
+	"./uacss",
 	"./Stateful",
 	"./Selection",
 	"./StoreMap",
