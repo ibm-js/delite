@@ -23,7 +23,7 @@ define([
 		},
 */
 		"Updates": function () {
-			var d = this.async(2000);
+			var d = this.async(1500);
 			var store = new C();
 			var myData = [
 				{ id: "foo", name: "Foo" },
@@ -55,8 +55,18 @@ define([
 			store.store = myStore;
 			return d;
 		},
+		"NullStore": function () {
+			var d = this.async(1500);
+			var store = new C();
+			store.on("query-success", d.callback(function () {
+				assert.equal(store.renderItems.length, 0);
+			}));
+			store.startup();
+			store.store = null;
+			return d;
+		},
 		"Destroy": function () {
-			var d = this.async(2000);
+			var d = this.async(1500);
 			var store = new C();
 			var myData = [
 				{ id: "foo", name: "Foo" },
@@ -90,7 +100,7 @@ define([
 			return d;
 		},
 		"Query": function () {
-			var d = this.async(2000);
+			var d = this.async(1500);
 			var store = new C();
 			store.query = { id: "foo" };
 			var myData = [
@@ -119,9 +129,9 @@ define([
 			return d;
 		},
 		"StoreFuncRange": function () {
-			var d = this.async(2000);
+			var d = this.async(1500);
 			var store = new C();
-			store.processStore = function (store) {
+			store.preProcessStore = function (store) {
 				return store.range(1);
 			};
 			var myData = [
@@ -130,8 +140,9 @@ define([
 			];
 			store.on("query-success", d.callback(function () {
 				assert(store.renderItems instanceof Array);
+				// TODO: actual tests are commented out pending SitePen/dstore#5
+				// TODO: once fixed also add postProcessStore tests
 				//assert.equal(store.renderItems.length, 1);
-				//assert.deepEqual(store.renderItems[0], myData[0]);
 				myStore.put({ id: "foo", name: "Foo2" });
 				// this works because put is synchronous & same for add etc...
 				//assert.equal(store.renderItems.length, 1);
@@ -150,9 +161,9 @@ define([
 			return d;
 		},
 		"StoreFuncSort": function () {
-			var d = this.async(2000);
+			var d = this.async(1500);
 			var store = new C();
-			store.processStore = function (store) {
+			store.preProcessStore = function (store) {
 				return store.sort("index");
 			};
 			var myData = [
