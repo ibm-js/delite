@@ -1,11 +1,11 @@
 define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalidating) {
 
 	var isStoreInvalidated = function (props) {
-		return props.store || props.query || props.processStore;
+		return props.store || props.query || props.preProcessStore || props.postProcessStore;
 	};
 
 	var setStoreValidate = function (props) {
-		props.store = props.query = props.processStore = false;
+		props.store = props.query = props.preProcessStore = props.postProcessStore = false;
 	};
 
 	return dcl(Invalidating, {
@@ -28,10 +28,18 @@ define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalida
 		//		A query filter to apply to the store. Default is {}.
 		query: {},
 
-		// processStore: Function
+		// preProcessStore: Function
 		//		An optional function that processes the store and returns a new one (to sort it, range it etc...). 
+		//		This processing is applied before potentially tracking the store for modifications (if Observable).
 		//		Default is null.
-		processStore: null,
+		preProcessStore: null,
+		
+		// postProcessStore: 
+		//		An optional function that processes the store and returns a new one (to sort it, range it etc...). 
+		//		This processing is applied after potentially tracking the store for modifications (if Observable).
+		//		This allows for example to be notified of modifications that occurred outside of the range. 
+		//		Default is null.
+		postProcessStore: null,
 
 		// renderItems: Array
 		//		The render items corresponding to the store items for this widget. This is filled from the store and
@@ -42,7 +50,8 @@ define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalida
 			// we want to be able to wait for potentially several of those properties to be set before
 			// actually firing the store request
 			this.addInvalidatingProperties({
-					"processStore": "invalidateProperty",
+					"preProcessStore": "invalidateProperty",
+					"postProcessStore": "invalidateProperty",
 					"store": "invalidateProperty",
 					"query": "invalidateProperty"
 				}
@@ -90,27 +99,45 @@ define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalida
 			// tags:
 			//		protected
 			if (isStoreInvalidated(props)) {
-				this._untrack();
 				setStoreValidate(props);
-				var store = this.store.filter(this.query);
-				if (this.processStore) {
-					store = this.processStore(store);
+				this.queryStoreAndInitItems(this.preProcessStore, this.postProcessStore);
+			}
+		},
+
+		queryStoreAndInitItems: function (preProcessStore, postProcessStore) {
+			// summary:
+			//		Query the store, create the render items and call initItems() when ready. If an error occurs
+			//		a 'query-error' event will be fired. 
+			// description:  This method is not supposed to be called by application developer.
+			//		It will be called automatically when modifying the store related properties or by the subclass
+			//		if needed.
+			// returns: 
+			//		If store to be processed is not null a promise that will be resolved when the loading process 
+			//		will be finished.
+			// tags:
+			//		protected
+			this._untrack();
+			var store = this.store.filter(this.query);
+			if (preProcessStore) {
+				store = preProcessStore.call(this, store);
+			}
+			if (store != null) {
+				if (store.track) {
+					// user asked us to observe the store
+					var tracked = this._tracked = store.track();
+					tracked.on("add", this._itemAdded.bind(this));
+					tracked.on("update", this._itemUpdated.bind(this));
+					tracked.on("remove", this._itemRemoved.bind(this));
 				}
-				if (store != null) {
-					if (store.track) {
-						// user asked us to observe the store
-						var tracked = this._tracked = store.track();
-						tracked.on("add", this._itemAdded.bind(this));
-						tracked.on("update", this._itemUpdated.bind(this));
-						tracked.on("remove", this._itemRemoved.bind(this));
-					}
-					// if we have a mapping function between store item and some intermediary items use it
-					when(store.map(function (item) {
-						return this.itemToRenderItem(item);
-					}, this), this.initItems.bind(this), this._queryError.bind(this));
-				} else {
-					this.initItems([]);
+				if (postProcessStore) {
+					store = postProcessStore.call(this, store);
 				}
+				// if we have a mapping function between store item and some intermediary items use it
+				return when(store.map(function (item) {
+					return this.itemToRenderItem(item);
+				}, this)).then(this.initItems.bind(this), this._queryError.bind(this));
+			} else {
+				this.initItems([]);
 			}
 		},
 

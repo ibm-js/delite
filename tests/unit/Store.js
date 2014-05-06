@@ -121,17 +121,23 @@ define([
 		"StoreFuncRange": function () {
 			var d = this.async(2000);
 			var store = new C();
-			store.processStore = function (store) {
+			store.preProcessStore = function (store) {
 				return store.range(1);
 			};
 			var myData = [
 				{ id: "foo", name: "Foo" },
 				{ id: "bar", name: "Bar" }
 			];
-			store.on("query-success", d.callback(function () {
+			var count = 0;
+			store.on("query-success", function () {
+				count++;
+				if (count === 2) {
+					d.resolve();
+				}
 				assert(store.renderItems instanceof Array);
+				// TODO: actual tests are commented out pending SitePen/dstore#5
+				// TODO: once fixed also add postProcessStore tests
 				//assert.equal(store.renderItems.length, 1);
-				//assert.deepEqual(store.renderItems[0], myData[0]);
 				myStore.put({ id: "foo", name: "Foo2" });
 				// this works because put is synchronous & same for add etc...
 				//assert.equal(store.renderItems.length, 1);
@@ -142,7 +148,9 @@ define([
 				myStore.remove("bar");
 				//assert.equal(store.renderItems.length, 1);
 				//assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo2" });
-			}));
+				// changing preProcessStore again should launch back query
+				store.preProcessStore = null;
+			});
 			store.startup();
 			// use empty model to easy comparison
 			var myStore = new M({ data: myData, model: null });
@@ -152,7 +160,7 @@ define([
 		"StoreFuncSort": function () {
 			var d = this.async(2000);
 			var store = new C();
-			store.processStore = function (store) {
+			store.preProcessStore = function (store) {
 				return store.sort("index");
 			};
 			var myData = [
