@@ -63,9 +63,6 @@ define(["dojo/has"], function (has) {
 
 		has.add("mac", dav.indexOf("Macintosh") >= 0);
 
-		has.add("svg", typeof SVGAngle !== "undefined");
-
-		has.add("air", dua.indexOf("AdobeAIR") >= 0);
 		has.add("msapp", parseFloat(dua.split("MSAppHost/")[1]) || undefined);
 	}
 
