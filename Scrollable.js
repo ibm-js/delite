@@ -16,10 +16,12 @@ define([
 	 * @description
 	 * When mixed into a host widget, this mixin brings scrolling capabilities
 	 * based on the overflow: auto CSS property.
+	 * 
 	 * By default, the scrolling capabilities are added to the widget
 	 * node itself. The host widget can chose the node thanks to the property
 	 * 'scrollableNode' which must be set at latest in its buildRendering()
 	 * method.
+	 * 
 	 * During interactive or programmatic scrolling, native "scroll"
 	 * events are emitted, and can be listen as follows (here,
 	 * 'scrollWidget' is the widget into which this mixin is mixed):
@@ -44,6 +46,7 @@ define([
 		/**
 		 * The direction of the interactive scroll. Possible values are:
 		 * "vertical", "horizontal", "both, and "none".
+		 * 
 		 * Note that scrolling programmatically using scrollTo() is
 		 * possible on both horizontal and vertical directions independently
 		 * on the value of scrollDirection.
@@ -54,15 +57,17 @@ define([
 
 		/**
 		 * Designates the descendant node of this widget which is made scrollable.
+		 * 
+		 * The default value is 'null'. If not set otherwise before the buildRendering()
+		 * method of the mixin is executed, it is set by default to this widget
+		 * itself ('this').
+		 * 
 		 * Note that this property can be set only at construction time, at latest
 		 * in the buildRendering() method of the host widget into which this class is mixed.
 		 * It should not be changed afterwards.
 		 * Typically, this property can be set by a host widget which needs scrolling
 		 * capabilities on one its descendant nodes.
 		 * @member {DomNode}
-		 * @default The default value is 'null'. If not set otherwise before the buildRendering()
-		 * method of the mixin is executed, it is set by default to this widget
-		 * itself ('this').
 		 */
 		scrollableNode: null,
 
