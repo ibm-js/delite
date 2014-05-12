@@ -54,8 +54,6 @@ define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalida
 			// we want to be able to wait for potentially several of those properties to be set before
 			// actually firing the store request
 			this.addInvalidatingProperties({
-					"preProcessStore": "invalidateProperty",
-					"postProcessStore": "invalidateProperty",
 					"store": "invalidateProperty",
 					"query": "invalidateProperty"
 				}
