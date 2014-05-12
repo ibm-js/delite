@@ -23,7 +23,7 @@ define([
 		},
 */
 		"Updates": function () {
-			var d = this.async(2000);
+			var d = this.async(1500);
 			var store = new C();
 			var myData = [
 				{ id: "foo", name: "Foo" },
@@ -55,8 +55,18 @@ define([
 			store.store = myStore;
 			return d;
 		},
+		"NullStore": function () {
+			var d = this.async(1500);
+			var store = new C();
+			store.on("query-success", d.callback(function () {
+				assert.equal(store.renderItems.length, 0);
+			}));
+			store.startup();
+			store.store = null;
+			return d;
+		},
 		"Destroy": function () {
-			var d = this.async(2000);
+			var d = this.async(1500);
 			var store = new C();
 			var myData = [
 				{ id: "foo", name: "Foo" },
@@ -90,7 +100,7 @@ define([
 			return d;
 		},
 		"Query": function () {
-			var d = this.async(2000);
+			var d = this.async(1500);
 			var store = new C();
 			store.query = { id: "foo" };
 			var myData = [
@@ -119,7 +129,7 @@ define([
 			return d;
 		},
 		"StoreFuncRange": function () {
-			var d = this.async(2000);
+			var d = this.async(1500);
 			var store = new C();
 			store.preProcessStore = function (store) {
 				return store.range(1);
@@ -128,12 +138,7 @@ define([
 				{ id: "foo", name: "Foo" },
 				{ id: "bar", name: "Bar" }
 			];
-			var count = 0;
-			store.on("query-success", function () {
-				count++;
-				if (count === 2) {
-					d.resolve();
-				}
+			store.on("query-success", d.callback(function () {
 				assert(store.renderItems instanceof Array);
 				// TODO: actual tests are commented out pending SitePen/dstore#5
 				// TODO: once fixed also add postProcessStore tests
@@ -148,9 +153,7 @@ define([
 				myStore.remove("bar");
 				//assert.equal(store.renderItems.length, 1);
 				//assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo2" });
-				// changing preProcessStore again should launch back query
-				store.preProcessStore = null;
-			});
+			}));
 			store.startup();
 			// use empty model to easy comparison
 			var myStore = new M({ data: myData, model: null });
@@ -158,7 +161,7 @@ define([
 			return d;
 		},
 		"StoreFuncSort": function () {
-			var d = this.async(2000);
+			var d = this.async(1500);
 			var store = new C();
 			store.preProcessStore = function (store) {
 				return store.sort("index");

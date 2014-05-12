@@ -1,11 +1,11 @@
 define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalidating) {
 
 	var isStoreInvalidated = function (props) {
-		return props.store || props.query || props.preProcessStore || props.postProcessStore;
+		return props.store || props.query;
 	};
 
 	var setStoreValidate = function (props) {
-		props.store = props.query = props.preProcessStore = props.postProcessStore = false;
+		props.store = props.query = false;
 	};
 
 	return dcl(Invalidating, {
@@ -29,17 +29,21 @@ define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalida
 		query: {},
 
 		// preProcessStore: Function
-		//		An optional function that processes the store and returns a new one (to sort it, range it etc...). 
+		//		An optional function that processes the store/collection and returns a new collection (to sort it, 
+		//		range it etc...). 
 		//		This processing is applied before potentially tracking the store for modifications (if Observable).
-		//		Default is null.
-		preProcessStore: null,
+		//		Changing this function on the instance will not automatically refresh the class.
+		//		Default is just an identity function.
+		preProcessStore: function (store) { return store; },
 		
 		// postProcessStore: 
-		//		An optional function that processes the store and returns a new one (to sort it, range it etc...). 
+		//		An optional function that processes the store/collection and returns a new collection (to sort it, 
+		//		range it etc...). 
 		//		This processing is applied after potentially tracking the store for modifications (if Observable).
-		//		This allows for example to be notified of modifications that occurred outside of the range. 
-		//		Default is null.
-		postProcessStore: null,
+		//		This allows for example to be notified of modifications that occurred outside of the range.
+		//		Changing this function on the instance will not automatically refresh the class.
+		//		Default is just an identity function.
+		postProcessStore: function (store) { return store; },
 
 		// renderItems: Array
 		//		The render items corresponding to the store items for this widget. This is filled from the store and
@@ -117,23 +121,18 @@ define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalida
 			// tags:
 			//		protected
 			this._untrack();
-			var store = this.store.filter(this.query);
-			if (preProcessStore) {
-				store = preProcessStore.call(this, store);
-			}
-			if (store != null) {
-				if (store.track) {
+			if (this.store != null) {
+				var collection = preProcessStore.call(this, this.store.filter(this.query));
+				if (collection.track) {
 					// user asked us to observe the store
-					var tracked = this._tracked = store.track();
+					var tracked = this._tracked = collection.track();
 					tracked.on("add", this._itemAdded.bind(this));
 					tracked.on("update", this._itemUpdated.bind(this));
 					tracked.on("remove", this._itemRemoved.bind(this));
 				}
-				if (postProcessStore) {
-					store = postProcessStore.call(this, store);
-				}
+				collection = postProcessStore.call(this, collection);
 				// if we have a mapping function between store item and some intermediary items use it
-				return when(store.map(function (item) {
+				return when(collection.map(function (item) {
 					return this.itemToRenderItem(item);
 				}, this)).then(this.initItems.bind(this), this._queryError.bind(this));
 			} else {
