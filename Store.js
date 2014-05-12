@@ -152,13 +152,20 @@ define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalida
 					tracked.on("remove", this._itemRemoved.bind(this));
 				}
 				collection = postProcessStore.call(this, collection);
-				// if we have a mapping function between store item and some intermediary items use it
-				return when(collection.map(function (item) {
-					return this.itemToRenderItem(item);
-				}, this)).then(this.initItems.bind(this), this._queryError.bind(this));
+				return this.fetch(collection);
 			} else {
 				this.initItems([]);
 			}
+		},
+
+		fetch: function (collection) {
+			// summary:
+			//			Called to process the items returned after querying the store
+
+			return when(collection.map(function (item) {
+				// if we have a mapping function between store item and some intermediary items use it
+				return this.itemToRenderItem(item);
+			}, this)).then(this.initItems.bind(this), this._queryError.bind(this));
 		},
 
 		_queryError: function (error) {
