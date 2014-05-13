@@ -39,7 +39,6 @@ define(["dcl/dcl", "dojo/sniff", "./Widget"], function (dcl, has, Widget) {
 
 		_setSelectedItemAttr: function (value) {
 			if (this.selectedItem !== value) {
-				this._set("selectedItem", value);
 				this.selectedItems = (value == null ? null : [value]);
 			}
 		},
@@ -52,7 +51,6 @@ define(["dcl/dcl", "dojo/sniff", "./Widget"], function (dcl, has, Widget) {
 			var oldSelectedItems = this.selectedItems;
 
 			this._set("selectedItems", value);
-			this._set("selectedItem", null);
 
 			if (oldSelectedItems != null && oldSelectedItems.length > 0) {
 				this.updateRenderers(oldSelectedItems);
@@ -60,6 +58,8 @@ define(["dcl/dcl", "dojo/sniff", "./Widget"], function (dcl, has, Widget) {
 			if (this.selectedItems && this.selectedItems.length > 0) {
 				this._set("selectedItem", this.selectedItems[0]);
 				this.updateRenderers(this.selectedItems);
+			} else {
+				this._set("selectedItem", null);
 			}
 		},
 
