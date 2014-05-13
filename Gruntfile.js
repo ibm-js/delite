@@ -141,6 +141,7 @@ module.exports = function (grunt) {
 			}
 		}
 	});
+
 	// Load plugins
 	grunt.loadNpmTasks("intern");
 	grunt.loadNpmTasks("grunt-contrib-jshint");
@@ -149,10 +150,13 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks("jsdoc-amddcl");
 	grunt.loadTasks("themes/tasks");// Custom cssToJs task to convert CSS to JS
 
+	// Aliases
 	grunt.registerTask("css", ["less", "cssToJs"]);
+	grunt.registerTask("jsdoc", "jsdoc-amddcl");
 
-	// always specify the target e.g. grunt test:remote, grunt test:remote
-	// then add on any other flags afterwards e.g. console, lcovhtml
+	// Testing.
+	// Always specify the target e.g. grunt test:remote, grunt test:remote
+	// then add on any other flags afterwards e.g. console, lcovhtml.
 	var testTaskDescription = "Run this task instead of the intern task directly! \n" +
 		"Always specify the test target e.g. \n" +
 		"grunt test:local\n" +
