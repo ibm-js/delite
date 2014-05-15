@@ -16,7 +16,6 @@
 
 // Parse the URL, get parameters
 var dir = "",
-	testMode = null,
 	locale;
 if (window.location.href.indexOf("?") > -1) {
 	var str = window.location.href.substr(window.location.href.indexOf("?") + 1).split(/#/);
@@ -26,14 +25,14 @@ if (window.location.href.indexOf("?") > -1) {
 			key = split[0],
 			value = (split[1] || "").replace(/[^\w]/g, "");	// replace() to prevent XSS attack
 		switch (key) {
-			case "locale":
-				// locale string | null
-				locale = value;
-				break;
-			case "dir":
-				// rtl | null
-				dir = value;
-				break;
+		case "locale":
+			// locale string | null
+			locale = value;
+			break;
+		case "dir":
+			// rtl | null
+			dir = value;
+			break;
 		}
 	}
 }
@@ -97,14 +96,14 @@ boilerplateOnLoad = function () {
 	// This function is the first registered domReady() callback.
 
 	// BIDI
-	if(dir === "rtl") {
+	if (dir === "rtl") {
 		// set dir=rtl on <html> node
 		document.body.parentNode.setAttribute("dir", "rtl");
 
 		// pretend all the labels are in an RTL language, because
 		// that affects how they lay out relative to inline form widgets
 		var labels = document.body.querySelectorAll("label");
-		for(var i = 0; i < labels.length; i++){
+		for (var i = 0; i < labels.length; i++) {
 			labels[i].setAttribute("dir", "rtl");
 		}
 	}
