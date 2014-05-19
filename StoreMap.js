@@ -1,3 +1,4 @@
+/** @module delite/StoreMap */
 define(["dcl/dcl", "dojo/_base/lang", "./Store"], function (dcl, lang, Store) {
 
 	var getvalue = function (map, item, key, store) {
@@ -26,45 +27,56 @@ define(["dcl/dcl", "dojo/_base/lang", "./Store"], function (dcl, lang, Store) {
 
 	var capitalize = /f(?=unc$)|a(?=ttr$)/;
 
+
+	/**
+	 * @summary
+	 * Mixin providing store binding management for widgets that extend delite/Store. Classes extending
+	 * this mixin can easily define how store items properties are mapped in the render items properties
+	 * consumable by the widget. The mapping can either occur by property (property A in store item
+	 * corresponds to property B in render item) or by function (a function is specified that mapped the
+	 * store item into the value of a property of the render item)..
+	 * @description
+	 * For each mapped property "foo" from the render item one can provide:
+	 *		* fooAttr property in which case the mapping is looking into the store item property specified
+	 *		by fooAttr
+	 *		* fooFunc property function in which case the mapping is delegating the mapping operation to the
+	 *		fooFunc function.
+	 *		fooFunc is of the following signature (value must be passed only for set operations:
+	 *		fooFunc(item, store, value)
+	 *		* if none of this is provided the mapping is looking into store item "foo" property
+	 *	Mapping property are meant to be added to the widget class using the mixin. One can directly add the
+	 *	mapping properties to an instance but in this case there are two limitations:
+	 *		* The property must be added before the widget is started
+	 *		* If the property is added in the markup only fully lower case properties are supported
+	 *		(e.g. foobar not fooBar)
+	 * @mixin module:delite/StoreMap
+	 * @augments {module:delite/Store}
+	 */
 	return dcl(Store, {
-
-		// summary:
-		//		Mixin providing store binding management for widgets that extend delite/Store. Classes extending
-		//		this mixin can easily define how store items properties are mapped in the render items properties
-		//		consumable by the widget. The mapping can either occur by property (property A in store item
-		//		corresponds to property B in render item) or by function (a function is specified that mapped the
-		//		store item into the value of a property of the render item).
-		// description:
-		//		For each mapped property "foo" from the render item one can provide:
-		//			* fooAttr property in which case the mapping is looking into the store item property specified
-		//				by fooAttr
-		//			* fooFunc property function in which case the mapping is delegating the mapping operation to the
-		//				fooFunc function.
-		//			  fooFunc is of the following signature (value must be passed only for set operations:
-		//				fooFunc(item, store, value)
-		//			* if none of this is provided the mapping is looking into store item "foo" property
-		//		Mapping property are meant to be added to the widget class using the mixin. One can directly add the
-		// 		mapping properties to an instance but in this case there are two limitations:
-		//			* The property must be added before the widget is started
-		//			* If the property is added in the markup only fully lower case properties are supported
-		// 				(e.g. foobar not fooBar)
-
-		// allowRemap: Boolean
-		//		Whether the created render items will be updated when call the remap() function on the component
-		//		allowing the consuming component to re-perform the mapping on demand. This property must not be
-		//		changed after the initialization cycle.
-		//		Default is false.
+		/**
+		 * Whether the created render items will be updated when call the remap() function on the component
+		 * allowing the consuming component to re-perform the mapping on demand. This property must not be
+		 * changed after the initialization cycle.
+		 * @member {boolean}
+		 * @default false
+		 */
 		allowRemap: false,
 
-		// _mappedKeys: [private] Array?
-		//		Array of item keys to be considered for mapping. The component will be introspected to find
-		//		all the properties ending with "Attr" or "Func" and provide mapping for those.
+		/**
+		 * Array of item keys to be considered for mapping. The component will be introspected to find
+		 * all the properties ending with "Attr" or "Func" and provide mapping for those.
+		 * @member {Object}
+		 * @default null
+		 * @private
+		 */
 		_mappedKeys: null,
 
-		// copyAllItemProps: Boolean
-		//		If true, in addition to the mapped properties copy all the other properties of the store item into
-		//		the render item with direct mapping. This property must not be changed after the initialization cycle.
-		//		Default is false.
+		/**
+		 * If true, in addition to the mapped properties copy all the other properties of the store item into
+		 * the render item with direct mapping. This property must not be changed after the initialization cycle.
+		 * @member {boolean}
+		 * @default false
+		 */
 		copyAllItemProps: false,
 
 		startup: function () {
@@ -129,13 +141,12 @@ define(["dcl/dcl", "dojo/_base/lang", "./Store"], function (dcl, lang, Store) {
 			};
 		}),
 
+		/**
+		 * Creates a store item based from the widget internal item based on the various mapped properties. 
+		 * @param {Object} renderItem The render item
+		 * @returns {Object}		
+		 */
 		renderItemToItem: function (/*Object*/ renderItem) {
-			// summary:
-			//		Create a store item based from the widget internal item. By default it returns the widget
-			//		internal item itself.
-			// renderItem: Object
-			//		The render item.
-			// returns: Object
 			var item = {}, store = this.store;
 			// special id case
 			item[store.idProperty] = renderItem.id;
@@ -147,15 +158,13 @@ define(["dcl/dcl", "dojo/_base/lang", "./Store"], function (dcl, lang, Store) {
 			return r;
 		},
 
+		/**
+		 * Returns the widget internal item for a given store item based on the various mapped properties.
+		 * @param {Object} item The store item
+		 * @returns {Object}
+		 * @protected
+		 */
 		itemToRenderItem: function (item) {
-			// summary:
-			//		Returns the widget internal item for a given store item. By default it returns the store
-			//		item itself.
-			// item: Object
-			//		The store item.
-			// tags:
-			//		protected
-
 			var renderItem = {};
 			var mappedKeys = this._mappedKeys;
 			var store = this.store;
@@ -184,12 +193,13 @@ define(["dcl/dcl", "dojo/_base/lang", "./Store"], function (dcl, lang, Store) {
 			return renderItem;
 		},
 
+		/**
+		 * If allowRemap is true, the method allows to perform again the mapping between the data item
+		 * and the render items. This might be useful is mapping by function is used and the execution
+		 * context of the mapping function as changed so that the results would need to be updated.
+		 * It should not be called if allowRemap is false.
+		 */
 		remap: function () {
-			// summary:
-			//		If allowRemap is true, the method allows to perform again the mapping between the data item
-			//		and the render items. This might be useful is mapping by function is used and the executation
-			//		context of the mapping function as changed so that the results would need to be updated.
-			//		It should not be called if allowRemap is false.
 			var items = this.renderItems;
 			var mappedKeys = this._mappedKeys;
 			for (var i = 0; i < items.length; i++) {

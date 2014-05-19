@@ -1,22 +1,29 @@
+/** @module delite/Selection */
 define(["dcl/dcl", "dojo/sniff", "./Widget"], function (dcl, has, Widget) {
+	/**
+	 * Mixin for widgets that manage a list of selected data items.
+	 * @mixin module:delite/Selection
+	 * @augments {module:delite/Widget}
+	 */
 	return dcl(Widget, {
-		// summary:
-		//		Mixin for classes for widgets that manage a list of selected data items.
-
 		preCreate: function () {
 			this._set("selectedItems", []);
 		},
-
-		// selectionMode: String
-		//		Valid values are:
-		//
-		//		1. "none": No selection can be done.
-		//		2. "single": Only one item can be selected at a time.
-		//		3. "multiple": Several item can be selected using the control key modifier.
-		//		Changing this value impacts the current selected items to adapt the selection to the new mode. However
-		//		whatever the selection mode is you can always set several selected items using the selectItem(s) API.
-		//		The mode will be enforced only when using setSelected and/or selectFromEvent APIs.
-		//		Default value is "single".
+		
+		/**
+		 * @summary
+		 * The chosen selection mode.
+		 * @description
+		 * Valid values are:
+		 * 1. "none": No selection can be done.
+		 * 2. "single": Only one item can be selected at a time.
+		 * 3. "multiple": Several item can be selected using the control key modifier.
+		 * Changing this value impacts the current selected items to adapt the selection to the new mode. However
+		 * whatever the selection mode is you can always set several selected items using the selectItem(s) API.
+		 * The mode will be enforced only when using setSelected and/or selectFromEvent APIs.
+		 * @member {string}
+		 * @default "single"
+		 */
 		selectionMode: "single",
 
 		_setSelectionModeAttr: function (value) {
@@ -33,8 +40,11 @@ define(["dcl/dcl", "dojo/sniff", "./Widget"], function (dcl, has, Widget) {
 			}
 		},
 
-		// selectedItem: Object
-		//		In single selection mode, the selected item or in multiple selection mode the last selected item.
+		/**
+		 * In single selection mode, the selected item or in multiple selection mode the last selected item.
+		 * @member {Object}
+		 * @default null
+		 */
 		selectedItem: null,
 
 		_setSelectedItemAttr: function (value) {
@@ -43,8 +53,11 @@ define(["dcl/dcl", "dojo/sniff", "./Widget"], function (dcl, has, Widget) {
 			}
 		},
 
-		// selectedItems: Object[]
-		//		The list of selected items.
+		/**
+		 * The list of selected items.
+		 * @member {object[]}
+		 * @default null
+		 */
 		selectedItems: null,
 
 		_setSelectedItemsAttr: function (value) {
@@ -67,25 +80,33 @@ define(["dcl/dcl", "dojo/sniff", "./Widget"], function (dcl, has, Widget) {
 			return this._get("selectedItems") == null ? [] : this._get("selectedItems").concat();
 		},
 
+		/**
+		 * @summary
+		 * Tests if an event has a selection modifier.
+		 * @description
+		 * If it has a selection modifier, that means that:
+		 *		*if selectionMode is "single", the event will be able to deselect a selected item
+		 *		* if selectionMode is "multiple", the event will trigger the selection state of the item
+		 * The default implementation of this method returns true if the event.ctrlKey attribute is
+		 * true, which means that:
+		 *		* if selectionMode is "single", the Ctrl (or Command on MacOS) key must be pressed for the
+		 *		event to deselect the currently selected item
+		 *		* if selectionMode is "multiple", the Ctrl (or Command on MacOS) key must be pressed for the
+		 *		event to toggle the selection status of the item.
+		 * @param {Event} event The event that lead to the selection 
+		 * @returns {boolean} Whether the event has selection modifier
+		 * @protected
+		 */
 		hasSelectionModifier: function (event) {
-			// summary:
-			//		Tests if an event has a selection modifier. If it has a selection modifier, that means that:
-			//			* if selectionMode is "single", the event will be able to deselect a selected item
-			//			* if selectionMode is "multiple", the event will trigger the selection state of the item
-			//		The default implementation of this method returns true if the event.ctrlKey attribute is
-			//		true, which means that:
-			//			* if selectionMode is "single", the Ctrl (or Command on MacOS) key must be pressed for the
-			//			event to deselect the currently selected item
-			//			* if selectionMode is "multiple", the Ctrl (or Command on MacOS) key must be pressed for the
-			//			event to toggle the selection status of the item.
 			return !has("mac") ? event.ctrlKey : event.metaKey;
 		},
 
+		/**
+		 * Returns whether an item is selected or not.
+		 * @param {item} object The item to test.
+		 * @returns {Object} The item to test the selection for.
+		 */
 		isSelected: function (item) {
-			// summary:
-			//		Returns whether an item is selected or not.
-			// item: Object
-			//		The item to test the selection for.			
 			if (this.selectedItems == null || this.selectedItems.length === 0) {
 				return false;
 			}
@@ -95,30 +116,31 @@ define(["dcl/dcl", "dojo/sniff", "./Widget"], function (dcl, has, Widget) {
 			}, this);
 		},
 
+		/**
+		 * This function must be implemented to return the id of a item.
+		 * @param {item} object The item the identity of must be returned
+		 * @returns {string} The identity of the item
+		 */
 		getIdentity: function (/*jshint unused: vars */item) {
-			// summary:
-			//		This function must be implemented to return the id of a item.
-			// item: Object
-			//		The item to query the identity for.
 		},
 
+		/**
+		 * This function must be implemented to update the rendering of the items based on whether they are
+		 * selected or not. The implementation must check for their new selection state and update
+		 * accordingly.
+		 * @param {object[]} items The array of items changing their selection state
+		 * @protected
+		 */
 		updateRenderers: function (/*jshint unused: vars */items) {
-			// summary:
-			//		This function must be implemented to update the rendering of the items based on whether they are
-			//		selected or not. The implementation must check for their new selection state and update 
-			//		accordingly.
-			// items: Array
-			//		The array of items changing their selection state
 		},
 
-		setSelected: function (item, value) {
-			// summary:
-			//		Change the selection state of an item.
-			// item: Object
-			//		The item to change the selection state for.
-			// value: Boolean
-			//		True to select the item, false to deselect it. 
 
+		/**
+		 * Change the selection state of an item.
+		 * @param {Object} item The item to change the selection state for.
+		 * @param {boolean] value True to select the item, false to deselect it.
+		 */
+		setSelected: function (item, value) {
 			if (this.selectionMode === "none" || item == null) {
 				return;
 			}
@@ -160,22 +182,16 @@ define(["dcl/dcl", "dojo/sniff", "./Widget"], function (dcl, has, Widget) {
 			}
 		},
 
+		/**
+		 * Applies selection triggered by an user interaction.
+		 * @param {Event} event The source event of the user interaction.
+		 * @param {Object} value The render item that has been selected/deselected.
+		 * @param {Object} renderer The visual renderer of the selected/deselected item.
+		 * @param {boolean} dispatch Whether an event must be dispatched or not.
+		 * @returns {boolean} True if the selection has changed and false otherwise.
+		 * @protected
+		 */
 		selectFromEvent: function (event, item, renderer, dispatch) {
-			// summary:
-			//		Applies selection triggered by an user interaction
-			// event: Event
-			//		The source event of the user interaction.
-			// item: Object
-			//		The render item that has been selected/deselected.
-			// renderer: Object
-			//		The visual renderer of the selected/deselected item.			
-			// dispatch: Boolean
-			//		Whether an event must be dispatched or not.
-			// returns: Boolean
-			//		Returns true if the selection has changed and false otherwise.
-			// tags:
-			//		protected
-
 			if (this.selectionMode === "none") {
 				return false;
 			}
@@ -222,18 +238,15 @@ define(["dcl/dcl", "dojo/sniff", "./Widget"], function (dcl, has, Widget) {
 			return changed;
 		},
 
+		/**
+		 * Dispatch a selection change event.
+		 * @param {Object} oldSelectedItem The previously selectedItem.
+		 * @param {Object} newSelectedItem The new selectedItem.
+		 * @param {Object} renderer The visual renderer of the selected/deselected item.
+		 * @param {Event} triggerEvent The event that lead to the selection of the item.
+		 * @protected
+		 */
 		dispatchSelectionChange: function (oldSelectedItem, newSelectedItem, renderer, triggerEvent) {
-			// summary:
-			//		Dispatch a selection change event.
-			// oldSelectedItem: Object
-			//		The previously selectedItem.
-			// newSelectedItem: Object
-			//		The new selectedItem.
-			// renderer: Object
-			//		The visual renderer of the selected/deselected item.
-			// triggerEvent: Event
-			//		The event that lead to the selection of the item.
-
 			this.emit("selection-change", {
 				oldValue: oldSelectedItem,
 				newValue: newSelectedItem,

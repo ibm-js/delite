@@ -1,38 +1,54 @@
+/** @module delite/Invalidating */
 define(["dcl/dcl", "dojo/_base/lang", "./Stateful", "./Destroyable"], function (dcl, lang, Stateful, Destroyable) {
 
+	/**
+	 * @summary
+	 * Mixin for classes (usually widgets) that watch a set of invalidating properties
+	 * and delay to the next execution frame the refresh following the changes of
+	 * the values of these properties. The receiving class must extend delite/Widget
+	 * or dojo/Evented.
+	 * @description
+	 * Once a set of properties have been declared subject to invalidation using the method
+	 * addInvalidatingProperties(), changes of the values of these properties possibly
+	 * end up calling refreshProperties() and in all cases refreshRendering(),
+	 * thus allowing the receiving class to refresh itself based on the new values.
+	 * @mixin module:delite/Invalidating
+	 * @augments {module:delite/Stateful}
+	 * @augments {module:delite/Destroyable}
+	 */
 	return dcl([Stateful, Destroyable], {
-		// summary:
-		//		Mixin for classes (usually widgets) that watch a set of invalidating properties
-		//		and delay to the next execution frame the refresh following the changes of
-		//		the values of these properties. The receiving class must extend delite/Widget
-		//		or dojo/Evented.
-		// description:
-		//		Once a set of properties have been declared subject to invalidation using the method
-		//		addInvalidatingProperties(), changes of the values of these properties possibly
-		//		end up calling refreshProperties() and in all cases refreshRendering(),
-		//		thus allowing the receiving class to refresh itself based on the new values.
 
 		_renderHandle: null,
 
-		// _invalidatingProperties: [private] Object
-		//		A hash of properties to watch in order to trigger the invalidation of these properties
-		//		and/or the rendering invalidation.
-		//		This list must be initialized by the time buildRendering() completes, usually in preCreate(),
-		//		using addInvalidatingProperties(). Default value is null.
+		/**
+		 * A hash of properties to watch in order to trigger the invalidation of these properties
+		 * and/or the rendering invalidation. This list must be initialized by the time buildRendering() completes, 
+		 * usually in preCreate(), using addInvalidatingProperties(). 
+		 * @default null
+		 * @private
+		 */
 		_invalidatingProperties: null,
-		
-		// _invalidatedProperties: [private] Object
-		//		A hash of invalidated properties either to refresh them or to refresh the rendering.
+
+		/**
+		 * A hash of invalidated properties either to refresh them or to refresh the rendering.
+		 * @private
+		 */
 		_invalidatedProperties: null,
-		
-		// invalidProperties: Boolean
-		//		Whether at least one property is invalid. This is readonly information, one must call
-		//		invalidateProperties() to modify this flag.
+
+		/**
+		 * Whether at least one property is invalid. This is readonly information, one must call
+		 * invalidateProperties() to modify this flag.
+		 * @member {boolean}
+		 * @default false
+		 */
 		invalidProperties: false,
-		
-		// invalidRenderering: Boolean
-		//		Whether the rendering is invalid. This is readonly information, one must call
-		//		invalidateRendering() to modify this flag.
+
+		/**
+		 * Whether the rendering is invalid. This is readonly information, one must call
+		 * invalidateRendering() to modify this flag.
+		 * @member {boolean}
+		 * @default false
+		 */
 		invalidRendering: false,
 
 		// if we are not a Widget, setup the listeners at construction time
@@ -59,25 +75,37 @@ define(["dcl/dcl", "dojo/_base/lang", "./Stateful", "./Destroyable"], function (
 			this._invalidatedProperties = {};
 		},
 
+		/**
+		 * @summary
+		 * Adds the properties listed as arguments to the properties watched for triggering invalidation.
+		 * This method must be called during the startup lifecycle before buildRendering() completes,
+		 * usually in preCreate().
+		 * @description
+		 * This can be used to trigger invalidation for rendering or for both property and rendering. When
+		 * no invalidation mechanism is specified, only the rendering refresh will be triggered, that is only
+		 * the refreshRendering() method will be called.
+		 * This method can either be called with a list of properties to invalidate the rendering as follows:
+		 * ```javascript
+		 *		this.addInvalidatingProperties("foo", "bar", ...);
+		 *	```	
+		 * or with an hash of keys/values, the keys being the properties to invalidate and the values
+		 * being the invalidation method (either rendering or property and rendering):
+		 * ```javascript
+		 *		this.addInvalidatingProperties({
+		 *			"foo": "invalidateProperty",
+		 *			"bar": "invalidateRendering"
+		 *		});
+		 *	```	
+		 * @param {HTMLElement|id} widget The child Widget or HTMLElement to display.
+		 * @param {Object} params Optional params that might be taken into account when displaying the child. This can
+		 * be the type of visual transitions involved. This might vary from one DisplayContainer to another.
+		 * By default on the "hide" param is supporting meaning that the transition should hide the widget
+		 * not display it.
+		 * @returns {promise} Optionally a promise that will be resolved when the display & transition effect will have
+		 * been performed.
+		 * @protected
+		 */
 		addInvalidatingProperties: function () {
-			// summary:
-			//		Adds the properties listed as arguments to the properties watched for triggering invalidation.
-			// 		This method must be called during the startup lifecycle before buildRendering() completes,
-			//		usually in preCreate().
-			// description:
-			//		This can be used to trigger invalidation for rendering or for both property and rendering. When
-			//		no invalidation mechanism is specified, only the rendering refresh will be triggered, that is only
-			//		the refreshRendering() method will be called.
-			//		This method can either be called with a list of properties to invalidate the rendering as follows:
-			//			this.addInvalidatingProperties("foo", "bar", ...);
-			//		or with an hash of keys/values, the keys being the properties to invalidate and the values
-			//		being the invalidation method (either rendering or property and rendering):
-			//			this.addInvalidatingProperties({
-			//				"foo": "invalidateProperty",
-			//				"bar": "invalidateRendering"
-			//			});
-			// tags:
-			//		protected
 			if (this._invalidatingProperties == null) {
 				this._invalidatingProperties = {};
 			}
@@ -94,16 +122,15 @@ define(["dcl/dcl", "dojo/_base/lang", "./Stateful", "./Destroyable"], function (
 				}
 			}
 		},
-		
+
+		/**
+		 * Invalidates the property for the next execution frame.
+		 * @param {string} [name] The name of the property to invalidate. If absent, the revalidation
+		 * is performed without a particular property being invalidated, that is
+		 * the argument passed to refreshProperties() is called without any argument.
+		 * @protected
+		 */
 		invalidateProperty: function (name) {
-			// summary:
-			//		Invalidates the property for the next execution frame.
-			// name: String?
-			//		The name of the property to invalidate. If absent, the revalidation
-			//		is performed without a particular property being invalidated, that is
-			//		the argument passed to refreshProperties() is called without any argument.
-			// tags:
-			//		protected
 			if (name) {
 				this._invalidatedProperties[name] = true;
 			}
@@ -118,16 +145,15 @@ define(["dcl/dcl", "dojo/_base/lang", "./Stateful", "./Destroyable"], function (
 				this.defer(this.validateProperties, 0);
 			}
 		},
-		
+
+		/**
+		 * Invalidates the rendering for the next execution frame.
+		 * @param {string} [name] The name of the property to invalidate. If absent then the revalidation is asked 
+		 * without a particular property being invalidated, that is refreshRendering() is called without
+		 * any argument.
+		 * @protected
+		 */
 		invalidateRendering: function (name) {
-			// summary:
-			//		Invalidates the rendering for the next execution frame.
-			// name: String?
-			//		The name of the property to invalidate. If absent then the revalidation is asked without a
-			//		particular property being invalidated, that is refreshRendering() is called without
-			//		any argument.
-			// tags:
-			//		protected
 			if (name) {
 				this._invalidatedProperties[name] = true;
 			}
@@ -136,15 +162,16 @@ define(["dcl/dcl", "dojo/_base/lang", "./Stateful", "./Destroyable"], function (
 				this._renderHandle = this.defer(this.validateRendering, 0);
 			}
 		},
-		
+
+		/**
+		 * @summary
+		 * Immediately validates the properties.
+		 * @description 
+		 * Does nothing if no invalidating property is invalid. You generally do not call that method 
+		 * yourself.
+		 * @protected
+		 */
 		validateProperties: function () {
-			// summary:
-			//		Immediately validates the properties.
-			// description:
-			//		Does nothing if no invalidating property is invalid.
-			//		You generally do not call that method yourself.
-			// tags:
-			//		protected
 			if (this.invalidProperties) {
 				var props = lang.clone(this._invalidatedProperties);
 				this.invalidProperties = false;
@@ -155,15 +182,16 @@ define(["dcl/dcl", "dojo/_base/lang", "./Stateful", "./Destroyable"], function (
 				this.invalidateRendering();
 			}
 		},
-		
+
+		/**
+		 * @summary
+		 * Immediately validates the rendering.
+		 * @description 
+		 * Does nothing if the rendering is not invalid. You generally do not call that method
+		 * yourself.
+		 * @protected
+		 */
 		validateRendering: function () {
-			// summary:
-			//		Immediately validates the rendering.
-			// description:
-			//		Does nothing if the rendering is not invalid.
-			//		You generally do not call that method yourself.
-			// tags:
-			//		protected
 			if (this.invalidRendering) {
 				var props = lang.clone(this._invalidatedProperties);
 				this.invalidRendering = false;
@@ -178,51 +206,50 @@ define(["dcl/dcl", "dojo/_base/lang", "./Stateful", "./Destroyable"], function (
 					{ invalidatedProperties: props, bubbles: true, cancelable: false });
 			}
 		},
-		
+
+		/**
+		 * @summary
+		 * Immediately validates the properties and the rendering.
+		 * @description 
+		 * The method calls validateProperties() then validateRendering(). You generally do not call 
+		 * that method yourself.
+		 * @protected
+		 */
 		validate: function () {
-			// summary:
-			//		Immediately validates the properties and the rendering.
-			// description:
-			//		The method calls validateProperties() then validateRendering().
-			//		You generally do not call that method yourself.
-			// tags:
-			//		protected
 			this.validateProperties();
 			this.validateRendering();
 		},
-		
+
+		/**
+		 * @summary
+		 * Actually refreshes the properties.
+		 * @description 
+		 * The default implementation does nothing. A class using this mixin
+		 * should implement this method if it needs to react to changes
+		 * of the value of an invalidating property, except for modifying the
+		 * DOM in which case refreshRendering() should be used instead.
+		 * Typically, this method should be overriden for implementing
+		 * the reconciliation of properties, for instance for adjusting
+		 * interdependent properties such as "min", "max", and "value".
+		 * The mixin calls this method before refreshRendering().
+		 * @param {Object} props A hash of invalidated properties.
+		 * @protected
+		 */
 		refreshProperties: function (/*jshint unused: vars */props) {
-			// summary:
-			//		Actually refreshes the properties. 
-			// description:
-			//		The default implementation does nothing. A class using this mixin
-			//		should implement this method if it needs to react to changes
-			//		of the value of an invalidating property, except for modifying the
-			//		DOM in which case refreshRendering() should be used instead.
-			//		Typically, this method should be overriden for implementing
-			//		the reconciliation of properties, for instance for adjusting 
-			//		interdependent properties such as "min", "max", and "value". 
-			//		The mixin calls this method before refreshRendering().
-			// props: Object
-			//		A hash of invalidated properties. This hash will then be passed further down to the
-			//		refreshRendering() method. As such any modification to this hash will be 
-			//		visible in refreshRendering().
-			// tags:
-			//		protected
 		},
-		
+
+		/**
+		 * @summary
+		 * Actually refreshes the rendering.
+		 * @description
+		 * The default implementation does nothing. A class using this mixin
+		 * should implement this method if it needs to modify the DOM in reaction
+		 * to changes of the value of invalidating properties.
+		 * The mixin calls this method after refreshProperties().
+		 * @param {Object} props A hash of invalidated properties.
+		 * @protected
+		 */
 		refreshRendering: function (/*jshint unused: vars */props) {
-			// summary:
-			//		Actually refreshes the rendering.
-			// description:
-			//		The default implementation does nothing. A class using this mixin
-			//		should implement this method if it needs to modify the DOM in reaction 
-			//		to changes of the value of invalidating properties.
-			//		The mixin calls this method after refreshProperties().
-			// props: Object
-			//		A hash of invalidated properties.
-			// tags:
-			//		protected
 		}
 	});
 });

@@ -1,26 +1,28 @@
+/** @module delite/DisplayContainer */
 define(["dcl/dcl", "dojo/on", "dojo/Deferred", "dojo/when", "delite/Container"],
 	function (dcl, on, Deferred, when, Container) {
+	/**
+	 * @summary
+	 * Mixin for widget containers that needs to show on or off a child.
+	 * @description
+	 * When the show method is called a container extending this mixin is able to be notified that one of
+	 * its children must be displayed. Before displaying it, it will fire the delite-display-load event
+	 * giving a chance to a listener to load and create the child if not yet available before proceeding with
+	 * the display. After the display has been performed a delite-display-complete event will be fired.
+	 * @mixin module:delite/DisplayContainer
+	 * @augments {module:delite/Container}
+	 */
 	return dcl(Container, {
-		// summary:
-		//		Mixin for widget containers that needs to show on or off a child.
-		// description:
-		//		When the show method is called a container extending this mixin is able to be notified that one of
-		//		its children must be displayed. Before displaying it, it will fire the delite-display-load event
-		//		giving a chance to a listener to load and create the child if not yet available before proceeding with
-		//		the display. After the display has been performed a delite-display-complete event will be fired.
-
+		/**
+		 * This method must be called to display a particular destination child on this container.
+		 * @param {HTMLElement|id} dest Widget or HTMLElement or id that points to the child this container must 
+		 * display.
+		 * @param {Object} [params] Optional params that might be taken into account when displaying the child. This can 
+		 * be the type of visual transitions involved. This might vary from one DisplayContainer to another.
+		 * @returns {Promise} A promise that will be resolved when the display & transition effect will have been
+		 * performed.
+		 */
 		show: function (dest, params) {
-			// summary:
-			//		This method must be called to display a particular destination child on this container.
-			// dest:
-			//		Widget or HTMLElement or id that points to the child this container must display.
-			// params:
-			//		Optional params that might be taken into account when displaying the child. This can be the
-			//		type of visual transitions involved. This might vary from one DisplayContainer to another.
-			// returns:
-			//		A promise that will be resolved when the display & transition effect will have been
-			//		performed.
-
 			// we need to warn potential app controller we are going to load a view & transition
 			var event = {
 				dest: dest,
@@ -59,18 +61,15 @@ define(["dcl/dcl", "dojo/on", "dojo/Deferred", "dojo/when", "delite/Container"],
 			return displayDeferred.promise;
 		},
 
+		/**
+		 * This method must be called to hide a particular destination child on this container.
+		 * @param {HTMLElement|id} dest Widget or HTMLElement or id that points to the child this container must hide.
+		 * @param {Object} [params] Optional params that might be taken into account when removing the child. This can 
+		 * be the type of visual transitions involved. This might vary from one DisplayContainer to another.
+		 * @returns {Promise} A promise that will be resolved when the display & transition effect will have been
+		 * performed.
+		 */
 		hide: function (dest, params) {
-			// summary:
-			//		This method must be called to hide a particular destination child on this container.
-			// dest:
-			//		Widget or HTMLElement or id that points to the child this container must hide.
-			// params:
-			//		Optional params that might be taken into account when removing the child. This can be the
-			//		type of visual transitions involved. This might vary from one DisplayContainer to another.
-			// returns:
-			//		A promise that will be resolved when the display & transition effect will have been
-			//		performed.
-
 			// we need to warn potential app controller we are going to load a view & transition
 			var event = {
 				dest: dest,
@@ -112,22 +111,18 @@ define(["dcl/dcl", "dojo/on", "dojo/Deferred", "dojo/when", "delite/Container"],
 			return displayDeferred.promise;
 		},
 
+		/**
+		 * This method must perform the display and possible transition effect. It is meant to be specialized by 
+		 * subclasses.
+		 * @param {HTMLElement|string} widget The child Widget or HTMLElement to display.
+		 * @param {Object} [params] Optional params that might be taken into account when displaying the child. This can 
+		 * be the type of visual transitions involved. This might vary from one DisplayContainer to another.
+		 * By default on the "hide" param is supporting meaning that the transition should hide the widget
+		 * not display it.
+		 * @returns {Promise} Optionally a promise that will be resolved when the display & transition effect will have
+		 * been performed.
+		 */
 		changeDisplay: function (widget, /*jshint unused: vars*/params) {
-			// summary:
-			//		This method must perform the display and possible transition effect. It is meant to be
-			//		specialized by subclasses.
-			// widget:
-			//		The child widget or HTMLElement to display.
-			// params:
-			//		Optional params that might be taken into account when displaying the child. This can be the
-			//		type of visual transitions involved. This might vary from one DisplayContainer to another. 
-			//		By default on the "hide" param is supporting meaning that the transition should hide the widget
-			//		not display it.
-			// returns:
-			//		Optionally a promise that will be resolved when the display & transition effect will have
-			//		been performed.
-			// tags:
-			//		protected
 			if (params.hide === true) {
 				widget.style.visibility = "hidden";
 				widget.style.display = "none";
@@ -137,19 +132,18 @@ define(["dcl/dcl", "dojo/on", "dojo/Deferred", "dojo/when", "delite/Container"],
 			}
 		},
 
+		/**
+		 * This method can be redefined to load a child of the container. By default it just looks up
+		 * elements by id.
+		 * @protected
+		 * @param {HTMLElement|id} widget Widget or HTMLElement or id that points to the child this container must 
+		 * display.
+		 * @returns {promise|object} If asynchronous a promise that will be resolved when the child will have been 
+		 * loaded with an object of the following form: { child: widget } or with an optional index
+		 * { child: widget, index: index }. Other properties might be added to	the object if needed.
+		 * If the action is synchronous this directly returns the given object.
+		 */
 		load: function (dest) {
-			// summary:
-			//		This method can be redefined to load a child of the container. By default it just looks up
-			//		elements by id.
-			// dest:
-			//		Widget or HTMLElement or id that points to the child this container must display.
-			// returns:
-			//		If asynchronous a promise that will be resolved when the child will have been loaded with an
-			//		object of the following form: { child: widget } or with an optional index
-			//		{ child: widget, index: index }. Other properties might be added to	the object if needed.
-			//		If the action is synchronous this directly returns the given object.
-			// tags:
-			//		protected
 			return { child: typeof dest === "string" ? this.ownerDocument.getElementById(dest) : dest };
 		}
 	});
