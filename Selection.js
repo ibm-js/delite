@@ -55,7 +55,7 @@ define(["dcl/dcl", "dojo/sniff", "./Widget"], function (dcl, has, Widget) {
 
 		/**
 		 * The list of selected items.
-		 * @member {object[]}
+		 * @member {Object[]}
 		 * @default null
 		 */
 		selectedItems: null,
@@ -128,7 +128,7 @@ define(["dcl/dcl", "dojo/sniff", "./Widget"], function (dcl, has, Widget) {
 		 * This function must be implemented to update the rendering of the items based on whether they are
 		 * selected or not. The implementation must check for their new selection state and update
 		 * accordingly.
-		 * @param {object[]} items The array of items changing their selection state
+		 * @param {Object[]} items The array of items changing their selection state
 		 * @protected
 		 */
 		updateRenderers: function (/*jshint unused: vars */items) {

@@ -176,7 +176,7 @@ define([
 		 * Returns the current amount of scroll, as an object with x and y properties
 		 * for the horizontal and vertical scroll amount.
 		 * This is a convenience method and it is not supposed to be overridden.
-		 * @returns {object}
+		 * @returns {Object}
 		 */
 		getCurrentScroll: function () {
 			return {x: this.scrollableNode.scrollLeft, y: this.scrollableNode.scrollTop};
@@ -184,7 +184,7 @@ define([
 
 		/**
 		 * Scrolls by the given amount.
-		 * @param {object} by The scroll amount. An object with x and/or y properties, for example
+		 * @param {Object} by The scroll amount. An object with x and/or y properties, for example
 		 * {x: 0, y: -5} or {y: -29}.
 		 * @param {number} duration Duration of scrolling animation in milliseconds. 
 		 * If 0 or unspecified, scrolls without animation.
@@ -202,12 +202,12 @@ define([
 
 		/**
 		 * Scrolls to the given position.
-		 * @param {object} to The scroll destination position. An object with w and/or y properties, for example
+		 * @param {Object} to The scroll destination position. An object with w and/or y properties, for example
 		 * {x: 0, y: -5} or {y: -29}.
-		 * @param {number} duration Duration of scrolling animation in milliseconds. 
+		 * @param {number} [duration] Duration of scrolling animation in milliseconds. 
 		 *  If 0 or unspecified, scrolls without animation.
 		 */
-		scrollTo: function (to, /*Number?*/duration) {
+		scrollTo: function (to, duration) {
 			var scrollableNode = this.scrollableNode;
 			this._stopAnimation();
 			if (!duration || duration <= 0) { // shortcut
