@@ -46,7 +46,7 @@ define([
 	/**
 	 * List of selectors that the parser needs to search for as possible upgrade targets.  Mainly contains
 	 * the widget custom tags like d-accordion, but also selectors like button[is='d-button'] to find <button is="...">
-	 * @type {String[]}
+	 * @type {string[]}
 	 */
 	var selectors = [];
 
@@ -62,7 +62,7 @@ define([
 	/**
 	 * Create an Element.  Similar to document.createElement(), but if tag is the name of a widget defined by
 	 * register(), then it upgrades the Element to be a widget.
-	 * @param {String} tag
+	 * @param {string} tag
 	 * @returns {Element} The DOMNode
 	 */
 	function createElement(tag) {
@@ -214,8 +214,8 @@ define([
 	 * Registers the tag with the current document, and save tag information in registry.
 	 * Handles situations where the base constructor inherits from
 	 * HTMLElement but is not HTMLElement.
-	 * @param  {String}   tag         The custom tag name for the element, or the "is" attribute value.
-	 * @param  {String}   baseElement The native HTML*Element "class" that this custom element is extending.
+	 * @param  {string}   tag         The custom tag name for the element, or the "is" attribute value.
+	 * @param  {string}   baseElement The native HTML*Element "class" that this custom element is extending.
 	 * @param  {Function} baseCtor    The constructor function.
 	 * @return {Function}             The "new" constructor function that can create instances of the custom element.
 	 */
@@ -296,9 +296,9 @@ define([
 	 * the widget properties are set.
 	 * For a property XXX, define methods _setXXXAttr() and/or _getXXXAttr().
 	 *
-	 * @param  {String}               tag             The custom element's tag name
-	 * @param  {Objects}              [extensions...] Any number of extensions to be built into the custom element
-	 *                                                constructor.   But first one must be [descendant] of HTMLElement.
+	 * @param  {string}               tag             The custom element's tag name
+	 * @param  {Object[]}             superclasses    Any number of superclasses to be built into the custom element
+	 *                                                constructor. But first one must be [descendant] of HTMLElement.
 	 * @param  {Object}               props           Properties of this widget class
 	 * @return {Function}                             A constructor function that will create an instance of the custom
 	 *                                                element
@@ -345,7 +345,7 @@ define([
 
 	/**
 	 * Parse the given DOM tree for any DOMNodes that need to be upgraded to widgets.
-	 * @param {Element?} Root DOMNode to parse from
+	 * @param {Element} [root] DOMNode to parse from
 	 */
 	function parse(root) {
 		// Note: if() statement to avoid calling querySelectorAll(""), which fails on Chrome.
