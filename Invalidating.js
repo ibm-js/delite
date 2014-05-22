@@ -16,7 +16,7 @@ define(["dcl/dcl", "dojo/_base/lang", "./Stateful", "./Destroyable"], function (
 	 * @augments {module:delite/Stateful}
 	 * @augments {module:delite/Destroyable}
 	 */
-	return dcl([Stateful, Destroyable], {
+	return dcl([Stateful, Destroyable], /** @lends module:delite/Invalidating# */{
 
 		_renderHandle: null,
 

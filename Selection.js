@@ -5,7 +5,7 @@ define(["dcl/dcl", "dojo/sniff", "./Widget"], function (dcl, has, Widget) {
 	 * @mixin module:delite/Selection
 	 * @augments {module:delite/Widget}
 	 */
-	return dcl(Widget, {
+	return dcl(Widget, /** @lends module:delite/Selection# */{
 		preCreate: function () {
 			this._set("selectedItems", []);
 		},

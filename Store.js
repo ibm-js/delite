@@ -22,7 +22,7 @@ define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalida
 	 * @mixin module:delite/Store
 	 * @augments {module:delite/Invalidating}
 	 */
-	return dcl(Invalidating, {
+	return dcl(Invalidating, /** @lends module:delite/Store# */{
 		/**
 		 * The store that contains the items to display.
 		 * @member {dstore/Store}

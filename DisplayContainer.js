@@ -12,7 +12,7 @@ define(["dcl/dcl", "dojo/on", "dojo/Deferred", "dojo/when", "delite/Container"],
 	 * @mixin module:delite/DisplayContainer
 	 * @augments {module:delite/Container}
 	 */
-	return dcl(Container, {
+	return dcl(Container, /** @lends module:delite/DisplayContainer# */ {
 		/**
 		 * This method must be called to display a particular destination child on this container.
 		 * @param {HTMLElement|string} dest Widget or HTMLElement or id that points to the child this container must 
