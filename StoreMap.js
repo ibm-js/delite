@@ -52,7 +52,7 @@ define(["dcl/dcl", "dojo/_base/lang", "./Store"], function (dcl, lang, Store) {
 	 * @mixin module:delite/StoreMap
 	 * @augments {module:delite/Store}
 	 */
-	return dcl(Store, {
+	return dcl(Store, /** @lends module:delite/StoreMap# */{
 		/**
 		 * Whether the created render items will be updated when call the remap() function on the component
 		 * allowing the consuming component to re-perform the mapping on demand. This property must not be
