@@ -114,10 +114,6 @@ module.exports = function (grunt) {
 			delite: {
 				files: [
 					{
-						args: [
-							"-c",
-							"./node_modules/jsdoc-amddcl/conf.json"
-						],
 						src: [
 							".",
 							"./README.md",
@@ -126,9 +122,7 @@ module.exports = function (grunt) {
 					},
 					{
 						args: [
-							"-X",
-							"-c",
-							"./node_modules/jsdoc-amddcl/conf.json"
+							"-X"
 						],
 						src: [
 							".",
