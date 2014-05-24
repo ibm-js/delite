@@ -11,7 +11,7 @@ define([
 		//		Mixin to track handles and release them when instance is destroyed.
 		// description:
 		//		Call this.own(...) on list of handles (returned from dojo/aspect, dojo/on,
-		//		dojo/Stateful::watch, or any class (including widgets) with a destroy() or remove() method.
+		//		delite/Stateful::watch, or any class (including widgets) with a destroy() or remove() method.
 		//		Then call destroy() later to destroy this instance and release the resources.
 
 		destroy: dcl.advise({
