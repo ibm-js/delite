@@ -111,7 +111,7 @@ module.exports = function (grunt) {
 			}
 		},
 		"jsdoc-amddcl": {
-			delite: {
+			docs: {
 				files: [
 					{
 						src: [
@@ -119,7 +119,11 @@ module.exports = function (grunt) {
 							"./README.md",
 							"./package.json"
 						]
-					},
+					}
+				]
+			},
+			export: {
+				files: [
 					{
 						args: [
 							"-X"
