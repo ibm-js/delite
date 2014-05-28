@@ -11,9 +11,8 @@ define([
 ], function (dcl, dom, domClass, baseFx, easing, Widget, Invalidating) {
 
 	/**
-	 * @summary 
 	 * A mixin which adds scrolling capabilities to a widget.
-	 * @description
+	 * 
 	 * When mixed into a host widget, this mixin brings scrolling capabilities
 	 * based on the overflow: auto CSS property.
 	 * 

@@ -11,9 +11,8 @@ define(["dcl/dcl", "dojo/sniff", "./Widget"], function (dcl, has, Widget) {
 		},
 		
 		/**
-		 * @summary
 		 * The chosen selection mode.
-		 * @description
+		 * 
 		 * Valid values are:
 		 * 1. "none": No selection can be done.
 		 * 2. "single": Only one item can be selected at a time.
@@ -81,18 +80,17 @@ define(["dcl/dcl", "dojo/sniff", "./Widget"], function (dcl, has, Widget) {
 		},
 
 		/**
-		 * @summary
 		 * Tests if an event has a selection modifier.
-		 * @description
+		 * 
 		 * If it has a selection modifier, that means that:
-		 *		*if selectionMode is "single", the event will be able to deselect a selected item
-		 *		* if selectionMode is "multiple", the event will trigger the selection state of the item
+		 *   * if selectionMode is "single", the event will be able to deselect a selected item
+		 *   * if selectionMode is "multiple", the event will trigger the selection state of the item
 		 * The default implementation of this method returns true if the event.ctrlKey attribute is
 		 * true, which means that:
-		 *		* if selectionMode is "single", the Ctrl (or Command on MacOS) key must be pressed for the
-		 *		event to deselect the currently selected item
-		 *		* if selectionMode is "multiple", the Ctrl (or Command on MacOS) key must be pressed for the
-		 *		event to toggle the selection status of the item.
+		 *   * if selectionMode is "single", the Ctrl (or Command on MacOS) key must be pressed for the
+		 *   * event to deselect the currently selected item
+		 *   * if selectionMode is "multiple", the Ctrl (or Command on MacOS) key must be pressed for the
+		 *     event to toggle the selection status of the item.
 		 * @param {Event} event The event that lead to the selection 
 		 * @returns {boolean} Whether the event has selection modifier
 		 * @protected

@@ -2,12 +2,11 @@
 define(["dcl/dcl", "dojo/_base/lang", "./Stateful", "./Destroyable"], function (dcl, lang, Stateful, Destroyable) {
 
 	/**
-	 * @summary
 	 * Mixin for classes (usually widgets) that watch a set of invalidating properties
 	 * and delay to the next execution frame the refresh following the changes of
 	 * the values of these properties. The receiving class must extend delite/Widget
 	 * or dojo/Evented.
-	 * @description
+	 * 
 	 * Once a set of properties have been declared subject to invalidation using the method
 	 * addInvalidatingProperties(), changes of the values of these properties possibly
 	 * end up calling refreshProperties() and in all cases refreshRendering(),
@@ -76,11 +75,10 @@ define(["dcl/dcl", "dojo/_base/lang", "./Stateful", "./Destroyable"], function (
 		},
 
 		/**
-		 * @summary
 		 * Adds the properties listed as arguments to the properties watched for triggering invalidation.
 		 * This method must be called during the startup lifecycle before buildRendering() completes,
 		 * usually in preCreate().
-		 * @description
+		 * 
 		 * This can be used to trigger invalidation for rendering or for both property and rendering. When
 		 * no invalidation mechanism is specified, only the rendering refresh will be triggered, that is only
 		 * the refreshRendering() method will be called.
@@ -164,9 +162,8 @@ define(["dcl/dcl", "dojo/_base/lang", "./Stateful", "./Destroyable"], function (
 		},
 
 		/**
-		 * @summary
 		 * Immediately validates the properties.
-		 * @description 
+		 * 
 		 * Does nothing if no invalidating property is invalid. You generally do not call that method 
 		 * yourself.
 		 * @protected
@@ -184,9 +181,8 @@ define(["dcl/dcl", "dojo/_base/lang", "./Stateful", "./Destroyable"], function (
 		},
 
 		/**
-		 * @summary
 		 * Immediately validates the rendering.
-		 * @description 
+		 * 
 		 * Does nothing if the rendering is not invalid. You generally do not call that method
 		 * yourself.
 		 * @protected
@@ -208,9 +204,8 @@ define(["dcl/dcl", "dojo/_base/lang", "./Stateful", "./Destroyable"], function (
 		},
 
 		/**
-		 * @summary
 		 * Immediately validates the properties and the rendering.
-		 * @description 
+		 * 
 		 * The method calls validateProperties() then validateRendering(). You generally do not call 
 		 * that method yourself.
 		 * @protected
@@ -221,9 +216,8 @@ define(["dcl/dcl", "dojo/_base/lang", "./Stateful", "./Destroyable"], function (
 		},
 
 		/**
-		 * @summary
 		 * Actually refreshes the properties.
-		 * @description 
+		 * 
 		 * The default implementation does nothing. A class using this mixin
 		 * should implement this method if it needs to react to changes
 		 * of the value of an invalidating property, except for modifying the
@@ -239,9 +233,8 @@ define(["dcl/dcl", "dojo/_base/lang", "./Stateful", "./Destroyable"], function (
 		},
 
 		/**
-		 * @summary
 		 * Actually refreshes the rendering.
-		 * @description
+		 * 
 		 * The default implementation does nothing. A class using this mixin
 		 * should implement this method if it needs to modify the DOM in reaction
 		 * to changes of the value of invalidating properties.

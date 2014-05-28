@@ -2,9 +2,8 @@
 define(["dcl/dcl", "dojo/on", "dojo/Deferred", "dojo/when", "delite/Container"],
 	function (dcl, on, Deferred, when, Container) {
 	/**
-	 * @summary
-	 * Mixin for widget containers that needs to show on or off a child.
-	 * @description
+	 * Mixin for widget containers that need to show on or off a child.
+	 * 
 	 * When the show method is called a container extending this mixin is able to be notified that one of
 	 * its children must be displayed. Before displaying it, it will fire the delite-display-load event
 	 * giving a chance to a listener to load and create the child if not yet available before proceeding with
