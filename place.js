@@ -1,9 +1,8 @@
 define([
 	"dojo/dom-geometry", // domGeometry.position
 	"dojo/dom-style", // domStyle.getComputedStyle
-	"dojo/_base/window", // win.body
 	"./Viewport" // getEffectiveBox
-], function (domGeometry, domStyle, win, Viewport) {
+], function (domGeometry, domStyle, Viewport) {
 
 	// module:
 	//		delite/place
@@ -34,7 +33,7 @@ define([
 		// so reattach it to <body>.	 (Otherwise, the positioning will be wrong
 		// and also it might get cutoff.)
 		if (!node.parentNode || String(node.parentNode.tagName).toLowerCase() !== "body") {
-			win.body(node.ownerDocument).appendChild(node);
+			node.ownerDocument.body.appendChild(node);
 		}
 
 		var best = null;
@@ -139,10 +138,10 @@ define([
 			top = best.y,
 			side = l ? best.x : view.w - best.x - best.w;
 
-		if (/relative|absolute/.test(domStyle.get(win.body(node.ownerDocument), "position"))) {
+		if (/relative|absolute/.test(domStyle.get(node.ownerDocument.body, "position"))) {
 			// compensate for margin on <body>, see #16148
-			top -= domStyle.get(win.body(node.ownerDocument), "marginTop");
-			side -= (l ? 1 : -1) * domStyle.get(win.body(node.ownerDocument), l ? "marginLeft" : "marginRight");
+			top -= domStyle.get(node.ownerDocument.body, "marginTop");
+			side -= (l ? 1 : -1) * domStyle.get(node.ownerDocument.body, l ? "marginLeft" : "marginRight");
 		}
 
 		var s = node.style;

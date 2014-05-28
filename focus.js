@@ -9,10 +9,9 @@ define([
 	"dojo/on",
 	"dojo/domReady",
 	"dojo/Stateful",
-	"dojo/_base/window", // win.body
 	"dojo/window", // winUtils.get
 	"./a11y"	// a11y.isTabNavigable
-], function (aspect, dcl, dom, domAttr, domClass, domConstruct, Evented, on, domReady, Stateful, win, winUtils, a11y) {
+], function (aspect, dcl, dom, domAttr, domClass, domConstruct, Evented, on, domReady, Stateful, winUtils, a11y) {
 
 	// module:
 	//		delite/focus
@@ -215,7 +214,7 @@ define([
 						node = dom.byId(popupParent);
 					} else if (node.tagName && node.tagName.toLowerCase() === "body") {
 						// is this the root of the document or just the root of an iframe?
-						if (node === win.body()) {
+						if (node === document.body) {
 							// node is the root of the main document
 							break;
 						}
