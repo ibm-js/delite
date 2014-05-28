@@ -18,8 +18,11 @@ define(["intern!object",
 				return;
 			}
 			return this.remote.execute("return document.activeElement.value")
+				.elementById("focus")
+				.click()
+				.execute("return document.activeElement.value")
 				.then(function (value) {
-					assert.equal(value, "auto focus", "initial element");
+					assert.equal(value, "input before grid", "<input> before <my-grid>");
 				})
 				.keys("\uE004") // tab
 				.execute("return document.activeElement.textContent")
@@ -29,7 +32,7 @@ define(["intern!object",
 				.keys("\uE008\uE004") // shift tab
 				.execute("return document.activeElement.value")
 				.then(function (value) {
-					assert.equal(value, "auto focus", "shift tabbed back to initial element");
+					assert.equal(value, "input before grid", "shift tabbed back to initial element");
 				})
 				.keys("\uE008") // release shift
 				.keys("\uE004") // tab
