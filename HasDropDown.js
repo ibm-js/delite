@@ -25,26 +25,26 @@ define([
 
 		// _buttonNode: [protected] DomNode
 		//		The button/icon/node to click to display the drop down.
-		//		Can be set via a data-dojo-attach-point assignment.
+		//		Can be set via a data-attach-point assignment.
 		//		If missing, then either focusNode or domNode (if focusNode is also missing) will be used.
 		_buttonNode: null,
 
 		// _arrowWrapperNode: [protected] DomNode
-		//		Will set CSS class duiUpArrow, duiDownArrow, duiRightArrow etc. on this node depending
+		//		Will set CSS class d-up-arrow-button, d-down-arrow, d-right-arrow etc. on this node depending
 		//		on where the drop down is set to be positioned.
-		//		Can be set via a data-dojo-attach-point assignment.
+		//		Can be set via a data-attach-point assignment.
 		//		If missing, then _buttonNode will be used.
 		_arrowWrapperNode: null,
 
 		// _popupStateNode: [protected] DomNode
 		//		The node to set the aria-expanded class on.
-		//		Can be set via a data-dojo-attach-point assignment.
+		//		Can be set via a data-attach-point assignment.
 		//		If missing, then focusNode or _buttonNode (if focusNode is missing) will be used.
 		_popupStateNode: null,
 
 		// _aroundNode: [protected] DomNode
 		//		The node to display the popup around.
-		//		Can be set via a data-dojo-attach-point assignment.
+		//		Can be set via a data-attach-point assignment.
 		//		If missing, then domNode will be used.
 		_aroundNode: null,
 
@@ -205,19 +205,14 @@ define([
 			this._buttonNode = this._buttonNode || this.focusNode || this;
 			this._popupStateNode = this._popupStateNode || this.focusNode || this._buttonNode;
 
-			// Add a class to the "duiDownArrowButton" type class to _buttonNode so theme can set direction of arrow
+			// Add a "d-down-arrow" type class to _buttonNode so theme can set direction of arrow
 			// based on where drop down will normally appear
 			var defaultPos = {
-				"after": this.isLeftToRight() ? "Right" : "Left",
-				"before": this.isLeftToRight() ? "Left" : "Right",
-				"above": "Up",
-				"below": "Down",
-				"left": "Left",
-				"right": "Right"
-			}[this.dropDownPosition[0]] || this.dropDownPosition[0] || "Down";
+				"after": this.isLeftToRight() ? "right" : "left",
+				"before": this.isLeftToRight() ? "left" : "right"
+			}[this.dropDownPosition[0]] || this.dropDownPosition[0] || "down";
 
-			// TODO: rename to d-... type CSS class
-			domClass.add(this._arrowWrapperNode || this._buttonNode, "dui" + defaultPos + "ArrowButton");
+			domClass.add(this._arrowWrapperNode || this._buttonNode, "d-" + defaultPos + "-arrow");
 		}),
 
 		postCreate: function () {
@@ -401,8 +396,8 @@ define([
 					self.closeDropDown(true);
 				},
 				onClose: function () {
-					domClass.remove(self._popupStateNode, "duiHasDropDownOpen");
-					self._set("opened", false);	// use set() because _CssStateMixin is watching
+					domClass.remove(self._popupStateNode, "d-drop-down-open");
+					self._set("opened", false);	// use _set() because CssStateMixin is watching
 				}
 			});
 
@@ -419,7 +414,7 @@ define([
 				}
 			}
 
-			domClass.add(this._popupStateNode, "duiHasDropDownOpen");
+			domClass.add(this._popupStateNode, "d-drop-down-open");
 			this._set("opened", true);	// use set() because _CssStateMixin is watching
 
 			this._popupStateNode.setAttribute("aria-expanded", "true");
