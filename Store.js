@@ -10,11 +10,10 @@ define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalida
 	};
 
 	/**
-	 * @summary
 	 * Mixin for widgets for store management that creates widget render items from store items after
 	 * querying the store. The receiving class must extend delite/Stateful and dojo/Evented or
 	 * delite/Widget.
-	 * @description
+	 * 
 	 * Classes extending this mixin automatically create render items that are consumable by the widget
 	 * from store items after querying the store. This happens each time the widget store, query or
 	 * queryOptions properties are set. If that store is Observable it will be observed and render items
@@ -97,10 +96,9 @@ define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalida
 		},
 
 		/**
-		 * @summary
 		 * This method is called once the query has been executed to initial the renderItems array
 		 * with the list of initial render items.
-		 * @description
+		 * 
 		 * This method sets the renderItems property to the render items array passed as parameter. Once
 		 * done, it fires a 'query-success' event.
 		 * @param {Object[]} renderItems The array of initial render items to be set in the renderItems property.
@@ -112,7 +110,7 @@ define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalida
 		},
 
 		/**
-		 * If the store parameters are invalidated, query the store, create the render items and call initItems() 
+		 * If the store parameters are invalidated, queries the store, creates the render items and calls initItems() 
 		 * when ready. If an error occurs a 'query-error' event will be fired.
 		 * @param props
 		 * @protected
@@ -125,10 +123,9 @@ define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalida
 		},
 
 		/**
-		 * @summary
-		 * Query the store, create the render items and call initItems() when ready. If an error occurs
+		 * Queries the store, creates the render items and calls initItems() when ready. If an error occurs
 		 * a 'query-error' event will be fired.
-		 * @description 
+		 * 
 		 * This method is not supposed to be called by application developer.
 		 * It will be called automatically when modifying the store related properties or by the subclass
 		 * if needed.

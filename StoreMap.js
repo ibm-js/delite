@@ -29,13 +29,12 @@ define(["dcl/dcl", "dojo/_base/lang", "./Store"], function (dcl, lang, Store) {
 
 
 	/**
-	 * @summary
 	 * Mixin providing store binding management for widgets that extend delite/Store. Classes extending
 	 * this mixin can easily define how store items properties are mapped in the render items properties
 	 * consumable by the widget. The mapping can either occur by property (property A in store item
 	 * corresponds to property B in render item) or by function (a function is specified that mapped the
 	 * store item into the value of a property of the render item)..
-	 * @description
+	 * 
 	 * For each mapped property "foo" from the render item one can provide:
 	 *		* fooAttr property in which case the mapping is looking into the store item property specified
 	 *		by fooAttr
