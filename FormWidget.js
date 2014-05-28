@@ -34,10 +34,6 @@ define([
 		//		Corresponds to the native HTML `<input>` element's attribute.
 		value: "",
 
-		// scrollOnFocus: Boolean
-		//		On focus, should this widget scroll into view?
-		scrollOnFocus: true,
-
 		// tabIndex: Number
 		//        The order in which fields are traversed when user hits the tab key
 		tabIndex: 0,
@@ -102,14 +98,6 @@ define([
 				);
 			}
 			return props; // for after advice
-		}),
-
-		_onFocus: dcl.before(function () {
-			if (this.scrollOnFocus) {
-				this.defer(function () {
-					winUtils.scrollIntoView(this);
-				}); // without defer, the input caret position can change on mouse click
-			}
 		}),
 
 		isFocusable: function () {
