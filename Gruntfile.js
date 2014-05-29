@@ -21,7 +21,6 @@ module.exports = function (grunt) {
 
 		// Task for compiling less files into CSS files
 		less : {
-
 			// Compile theme independent files
 			transitions: {
 				expand: true,
@@ -58,10 +57,10 @@ module.exports = function (grunt) {
 			}
 		},
 
-		// Convert CSS files to JS files
+		// convert CSS files to JS files
 		cssToJs : {
-			// convert CSS files generated from LESS files
-			intermediate: {
+			// conversions removing the CSS files
+			replace: {
 				src: [
 					// infrastructure
 					"themes/*/*.css",
@@ -78,22 +77,18 @@ module.exports = function (grunt) {
 				}
 			},
 
-			// convert files originally authored as CSS, without removing the original CSS files
-			original: {
-				src: [ "tests/unit/css/*.css" ]
+			// conversions keeping the CSS files
+			keep: {
+				src: [
+					// some apps may want to load defaultapp.css as a JS file rather than a CSS file.
+					"themes/defaultapp.css",
+
+					// files originally authored as CSS
+					"tests/unit/css/*.css"
+				]
 			}
 		},
 
-		// Copied from grunt web site but not tested
-		uglify: {
-			options: {
-				banner: "/*! <%= pkg.name %> <%= grunt.template.today('yyyy-mm-dd') %> */\n"
-			},
-			build: {
-				src: "src/<%= pkg.name %>.js",
-				dest: "build/<%= pkg.name %>.min.js"
-			}
-		},
 		intern: {
 			local: {
 				options: {
@@ -110,6 +105,7 @@ module.exports = function (grunt) {
 				}
 			}
 		},
+
 		"jsdoc-amddcl": {
 			docs: {
 				files: [
