@@ -1,7 +1,6 @@
 define([
 	"dcl/dcl",
 	"dojo/Deferred",
-	"dojo/dom", // dom.isDescendant
 	"dojo/dom-attr", // domAttr.set
 	"dojo/dom-class", // domClass.add domClass.contains domClass.remove
 	"dojo/dom-geometry", // domGeometry.marginBox domGeometry.position
@@ -13,7 +12,7 @@ define([
 	"./focus",
 	"./popup",
 	"./Widget"
-], function (dcl, Deferred, dom, domAttr, domClass, domGeometry, domStyle, has, keys, on, touch,
+], function (dcl, Deferred, domAttr, domClass, domGeometry, domStyle, has, keys, on, touch,
 			 focus, popup, Widget) {
 
 	// module:

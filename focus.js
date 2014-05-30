@@ -1,7 +1,7 @@
 define([
 	"dcl/advise",
 	"dcl/dcl",
-	"dojo/dom", // dom.byId dom.isDescendant
+	"dojo/dom", // dom.byId
 	"dojo/dom-attr", // domAttr.get
 	"dojo/dom-class",
 	"dojo/dom-construct", // connect to domConstruct.empty, domConstruct.destroy
@@ -49,10 +49,10 @@ define([
 		constructor: function () {
 			// Don't leave curNode/prevNode pointing to bogus elements
 			function check(node) {
-				if (dom.isDescendant(this.curNode, node)) {
+				if (this.curNode && this.curNode.contains(node)) {
 					this.set("curNode", null);
 				}
-				if (dom.isDescendant(this.prevNode, node)) {
+				if (this.prevNode && this.prevNode.contains(node)) {
 					this.set("prevNode", null);
 				}
 			}
