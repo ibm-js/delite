@@ -1,7 +1,6 @@
 define([
 	"dcl/advise",
 	"dcl/dcl",
-	"dojo/dom", // dom.isDescendant
 	"dojo/dom-attr", // domAttr.set
 	"dojo/dom-construct", // domConstruct.create domConstruct.destroy
 	"dojo/dom-geometry", // domGeometry.isBodyLtr
@@ -13,7 +12,7 @@ define([
 	"./BackgroundIframe",
 	"./Viewport",
 	"./theme!" // d-popup class
-], function (advise, dcl, dom, domAttr, domConstruct, domGeometry, domStyle, has, keys, on,
+], function (advise, dcl, domAttr, domConstruct, domGeometry, domStyle, has, keys, on,
 			 place, BackgroundIframe, Viewport) {
 
 	// module:
@@ -245,7 +244,7 @@ define([
 			// If we are opening a new popup that isn't a child of a currently opened popup, then
 			// close currently opened popup(s).   This should happen automatically when the old popups
 			// gets the _onBlur() event, except that the _onBlur() event isn't reliable on IE, see [22198].
-			while (stack.length && (!args.parent || !dom.isDescendant(args.parent, stack[stack.length - 1].widget))) {
+			while (stack.length && (!args.parent || !args.parent.contains(stack[stack.length - 1].widget))) {
 				this.close(stack[stack.length - 1].widget);
 			}
 
