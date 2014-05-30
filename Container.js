@@ -9,7 +9,7 @@ define([
 
 	return dcl(Widget, {
 		// summary:
-		//		Widget that contains a set of widget children.
+		//		Widget that contains a set of Element children (either widgets or plain DOM nodes).
 
 		buildRendering: dcl.after(function () {
 			if (!this.containerNode) {
@@ -18,20 +18,19 @@ define([
 			}
 		}),
 
-		addChild: function (/*DOMNode*/ widget, /*int?*/ insertIndex) {
+		addChild: function (/*DOMNode*/ node, /*int?*/ insertIndex) {
 			// summary:
 			//		Makes the given widget or DOM node a child of this widget.
 			// description:
 			//		Inserts specified child widget or DOM node as a child of this widget's
 			//		container node, and possibly does other processing (such as layout).
 
-			// I want to just call domConstruct.place(widget, this.containerNode, insertIndex), but the counting
+			// I want to just call domConstruct.place(node, this.containerNode, insertIndex), but the counting
 			// is thrown off by text nodes and comment nodes that show up when constructed by markup.
-			// In the future consider stripping those nodes on construction, either in the parser or this widget code.
+			// In the future consider stripping those nodes on construction, either in the parser or this node code.
 			var refNode = this.containerNode;
 			if (insertIndex > 0) {
-				// Old-school way to get nth child; dojo.query would be easier but Container was weened from dojo.query
-				// in #10087 to minimize download size.  Not sure if that's still and issue with new smaller dojo/query.
+				// TODO: use this.children or querySelectorAll() to get list of children, rather than looping
 				refNode = refNode.firstChild;
 				while (insertIndex > 0) {
 					if (refNode.nodeType === 1) {
@@ -48,32 +47,29 @@ define([
 				}
 			}
 
-			domConstruct.place(widget, refNode, insertIndex);
+			domConstruct.place(node, refNode, insertIndex);
 
 			// If I've been started but the child widget hasn't been started,
 			// start it now.  Make sure to do this after widget has been
 			// inserted into the DOM tree, so it can see that it's being controlled by me,
 			// so it doesn't try to size itself.
-			if (this._started && !widget._started && dcl.isInstanceOf(widget, Widget)) {
-				widget.startup();
+			if (this._started && !node._started && dcl.isInstanceOf(node, Widget)) {
+				node.startup();
 			}
 		},
 
-		removeChild: function (/*Element|int*/ widget) {
+		removeChild: function (/*Element|int*/ node) {
 			// summary:
 			//		Removes the passed widget instance from this widget but does
 			//		not destroy it.  You can also pass in an integer indicating
 			//		the index within the container to remove (ie, removeChild(5) removes the sixth widget).
 
-			if (typeof widget === "number") {
-				widget = this.getChildren()[widget];
+			if (typeof node === "number") {
+				node = this.getChildren()[node];
 			}
 
-			if (widget) {
-				var node = widget;
-				if (node && node.parentNode) {
-					HTMLElement.prototype.removeChild.call(node.parentNode, node); // detach but don't destroy
-				}
+			if (node && node.parentNode) {
+				HTMLElement.prototype.removeChild.call(node.parentNode, node); // detach but don't destroy
 			}
 		},
 
