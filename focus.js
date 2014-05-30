@@ -1,5 +1,5 @@
 define([
-	"dojo/aspect",
+	"dcl/advise",
 	"dcl/dcl",
 	"dojo/dom", // dom.byId dom.isDescendant
 	"dojo/dom-attr", // domAttr.get
@@ -11,7 +11,7 @@ define([
 	"dojo/Stateful",
 	"dojo/window", // winUtils.get
 	"./a11y"	// a11y.isTabNavigable
-], function (aspect, dcl, dom, domAttr, domClass, domConstruct, Evented, on, domReady, Stateful, winUtils, a11y) {
+], function (advise, dcl, dom, domAttr, domClass, domConstruct, Evented, on, domReady, Stateful, winUtils, a11y) {
 
 	// module:
 	//		delite/focus
@@ -57,8 +57,8 @@ define([
 				}
 			}
 
-			aspect.before(domConstruct, "empty", check.bind(this));
-			aspect.before(domConstruct, "destroy", check.bind(this));
+			advise.before(domConstruct, "empty", check.bind(this));
+			advise.before(domConstruct, "destroy", check.bind(this));
 		},
 
 		registerIframe: function (/*DomNode*/ iframe) {
