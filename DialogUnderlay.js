@@ -1,5 +1,4 @@
 define([
-	"dojo/aspect", // aspect.after
 	"dojo/dom-attr", // domAttr.set
 	"dojo/dom-style", // domStyle.getComputedStyle
 	"dojo/on",
@@ -8,7 +7,7 @@ define([
 	"./Widget",
 	"./BackgroundIframe",
 	"./Viewport"
-], function (aspect, domAttr, domStyle, on, winUtils, register, Widget, BackgroundIframe, Viewport) {
+], function (domAttr, domStyle, on, winUtils, register, Widget, BackgroundIframe, Viewport) {
 
 	// module:
 	//		delite/DialogUnderlay

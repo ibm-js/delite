@@ -1,5 +1,5 @@
 define([
-	"dojo/aspect",
+	"dcl/advise",
 	"dcl/dcl",
 	"dojo/dom", // dom.isDescendant
 	"dojo/dom-attr", // domAttr.set
@@ -13,7 +13,7 @@ define([
 	"./BackgroundIframe",
 	"./Viewport",
 	"./theme!" // d-popup class
-], function (aspect, dcl, dom, domAttr, domConstruct, domGeometry, domStyle, has, keys, on,
+], function (advise, dcl, dom, domAttr, domConstruct, domGeometry, domStyle, has, keys, on,
 			 place, BackgroundIframe, Viewport) {
 
 	// module:
@@ -150,7 +150,7 @@ define([
 				s.top = "0px";
 
 				widget._popupWrapper = wrapper;
-				aspect.after(widget, "destroy", destroyWrapper, true);
+				advise.after(widget, "destroy", destroyWrapper);
 			}
 
 			return wrapper;
