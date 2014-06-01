@@ -6,14 +6,14 @@ define(["dcl/dcl", "dojo/_base/lang", "./Stateful", "./Destroyable"], function (
 	 * and delay to the next execution frame the refresh following the changes of
 	 * the values of these properties. The receiving class must extend delite/Widget
 	 * or dojo/Evented.
-	 * 
+	 *
 	 * Once a set of properties have been declared subject to invalidation using the method
 	 * addInvalidatingProperties(), changes of the values of these properties possibly
 	 * end up calling refreshProperties() and in all cases refreshRendering(),
 	 * thus allowing the receiving class to refresh itself based on the new values.
 	 * @mixin module:delite/Invalidating
-	 * @augments {module:delite/Stateful}
-	 * @augments {module:delite/Destroyable}
+	 * @augments module:delite/Stateful
+	 * @augments module:delite/Destroyable
 	 */
 	return dcl([Stateful, Destroyable], /** @lends module:delite/Invalidating# */{
 
@@ -78,29 +78,25 @@ define(["dcl/dcl", "dojo/_base/lang", "./Stateful", "./Destroyable"], function (
 		 * Adds the properties listed as arguments to the properties watched for triggering invalidation.
 		 * This method must be called during the startup lifecycle before buildRendering() completes,
 		 * usually in preCreate().
-		 * 
+		 *
 		 * This can be used to trigger invalidation for rendering or for both property and rendering. When
 		 * no invalidation mechanism is specified, only the rendering refresh will be triggered, that is only
 		 * the refreshRendering() method will be called.
 		 * This method can either be called with a list of properties to invalidate the rendering as follows:
+		 *
 		 * ```javascript
 		 *		this.addInvalidatingProperties("foo", "bar", ...);
-		 *	```	
+		 *	```
+		 *
 		 * or with an hash of keys/values, the keys being the properties to invalidate and the values
 		 * being the invalidation method (either rendering or property and rendering):
+		 *
 		 * ```javascript
 		 *		this.addInvalidatingProperties({
 		 *			"foo": "invalidateProperty",
 		 *			"bar": "invalidateRendering"
 		 *		});
 		 *	```	
-		 * @param {HTMLElement|id} widget The child Widget or HTMLElement to display.
-		 * @param {Object} params Optional params that might be taken into account when displaying the child. This can
-		 * be the type of visual transitions involved. This might vary from one DisplayContainer to another.
-		 * By default on the "hide" param is supporting meaning that the transition should hide the widget
-		 * not display it.
-		 * @returns {promise} Optionally a promise that will be resolved when the display & transition effect will have
-		 * been performed.
 		 * @protected
 		 */
 		addInvalidatingProperties: function () {
@@ -125,7 +121,7 @@ define(["dcl/dcl", "dojo/_base/lang", "./Stateful", "./Destroyable"], function (
 		 * Invalidates the property for the next execution frame.
 		 * @param {string} [name] The name of the property to invalidate. If absent, the revalidation
 		 * is performed without a particular property being invalidated, that is
-		 * the argument passed to refreshProperties() is called without any argument.
+		 * the argument passed to `refreshProperties()` is called without any argument.
 		 * @protected
 		 */
 		invalidateProperty: function (name) {
@@ -146,7 +142,7 @@ define(["dcl/dcl", "dojo/_base/lang", "./Stateful", "./Destroyable"], function (
 
 		/**
 		 * Invalidates the rendering for the next execution frame.
-		 * @param {string} [name] The name of the property to invalidate. If absent then the revalidation is asked 
+		 * @param {string} [name] The name of the property to invalidate. If absent then the revalidation is asked
 		 * without a particular property being invalidated, that is refreshRendering() is called without
 		 * any argument.
 		 * @protected
@@ -163,7 +159,7 @@ define(["dcl/dcl", "dojo/_base/lang", "./Stateful", "./Destroyable"], function (
 
 		/**
 		 * Immediately validates the properties.
-		 * 
+		 *
 		 * Does nothing if no invalidating property is invalid. You generally do not call that method 
 		 * yourself.
 		 * @protected
@@ -182,7 +178,7 @@ define(["dcl/dcl", "dojo/_base/lang", "./Stateful", "./Destroyable"], function (
 
 		/**
 		 * Immediately validates the rendering.
-		 * 
+		 *
 		 * Does nothing if the rendering is not invalid. You generally do not call that method
 		 * yourself.
 		 * @protected
@@ -205,7 +201,7 @@ define(["dcl/dcl", "dojo/_base/lang", "./Stateful", "./Destroyable"], function (
 
 		/**
 		 * Immediately validates the properties and the rendering.
-		 * 
+		 *
 		 * The method calls validateProperties() then validateRendering(). You generally do not call 
 		 * that method yourself.
 		 * @protected
@@ -217,7 +213,7 @@ define(["dcl/dcl", "dojo/_base/lang", "./Stateful", "./Destroyable"], function (
 
 		/**
 		 * Actually refreshes the properties.
-		 * 
+		 *
 		 * The default implementation does nothing. A class using this mixin
 		 * should implement this method if it needs to react to changes
 		 * of the value of an invalidating property, except for modifying the
@@ -226,7 +222,8 @@ define(["dcl/dcl", "dojo/_base/lang", "./Stateful", "./Destroyable"], function (
 		 * the reconciliation of properties, for instance for adjusting
 		 * interdependent properties such as "min", "max", and "value".
 		 * The mixin calls this method before refreshRendering().
-		 * @param {Object} props A hash of invalidated properties.
+		 *
+		 * @param {Object} props - A hash of invalidated properties.
 		 * @protected
 		 */
 		refreshProperties: function (/*jshint unused: vars */props) {
@@ -234,12 +231,13 @@ define(["dcl/dcl", "dojo/_base/lang", "./Stateful", "./Destroyable"], function (
 
 		/**
 		 * Actually refreshes the rendering.
-		 * 
+		 *
 		 * The default implementation does nothing. A class using this mixin
 		 * should implement this method if it needs to modify the DOM in reaction
 		 * to changes of the value of invalidating properties.
 		 * The mixin calls this method after refreshProperties().
-		 * @param {Object} props A hash of invalidated properties.
+		 *
+		 * @param {Object} props - A hash of invalidated properties.
 		 * @protected
 		 */
 		refreshRendering: function (/*jshint unused: vars */props) {

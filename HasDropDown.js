@@ -1,3 +1,4 @@
+/** @module delite/HasDropDown */
 define([
 	"dcl/dcl",
 	"dojo/Deferred",
@@ -15,89 +16,126 @@ define([
 ], function (dcl, Deferred, domAttr, domClass, domGeometry, domStyle, has, keys, on, touch,
 			 focus, popup, Widget) {
 
-	// module:
-	//		delite/HasDropDown
+	// TODO: this needs an overhaul for 2.0, including
+	//	- use deferreds instead of callbacks
+	//	- use ES5 setters rather than methods??
+	//	- _onXXX() methods should be renamed to _xxxHandler() or something like that
 
-	return dcl(Widget, {
-		// summary:
-		//		Mixin for widgets that need drop down ability.
-
-		// _buttonNode: [protected] DomNode
-		//		The button/icon/node to click to display the drop down.
-		//		Can be set via a data-attach-point assignment.
-		//		If missing, then either focusNode or domNode (if focusNode is also missing) will be used.
+	/**
+	 * Mixin for widgets that need drop down ability.
+	 * @mixin module:delite/HasDropDown
+	 * @augments module:delite/Widget
+	 */
+	return dcl(Widget, /** @lends module:delite/HasDropDown# */ {
+		/**
+		 * The button/icon/node to click to display the drop down.
+		 * Can be set in a template via a `data-attach-point` assignment.
+		 * If missing, then either `this.focusNode` or `this.domNode` (if `focusNode` is also missing) will be used.
+		 * @member {Element}
+		 * @protected
+		 */
 		_buttonNode: null,
 
-		// _arrowWrapperNode: [protected] DomNode
-		//		Will set CSS class d-up-arrow-button, d-down-arrow, d-right-arrow etc. on this node depending
-		//		on where the drop down is set to be positioned.
-		//		Can be set via a data-attach-point assignment.
-		//		If missing, then _buttonNode will be used.
+		/**
+		 * Will set CSS class `d-up-arrow-button`, `d-down-arrow-button`, `d-right-arrow-button` etc. on this node
+		 * depending on where the drop down is set to be positioned.
+		 * Can be set in a template via a `data-attach-point` assignment.
+		 * If missing, then `this._buttonNode` will be used.
+		 * @member {Element}
+		 * @protected
+		 */
 		_arrowWrapperNode: null,
 
-		// _popupStateNode: [protected] DomNode
-		//		The node to set the aria-expanded class on.
-		//		Can be set via a data-attach-point assignment.
-		//		If missing, then focusNode or _buttonNode (if focusNode is missing) will be used.
+		/**
+		 * The node to set the aria-expanded class on.
+		 * Can be set in a template via a `data-attach-point` assignment.
+		 * If missing, then `this.focusNode` or `this._buttonNode` (if `focusNode` is missing) will be used.
+		 * @member {Element}
+		 * @protected
+		 */
 		_popupStateNode: null,
 
-		// _aroundNode: [protected] DomNode
-		//		The node to display the popup around.
-		//		Can be set via a data-attach-point assignment.
-		//		If missing, then domNode will be used.
+		/**
+		 * The node to display the popup around.
+		 * Can be set in a template via a `data-attach-point` assignment.
+		 * If missing, then `this.domNode` will be used.
+		 * @member {Element}
+		 * @protected
+		 */
 		_aroundNode: null,
 
-		// dropDown: [protected] Widget
-		//		The widget to display as a popup.  This widget *must* be
-		//		defined before the startup function is called.
+		/**
+		 * The widget to display as a popup.  This property *must* be
+		 * defined before the `startup()` method is called.
+		 * @member {module:delite/Widget}
+		 */
 		dropDown: null,
 
-		// autoWidth: [protected] Boolean
-		//		Set to true to make the drop down at least as wide as this
-		//		widget.  Set to false if the drop down should just be its
-		//		default width.
+		/**
+		 * If true, make the drop down at least as wide as this widget.
+		 * If false, leave the drop down at its default width.
+		 * @member {boolean}
+		 * @default true
+		 */
 		autoWidth: true,
 
-		// forceWidth: [protected] Boolean
-		//		Set to true to make the drop down exactly as wide as this
-		//		widget.  Overrides autoWidth.
+		/**
+		 * If true, make the drop down exactly as wide as this widget.  Overrides `autoWidth`.
+		 * @member {boolean}
+		 * @default false
+		 */
 		forceWidth: false,
 
-		// maxHeight: [protected] Integer
-		//		The max height for our dropdown.
-		//		Any dropdown taller than this will have scrollbars.
-		//		Set to 0 for no max height, or -1 to limit height to available space in viewport
+		/**
+		 * The maximum height for our dropdown.
+		 * Any dropdown taller than this will have a scroll bar.
+		 * Set to 0 for no max height, or -1 to limit height to available space in viewport.
+		 * @member {number}
+		 * @default -1
+		 */
 		maxHeight: -1,
 
-		// dropDownPosition: [const] String[]
-		//		This variable controls the position of the drop down.
-		//		It's an array of strings with the following values:
-		//
-		//		- before: places drop down to the left of the target node/widget, or to the right in
-		//		  the case of RTL scripts like Hebrew and Arabic
-		//		- after: places drop down to the right of the target node/widget, or to the left in
-		//		  the case of RTL scripts like Hebrew and Arabic
-		//		- above: drop down goes above target node
-		//		- below: drop down goes below target node
-		//
-		//		The list is positions is tried, in order, until a position is found where the drop down fits
-		//		within the viewport.
-		//
+		/**
+		 * Controls the position of the drop down.
+		 * It's an array of strings with the following values:
+		 *
+		 * - before: places drop down to the left of the target node/widget, or to the right in
+		 * the case of RTL scripts like Hebrew and Arabic
+		 * - after: places drop down to the right of the target node/widget, or to the left in
+		 * the case of RTL scripts like Hebrew and Arabic
+		 * - above: drop down goes above target node
+		 * - below: drop down goes below target node
+		 *
+		 * The positions are tried, in order, until a position is found where the drop down fits
+		 * within the viewport.
+		 *
+		 * @member {string[]}
+		 * @default ["below", "above"]
+		 */
 		dropDownPosition: ["below", "above"],
 
-		// _stopClickEvents: Boolean
-		//		When set to false, the click events will not be stopped, in
-		//		case you want to use them in your subclass
+		/**
+		 * If false, click events will not be stopped.
+		 * Set to true in case you want to listen to those events in your subclass.
+		 * @member {boolean}
+		 * @default true
+		 * @protected
+		 */
 		_stopClickEvents: true,
 
-		// opened: [readonly] Boolean
-		//		Whether or not the drop down is open.
+		/**
+		 * Whether or not the drop down is open.
+		 * @member {boolean}
+		 * @readonly
+		 */
 		opened: false,
 
-		_onDropDownMouseDown: function (/*Event*/ e) {
-			// summary:
-			//		Callback when the user mousedown/touchstart on the arrow icon.
-
+		/**
+		 * Callback when the user mousedown/touchstart on the arrow icon.
+		 * @param {Event} e
+		 * @private
+		 */
+		_onDropDownMouseDown: function (e) {
 			if (this.disabled || this.readOnly) {
 				return;
 			}
@@ -118,22 +156,24 @@ define([
 			this.toggleDropDown();
 		},
 
-		_onDropDownMouseUp: function (/*Event?*/ e) {
-			// summary:
-			//		Callback on mouseup/touchend after mousedown/touchstart on the arrow icon.
-			//		Note that this function is called regardless of what node the event occurred on (but only after
-			//		a mousedown/touchstart on the arrow).
-			//
-			//		If the drop down is a simple menu and the cursor is over the menu, we execute it, otherwise,
-			//		we focus our drop down widget.  If the event is missing, then we are not a mouseup event.
-			//
-			//		This is useful for the common mouse movement pattern
-			//		with native browser `<select>` nodes:
-			//
-			//		1. mouse down on the select node (probably on the arrow)
-			//		2. move mouse to a menu item while holding down the mouse button
-			//		3. mouse up.  this selects the menu item as though the user had clicked it.
-
+		/**
+		  * Callback on mouseup/touchend after mousedown/touchstart on the arrow icon.
+		  * Note that this function is called regardless of what node the event occurred on (but only after
+		  * a mousedown/touchstart on the arrow).
+		  *
+		  * If the drop down is a simple menu and the cursor is over the menu, we execute it, otherwise,
+		  * we focus our drop down widget.  If the event is missing, then we are not a mouseup event.
+		  *
+		  * This is useful for the common mouse movement pattern with native browser `<select>` nodes:
+		  *
+		  * 1. mouse down on the select node (probably on the arrow)
+		  * 2. move mouse to a menu item while holding down the mouse button
+		  * 3. mouse up; this selects the menu item as though the user had clicked it
+		  *
+		  * @param {Event} [e]
+		  * @private
+		  */
+		_onDropDownMouseUp: function (e) {
 			/* jshint maxcomplexity:14 */	// TODO: simplify this method?
 
 			if (e && this._docHandler) {
@@ -192,7 +232,12 @@ define([
 			}
 		},
 
-		_onDropDownClick: function (/*Event*/ e) {
+		/**
+		 * Callback for click event.
+		 * @param {Event} e
+		 * @private
+		 */
+		_onDropDownClick: function (e) {
 			// The drop down was already opened on mousedown/keydown; just need to stop the event
 			if (this._stopClickEvents) {
 				e.stopPropagation();
@@ -215,9 +260,6 @@ define([
 		}),
 
 		postCreate: function () {
-			// summary:
-			//		set up nodes and connect our mouse and keyboard events
-
 			var keyboardEventNode = this.focusNode || this;
 			this.own(
 				on(this._buttonNode, touch.press, this._onDropDownMouseDown.bind(this)),
@@ -244,10 +286,12 @@ define([
 			}
 		},
 
-		_onKey: function (/*Event*/ e) {
-			// summary:
-			//		Callback when the user presses a key while focused on the button node
-
+		/**
+		 * Callback when the user presses a key while focused on the button node.
+		 * @param {Event} e
+		 * @private
+		 */
+		_onKey: function (e) {
 			/* jshint maxcomplexity:14 */
 
 			if (this.disabled || this.readOnly) {
@@ -283,6 +327,11 @@ define([
 			}
 		},
 
+		/**
+		 * Callback when the user releases a key while focused on the button node.
+		 * @param {Event} e
+		 * @private
+		 */
 		_onKeyUp: function () {
 			if (this._toggleOnKeyUp) {
 				delete this._toggleOnKeyUp;
@@ -295,8 +344,7 @@ define([
 		},
 
 		_onBlur: dcl.before(function () {
-			// summary:
-			//		Called magically when focus has shifted away from this widget and it's dropdown
+			// Called magically when focus has shifted away from this widget and it's dropdown
 
 			// Close dropdown but don't focus my <input>.  User may have focused somewhere else (ex: clicked another
 			// input), and even if they just clicked a blank area of the screen, focusing my <input> will unwantedly
@@ -304,39 +352,37 @@ define([
 			this.closeDropDown(false);
 		}),
 
+		/**
+		 * Returns true if the dropdown exists and its data is loaded. This can
+		 * be overridden in order to force a call to loadDropDown().
+		 * @returns {boolean}
+		 * @protected
+		 */
 		isLoaded: function () {
-			// summary:
-			//		Returns true if the dropdown exists and it's data is loaded.  This can
-			//		be overridden in order to force a call to loadDropDown().
-			// tags:
-			//		protected
-
 			return true;
 		},
 
-		loadDropDown: function (/*Function*/ loadCallback) {
-			// summary:
-			//		Creates the drop down if it doesn't exist, loads the data
-			//		if there's an href and it hasn't been loaded yet, and then calls
-			//		the given callback.
-			// tags:
-			//		protected
-
+		/**
+		 * Creates the drop down if it doesn't exist, loads the data
+		 * if there's an href and it hasn't been loaded yet, and then calls
+		 * the given callback.
+		 * @param {Function} loadCallback
+		 * @protected
+		 */
+		loadDropDown: function (loadCallback) {
 			// TODO: for 2.0, change API to return a Deferred, instead of calling loadCallback?
 			loadCallback();
 		},
 
+		/**
+		 * Creates the drop down if it doesn't exist, loads the data
+		 * if there's an href and it hasn't been loaded yet, and
+		 * then opens the drop down.  This is basically a callback when the
+		 * user presses the down arrow button to open the drop down.
+		 * @returns {Promise} Promise for the drop down widget that fires when drop down is created and loaded.
+		 * @protected
+		 */
 		loadAndOpenDropDown: function () {
-			// summary:
-			//		Creates the drop down if it doesn't exist, loads the data
-			//		if there's an href and it hasn't been loaded yet, and
-			//		then opens the drop down.  This is basically a callback when the
-			//		user presses the down arrow button to open the drop down.
-			// returns: Deferred
-			//		Deferred for the drop down widget that
-			//		fires when drop down is created and loaded
-			// tags:
-			//		protected
 			var d = new Deferred();
 
 			function afterLoad() {
@@ -351,14 +397,13 @@ define([
 			return d;
 		},
 
+		/**
+		 * Toggle the drop-down widget; if it is open, close it, if not, open it.
+		 * Called when the user presses the down arrow button or presses
+		 * the down arrow key to open/close the drop down.
+		 * @protected
+		 */
 		toggleDropDown: function () {
-			// summary:
-			//		Callback when the user presses the down arrow button or presses
-			//		the down arrow key to open/close the drop down.
-			//		Toggle the drop-down widget; if it is up, close it, if not, open it
-			// tags:
-			//		protected
-
 			if (this.disabled || this.readOnly) {
 				return;
 			}
@@ -369,15 +414,13 @@ define([
 			}
 		},
 
+		/**
+		 * Opens the dropdown for this widget.  To be called only when this.dropDown
+		 * has been created and is ready to display (i.e. its data is loaded).
+		 * @returns {*} Return value of delite/popup.open().
+		 * @protected
+		 */
 		openDropDown: function () {
-			// summary:
-			//		Opens the dropdown for this widget.   To be called only when this.dropDown
-			//		has been created and is ready to display (ie, it's data is loaded).
-			// returns:
-			//		return value of delite/popup.open()
-			// tags:
-			//		protected
-
 			var dropDown = this.dropDown,
 				aroundNode = this._aroundNode || this,
 				self = this;
@@ -427,14 +470,12 @@ define([
 			return retVal;
 		},
 
-		closeDropDown: function (/*Boolean*/ focus) {
-			// summary:
-			//		Closes the drop down on this widget
-			// focus:
-			//		If true, refocuses the button widget
-			// tags:
-			//		protected
-
+		/**
+		 * Closes the drop down on this widget.
+		 * @param {boolean} focus - If true, refocus this widget.
+		 * @protected
+		 */
+		closeDropDown: function (focus) {
 			if (this._focusDropDownTimer) {
 				this._focusDropDownTimer.remove();
 				delete this._focusDropDownTimer;
@@ -449,6 +490,5 @@ define([
 				this.opened = false;
 			}
 		}
-
 	});
 });

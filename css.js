@@ -1,3 +1,32 @@
+/**
+ * CSS loading plugin for widgets.
+ *
+ * This plugin will load the specified CSS files, or alternately AMD modules containing CSS,
+ * and insert their content into the document in the specified order.
+ *
+ * The CSS files or modules are specified as a comma separated list, for example
+ * `delite/css!../foo.css,../bar.css` or for modules, `delite/css!../foo,../bar`.
+ *
+ * Similar to `text!`, this plugin won't resolve until it has completed loading the specified CSS.
+ *
+ * This loader has the following limitations:
+ *
+ * - The plugin will not wait for `@import` statements to complete before resolving.
+ * Imported CSS files should not have `@import` statements, but rather
+ * all CSS files needed should be listed in the widget's `define([...], ...)` dependency list.
+ *
+ * - Loading plain CSS files won't work cross domain, unless you set Access-Control-Allow-Origin
+ * in the HTTP response header.  Instead you should load AMD modules containing CSS.
+ *
+ * For a more full featured loader one can use:
+ *
+ * - [Xstyle's CSS loader](https:* github.com/kriszyp/xstyle/blob/master/core/load-css.js)
+ * - [CURL's](https:* github.com/cujojs/curl/blob/master/src/curl/plugin/css.js)
+ * - [requirejs-css-plugin](https:* github.com/tyt2y3/requirejs-css-plugin)
+ * - [requirecss](https:* github.com/guybedford/require-css)
+ *
+ * @module delite/css
+ **/
 define(["dojo/dom-construct"], function (domConstruct) {
 	"use strict";
 
@@ -7,12 +36,14 @@ define(["dojo/dom-construct"], function (domConstruct) {
 		lastInsertedStylesheet,
 		sheets = {};		// map of which stylesheets have already been inserted
 
-	function insertCss(/*String*/ css) {
-		// summary:
-		//		Inserts the specified CSS into the document, after any CSS previously inserted
-		//		by this function, but before any user-defined CSS.  This lets the app's stylesheets
-		//		override the widget's default styling.
-
+	/**
+	 * Inserts the specified CSS into the document, after any CSS previously inserted
+	 * by this functorion, but before any user-defined CSS.  This lets the app's stylesheets
+	 * override the widget's default styling.
+	 * @param {string} css
+	 * @returns {HTMLStyleElement}
+	 */
+	function insertCss(css) {
 		// Creates a new stylesheet on each call.  Could alternately just add CSS to the old stylesheet.
 		// Maybe the current implementation is faster.
 		var styleSheet = doc.createElement("style");
@@ -24,44 +55,15 @@ define(["dojo/dom-construct"], function (domConstruct) {
 	}
 
 	return {
-		// summary:
-		//		CSS loading plugin for the DELITE widgets.
-		//
-		//		This plugin will load the specified CSS files, or alternately AMD modules containing CSS,
-		//		and insert their content into the document in the specified order.
-		//
-		//		The CSS files or modules are specified as a comma separated list, for example
-		//		delite/css!../foo.css,../bar.css or for modules, delite/css!../foo,../bar.
-		//
-		//		Similar to text!, this plugin won't resolve until it has completed loading the specified CSS.
-		//		
-		//		This loader has the following limitations:
-		//
-		//			- The plugin will not wait for @import statements to complete before resolving.
-		//			  Imported CSS files should not have @import statements, but rather
-		//			  all CSS files needed should be listed in the widget's define([...], ...) dependency list.
-		//
-		//			- Loading plain CSS files won't work cross domain, unless you set Access-Control-Allow-Origin
-		//			  in the HTTP response header.  Instead you should load AMD modules containing CSS.
-		//
-		//		For a more full featured loader one can use:
-		//
-		//		- [Xstyle's CSS loader](https://github.com/kriszyp/xstyle/blob/master/core/load-css.js)
-		//		- [CURL's](https://github.com/cujojs/curl/blob/master/src/curl/plugin/css.js)
-		//		- [requirejs-css-plugin](https://github.com/tyt2y3/requirejs-css-plugin)
-		//		- [requirecss](https://github.com/guybedford/require-css)
-
+		/**
+		 * Load and install the specified CSS files, in specified order, and then call onload().
+		 * @param {string} mids - Absolute path to the resource.
+		 * @param {Function} require - AMD's require() method.
+		 * @param {Function} onload - Callback function which will be called, when the loading finishes
+		 *     and the stylesheet has been inserted.
+		 * @private
+		 */
 		load: function (mids, require, onload) {
-			// summary:
-			//		Load and install the specified CSS files, in specified order, and then call onload().
-			// path: String
-			//		Absolute path to the resource.
-			// require: Function
-			//		AMD's require() method
-			// onload: Function
-			//		Callback function which will be called, when the loading finishes
-			//		and the stylesheet has been inserted.
-
 			// Use dojo/text! to load the CSS data rather than <link> tags because:
 			//		1. In a build, the CSS data will already be inlined into the JS file.  Using <link> tags would
 			//		   cause needless network requests.

@@ -1,3 +1,4 @@
+/** @module delite/FormWidget */
 define([
 	"dcl/dcl",
 	"dojo/window", // winUtils.scrollIntoView
@@ -6,45 +7,54 @@ define([
 	"./Invalidating"
 ], function (dcl, winUtils, domStyle, Widget, Invalidating) {
 
-	// module:
-	//		delite/FormWidget
+	/**
+	 * Base class for widgets that extend `HTMLElement`, but conceptually correspond
+	 * to native HTML elements such as `<checkbox>` or `<button>`,
+	 * which can be children of a `<form>` node.
+	 *
+	 * @mixin module:delite/FormWidget
+	 * @augments module:delite/Widget
+	 * @augments module:delite/Invalidating
+	 */
+	return dcl([Widget, Invalidating], /** @lends module:delite/FormWidget# */ {
 
-	return dcl([Widget, Invalidating], {
-		// summary:
-		//		Mixin for widgets that extend HTMLElement, but conceptually correspond
-		//		to native HTML elements such as `<checkbox>` or `<button>`,
-		//		which can be children of a `<form>` node or a `deliteful/Form` widget.
-		//
-		// description:
-		//		Represents a single HTML element.
-		//		All these widgets should have these attributes just like native HTML input elements.
-		//		You can set them during widget construction or afterwards, via `delite/Widget.set()`.
-		//
-		//		They also share some common methods.
-
-		// name: [const] String
-		//		Name used when submitting form; same as "name" attribute or plain HTML elements
+		/**
+		 * Name used when submitting form; same as "name" attribute or plain HTML elements.
+		 * @member {string} module:delite/FormWidget.name
+		 */
 		name: "",
 
-		// alt: String
-		//		Corresponds to the native HTML `<input>` element's attribute.
+		/**
+		 * Corresponds to the native HTML `<input>` element's attribute.
+		 * @member {string} module:delite/FormWidget.alt
+		 */
 		alt: "",
 
-		// value: String
-		//		Corresponds to the native HTML `<input>` element's attribute.
+		/**
+		 * Corresponds to the native HTML `<input>` element's attribute.
+		 * @member {string} module:delite/FormWidget.value
+		 */
 		value: "",
 
-		// tabIndex: Number
-		//        The order in which fields are traversed when user hits the tab key
+		/**
+		 * The order in which fields are traversed when user hits the tab key.
+		 * @member {number} module:delite/FormWidget.tabIndex
+		 * @default 0
+		 */
 		tabIndex: 0,
 
-		// tabStops: [const] String
-		//        Concatenated list of node names that can receive focus during tab operations
+		/**
+		 * Concatenated list of node names that can receive focus during tab operations.
+		 * @member {string} FormWidget#tabStops
+		 * @default "focusNode"
+		 */
 		tabStops: "focusNode", // should be "" if the widget's only tab stop is the outer root node
 
-		// disabled: Boolean
-		//		Should this widget respond to user input?
-		//		In markup, this is specified as "disabled='disabled'", or just "disabled".
+		/**
+		 * If set to true, the widget will not respond to user input and will not be included in form submission.
+		 * @member {boolean} FormWidget#disabled
+		 * @default false
+		 */
 		disabled: false,
 
 		preCreate: function () {
@@ -56,9 +66,8 @@ define([
 		},
 
 		refreshRendering: dcl.after(function (args) {
-			// summary:
-			//		Handle disabled and tabIndex, across the tabStops and root node.
-			//		No special processing is needed for tabStops other than just to refresh disable and tabIndex.
+			// Handle disabled and tabIndex, across the tabStops and root node.
+			// No special processing is needed for tabStops other than just to refresh disable and tabIndex.
 			var props = args[0];
 			var self = this;
 			var tabStops = this.tabStops.split(/[ ,]/);
@@ -100,17 +109,19 @@ define([
 			return props; // for after advice
 		}),
 
+		/**
+		 * Returns whether or not this widget is focusable.  Used internally by delite.
+		 * @returns {boolean}
+		 * @protected
+		 */
 		isFocusable: function () {
-			// summary:
-			//		Tells if this widget is focusable or not.  Used internally by delite.
-			// tags:
-			//		protected
 			return !this.disabled && this.focusNode && (domStyle.get(this, "display") !== "none");
 		},
 
+		/**
+		 * Put focus on this widget.
+		 */
 		focus: function () {
-			// summary:
-			//		Put focus on this widget
 			if (!this.disabled && this.focusNode.focus) {
 				try {
 					this.focusNode.focus();

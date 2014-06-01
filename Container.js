@@ -1,16 +1,16 @@
+/** @module delite/Container */
 define([
 	"dcl/dcl",
 	"dojo/dom-construct", // domConstruct.place
 	"./Widget"
 ], function (dcl, domConstruct, Widget) {
 
-	// module:
-	//		delite/Container
-
-	return dcl(Widget, {
-		// summary:
-		//		Widget that contains a set of Element children (either widgets or plain DOM nodes).
-
+	/**
+	 * Widget that contains a set of Element children (either widgets or plain DOM nodes).
+	 * @mixin module:delite/Container
+	 * @augments module:delite/Widget
+	 */
+	return dcl(Widget, /** @lends module:delite/Container# */{
 		buildRendering: dcl.after(function () {
 			if (!this.containerNode) {
 				// All widgets with descendants must set containerNode.
@@ -18,16 +18,16 @@ define([
 			}
 		}),
 
-		addChild: function (/*DOMNode*/ node, /*int?*/ insertIndex) {
-			// summary:
-			//		Makes the given widget or DOM node a child of this widget.
-			// description:
-			//		Inserts specified child widget or DOM node as a child of this widget's
-			//		container node, and possibly does other processing (such as layout).
-
+		/**
+		 * Inserts specified Element as a child of this widgets's
+		 * container node, and possibly does other processing (such as layout).
+		 * @param {Element} node - Element to add as a child.
+		 * @param {number} [insertIndex] - Position the child as at the specified position relative to other children.
+		 */
+		addChild: function (node, insertIndex) {
 			// I want to just call domConstruct.place(node, this.containerNode, insertIndex), but the counting
 			// is thrown off by text nodes and comment nodes that show up when constructed by markup.
-			// In the future consider stripping those nodes on construction, either in the parser or this node code.
+			// In the future consider stripping those nodes on construction, either in the parser or this widget code.
 			var refNode = this.containerNode;
 			if (insertIndex > 0) {
 				// TODO: use this.children or querySelectorAll() to get list of children, rather than looping
@@ -58,12 +58,13 @@ define([
 			}
 		},
 
-		removeChild: function (/*Element|int*/ node) {
-			// summary:
-			//		Removes the passed widget instance from this widget but does
-			//		not destroy it.  You can also pass in an integer indicating
-			//		the index within the container to remove (ie, removeChild(5) removes the sixth widget).
-
+		/**
+		 * Removes the passed node instance from this widget but does
+		 * not destroy it.  You can also pass in an integer indicating
+		 * the index within the container to remove (ie, removeChild(5) removes the sixth node).
+		 * @param {Element|number} node
+		 */
+		removeChild: function (node) {
 			if (typeof node === "number") {
 				node = this.getChildren()[node];
 			}
@@ -73,47 +74,55 @@ define([
 			}
 		},
 
+		/**
+		 * Returns true if widget has child widgets, i.e. if this.containerNode contains widgets.
+		 * @returns {boolean}
+		 */
 		hasChildren: function () {
-			// summary:
-			//		Returns true if widget has child widgets, i.e. if this.containerNode contains widgets.
-			return this.getChildren().length > 0;	// Boolean
+			return this.getChildren().length > 0;
 		},
 
-		getIndexOfChild: function (/*DOMNode*/ child) {
-			// summary:
-			//		Gets the index of the child in this container or -1 if not found
-			return this.getChildren().indexOf(child);	// int
+		/**
+		 * Returns the index of the child in this container or -1 if not found.
+		 * @param {Element} child
+		 * @returns {number}
+		 */
+		getIndexOfChild: function (child) {
+			return this.getChildren().indexOf(child);
 		},
 
-		_getSibling: function (/*Element*/ node, /*String*/ which) {
-			// summary:
-			//		Returns next or previous sibling of specified node
-			// node:
-			//		The node
-			// which:
-			//		Either "next" or "previous"
-			// tags:
-			//		private
+		/**
+		 * Returns next or previous sibling of specified node.
+		 * @param {Element} node - The node.
+		 * @param {string} which - Either "next" or "previous".
+		 * @returns {Element}
+		 * @private
+		 */
+		_getSibling: function (node, which) {
 			do {
 				node = node[which + "Sibling"];
 			} while (node && node.nodeType !== 1);
-			return node;	// Element
+			return node;
 		},
 
-		getPreviousSibling: function (/*Element*/ node) {
-			// summary:
-			//		Returns null if this is the first child of the parent,
-			//		otherwise returns the next element sibling to the "left".
-
-			return this._getSibling(node, "previous"); // Element
+		/**
+		 * Returns null if this is the first child of the parent,
+		 * otherwise returns the next element sibling to the "left".
+		 * @param {Element} node
+		 * @returns {Element}
+		 */
+		getPreviousSibling: function (node) {
+			return this._getSibling(node, "previous");
 		},
 
-		getNextSibling: function (/*Element*/ node) {
-			// summary:
-			//		Returns null if this is the last child of the parent,
-			//		otherwise returns the next element sibling to the "right".
-
-			return this._getSibling(node, "next"); // Element
+		/**
+		 * Returns null if this is the last child of the parent,
+		 * otherwise returns the next element sibling to the "right".
+		 * @param {Element} node
+		 * @returns {Element}
+		 */
+		getNextSibling: function (node) {
+			return this._getSibling(node, "next");
 		}
 	});
 });

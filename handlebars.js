@@ -1,12 +1,49 @@
+/**
+ * Plugin that loads a Handlebars template from a specified MID, and returns a function to
+ * generate DOM corresponding to that template, and set up handlers
+ * to modify the generated DOM as widget properties change.  The returned function is meant
+ * to run in the context of the widget, so that properties are available through `this` and
+ * so is a `watch()` method to monitor changes to those properties.
+ *
+ * Could also theoretically be used by a build-tool to precompile templates, assuming you loaded
+ * [jsdom](https://github.com/tmpvar/jsdom) to provide methods like `document.createElement()`.
+ *
+ * Template has a format like:
+ *
+ * ```html
+ * <button>
+ *   <span class="d-reset {{iconClass}}"></span>
+ *   {{#if showLabel}}
+ *     {{label}}
+ *   {{/if}}
+ * </button>
+ * ```
+ * 
+ * Usage is typically like:
+ * 
+ * ```js
+ * define([..., "delite/handlebars!./templates/MyTemplate.html"], function(..., renderFunc){
+ *     ...
+ *     buildRendering: renderFunc,
+ *     ...
+ * });
+ * ```
+ * 
+ * @module delite/handlebars
+ */
 define(["./template"], function (template) {
 
 	// Text plugin to load the templates and do the build.
 	var textPlugin = "requirejs-text/text";
-	
-	function tokenize(/*String*/ text) {
-		// Given a string like "hello {{foo}} world", split it into static text and property references,
-		//  and return array representing the parts, ex: ["hello ", {property: "foo"}, " world"]
 
+
+	/**
+	 * Given a string like "hello {{foo}} world", split it into static text and property references,
+	 * and return array representing the parts, ex: `["hello ", {property: "foo"}, " world"]`.
+	 * @param {string} text
+	 * @returns {Array}
+	 */
+	function tokenize(text) {
 		var inVar, parts = [];
 
 		if (text) {
@@ -24,26 +61,21 @@ define(["./template"], function (template) {
 		return parts;
 	}
 
-	var handlebars = {
-		// summary:
-		//		Plugin that loads a Handlebars template from a specified MID, and returns a function to
-		//		generate DOM corresponding to that template, and set up handlers
-		//		to modify the generated DOM as widget properties change.  The returned function is meant
-		//		to run in the context of the widget, so that properties are available through "this" and
-		//		so is a watch() method to monitor changes to those properties.
-		//
-		//		Can also be used by the build-tool to precompile templates, assuming you load
-		//		https://github.com/tmpvar/jsdom to provide methods like document.createElement().
-
+	var handlebars = /** @lends module:delite/handlebars */ {
 		//		TODO: loops like <ul>{{#each ary}}<span>{{foo}}</span>{{/each}}</ul>
 		//		where ary is an array like [{foo: 123},...].  In this case the parent node
 		//		(<ul> in this example) can't have any other children besides what's defined by
 		//		the {{#each ary}}...{{/ary}} block.
 
-		parseNode: function (/*DOMNode*/ templateNode, /*String?*/ xmlns) {
-			// summary:
-			//		Scan a single Element (not text node, not branching node like {{#if}}, but regular DOMNode
-
+		/**
+		 * Scan a single Element (not text node, not branching node like {{#if}}, but regular DOM node.
+		 * @param {Element} templateNode
+		 * @param {string} [xmlns] - Used primarily for SVG nodes.
+		 * @returns {Object} Object in format
+		 * `{tag: string, xmlns: string, attributes: {}, children: Object[], attachPoints: string[]}`.
+		 * @private
+		 */
+		parseNode: function (templateNode, xmlns) {
 			// Get tag name, reversing the tag renaming done in parse()
 			var tag = templateNode.tagName.replace(/^template-/i, "").toLowerCase();
 
@@ -77,10 +109,14 @@ define(["./template"], function (template) {
 			};
 		},
 
-		parseChildren: function (/*DOMNode*/ templateNode, /*String?*/ xmlns) {
-			// summary:
-			//		Scan child nodes, both text and Elements
-
+		/**
+		 * Scan child nodes, both text and Elements.
+		 * @param {Element} templateNode
+		 * @param {string} [xmlns] - Used primarily for SVG nodes.
+		 * @returns {Array}
+		 * @private
+		 */
+		parseChildren: function (templateNode, xmlns) {
 			var children = [];
 
 			for (var child = templateNode.firstChild; child; child = child.nextSibling) {
@@ -127,11 +163,16 @@ define(["./template"], function (template) {
 			return children;
 		},
 
-		parse: function (/*String*/ templateText) {
-			// summary:
-			//		Given a template, returns the tree representing that template.
-			//		Will only run in a browser, or in node.js with https://github.com/tmpvar/jsdom.
 
+		/**
+		 * Given a template, returns the tree representing that template.
+		 * Will only run in a browser, or in node.js with https://github.com/tmpvar/jsdom.
+		 * @param {string} templateText - HTML text for template.
+		 * @returns {Object} Object in format
+		 * `{tag: string, xmlns: string, attributes: {}, children: Object[], attachPoints: string[]}`.
+		 * @private
+		 */
+		parse: function (templateText) {
 			// Adjust the template, putting if statements and looping statements inside their own
 			// <each> and <if> blocks.
 			var adjustedTemplate = templateText.replace(/{{#(each|if) +([^}]+)}}/g,
@@ -166,34 +207,35 @@ define(["./template"], function (template) {
 			return handlebars.parseNode(root);
 		},
 
+		/**
+		 * Given a template, returns a function to generate DOM corresponding to that template,
+		 * and setup listeners (using `Widget.watch()`) to propagate changes in the widget
+		 * properties to the templates.
+		 *
+		 * This method is usually only called directly when your template contains custom elements,
+		 * and a call to handlebars!myTemplate.html might try to compile the template before the custom
+		 * elements were loaded.
+		 *
+		 * @param {string} template - See module description for details on template format.
+		 * @returns {Function} - Function that optionally takes a top level node, or creates it if not passed in, and
+		 * then creates the rest of the DOMNodes in the template.
+		 */
 		compile: function (templateText) {
-			// summary:
-			//		Given a template, returns a function to generate DOM corresponding to that template,
-			//		and setup listeners (using `Widget.watch()`) to propagate changes in the widget
-			//		properties to the templates.
-			// template: String
-			//		See module description for details on template format.
-			// returns: Function
-			//		Returns a function that optionally takes a top level node, or creates it if not passed in, and
-			//		then creates the rest of the DOMNodes in the template
-
 			var tree = handlebars.parse(templateText);
 			var func = template.compile(tree);
 			return func;
 		},
 
+		/**
+		 * Returns a function to generate the DOM specified by the template.
+		 * This is the function run when you use this module as a plugin.
+		 * @param {string} mid - Absolute path to the resource.
+		 * @param {Function} require - AMD's require() method.
+		 * @param {Function} onload - Callback function which will be called, when the loading finishes
+		 *     and the stylesheet has been inserted.
+		 * @private
+		 */
 		load: function (mid, require, onload) {
-			// summary:
-			//		Returns a function to generate the DOM specified by the template.
-			//		This is the function run when you use this module as a plugin.
-			// mid: String
-			//		Absolute path to the resource.
-			// require: Function
-			//		AMD's require() method
-			// onload: Function
-			//		Callback function which will be called, when the loading finishes
-			//		and the stylesheet has been inserted.
-
 			require([textPlugin + "!" + mid], function (template) {
 				onload(handlebars.compile(template));
 			});

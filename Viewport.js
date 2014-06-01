@@ -1,3 +1,14 @@
+/**
+ * Utility singleton to watch for viewport resizes, avoiding duplicate notifications
+ * which can lead to infinite loops.
+ *
+ * Usage: `Viewport.on("resize", myCallback)`.
+ * 
+ * myCallback() is called without arguments in case it's Widget.resize(),
+ * which would interpret the argument as the size to make the widget.
+ *
+ * @module delite/Viewport
+ */
 define([
 	"dojo/Evented",
 	"dojo/on",
@@ -5,23 +16,6 @@ define([
 	"dojo/sniff",	// has("ie"), has("ios")
 	"dojo/window" // getBox()
 ], function (Evented, on, domReady, has, winUtils) {
-
-	// module:
-	//		delite/Viewport
-
-	/*=====
-	 return {
-		 // summary:
-		 //		Utility singleton to watch for viewport resizes, avoiding duplicate notifications
-		 //		which can lead to infinite loops.
-		 // description:
-		 //		Usage: Viewport.on("resize", myCallback).
-		 //
-		 //		myCallback() is called without arguments in case it's Widget.resize(),
-		 //		which would interpret the argument as the size to make the widget.
-	 };
-	 =====*/
-
 	var Viewport = new Evented();
 
 	var focusedNode;
@@ -48,11 +42,13 @@ define([
 		}
 	});
 
-	Viewport.getEffectiveBox = function (/*Document*/ doc) {
-		// summary:
-		//		Get the size of the viewport, or on mobile devices, the part of the viewport not obscured by the
-		//		virtual keyboard.
-
+	/**
+	 * Get the size of the viewport, or on mobile devices, the part of the viewport not obscured by the
+	 * virtual keyboard.
+	 * @function module:delite/Viewport.getEffectiveBox
+	 * @param {Document} doc - The document, typically the global variable `document`.
+	 */
+	Viewport.getEffectiveBox = function (doc) {
 		var box = winUtils.getBox(doc);
 
 		// Account for iOS virtual keyboard, if it's being shown.  Unfortunately no direct way to check or measure.

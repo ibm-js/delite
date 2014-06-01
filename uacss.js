@@ -1,26 +1,20 @@
+/**
+ * Applies pre-set CSS classes to the top-level HTML node, based on:
+ * 
+ * - browser: `d-webkit`, `d-safari`, `d-chrome`, `d-gecko`, `d-ios`, `d-android`
+ * - browser version (ex: `d-ie-9`, `d-ff-26`)
+ * - box model (ex: `d-contentBox`)
+ * - text direction: `d-rtl` (if the document is RTL)
+ * 
+ * Returns the `has()` method.
+ *
+ * @module delite/uacss
+ */
 define([
 	"dojo/dom-geometry",
 	"./sniff",
 	"dojo/domReady!"	// so we can check for dir=rtl
 ], function (geometry, has) {
-
-	// module:
-	//		delite/uacss
-
-	/*=====
-	 return {
-		 // summary:
-		 //		Applies pre-set CSS classes to the top-level HTML node, based on:
-		 //
-		 //		- browser (ex: d-ie)
-		 //		- browser version (ex: d-ie-6)
-		 //		- box model (ex: d-contentBox)
-		 //		- text direction (ex: d-rtl)
-		 //
-		 //		Returns the has() method.
-	 };
-	 =====*/
-
 	var ie = has("ie"),
 		maj = Math.floor,
 		ff = has("ff"),

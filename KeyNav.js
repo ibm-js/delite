@@ -1,3 +1,4 @@
+/** @module delite/KeyNav */
 define([
 	"dcl/dcl",
 	"dojo/keys", // keys.END keys.HOME, keys.LEFT_ARROW etc.
@@ -6,54 +7,69 @@ define([
 	"./focus"
 ], function (dcl, keys, on, Widget) {
 
-	// module:
-	//		delite/KeyNav
-
-	function takesInput(/*Element*/ node) {
-		// summary:
-		//		Return true if node is an <input> or similar that responds to keyboard input
-
+	/**
+	 * Return true if node is an `<input>` or similar that responds to keyboard input.
+	 * @param {Element} node
+	 * @returns {boolean}
+	 */
+	function takesInput(node) {
 		var tag = node.nodeName.toLowerCase();
 
 		return !node.readOnly && (tag === "textarea" || (tag === "input" &&
 			/^(color|email|number|password|search|tel|text|url|range)$/.test(node.type)));
 	}
 
-	return dcl(Widget, {
-		// summary:
-		//		A mixin to allow arrow key and letter key navigation of child Elements.
-		//		It can be used by delite/Container based widgets with a flat list of children,
-		//		or more complex widgets like deliteful/Tree.
-		//
-		//		To use this mixin, the subclass must:
-		//
-		//			- Implement  _getNext(), _getFirst(), _getLast(), _onLeftArrow(), _onRightArrow()
-		//			  _onDownArrow(), _onUpArrow() methods to handle home/end/left/right/up/down keystrokes.
-		//			  Next and previous in this context refer to a linear ordering of the descendants used
-		//			  by letter key search.
-		//			- Set all navigable descendants' initial tabIndex to "-1"; both initial descendants and any
-		//			  descendants added later, by for example addChild().
-		//			- Define childSelector to a function or string that identifies focusable child Elements.
-		//
-		//		Note the word "child" in that class is used loosely, to refer to any descendant Element.
-		//		If the child elements contain text though, they should have a label attribute.  KeyNav uses the label
-		//		attribute for letter key navigation.
+	/**
+	  * A mixin to allow arrow key and letter key navigation of child Elements.
+	  * It can be used by delite/Container based widgets with a flat list of children,
+	  * or more complex widgets like a Tree.
+	  * 
+	  * To use this mixin, the subclass must:
+	  * 
+	  * - Implement `_getNext()`, `_getFirst()`, `_getLast()`, `_onLeftArrow()`, `_onRightArrow()`
+	  * `_onDownArrow()`, `_onUpArrow()` methods to handle home/end/left/right/up/down keystrokes.
+	  * Next and previous in this context refer to a linear ordering of the descendants used
+	  * by letter key search.
+	  * - Set all navigable descendants' initial tabIndex to "-1"; both initial descendants and any
+	  * descendants added later, by for example `addChild()`.
+	  * - Define `childSelector` AS a function or string that identifies focusable child Elements.
+	  * 
+	  * Note the word "child" in this class is used loosely, to refer to any descendant Element.
+	  * If the child elements contain text though, they should have a label attribute.  KeyNav uses the label
+	  * attribute for letter key navigation.
+	  *
+	  * @mixin module:delite/KeyNav
+	  * @augments module:delite/Widget
+	  */
+	return dcl(Widget, /** @lends module:delite/KeyNav# */ {
 
-		/*=====
-		// focusedChild: [protected readonly] Element
-		//		The currently focused descendant, or null if there isn't one
+		// TODO: due to apparent bugs in jsdoc3, these aren't getting shown.
+
+		/**
+		 * The currently focused descendant, or null if there isn't one
+		 * @member {Element}
+		 * @readonly
+		 * @protected
+		 */
 		focusedChild: null,
 
-		// _keyNavCodes: Object
-		//		Hash mapping key code (arrow keys and home/end key) to functions to handle those keys.
-		//		Usually not used directly, as subclasses can instead override _onLeftArrow() etc.
-		_keyNavCodes: {},
-		=====*/
+		/**
+		 * Hash mapping key code (arrow keys and home/end key) to functions to handle those keys.
+		 * Usually not used directly, as subclasses can instead override _onLeftArrow() etc.
+		 * Must be set before postCreate().
+		 * @member {Object}
+		 * @protected
+		 */
+		_keyNavCodes: null,
 
-		// childSelector: [protected abstract] Function||String
-		//		Selector (passed to on.selector()) to identify what to treat as a navigable descendant. Used to
-		//		monitor focus events and set this.focusedChild.  Must be set by implementing class.  If this is
-		//		a string (ex: "> *"), then the implementing class must require dojo/query.
+		/**
+		 * Selector (passed to on.selector()) to identify what to treat as a navigable descendant.  Used to
+		 * monitor focus events and set `this.focusedChild`.  Must be set by implementing class.  If this is
+		 * a string (ex: "> *"), then the implementing class must require() `dojo/query`.
+		 * @member {string|Function}
+		 * @protected
+		 * @abstract
+		 */
 		childSelector: null,
 
 		postCreate: function () {
@@ -92,87 +108,91 @@ define([
 			);
 		},
 
+		/**
+		 * Called on left arrow key, or right arrow key if widget is in RTL mode.
+		 * Should go back to the previous child in horizontal container widgets like Toolbar.
+		 * @protected
+		 * @abstract
+		 */
 		_onLeftArrow: function () {
-			// summary:
-			//		Called on left arrow key, or right arrow key if widget is in RTL mode.
-			//		Should go back to the previous child in horizontal container widgets like Toolbar.
-			// tags:
-			//		extension
 		},
 
+		/**
+		 * Called on right arrow key, or left arrow key if widget is in RTL mode.
+		 * Should go to the next child in horizontal container widgets like Toolbar.
+		 * @protected
+		 * @abstract
+		 */
 		_onRightArrow: function () {
-			// summary:
-			//		Called on right arrow key, or left arrow key if widget is in RTL mode.
-			//		Should go to the next child in horizontal container widgets like Toolbar.
-			// tags:
-			//		extension
 		},
 
+		/**
+		 * Called on up arrow key.  Should go to the previous child in vertical container widgets like Menu.
+		 * @protected
+		 * @abstract
+		 */
 		_onUpArrow: function () {
-			// summary:
-			//		Called on up arrow key. Should go to the previous child in vertical container widgets like Menu.
-			// tags:
-			//		extension
 		},
 
+		/**
+		 * Called on down arrow key.  Should go to the next child in vertical container widgets like Menu.
+		 * @protected
+		 * @abstract
+		 */
 		_onDownArrow: function () {
-			// summary:
-			//		Called on down arrow key. Should go to the next child in vertical container widgets like Menu.
-			// tags:
-			//		extension
 		},
 
+		/**
+		 * Default focus() implementation: focus the first child.
+		 */
 		focus: function () {
-			// summary:
-			//		Default focus() implementation: focus the first child.
 			this.focusFirstChild();
 		},
 
+		/**
+		 * Returns first child that can be focused.
+		 * @returns {Element}
+		 * @protected
+		 */
 		_getFirstFocusableChild: function () {
-			// summary:
-			//		Returns first child that can be focused.
-
 			// Leverage _getNextFocusableChild() to skip disabled children
-			return this._getNextFocusableChild(null, 1);	// Element
+			return this._getNextFocusableChild(null, 1);
 		},
 
+		/**
+		 * Returns last child that can be focused.
+		 * @returns {Element}
+		 * @protected
+		 */
 		_getLastFocusableChild: function () {
-			// summary:
-			//		Returns last child that can be focused.
-
 			// Leverage _getNextFocusableChild() to skip disabled children
-			return this._getNextFocusableChild(null, -1);	// Element
+			return this._getNextFocusableChild(null, -1);
 		},
 
+		/**
+		 * Focus the first focusable child in the container.
+		 * @protected
+		 */
 		focusFirstChild: function () {
-			// summary:
-			//		Focus the first focusable child in the container.
-			// tags:
-			//		protected
-
 			this.focusChild(this._getFirstFocusableChild());
 		},
 
+		/**
+		 * Focus the last focusable child in the container.
+		 * @protected
+		 */
 		focusLastChild: function () {
-			// summary:
-			//		Focus the last focusable child in the container.
-			// tags:
-			//		protected
-
 			this.focusChild(this._getLastFocusableChild());
 		},
 
-		focusChild: function (/*Element*/ child, /*Boolean*/ last) {
-			// summary:
-			//		Focus specified child Element.
-			// child:
-			//		Reference to container's child
-			// last:
-			//		If true and if child has multiple focusable nodes, focus the
-			//		last one instead of the first one
-			// tags:
-			//		protected
-
+		/**
+		 * Focus specified child Element.
+		 * @param {Element} child - Reference to container's child.
+		 * @param {boolean} last - If true and if child has multiple focusable nodes, focus the
+		 *     last one instead of the first one.
+		 * @protected
+		 */
+		focusChild: function (child, last) {
 			// For IE focus outline to appear, must set tabIndex before focus.
 			// If this._savedTabIndex is set, use it instead of this.tabIndex, because it means
 			// the container's tabIndex has already been changed to -1.
@@ -184,15 +204,15 @@ define([
 			// returns) needs to know the old focusedChild to set its tabIndex to -1.
 		},
 
+		/**
+		 * Handler for when the container itself gets focus.
+		 * 
+		 * Initially the container itself has a tabIndex, but when it gets focus, switch focus to first child.
+		 * 
+		 * @param {Event} evt
+		 * @private
+		 */
 		_onContainerFocus: function (evt) {
-			// summary:
-			//		Handler for when the container itself gets focus.
-			// description:
-			//		Initially the container itself has a tabIndex, but when it gets
-			//		focus, switch focus to first child.
-			// tags:
-			//		private
-
 			// Note that we can't use _onFocus() because switching focus from the
 			// _onFocus() handler confuses the focus.js code
 			// (because it causes _onFocusNode() to be called recursively).
@@ -230,14 +250,13 @@ define([
 			}
 		}),
 
-		_onChildFocus: function (/*Element*/ child) {
-			// summary:
-			//		Called when a child gets focus, either by user clicking
-			//		it, or programatically by arrow key handling code.
-			// description:
-			//		It marks that the current node is the selected one, and the previously
-			//		selected node no longer is.
-
+		/**
+		 * Called when a child gets focus, either by user clicking it, or programatically by arrow key handling code.
+		 * It marks that the current node is the selected one, and the previously selected node no longer is.
+		 * @param {Element} child
+		 * @private
+		 */
+		_onChildFocus: function (child) {
 			if (child && child !== this.focusedChild) {
 				if (this.focusedChild && !this.focusedChild._destroyed) {
 					// mark that the previously focusable node is no longer focusable
@@ -258,41 +277,48 @@ define([
 
 		_searchString: "",
 
-		// multiCharSearchDuration: Number
-		//		If multiple characters are typed where each keystroke happens within
-		//		multiCharSearchDuration of the previous keystroke,
-		//		search for nodes matching all the keystrokes.
-		//
-		//		For example, typing "ab" will search for entries starting with
-		//		"ab" unless the delay between "a" and "b" is greater than multiCharSearchDuration.
+		/**
+		 * If multiple characters are typed where each keystroke happens within
+		 * multiCharSearchDuration of the previous keystroke,
+		 * search for nodes matching all the keystrokes.
+		 * 
+		 * For example, typing "ab" will search for entries starting with
+		 * "ab" unless the delay between "a" and "b" is greater than `multiCharSearchDuration`.
+		 * 
+		 * @member {number} KeyNav#multiCharSearchDuration
+		 * @default 1000
+		 */
 		multiCharSearchDuration: 1000,
 
-		onKeyboardSearch: function (
-				/*Element*/ item,
-				/*jshint unused: vars */
-				/*Event*/ evt,
-				/*String*/  searchString,
-				/*Number*/ numMatches) {
-			// summary:
-			//		When a key is pressed that matches a child item,
-			//		this method is called so that a widget can take appropriate action is necessary.
-			// tags:
-			//		protected
+		/**
+		 * When a key is pressed that matches a child item,
+		 * this method is called so that a widget can take appropriate action is necessary.
+		 * 
+		 * @param {Element} item
+		 * @param {Event} evt
+		 * @param {string} searchString
+		 * @param {number} numMatches
+		 * @private
+		 */
+		onKeyboardSearch: function (item, /*jshint unused: vars */ evt, searchString, numMatches) {
 			if (item) {
 				this.focusChild(item);
 			}
 		},
 
-		_keyboardSearchCompare: function (/*Element*/ item, /*String*/ searchString) {
-			// summary:
-			//		Compares the searchString to the Element's text label, returning:
-			//
-			//			* -1: a high priority match  and stop searching
-			//			* 0: not a match
-			//			* 1: a match but keep looking for a higher priority match
-			// tags:
-			//		private
-
+		/**
+		 * Compares the searchString to the Element's text label, returning:
+		 *
+		 * - -1: a high priority match  and stop searching
+		 * - 0: not a match
+		 * - 1: a match but keep looking for a higher priority match
+		 * 
+		 * @param {Element} item
+		 * @param {string} searchString
+		 * @returns {number}
+		 * @private
+		 */
+		_keyboardSearchCompare: function (item, searchString) {
 			var element = item,
 				text = item.label || (element.focusNode ? element.focusNode.label : "") || element.textContent || "",
 				currentString = text.replace(/^\s+/, "").substr(0, searchString.length).toLowerCase();
@@ -301,12 +327,12 @@ define([
 			return (!!searchString.length && currentString === searchString) ? -1 : 0;
 		},
 
+		/**
+		 * When a key is pressed, if it's an arrow key etc. then it's handled here.
+		 * @param {Event} evt
+		 * @private
+		 */
 		_onContainerKeydown: function (evt) {
-			// summary:
-			//		When a key is pressed, if it's an arrow key etc. then it's handled here.
-			// tags:
-			//		private
-
 			// Ignore left, right, home, and end on <input> controls
 			if (takesInput(evt.target) &&
 				(evt.keyCode === keys.LEFT_ARROW || evt.keyCode === keys.RIGHT_ARROW ||
@@ -331,12 +357,12 @@ define([
 			}
 		},
 
+		/**
+		 * When a printable key is pressed, it's handled here, searching by letter.
+		 * @param {Event} evt
+		 * @private
+		 */
 		_onContainerKeypress: function (evt) {
-			// summary:
-			//		When a printable key is pressed, it's handled here, searching by letter.
-			// tags:
-			//		private
-
 			if (takesInput(evt.target) || evt.charCode < keys.SPACE || evt.ctrlKey || evt.altKey || evt.metaKey ||
 				(evt.charCode === keys.SPACE && this._searchTimer)) {
 				// Ignore characters typed on <input> controls.
@@ -356,15 +382,17 @@ define([
 			this._keyboardSearch(evt, String.fromCharCode(evt.charCode).toLowerCase());
 		},
 
-		_keyboardSearch: function (/*Event*/ evt, /*String*/ keyChar) {
-			// summary:
-			//		Perform a search of the widget's options based on the user's keyboard activity
-			// description:
-			//		Called on keypress (and sometimes keydown), searches through this widget's children
-			//		looking for items that match the user's typed search string.  Multiple characters
-			//		typed within 1 sec of each other are combined for multicharacter searching.
-			// tags:
-			//		private
+		/**
+		 * Perform a search of the widget's options based on the user's keyboard activity.
+		 *
+		 * Called on keypress (and sometimes keydown), searches through this widget's children
+		 * looking for items that match the user's typed search string.  Multiple characters
+		 * typed within `multiCharSearchDuration` of each other are combined for multi-character searching.
+		 * @param {Event} evt
+		 * @param {string} keyChar
+		 * @private
+		 */
+		_keyboardSearch: function (evt, keyChar) {
 			var
 				matchedItem = null,
 				searchString,
@@ -404,17 +432,14 @@ define([
 			this.onKeyboardSearch(matchedItem, evt, searchString, numMatches);
 		},
 
+		/**
+		 * Returns the next or previous focusable child, relative to "child".
+		 * @param {Element} child
+		 * @param {number} dir - 1 for after, -1 for before
+		 * @returns {Element}
+		 * @protected
+		 */
 		_getNextFocusableChild: function (child, dir) {
-			// summary:
-			//		Returns the next or previous focusable child, compared to "child".
-			// child: Element
-			//		The current element
-			// dir: Integer
-			//		- 1 = after
-			//		- -1 = before
-			// tags:
-			//		abstract extension
-
 			var wrappedValue = child;
 			do {
 				if (!child) {
@@ -426,53 +451,56 @@ define([
 					child = this._getNext(child, dir);
 				}
 				if (child && child !== wrappedValue && this.isFocusable.call(child)) {
-					return child;	// Element
+					return child;
 				}
 			} while (child !== wrappedValue);
 			// no focusable child found
-			return null;	// Element
+			return null;
 		},
 
+		/**
+		 * Returns the first child.
+		 * Subclasses should override this method with a more efficient implementation.
+		 * @returns {Element}
+		 * @protected
+		 * @abstract
+		 */
 		_getFirst: function () {
-			// summary:
-			//		Returns the first child.
-			// tags:
-			//		extension
-
-			return this._getNavigableChildren()[0];	// Element
+			return this._getNavigableChildren()[0];
 		},
 
+		/**
+		 * Returns the last descendant.
+		 * Subclasses should override this method with a more efficient implementation.
+		 * @returns {Element}
+		 * @protected
+		 * @abstract
+		 */
 		_getLast: function () {
-			// summary:
-			//		Returns the last descendant.
-			// tags:
-			//		extension
-
 			var children = this._getNavigableChildren();
-			return children[children.length - 1];	// Element
+			return children[children.length - 1];
 		},
 
-		_getNext: function (child, dir) {
-			// summary:
-			//		Returns the next or previous navigable child, relative to "child".
-			//		Subclasses should override this method with a more efficient implementation.
-			// child: Element
-			//		The current child Element
-			// dir: Integer
-			//		- 1 = after
-			//		- -1 = before
-			// tags:
-			//		extension
 
+		/**
+		 * Returns the next or previous navigable child, relative to "child".
+		 * Subclasses should override this method with a more efficient implementation.
+		 * @param {Element} child - The current child Element.
+		 * @param {number} dir - 1 = after, -1 = before
+		 * @returns {Element}
+		 * @private
+		 * @abstract
+		 */
+		_getNext: function (child, dir) {
 			var children = this._getNavigableChildren(),
 				index = children.indexOf(child);
 			return children[(index + children.length + dir) % children.length];
 		},
 
+		/**
+		 * Helper method to get list of navigable children (navigable via arrow keys and letter keys).
+		 */
 		_getNavigableChildren: function () {
-			// summary:
-			//		Helper method to get list of navigable children (navigable via arrow keys and letter keys).
-
 			if (typeof this.childSelector === "function") {
 				return Array.prototype.filter.call(this.querySelectorAll("*"), this.childSelector);
 			} else {
