@@ -23,11 +23,11 @@ define([
 	"dojo/dom-construct", // connect to domConstruct.empty, domConstruct.destroy
 	"dojo/Evented",
 	"dojo/on",
-	"dojo/domReady",
 	"dojo/Stateful",
 	"dojo/window", // winUtils.get
-	"./a11y"	// a11y.isTabNavigable
-], function (advise, dcl, dom, domAttr, domClass, domConstruct, Evented, on, domReady, Stateful, winUtils, a11y) {
+	"./a11y",	// a11y.isTabNavigable
+	"dojo/domReady!"
+], function (advise, dcl, dom, domAttr, domClass, domConstruct, Evented, on, Stateful, winUtils, a11y) {
 
 	// Time of the last touch or focusIn event
 	var lastTouch;
@@ -332,14 +332,9 @@ define([
 		}
 	});
 
+	// Create singleton for top window
 	var singleton = new FocusManager();
-
-	// register top window and all the iframes it contains
-	// TODO: just use dojo/domReady! in the define() dependencies list.
-	// Also, use window instead of winUtils.get(document)
-	domReady(function () {
-		singleton.registerWin(winUtils.get(document));
-	});
+	singleton.registerWin(window);
 
 	return singleton;
 });

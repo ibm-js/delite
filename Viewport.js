@@ -12,35 +12,33 @@
 define([
 	"dojo/Evented",
 	"dojo/on",
-	"dojo/domReady",
 	"dojo/sniff",	// has("ie"), has("ios")
-	"dojo/window" // getBox()
-], function (Evented, on, domReady, has, winUtils) {
+	"dojo/window", // getBox()
+	"dojo/domReady!"
+], function (Evented, on, has, winUtils) {
 	var Viewport = new Evented();
 
 	var focusedNode;
 
-	domReady(function () {
-		var oldBox = winUtils.getBox();
-		Viewport._rlh = on(window, "resize", function () {
-			var newBox = winUtils.getBox();
-			if (oldBox.h === newBox.h && oldBox.w === newBox.w) {
-				return;
-			}
-			oldBox = newBox;
-			Viewport.emit("resize");
-		});
-
-		// On iOS, keep track of the focused node so we can guess when the keyboard is/isn't being displayed.
-		if (has("ios")) {
-			on(document, "focusin", function (evt) {
-				focusedNode = evt.target;
-			});
-			on(document, "focusout", function () {
-				focusedNode = null;
-			});
+	var oldBox = winUtils.getBox();
+	Viewport._rlh = on(window, "resize", function () {
+		var newBox = winUtils.getBox();
+		if (oldBox.h === newBox.h && oldBox.w === newBox.w) {
+			return;
 		}
+		oldBox = newBox;
+		Viewport.emit("resize");
 	});
+
+	// On iOS, keep track of the focused node so we can guess when the keyboard is/isn't being displayed.
+	if (has("ios")) {
+		on(document, "focusin", function (evt) {
+			focusedNode = evt.target;
+		});
+		on(document, "focusout", function () {
+			focusedNode = null;
+		});
+	}
 
 	/**
 	 * Get the size of the viewport, or on mobile devices, the part of the viewport not obscured by the
