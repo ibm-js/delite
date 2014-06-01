@@ -1,37 +1,98 @@
+/**
+ * Place an Element relative to a point, rectangle, or another Element.
+ * @module delite/place
+ */
 define([
 	"dojo/dom-geometry", // domGeometry.position
 	"dojo/dom-style", // domStyle.getComputedStyle
 	"./Viewport" // getEffectiveBox
 ], function (domGeometry, domStyle, Viewport) {
 
-	// module:
-	//		delite/place
+	// TODO: correctly document return value from _place(), at(), and around().
 
+	/**
+	 * @typedef {Object} module:delite/place.Position
+	 * @property {number} x - Horizontal coordinate in pixels, relative to document body.
+	 * @property {number} y - Vertical coordinate in pixels, relative to document body.
+	 */
 
-	function _place(/*DomNode*/ node, choices, layoutNode, aroundNodeCoords) {
-		// summary:
-		//		Given a list of spots to put node, put it at the first spot where it fits,
-		//		of if it doesn't fit anywhere then the place with the least overflow
-		// choices: Array
-		//		Array of elements like: {corner: 'TL', pos: {x: 10, y: 20} }
-		//		Above example says to put the top-left corner of the node at (10,20)
-		// layoutNode: Function(node, aroundNodeCorner, nodeCorner, size)
-		//		for things like tooltip, they are displayed differently (and have different dimensions)
-		//		based on their orientation relative to the parent.	 This adjusts the popup based on orientation.
-		//		It also passes in the available size for the popup, which is useful for tooltips to
-		//		tell them that their width is limited to a certain amount.	 layoutNode() may return a value
-		//		expressing how much the popup had to be modified to fit into the available space.	 T
-		//		his is used to determine what the best placement is.
-		// aroundNodeCoords: Object
-		//		Size of aroundNode, ex: {w: 200, h: 50}
+	/**
+	 * Represents the position of the "anchor" node.   Popup node will be placed adjacent to this rectangle.
+	 * @typedef {Object} module:delite/place.Rectangle
+	 * @property {number} x - Horizontal coordinate in pixels, relative to document body.
+	 * @property {number} y - Vertical coordinate in pixels, relative to document body.
+	 * @property {number} w - Width in pixels.
+	 * @property {number} h - Height in pixels.
+	 */
 
+	/**
+	 * Function on popup widget to adjust it based on what position it's being displayed in,
+	 * relative to anchor node.
+	 * @callback module:delite/place.LayoutFunc
+	 * @param {Element} node - The DOM node for the popup widget.
+	 * @param {string} aroundCorner - Corner of the anchor node, one of:
+	 * - "BL" - bottom left
+	 * - "BR" - bottom right
+	 * - "TL" - top left
+	 * - "TR" - top right
+	 * @param {string} nodeCorner - Corner of the popup node, one of:
+	 * - "BL" - bottom left
+	 * - "BR" - bottom right
+	 * - "TL" - top left
+	 * - "TR" - top right
+	 * @param {Object} size - `{w: 20, h: 30}` type object specifying size of the popup.
+	 * @returns {number} Optional.  Amount that the popup needed to be modified to fit in the space provided.
+	 * If no value is returned, it's assumed that the popup fit completely without modification.
+	 */
+
+	/**
+	 * Meta-data about the position chosen for a popup node.
+	 * Specifies the corner of the anchor node and the corner of the popup node that touch each other,
+	 * plus sizing data.
+	 * @typedef {Object} module:delite/place.ChosenPosition
+	 * @property {string} aroundCorner - Corner of the anchor node:
+	 * - "BL" - bottom left
+	 * - "BR" - bottom right
+	 * - "TL" - top left
+	 * - "TR" - top right
+	 * @property {string} corner - Corner of the popup node:
+	 * - "BL" - bottom left
+	 * - "BR" - bottom right
+	 * - "TL" - top left
+	 * - "TR" - top right
+	 * @property {number} x - Horizontal position of popup in pixels, relative to document body.
+	 * @property {number} y - Vertical position of popup in pixels, relative to document body.
+	 * @property {number} w - Width of popup in pixels.
+	 * @property {number} h - Height of popup in pixels.
+	 * @property {Object} spaceAvailable - `{w: 30, h: 20}` type object listing the amount of space that
+	 * was available fot the popup in the chosen position.
+	 */
+
+	/**
+	 * Given a list of positions to place node, place it at the first position where it fits,
+	 * of if it doesn't fit anywhere then the position with the least overflow.
+	 * @param {Element} node
+	 * @param {Array} choices - Array of objects like `{corner: "TL", pos: {x: 10, y: 20} }`.
+	 * This example says to put the top-left corner of the node at (10,20).
+	 * @param {module:delite/place.LayoutFunc} [layoutNode] - Widgets like tooltips are displayed differently an
+	 * have different dimensions based on their orientation relative to the parent.
+	 * This adjusts the popup based on orientation.
+	 * It also passes in the available size for the popup, which is useful for tooltips to
+	 * tell them that their width is limited to a certain amount.  layoutNode() may return a value
+	 * expressing how much the popup had to be modified to fit into the available space.
+	 * This is used to determine what the best placement is.
+	 * @param {module:delite/place.Rectangle} aroundNodeCoords - Size and position of aroundNode.
+	 * @returns {module:delite/place.ChosenPosition} Best position to place node.
+	 * @private
+	 */
+	function _place(node, choices, layoutNode, aroundNodeCoords) {
 		// get {x: 10, y: 10, w: 100, h:100} type obj representing position of
 		// viewport over document
 		var view = Viewport.getEffectiveBox(node.ownerDocument);
 
 		// This won't work if the node is inside a <div style="position: relative">,
 		// so reattach it to <body>.	 (Otherwise, the positioning will be wrong
-		// and also it might get cutoff.)
+		// and also it might get cut off.)
 		if (!node.parentNode || String(node.parentNode.tagName).toLowerCase() !== "body") {
 			node.ownerDocument.body.appendChild(node);
 		}
@@ -160,41 +221,37 @@ define([
 		"BR": "TL"
 	};
 
-	var place = {
-		// summary:
-		//		Code to place a DOMNode relative to another DOMNode.
-		//		Load using require(["delite/place"], function(place){ ... }).
+	var place = /** @lends module:delite/place */ {
 
+		// TODO: it's weird that padding is specified as x/y rather than h/w.
+
+		/**
+		 * Positions node kitty-corner to the rectangle centered at (pos.x, pos.y) with width and height of
+		 * padding.x * 2 and padding.y * 2, or zero if padding not specified.  Picks first corner in
+		 * corners[] where node is fully visible, or the corner where it's most visible.
+		 *
+		 * Node is assumed to be absolutely or relatively positioned.
+		 * 
+		 * @param {Element} node - The popup node to be positioned.
+		 * @param {module:delite/place.Position} pos - The point (or if padding specified, rectangle) to place
+		 * the node kitty-corner to.
+		 * @param {string[]} corners - Array of strings representing order to try corners of the node in,
+		 * like `["TR", "BL"]`.  Possible values are:
+		 * - "BL" - bottom left
+		 * - "BR" - bottom right
+		 * - "TL" - top left
+		 * - "TR" - top right
+		 * @param {module:delite/place.Position} [padding] - Optional param to set padding, to put some buffer
+		 * around the element you want to position.  Defaults to zero.
+		 * @param {module:delite/place.LayoutFunc} [layoutNode]
+		 * @returns {module:delite/place.ChosenPosition} Position node was placed at.
+		 * @example
+		 * // Try to place node's top right corner at (10,20).
+		 * // If that makes node go (partially) off screen, then try placing
+		 * // bottom left corner at (10,20).
+		 * place.at(node, {x: 10, y: 20}, ["TR", "BL"])
+		 */
 		at: function (node, pos, corners, padding, layoutNode) {
-			// summary:
-			//		Positions node kitty-corner to the rectangle centered at (pos.x, pos.y) with width and height of
-			//		padding.x * 2 and padding.y * 2, or zero if padding not specified.  Picks first corner in
-			//		corners[] where node is fully visible, or the corner where it's most visible.
-			//
-			//		Node is assumed to be absolutely or relatively positioned.
-			// node: DOMNode
-			//		The node to position
-			// pos: delite/place.__Position
-			//		Object like {x: 10, y: 20}
-			// corners: String[]
-			//		Array of Strings representing order to try corners of the node in, like ["TR", "BL"].
-			//		Possible values are:
-			//
-			//		- "BL" - bottom left
-			//		- "BR" - bottom right
-			//		- "TL" - top left
-			//		- "TR" - top right
-			// padding: delite/place.__Position?
-			//		Optional param to set padding, to put some buffer around the element you want to position.
-			//		Defaults to zero.
-			// layoutNode: Function(node, aroundNodeCorner, nodeCorner)
-			//		For things like tooltip, they are displayed differently (and have different dimensions)
-			//		based on their orientation relative to the parent.  This adjusts the popup based on orientation.
-			// example:
-			//		Try to place node's top right corner at (10,20).
-			//		If that makes node go (partially) off screen, then try placing
-			//		bottom left corner at (10,20).
-			//	|	place(node, {x: 10, y: 20}, ["TR", "BL"])
 			var choices = corners.map(function (corner) {
 				var c = {
 					corner: corner,
@@ -211,55 +268,43 @@ define([
 			return _place(node, choices, layoutNode);
 		},
 
-		around: function (
-				/*DomNode*/        node,
-				/*DomNode|delite/place.__Rectangle*/ anchor,
-				/*String[]*/    positions,
-				/*Boolean*/        leftToRight,
-				/*Function?*/    layoutNode) {
-
-			// summary:
-			//		Position node adjacent or kitty-corner to anchor
-			//		such that it's fully visible in viewport.
-			// description:
-			//		Place node such that corner of node touches a corner of
-			//		aroundNode, and that node is fully visible.
-			// anchor:
-			//		Either a DOMNode or a rectangle (object with x, y, width, height).
-			// positions:
-			//		Ordered list of positions to try matching up.
-			//
-			//		- before: places drop down to the left of the anchor node/widget, or to the right in the case
-			//			of RTL scripts like Hebrew and Arabic; aligns either the top of the drop down
-			//			with the top of the anchor, or the bottom of the drop down with bottom of the anchor.
-			//		- after: places drop down to the right of the anchor node/widget, or to the left in the case
-			//			of RTL scripts like Hebrew and Arabic; aligns either the top of the drop down
-			//			with the top of the anchor, or the bottom of the drop down with bottom of the anchor.
-			//		- before-centered: centers drop down to the left of the anchor node/widget, or to the right
-			//			in the case of RTL scripts like Hebrew and Arabic
-			//		- after-centered: centers drop down to the right of the anchor node/widget, or to the left
-			//			in the case of RTL scripts like Hebrew and Arabic
-			//		- above-centered: drop down is centered above anchor node
-			//		- above: drop down goes above anchor node, left sides aligned
-			//		- above-alt: drop down goes above anchor node, right sides aligned
-			//		- below-centered: drop down is centered above anchor node
-			//		- below: drop down goes below anchor node
-			//		- below-alt: drop down goes below anchor node, right sides aligned
-			// layoutNode: Function(node, aroundNodeCorner, nodeCorner)
-			//		For things like tooltip, they are displayed differently (and have different dimensions)
-			//		based on their orientation relative to the parent.	This adjusts the popup based on orientation.
-			// leftToRight:
-			//		True if widget is LTR, false if widget is RTL.   Affects the behavior of "above" and "below"
-			//		positions slightly.
-			// example:
-			//	|	placeAroundNode(node, aroundNode, {'BL':'TL', 'TR':'BR'});
-			//		This will try to position node such that node's top-left corner is at the same position
-			//		as the bottom left corner of the aroundNode (ie, put node below
-			//		aroundNode, with left edges aligned).	If that fails it will try to put
-			//		the bottom-right corner of node where the top right corner of aroundNode is
-			//		(ie, put node above aroundNode, with right edges aligned)
-			//
-
+		/**
+		 * Position node adjacent to anchor such that it's fully visible in viewport.
+		 * Adjacent means that one side of the anchor is flush with one side of the node.
+		 * @param {Element} node - The popup node to be positioned.
+		 * @param {Element|module:delite/place.Rectangle} anchor - Place node adjacent to this Element or rectangle.
+		 * @param {string[]} positions - Ordered list of positions to try matching up.
+		 * - before: places drop down to the left of the anchor node/widget, or to the right in the case
+		 *   of RTL scripts like Hebrew and Arabic; aligns either the top of the drop down
+		 *   with the top of the anchor, or the bottom of the drop down with bottom of the anchor.
+		 * - after: places drop down to the right of the anchor node/widget, or to the left in the case
+		 *   of RTL scripts like Hebrew and Arabic; aligns either the top of the drop down
+		 *   with the top of the anchor, or the bottom of the drop down with bottom of the anchor.
+		 * - before-centered: centers drop down to the left of the anchor node/widget, or to the right
+		 *   in the case of RTL scripts like Hebrew and Arabic
+		 * - after-centered: centers drop down to the right of the anchor node/widget, or to the left
+		 *   in the case of RTL scripts like Hebrew and Arabic
+		 * - above-centered: drop down is centered above anchor node
+		 * - above: drop down goes above anchor node, left sides aligned
+		 * - above-alt: drop down goes above anchor node, right sides aligned
+		 * - below-centered: drop down is centered above anchor node
+		 * - below: drop down goes below anchor node
+		 * - below-alt: drop down goes below anchor node, right sides aligned
+		 * @param {boolean} leftToRight - True if widget is LTR, false if widget is RTL.
+		 * Affects the behavior of "above" and "below" positions slightly.
+		 * @param {module:delite/place.LayoutFunc} [layoutNode] - Widgets like tooltips are displayed differently and
+		 * have different dimensions based on their orientation relative to the parent.
+		 * This adjusts the popup based on orientation.
+		 * @returns {module:delite/place.ChosenPosition} Position node was placed at.
+		 * @example
+		 * // Try to position node such that node's top-left corner is at the same position
+		 * // as the bottom left corner of the aroundNode (ie, put node below
+		 * // aroundNode, with left edges aligned).	If that fails try to put
+		 * // the bottom-right corner of node where the top right corner of aroundNode is
+		 * // (i.e., put node above aroundNode, with right edges aligned)
+		 * place.around(node, aroundNode, {'BL':'TL', 'TR':'BR'});
+		 */
+		around: function (node, anchor, positions, leftToRight, layoutNode) {
 			/* jshint maxcomplexity:11 */
 
 			// If around is a DOMNode (or DOMNode id), convert to coordinates.
@@ -390,25 +435,6 @@ define([
 			return position;
 		}
 	};
-
-	/*=====
-	 place.__Position = {
-	 // x: Integer
-	 //		horizontal coordinate in pixels, relative to document body
-	 // y: Integer
-	 //		vertical coordinate in pixels, relative to document body
-	 };
-	 place.__Rectangle = {
-	 // x: Integer
-	 //		horizontal offset in pixels, relative to document body
-	 // y: Integer
-	 //		vertical offset in pixels, relative to document body
-	 // w: Integer
-	 //		width in pixels.   Can also be specified as "width" for backwards-compatibility.
-	 // h: Integer
-	 //		height in pixels.   Can also be specified as "height" for backwards-compatibility.
-	 };
-	 =====*/
 
 	return place;
 });

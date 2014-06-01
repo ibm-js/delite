@@ -1,3 +1,4 @@
+/** @module delite/CustomElement */
 define([
 	"dcl/dcl",
 	"dojo/_base/lang",
@@ -7,19 +8,20 @@ define([
 	"./Stateful"
 ], function (dcl, lang, domConstruct, on, Destroyable, Stateful) {
 
-	// module:
-	//		delite/CustomElement
-
 	var div = document.createElement("div");
 
-	return dcl([Stateful, Destroyable], {
-		// summary:
-		//		Base class for all custom elements.
-		//		Use this class rather that Widget for non-visual custom elements.
-		//
-		//		Custom elements can provide custom setters/getters for properties, which are called automatically
-		//		when the value is set.  For an attribute XXX, define methods _setXXXAttr() and/or _getXXXAttr().
-
+	/**
+	 * Base class for all custom elements.
+	 *
+	 * Use this class rather that delite/Widget for non-visual custom elements.
+	 * Custom elements can provide custom setters/getters for properties, which are called automatically
+	 * when the value is set.  For an attribute XXX, define methods _setXXXAttr() and/or _getXXXAttr().
+	 *
+	 * @mixin module:delite/CustomElement
+	 * @augments module:delite/Stateful
+	 * @augments module:delite/Destroyable
+	 */
+	return dcl([Stateful, Destroyable], /** @lends module:delite/CustomElement# */{
 		_getProps: function () {
 			// Override _Stateful._getProps() to ignore properties from the HTML*Element superclasses, like "style".
 			// You would need to explicitly declare style: "" in your widget to get it here.
@@ -69,9 +71,12 @@ define([
 			}
 		}),
 
+		/**
+		 * Get declaratively specified attributes for widget properties.
+		 * @returns {Object} Hash mapping attribute names to their values.
+		 * @private
+		 */
 		_mapAttributes: function () {
-			// summary:
-			//		Get declaratively specified attributes to widget properties
 			var pcm = this._propCaseMap,
 				attr,
 				idx = 0,
@@ -159,12 +164,12 @@ define([
 			return props;
 		},
 
+		/**
+		 * Release resources used by this custom element and its descendants.
+		 * After calling this method, the element can no longer be used,
+		 * and should be removed from the document.
+		 */
 		destroy: function () {
-			// summary:
-			//		Release resources used by this custom element and its descendants.
-			//		After calling this method, the element can no longer be used,
-			//		and should be removed from the document.
-
 			// Destroy descendants
 			this.findCustomElements().forEach(function (w) {
 				if (w.destroy) {
@@ -176,17 +181,20 @@ define([
 			domConstruct.destroy(this);
 		},
 
-		emit: function (/*String*/ type, /*Object?*/ eventObj) {
-			// summary:
-			//		Signal that a synthetic event occurred, ex:
-			//	|	myWidget.emit("attrmodified-selectedChildWidget", {}).
-			//
-			//		Emits an event of specified type, based on eventObj.
-			//		Also calls onType() method, if present, and returns value from that method.
-			//		Modifies eventObj by adding missing parameters (bubbles, cancelable, widget).
-			// tags:
-			//		protected
-
+		/**
+		 * Signal that a synthetic event occurred.
+		 *
+		 * Emits an event of specified type, based on eventObj.
+		 * Also calls onType() method, if present, and returns value from that method.
+		 * Modifies eventObj by adding missing parameters (bubbles, cancelable, widget).
+		 *
+		 * @param {string} type - Name of event.
+		 * @param {Object} [eventObj] - Properties to mix in to emitted event.
+		 * @example
+		 * myWidget.emit("query-success", {});
+		 * @protected
+		 */
+		emit: function (type, eventObj) {
 			// Specify fallback values for bubbles, cancelable in case they are not set in eventObj.
 			// Also set pointer to widget, although since we can't add a pointer to the widget for native events
 			// (see #14729), maybe we shouldn't do it here?
@@ -215,27 +223,25 @@ define([
 			return ret;
 		},
 
-		on: function (/*String|Function*/ type, /*Function*/ func) {
-			// summary:
-			//		Call specified function when event occurs, ex: myWidget.on("click", function () { ... }).
-			// type:
-			//		Name of event (ex: "click") or extension event like touch.press.
-			// description:
-			//		Call specified function when event `type` occurs, ex: `myWidget.on("click", function () { ... })`.
-			//		Note that the function is not run in any particular scope, so if (for example) you want it to run
-			//		in the widget's scope you must do `myWidget.on("click", myWidget.func.bind(myWidget))`.
-
+		/**
+		 * Call specified function when event occurs.
+		 *
+		 * Note that the function is not run in any particular scope, so if (for example) you want it to run
+		 * in the widget's scope you must do `myWidget.on("click", myWidget.func.bind(myWidget))`.
+		 * @param {string|Function} type - Name of event (ex: "click") or extension event like `touch.press`.
+		 * @param {Function} func - Callback function.
+		 */
+		on: function (type, func) {
 			return this.own(on(this, type, func))[0];
 		},
 
 		// Utility functions previously in registry.js
 
+		/**
+		 * Search subtree under root returning custom elements found.
+		 * @param {Element} [root] Node to search under.
+		 */
 		findCustomElements: function (root) {
-			// summary:
-			//		Search subtree under root returning custom elements found.
-			// root: Element?
-			//		Node to search under.
-
 			var outAry = [];
 
 			function getChildrenHelper(root) {

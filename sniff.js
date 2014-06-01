@@ -1,15 +1,16 @@
+/**
+ * This module sets has() flags based on the current browser:
+ *
+ * - `has("webkit")`, `has("chrome")`, `has("safari")`
+ * - `has("mozilla")`, `has("ff")`
+ * - `has("ie")`
+ * - `has("ios")`
+ * - `has("android")`
+ *
+ * It returns the `has()` function.
+ * @module delite/sniff
+ */
 define(["dojo/has"], function (has) {
-	// module:
-	//		delite/sniff
-
-	/*=====
-	 return function(){
-		 // summary:
-		 //		This module sets has() flags based on the current browser.
-		 //		It returns the has() function.
-	 };
-	 =====*/
-
 	/* jshint maxcomplexity:20 */
 
 	if (has("host-browser")) {

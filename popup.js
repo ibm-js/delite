@@ -1,3 +1,7 @@
+/**
+ * Show drop downs (ex: the select list of a ComboBox) or popups (ex: right-click context menus).
+ * @module delite/popup
+ */
 define([
 	"dcl/advise",
 	"dcl/dcl",
@@ -15,91 +19,72 @@ define([
 ], function (advise, dcl, domAttr, domConstruct, domGeometry, domStyle, has, keys, on,
 			 place, BackgroundIframe, Viewport) {
 
-	// module:
-	//		delite/popup
+	/**
+	 * Arguments to delite/popup#open() method.
+	 * @typedef {Object} module:delite/popup.OpenArgs
+	 * @property {module:delite/Widget} popup - The Widget to display.
+	 * @property {module:delite/Widget} parent - The button etc. that is displaying this popup.
+	 * @property {Element|Rectangle} around - DOM node (typically a button);
+	 * place popup relative to this node.  (Specify this *or* `x` and `y` properties.)
+	 * @property {number} x - Absolute horizontal position (in pixels) to place node at.
+	 * (Specify this *or* `around` parameter.)
+	 * @property {number} y - Absolute vertical position (in pixels) to place node at.
+	 * (Specify this *or* `around` parameter.)
+	 * @property {string[]} orient - When the `around` parameter is specified, `orient` should be a
+	 * list of positions to try, ex. `[ "below", "above" ]`
+	 * delite/popup.open() tries to position the popup according to each specified position, in order,
+	 * until the popup appears fully within the viewport.  The default value is `["below", "above"]`.
+	 * When an (x,y) position is specified rather than an around node, orient is either
+	 * "R" or "L".  R (for right) means that it tries to put the popup to the right of the mouse,
+	 * specifically positioning the popup's top-right corner at the mouse position, and if that doesn't
+	 * fit in the viewport, then it tries, in order, the bottom-right corner, the top left corner,
+	 * and the top-right corner.
+	 * @property {Function} onCancel - Callback when user has canceled the popup by:
+	 * 1. hitting ESC or
+	 * 2. by using the popup widget's proprietary cancel mechanism (like a cancel button in a dialog);
+	 * i.e. whenever popupWidget.onCancel() is called, args.onCancel is called
+	 * @property {Function} onClose - Callback whenever this popup is closed.
+	 * @property {Position} padding - Adding a buffer around the opening position.
+	 * This is only used when `around` is not set.
+	 * @property {number} maxHeight
+	 * The max height for the popup.  Any popup taller than this will have scrollbars.
+	 * Set to Infinity for no max height.  Default is to limit height to available space in viewport,
+	 * above or below the aroundNode or specified x/y position.
+	 */
 
-	/*=====
-	 var __OpenArgs = {
-	 // popup: Widget
-	 //		widget to display
-	 // parent: Widget
-	 //		the button etc. that is displaying this popup
-	 // around: DomNode
-	 //		DOM node (typically a button); place popup relative to this node.
-	 //		(Specify this *or* "x" and "y" parameters.)
-	 // x: Integer
-	 //		Absolute horizontal position (in pixels) to place node at.  (Specify this *or* "around" parameter.)
-	 // y: Integer
-	 //		Absolute vertical position (in pixels) to place node at.  (Specify this *or* "around" parameter.)
-	 // orient: Object|String
-	 //		When the around parameter is specified, orient should be a list of positions to try, ex:
-	 //	|	[ "below", "above" ]
-	 //		For backwards compatibility it can also be an (ordered) hash of tuples of the form
-	 //		(around-node-corner, popup-node-corner), ex:
-	 //	|	{ "BL": "TL", "TL": "BL" }
-	 //		where BL means "bottom left" and "TL" means "top left", etc.
-	 //
-	 //		delite/popup.open() tries to position the popup according to each specified position, in order,
-	 //		until the popup appears fully within the viewport.
-	 //
-	 //		The default value is ["below", "above"]
-	 //
-	 //		When an (x,y) position is specified rather than an around node, orient is either
-	 //		"R" or "L".  R (for right) means that it tries to put the popup to the right of the mouse,
-	 //		specifically positioning the popup's top-right corner at the mouse position, and if that doesn't
-	 //		fit in the viewport, then it tries, in order, the bottom-right corner, the top left corner,
-	 //		and the top-right corner.
-	 // onCancel: Function
-	 //		callback when user has canceled the popup by:
-	 //
-	 //		1. hitting ESC or
-	 //		2. by using the popup widget's proprietary cancel mechanism (like a cancel button in a dialog);
-	 //		   i.e. whenever popupWidget.onCancel() is called, args.onCancel is called
-	 // onClose: Function
-	 //		callback whenever this popup is closed
-	 // onExecute: Function
-	 //		callback when user "executed" on the popup/sub-popup by selecting a menu choice, etc. (top menu only)
-	 // padding: place.__Position
-	 //		adding a buffer around the opening position. This is only useful when around is not set.
-	 // maxHeight: Integer
-	 //		The max height for the popup.  Any popup taller than this will have scrollbars.
-	 //		Set to Infinity for no max height.  Default is to limit height to available space in viewport,
-	 //		above or below the aroundNode or specified x/y position.
-	 };
-	 =====*/
-
+	/**
+	 * Function to destroy wrapper when popup widget is destroyed.
+	 */
 	function destroyWrapper() {
-		// summary:
-		//		Function to destroy wrapper when popup widget is destroyed.
-		//		Left in this scope to avoid memory leak on IE8 on refresh page, see #15206.
 		if (this._popupWrapper) {
 			domConstruct.destroy(this._popupWrapper);
 			delete this._popupWrapper;
 		}
 	}
 
-	var PopupManager = dcl(null, {
-		// summary:
-		//		Used to show drop downs (ex: the select list of a ComboBox)
-		//		or popups (ex: right-click context menus).
+	// TODO: convert from singleton to just a hash of functions; easier to doc that way.
 
-		// _stack: delite/Widget[]
-		//		Stack of currently popped up widgets.
-		//		(someone opened _stack[0], and then it opened _stack[1], etc.)
+	var PopupManager = dcl(null, /** @lends module:delite/popup */ {
+		/**
+		 * Stack of currently popped up widgets.
+		 * (someone opened _stack[0], and then it opened _stack[1], etc.)
+		 * @member {module:delite/Widget[]} PopupManager._stack
+		 */
 		_stack: [],
 
-		// _beginZIndex: Number
-		//		Z-index of the first popup.   (If first popup opens other
-		//		popups they get a higher z-index.)
+		/**
+		 * Z-index of the first popup.   (If first popup opens other popups they get a higher z-index.)
+		 * @member {number} PopupManager._beginZIndex
+		 */
 		_beginZIndex: 1000,
 
 		_idGen: 1,
 
+		/**
+		 * If screen has been scrolled, reposition all the popups in the stack. Then set timer to check again later.
+		 * @private
+		 */
 		_repositionAll: function () {
-			// summary:
-			//		If screen has been scrolled, reposition all the popups in the stack.
-			//		Then set timer to check again later.
-
 			if (this._firstAroundNode) {	// guard for when clearTimeout() on IE doesn't work
 				var oldPos = this._firstAroundPosition,
 					newPos = domGeometry.position(this._firstAroundNode, true),
@@ -123,12 +108,14 @@ define([
 			}
 		},
 
-		_createWrapper: function (/*Widget*/ widget) {
-			// summary:
-			//		Initialization for widgets that will be used as popups.
-			//		Puts widget inside a wrapper DIV (if not already in one),
-			//		and returns pointer to that wrapper DIV.
-
+		/**
+		 * Initialization for widgets that will be used as popups.
+		 * Puts widget inside a wrapper DIV (if not already in one), and returns pointer to that wrapper DIV.
+		 * @param {module:delite/Widget} widget
+		 * @returns {HTMLElement} The wrapper DIV.
+		 * @private
+		 */
+		_createWrapper: function (widget) {
 			var wrapper = widget._popupWrapper;
 			if (!wrapper) {
 				// Create wrapper <div> for when this widget [in the future] will be used as a popup.
@@ -155,13 +142,13 @@ define([
 			return wrapper;
 		},
 
-		moveOffScreen: function (/*Widget*/ widget) {
-			// summary:
-			//		Moves the popup widget off-screen.
-			//		Do not use this method to hide popups when not in use, because
-			//		that will create an accessibility issue: the offscreen popup is
-			//		still in the tabbing order.
-
+		/**
+		 * Moves the popup widget off-screen.  Do not use this method to hide popups when not in use, because
+		 * that will create an accessibility issue: the offscreen popup will still be in the tabbing order.
+		 * @param {module:delite/Widget} widget
+		 * @returns {HTMLElement}
+		 */
+		moveOffScreen: function (widget) {
 			// Create wrapper if not already there
 			var wrapper = this._createWrapper(widget);
 
@@ -179,16 +166,17 @@ define([
 			return wrapper;
 		},
 
-		hide: function (/*Widget*/ widget) {
-			// summary:
-			//		Hide this popup widget (until it is ready to be shown).
-			//		Initialization for widgets that will be used as popups
-			//
-			//		Also puts widget inside a wrapper DIV (if not already in one)
-			//
-			//		If popup widget needs to layout it should
-			//		do so when it is made visible, and popup._onShow() is called.
-
+		/**
+		 * Hide this popup widget (until it is ready to be shown).
+		 * Initialization for widgets that will be used as popups.
+		 *
+		 * Also puts widget inside a wrapper DIV (if not already in one).
+		 *
+		 * If popup widget needs to layout it should do so when it is made visible,
+		 * and popup._onShow() is called.
+		 * @param {module:delite/Widget} widget
+		 */
+		hide: function (widget) {
 			// Create wrapper if not already there
 			var wrapper = this._createWrapper(widget);
 
@@ -205,10 +193,12 @@ define([
 			}
 		},
 
+		/**
+		 * Compute the closest ancestor popup that's *not* a child of another popup.
+		 * Ex: For a TooltipDialog with a button that spawns a tree of menus, find the popup of the button.
+		 * @returns {module:delite/Widget}
+		 */
 		getTopPopup: function () {
-			// summary:
-			//		Compute the closest ancestor popup that's *not* a child of another popup.
-			//		Ex: For a TooltipDialog with a button that spawns a tree of menus, find the popup of the button.
 			var stack = this._stack;
 			for (var pi = stack.length - 1; pi > 0 && stack[pi].parent === stack[pi - 1].widget; pi--) {
 				/* do nothing, just trying to get right value for pi */
@@ -216,22 +206,23 @@ define([
 			return stack[pi];
 		},
 
-		open: function (/*__OpenArgs*/ args) {
-			// summary:
-			//		Popup the widget at the specified position
-			//
-			// example:
-			//		opening at the mouse position
-			//		|		popup.open({popup: menuWidget, x: evt.pageX, y: evt.pageY});
-			//
-			// example:
-			//		opening the widget as a dropdown
-			//		|		popup.open({parent: this, popup: menuWidget, around: this, onClose: function(){...}});
-			//
-			//		Note that whatever widget called delite/popup.open() should also listen to its
-			//		own _onBlur callback (fired from _base/focus.js) to know that focus has moved somewhere
-			//		else and thus the popup should be closed.
-
+		/**
+		 * Popup the widget at the specified position.
+		 *
+		 * Note that whatever widget called delite/popup.open() should also listen to its
+		 * own _onBlur callback (fired from delite/focus.js) to know that focus has moved somewhere
+		 * else and thus the popup should be closed.
+		 *
+		 * @param {module:delite/popup.OpenArgs} args
+		 * @returns {*}
+		 * @example
+		 * // Open at the mouse position
+		 * popup.open({popup: menuWidget, x: evt.pageX, y: evt.pageY});
+		 * @example
+		 * // Open the widget as a dropdown
+		 * popup.open({parent: this, popup: menuWidget, around: this, onClose: function(){...}});
+		 */
+		open: function (args) {
 			/* jshint maxcomplexity:24 */
 
 			var stack = this._stack,
@@ -365,11 +356,11 @@ define([
 			return best;
 		},
 
-		close: function (/*Widget?*/ popup) {
-			// summary:
-			//		Close specified popup and any popups that it parented.
-			//		If no popup is specified, closes all popups.
-
+		/**
+		 * Close specified popup and any popups that it parented.  If no popup is specified, closes all popups.
+		 * @param {module:delite/Widget} [popup]
+		 */
+		close: function (popup) {
 			var stack = this._stack;
 
 			// Basically work backwards from the top of the stack closing popups

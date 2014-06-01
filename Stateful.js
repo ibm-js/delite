@@ -1,15 +1,11 @@
+/** @module delite/Stateful */
 define(["dcl/dcl"], function (dcl) {
-
-	// module:
-	//		delite/Stateful
-
 	var apn = {};
 
+	/**
+	 * Helper function to map "foo" --> "_setFooAttr" with caching to avoid recomputing strings.
+	 */
 	function propNames(name) {
-		// summary:
-		//		Helper function to map "foo" --> "_setFooAttr" with caching to avoid recomputing strings.
-		//		Note: in dojo/Stateful they are _fooGetter and _fooSetter.
-
 		if (apn[name]) {
 			return apn[name];
 		}
@@ -24,40 +20,44 @@ define(["dcl/dcl"], function (dcl) {
 		return ret;
 	}
 
-	var Stateful = dcl(null, {
-		// summary:
-		//		Base class for objects that provide named properties with optional getter/setter
-		//		control and the ability to watch for property changes.
-		//
-		//		The class also provides the functionality to auto-magically manage getters
-		//		and setters for class attributes/properties.  Note though that expando properties
-		//		(i.e. properties added to an instance but not in the prototype) are not supported.
-		//
-		//		Getters and Setters should follow the format of _setXxxAttr or _getXxxAttr where
-		//		the xxx is a name of the attribute to handle.  So an attribute of "foo"
-		//		would have a custom getter of _getFooAttr and a custom setter of _setFooAttr.
-		//		Setters must save and announce the new property value by calling this._set("foo", val),
-		//		and getters should access the property value as this._fooAttr.
-		//
-		// example:
-		//	|	var MyClass = dcl(Stateful, { foo: "initial" });
-		//	|	var obj = new MyClass();
-		//	|	obj.watch("foo", function(){
-		//	|		console.log("foo changed to " + this.foo);
-		//	|	});
-		//	|	obj.foo = bar;
-		//
-		//		Stateful by default interprets the first parameter passed to the constructor as
-		//		a set of properties to set on the widget immediately after it is created.
-		//
-		// example:
-		//	|	var MyClass = dcl(Stateful, { foo: "initial" });
-		//	|	var obj = new MyClass({ foo: "special"});
-
+	/**
+	 * Base class for objects that provide named properties with optional getter/setter
+	 * control and the ability to watch for property changes.
+	 *
+	 * The class also provides the functionality to auto-magically manage getters
+	 * and setters for class attributes/properties.  Note though that expando properties
+	 * (i.e. properties added to an instance but not in the prototype) are not supported.
+	 *
+	 * Getters and Setters should follow the format of `_setXxxAttr` or `_getXxxAttr` where
+	 * the xxx is a name of the attribute to handle.  So an attribute of `foo`
+	 * would have a custom getter of `_getFooAttr` and a custom setter of `_setFooAttr`.
+	 * Setters must save and announce the new property value by calling `this._set("foo", val)`,
+	 * and getters should access the property value as `this._get("foo")`.
+	 *
+	 * @example <caption>Example 1</caption>
+	 * var MyClass = dcl(Stateful, { foo: "initial" });
+	 * var obj = new MyClass();
+	 * obj.watch("foo", function(){
+	 *    console.log("foo changed to " + this.foo);
+	 * });
+	 * obj.foo = bar;
+	 * // Stateful by default interprets the first parameter passed to
+	 * // the constructor as a set of properties to set on the widget 
+	 * // immediately after it is created.
+	 *
+	 * @example <caption>Example 2</caption>
+	 * var MyClass = dcl(Stateful, { foo: "initial" });
+	 * var obj = new MyClass({ foo: "special"});
+	 *
+	 * @mixin module:delite/Stateful
+	 */
+	var Stateful = dcl(null, /** @lends module:delite/Stateful# */ {
+		/**
+		 * Returns the list of properties that should be watchable.
+		 * @returns {String[]} List of properties.
+		 * @private
+		 */
 		_getProps: function () {
-			// summary:
-			//		Return the list of properties that should be watchable
-
 			var list = [];
 			for (var prop in this) {
 				if (typeof this[prop] !== "function" && !/^_/.test(prop)) {
@@ -67,11 +67,13 @@ define(["dcl/dcl"], function (dcl) {
 			return list;
 		},
 
-		_introspect: function (/*String[]*/ props) {
-			// summary:
-			//		Sets up ES5 getters/setters for each class property.
-			//		Inside _introspect(), "this" is a reference to the prototype rather than any individual instance.
-
+		/**
+		 * Sets up ES5 getters/setters for each class property.
+		 * Inside _introspect(), "this" is a reference to the prototype rather than any individual instance.
+		 * @param String[] props
+		 * @private
+		 */
+		_introspect: function (props) {
 			props.forEach(function (prop) {
 				var names = propNames(prop),
 					shadowProp = names.p,
@@ -118,22 +120,26 @@ define(["dcl/dcl"], function (dcl) {
 			}
 		}),
 
+		/**
+		 * Called after Object is created to process parameters passed to constructor.
+		 * @protected
+		 */
 		processConstructorParameters: function (args) {
-			// summary:
-			//		Called after Object is created to process parameters passed to constructor
 			if (args.length) {
 				this.mix(args[0]);
 			}
 		},
 
-		mix: function (/*Object*/ hash) {
-			// summary:
-			//		Set a hash of properties on a Stateful instance
-			//	|	myObj.mix({
-			//	|		foo: "Howdy",
-			//	|		bar: 3
-			//	|	})
-
+		/**
+		 * Set a hash of properties on a Stateful instance.
+		 * @param {Object} hash Hash of properties.
+		 * @example
+		 * myObj.mix({
+		 *     foo: "Howdy",
+		 *     bar: 3
+		 * });
+		 */
+		mix: function (hash) {
 			for (var x in hash) {
 				if (hash.hasOwnProperty(x) && x !== "_watchCallbacks") {
 					this[x] = hash[x];
@@ -141,18 +147,17 @@ define(["dcl/dcl"], function (dcl) {
 			}
 		},
 
-		_set: function (name, value) {		// note: called _changeAttrValue() in dojo/Stateful
-			// summary:
-			//		Internal helper for directly changing an attribute value.
-			// name: String
-			//		The property to set.
-			// value: Mixed
-			//		The value to set in the property.
-			// description:
-			//		Directly change the value of an attribute on an object, bypassing any
-			//		accessor setter.  Also notifies callbacks registered via watch().
-			//		It is designed to be used by descendant class when there are two values
-			//		of attributes that are linked, but calling .set() is not appropriate.
+		/**
+		 * Internal helper for directly setting a property value without calling the custom setter.
+		 *
+		 * Directly change the value of an attribute on an object, bypassing any
+		 * accessor setter.  Also notifies callbacks registered via watch().
+		 * Custom setters should call `_set` to actually record the new value.
+		 * @param {string} name - The property to set.
+		 * @param {*} value - Value to set the property to.
+		 * @protected
+		 */
+		_set: function (name, value) {
 
 			var shadowPropName = propNames(name).p;
 			var oldValue = this[shadowPropName];
@@ -162,36 +167,36 @@ define(["dcl/dcl"], function (dcl) {
 			}
 		},
 
+		/**
+		 * Internal helper for directly accessing an attribute value.
+		 *
+		 * Directly get the value of an attribute on an object, bypassing any accessor getter.
+		 * It is designed to be used by descendant class if they want
+		 * to access the value in their custom getter before returning it.
+		 * @param {string} name - Name of property.
+		 * @returns {*} Value of property.
+		 * @protected
+		 */
 		_get: function (name) {
-			// summary:
-			//		Internal helper for directly accessing an attribute value.
-			// description:
-			//		Directly get the value of an attribute on an object, bypassing any accessor getter.
-			//		It is designed to be used by descendant class if they want
-			//		to access the value in their custom getter before returning it.
-			// name: String
-			//		The property to get.
-
 			return this[propNames(name).p];
 		},
 
-		watch: function (/*String?*/ name, /*Function*/ callback) {
-			// summary:
-			//		Watches a property for changes
-			// name:
-			//		Indicates the property to watch. This is optional (the callback may be the
-			//		only parameter), and if omitted, all the properties will be watched
-			// returns:
-			//		An object handle for the watch. The unwatch method of this object
-			//		can be used to discontinue watching this property:
-			//		|	var watchHandle = obj.watch("foo", callback);
-			//		|	watchHandle.unwatch(); // callback won't be called now
-			// callback:
-			//		The function to execute when the property changes. This will be called after
-			//		the property has been changed. The callback will be called with the |this|
-			//		set to the instance, the first argument as the name of the property, the
-			//		second argument as the old value and the third argument as the new value.
-
+		/**
+		 * Watches a property for changes.
+		 * @param {string} name - Indicates the property to watch.
+		 * @param {Function} callback - The function to execute when the property changes.  This will be called after
+		 * the property has been changed. The callback will be called with the `this`
+		 * set to the instance, the first argument as the name of the property, the
+		 * second argument as the old value and the third argument as the new value.
+		 * @returns {Object} An object handle for the watch.  The unwatch method of this object
+		 * can be used to discontinue watching this property:
+		 *
+		 * ```js
+		 * var watchHandle = obj.watch("foo", callback);
+		 * watchHandle.unwatch(); // callback won't be called now
+		 * ```
+		 */
+		watch: function (name, callback) {
 			var callbacks = this._watchCallbacks;
 			if (!callbacks) {
 				var self = this;

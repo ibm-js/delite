@@ -1,3 +1,4 @@
+/** @module delite/DialogUnderlay */
 define([
 	"dojo/dom-attr", // domAttr.set
 	"dojo/dom-style", // domStyle.getComputedStyle
@@ -9,37 +10,34 @@ define([
 	"./Viewport"
 ], function (domAttr, domStyle, on, winUtils, register, Widget, BackgroundIframe, Viewport) {
 
-	// module:
-	//		delite/DialogUnderlay
+	// TODO: having show() methods on the instance and also on the module is confusing,
+	// at least when looking at the API doc page.  Should one be renamed?
 
-	var DialogUnderlay = register("d-dialog-underlay", [HTMLElement, Widget], {
-		// summary:
-		//		A component used to block input behind a `deliteful/Dialog`.
-		//
-		//		Normally this class should not be instantiated directly, but rather shown and hidden via
-		//		DialogUnderlay.show() and DialogUnderlay.hide().  And usually the module is not accessed directly
-		//		at all, since the underlay is shown and hidden by Dialog.DialogLevelManager.
-		//
-		//		The underlay itself can be styled based on and id:
-		//	|	#myDialog_underlay { background-color:red; }
-		//
-		//		In the case of `deliteful/Dialog`, this id is based on the id of the Dialog,
-		//		suffixed with _underlay.
+	/**
+	 * A component used to block input behind a Dialog widget.
+	 *
+	 * Normally this widget should not be instantiated directly, but rather shown and hidden via
+	 * `DialogUnderlay.show()` and `DialogUnderlay.hide()`.  And usually the module is not accessed directly
+	 * at all, since the underlay is shown and hidden by the Dialog.
+	 *
+	 * @class module:delite/DialogUnderlay
+	 */
+	var DialogUnderlay = register("d-dialog-underlay", [HTMLElement, Widget],
+			/** @lends module:delite/DialogUnderlay# */ {
 
-		// Parameters on creation or updatable later
-
-		// class: String
-		//		This class name is used on the DialogUnderlay node, in addition to d-dialog-underlay.
+		/**
+		 * This class name is used on the DialogUnderlay node, in addition to d-dialog-underlay.
+		 * @member {string}
+		 */
 		"class": "",
-
-		// This will get overwritten as soon as show() is call, but leave an empty array in case hide() or destroy()
-		// is called first.   The array is shared between instances but that's OK because we never write into it.
-		_modalConnects: [],
-
 		_setClassAttr: function (clazz) {
 			this.node.className = "d-dialog-underlay " + clazz;
 			this._set("class", clazz);
 		},
+
+		// This will get overwritten as soon as show() is call, but leave an empty array in case hide() or destroy()
+		// is called first.  The array is shared between instances but that's OK because we never write into it.
+		_modalConnects: [],
 
 		buildRendering: function () {
 			// Outer div is used for fade-in/fade-out, and also to hold background iframe.
@@ -57,16 +55,13 @@ define([
 			this.own(on(this, "keydown", this._onKeyDown.bind(this)));
 		},
 
+		/**
+		 * Sets the background to the size of the viewport (rather than the size
+		 * of the document) since we need to cover the whole browser window, even
+		 * if the document is only a few lines long.
+		 * @private
+		 */
 		layout: function () {
-			// summary:
-			//		Sets the background to the size of the viewport
-			// description:
-			//		Sets the background to the size of the viewport (rather than the size
-			//		of the document) since we need to cover the whole browser window, even
-			//		if the document is only a few lines long.
-			// tags:
-			//		private
-
 			var is = this.node.style,
 				os = this.style;
 
@@ -84,9 +79,10 @@ define([
 			os.display = "block";
 		},
 
+		/**
+		 * Show the dialog underlay (instance method).
+		 */
 		show: function () {
-			// summary:
-			//		Show the dialog underlay
 			this.style.display = "block";
 			this.open = true;
 			this.layout();
@@ -100,10 +96,10 @@ define([
 
 		},
 
+		/**
+		 * Hide the dialog underlay (instance method).ore fixes
+		 */
 		hide: function () {
-			// summary:
-			//		Hides the dialog underlay
-
 			this.bgIframe.destroy();
 			delete this.bgIframe;
 			this.style.display = "none";
@@ -119,21 +115,22 @@ define([
 			}
 		}),
 
+		/**
+		 * Extension point so Dialog can monitor keyboard events on the underlay.
+		 * @protected
+		 */
 		_onKeyDown: function () {
-			// summary:
-			//		Extension point so Dialog can monitor keyboard events on the underlay.
 		}
 	});
 
-	DialogUnderlay.show = function (/*Object*/ attrs, /*Number*/ zIndex) {
-		// summary:
-		//		Display the underlay with the given attributes set.  If the underlay is already displayed,
-		//		then adjust it's attributes as specified.
-		// attrs:
-		//		The parameters to create DialogUnderlay with.
-		// zIndex:
-		//		zIndex of the underlay
-
+	/**
+	 * Static method to display the underlay with the given attributes set.  If the underlay is already displayed,
+	 * then adjust it's attributes as specified.
+	 * @memberof module:delite/DialogUnderlay
+	 * @param {Object} attrs - The parameters to create DialogUnderlay with.
+	 * @param {number} zIndex - z-index of the underlay.
+	 */
+	DialogUnderlay.show = function (attrs, zIndex) {
 		var underlay = DialogUnderlay._singleton;
 		if (!underlay || underlay._destroyed) {
 			underlay = DialogUnderlay._singleton = new DialogUnderlay(attrs);
@@ -148,10 +145,11 @@ define([
 		}
 	};
 
+	/**
+	 * Static method to hide the underlay.
+	 * @memberof module:delite/DialogUnderlay
+	 */
 	DialogUnderlay.hide = function () {
-		// summary:
-		//		Hide the underlay.
-
 		// Guard code in case the underlay widget has already been destroyed
 		// because we are being called during page unload (when all widgets are destroyed)
 		var underlay = DialogUnderlay._singleton;

@@ -1,31 +1,36 @@
+/** @module delite/FormValueWidget */
 define([
 	"dcl/dcl",
 	"dojo/dom-attr", // domAttr.set
 	"./FormWidget"
 ], function (dcl, domAttr, FormWidget) {
 
-	// module:
-	//		delite/FormValueWidget
-
-	return dcl(FormWidget, {
-		// summary:
-		//		Mixin for widgets corresponding to native HTML elements such as `<input>` or `<select>`
-		//		that have user changeable values.
-		// description:
-		//		Each _FormValueMixin represents a single input value, and has a (possibly hidden) `<input>` element,
-		//		to which it serializes it's input value, so that form submission
-		//		(either normal submission or via FormBind?) works as expected.
-		//		After an onBlur event, onChange fires if the serialized widget value has changed from value
-		//		at the time of onFocus.
-
-		// intermediateChanges: Boolean
-		//		Fires onChange for each value change or only on demand
+	/**
+	 * Mixin for widgets corresponding to native HTML elements such as `<input>` or `<select>`
+	 * that have user changeable values.
+	 *
+	 * Each FormValueWidget represents a single input value, and has a (possibly hidden) `<input>` element,
+	 * to which it serializes its input value, so that form submission works as expected.
+	 *
+	 * The subclass should call `_handleOnChange()` to make the widget fire onchange events as the value changes.
+	 *
+	 * @mixin module:delite/FormValueWidget
+	 * @augments module:delite/FormWidget
+	 */
+	return dcl(FormWidget, /** @lends module:delite/FormValueWidget# */{
+		/**
+		 * Whether onchange is fired for each value change or only on blur.
+		 * @member {boolean}
+		 * @default false
+		 */
 		intermediateChanges: false,
 
-		// readOnly: Boolean
-		//		Should this widget respond to user input?
-		//		In markup, this is specified as "readOnly".
-		//		Similar to disabled except readOnly form values are submitted.
+		/**
+		 * If true, this widget won't respond to user input.
+		 * Similar to disabled except readOnly form values are submitted.
+		 * @member {boolean}
+		 * @default false
+		 */
 		readOnly: false,
 
 		preCreate: function () {
@@ -47,15 +52,21 @@ define([
 			}
 		}),
 
-		// previousOnChangeValue: anything
-		//		The last value fired to onChange.
+		/**
+		 * The last value fired to onChange.
+		 * @member {*} previousOnChangeValue
+		 * @private
+		 */
 		previousOnChangeValue: undefined,
 
-		compare: function (/*anything*/ val1, /*anything*/ val2) {
-			// summary:
-			//		Compare 2 values (as returned by get('value') for this widget).
-			// tags:
-			//		protected
+		/**
+		 * Compare two values (of this widget).
+		 * @param {*} val1
+		 * @param {*} val2
+		 * @returns {number}
+		 * @protected
+		 */
+		compare: function (val1, val2) {
 			if (typeof val1 === "number" && typeof val2 === "number") {
 				return (isNaN(val1) && isNaN(val2)) ? 0 : val1 - val2;
 			} else if (val1 > val2) {
@@ -67,18 +78,15 @@ define([
 			}
 		},
 
-		_handleOnChange: function (/*anything*/ newValue, /*Boolean?*/ priorityChange) {
-			// summary:
-			//		Called when the value of the widget is set.  Calls onChange() if appropriate
-			// newValue:
-			//		the new value
-			// priorityChange:
-			//		For a slider, for example, dragging the slider is priorityChange==false,
-			//		but on mouse up, it's priorityChange==true.  If intermediateChanges==false,
-			//		onChange is only called form priorityChange=true events.
-			// tags:
-			//		private
-
+		/**
+		 * Call when the value of the widget is set.  Calls onChange() if appropriate.
+		 * @param {*} newValue - The new value.
+		 * @param {boolean} [priorityChange] - For a slider, for example, dragging the slider is priorityChange==false,
+		 * but on mouse up, it's priorityChange==true.  If intermediateChanges==false,
+		 * onChange() is only called form priorityChange=true events.
+		 * @private
+		 */
+		_handleOnChange: function (newValue, priorityChange) {
 			this._pendingOnChange = this._pendingOnChange
 				|| (typeof newValue !== typeof this.previousOnChangeValue)
 				|| (this.compare(newValue, this.previousOnChangeValue) !== 0);

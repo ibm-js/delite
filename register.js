@@ -1,3 +1,4 @@
+/** @module delite/register */
 define([
 	"dcl/dcl",
 	"dojo/has"
@@ -62,6 +63,7 @@ define([
 	/**
 	 * Create an Element.  Similar to document.createElement(), but if tag is the name of a widget defined by
 	 * register(), then it upgrades the Element to be a widget.
+	 * @function module:delite/register.createElement
 	 * @param {string} tag
 	 * @returns {Element} The DOMNode
 	 */
@@ -79,12 +81,14 @@ define([
 		}
 	}
 
+	/**
+	 * Generate metadata about all the properties in proto, both direct and inherited.
+	 * On IE<=10, these properties will be applied to a DOMNode via Object.defineProperties().
+	 * Skips properties in the base element (HTMLElement, HTMLButtonElement, etc.)
+	 * @param {Object} proto - The prototype.
+	 * @returns {Object} Hash from property name to return value from `Object.getOwnPropertyDescriptor()`.
+	 */
 	function getPropDescriptors(proto) {
-		// summary:
-		//		Generate metadata about all the properties in proto, both direct and inherited.
-		//		On IE<=10, these properties will be applied to a DOMNode via Object.defineProperties().
-		//		Skips properties in the base element (HTMLElement, HTMLButtonElement, etc.)
-
 		var props = {};
 
 		do {
@@ -104,7 +108,8 @@ define([
 	 * Converts plain DOMNode of custom type into widget, by adding the widget's custom methods, etc.
 	 * Does nothing if the DOMNode has already been converted or if it doesn't correspond to a custom widget.
 	 * Roughly equivalent to dojo/parser::instantiate(), but for a single node, not an array
-	 * @param {Element} inElement The DOMNode
+	 * @function module:delite/register.upgrade
+	 * @param {Element} inElement The DOM node.
 	 */
 	function upgrade(element) {
 		if (!has("document-register-element") &&
@@ -290,18 +295,19 @@ define([
 	}
 
 	/**
-	 * Declare a widget and register as a custom element.
+	 * Declare a widget and register it as a custom element.
 	 *
 	 * props{} can provide custom setters/getters for widget properties, which are called automatically when
 	 * the widget properties are set.
 	 * For a property XXX, define methods _setXXXAttr() and/or _getXXXAttr().
 	 *
-	 * @param  {string}               tag             The custom element's tag name
+	 * @param  {string}               tag             The custom element's tag name.
 	 * @param  {Object[]}             superclasses    Any number of superclasses to be built into the custom element
 	 *                                                constructor. But first one must be [descendant] of HTMLElement.
-	 * @param  {Object}               props           Properties of this widget class
+	 * @param  {Object}               props           Properties of this widget class.
 	 * @return {Function}                             A constructor function that will create an instance of the custom
-	 *                                                element
+	 *                                                element.
+	 * @function module:delite/register
 	 */
 	function register(tag, superclasses, props) {
 		// Create the widget class by extending specified superclasses and adding specified properties.
@@ -345,7 +351,8 @@ define([
 
 	/**
 	 * Parse the given DOM tree for any DOMNodes that need to be upgraded to widgets.
-	 * @param {Element} [root] DOMNode to parse from
+	 * @function module:delite/register.parse
+	 * @param {Element} [root] DOM node to parse from.
 	 */
 	function parse(root) {
 		// Note: if() statement to avoid calling querySelectorAll(""), which fails on Chrome.
@@ -375,9 +382,29 @@ define([
 	register.parse = parse;
 
 	// Add helpers from dcl for declaring classes.
+
+	/**
+	 * Convenience shortcut to [dcl()](http://www.dcljs.org/docs/mini_js/dcl/).
+	 * @function module:delite/register.dcl
+	 */
 	register.dcl = dcl;
+
+	/**
+	 * Convenience shortcut to [dcl.after()](http://www.dcljs.org/docs/dcl_js/after/).
+	 * @function module:delite/register.after
+	 */
 	register.after = dcl.after;
+
+	/**
+	 * Convenience shortcut to [dcl.before()](http://www.dcljs.org/docs/dcl_js/before/).
+	 * @function module:delite/register.before
+	 */
 	register.before = dcl.before;
+
+	/**
+	 * egisConvenience shortcut to [dcl.around()](http://www.dcljs.org/docs/dcl_js/around/).
+	 * @function module:delite/register.around
+	 */
 	register.around = dcl.around;
 
 	return register;

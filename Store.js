@@ -13,13 +13,14 @@ define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalida
 	 * Mixin for widgets for store management that creates widget render items from store items after
 	 * querying the store. The receiving class must extend delite/Stateful and dojo/Evented or
 	 * delite/Widget.
-	 * 
+	 *
 	 * Classes extending this mixin automatically create render items that are consumable by the widget
 	 * from store items after querying the store. This happens each time the widget store, query or
 	 * queryOptions properties are set. If that store is Observable it will be observed and render items
 	 * will be automatically updated, added or deleted from the items property based on store notifications.
+	 *
 	 * @mixin module:delite/Store
-	 * @augments {module:delite/Invalidating}
+	 * @augments module:delite/Invalidating
 	 */
 	return dcl(Invalidating, /** @lends module:delite/Store# */{
 		/**
@@ -41,7 +42,6 @@ define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalida
 		 * range it etc...). This processing is applied before potentially tracking the store for modifications 
 		 * (if Observable).
 		 * Changing this function on the instance will not automatically refresh the class.
-		 * @member {Function}
 		 * @default identity function
 		 */
 		preProcessStore: function (store) { return store; },
@@ -52,7 +52,6 @@ define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalida
 		 * This processing is applied after potentially tracking the store for modifications (if Observable).
 		 * This allows for example to be notified of modifications that occurred outside of the range.
 		 * Changing this function on the instance will not automatically refresh the class.
-		 * @member {Function}
 		 * @default identity function
 		 */
 		postProcessStore: function (store) { return store; },
@@ -77,17 +76,17 @@ define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalida
 
 		/**
 		 * Creates a store item based from the widget internal item.
-		 * @param {Object} renderItem The render item
+		 * @param {Object} renderItem - The render item.
 		 * @returns {Object}
 		 */
-		renderItemToItem: function (/*Object*/ renderItem) {
+		renderItemToItem: function (renderItem) {
 			return renderItem;
 		},
 
 		/**
 		 * Returns the widget internal item for a given store item. By default it returns the store
 		 * item itself.
-		 * @param {Object} item The store item
+		 * @param {Object} item - The store item.
 		 * @returns {Object}
 		 * @protected
 		 */
@@ -98,10 +97,10 @@ define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalida
 		/**
 		 * This method is called once the query has been executed to initial the renderItems array
 		 * with the list of initial render items.
-		 * 
+		 *
 		 * This method sets the renderItems property to the render items array passed as parameter. Once
 		 * done, it fires a 'query-success' event.
-		 * @param {Object[]} renderItems The array of initial render items to be set in the renderItems property.
+		 * @param {Object[]} renderItems - The array of initial render items to be set in the renderItems property.
 		 * @protected
 		 */
 		initItems: function (renderItems) {
@@ -125,13 +124,13 @@ define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalida
 		/**
 		 * Queries the store, creates the render items and calls initItems() when ready. If an error occurs
 		 * a 'query-error' event will be fired.
-		 * 
+		 *
 		 * This method is not supposed to be called by application developer.
 		 * It will be called automatically when modifying the store related properties or by the subclass
 		 * if needed.
-		 * @param preProcessStore A function that processes the store/collection and returns a new collection 
+		 * @param preProcessStore - A function that processes the store/collection and returns a new collection
 		 * (to sort it, range it etc...), applied before tracking.
-		 * @param postProcessStore A function that processes the store/collection and returns a new collection
+		 * @param postProcessStore - A function that processes the store/collection and returns a new collection
 		 * (to sort it, range it etc...), applied after tracking.
 		 * @returns {Promise} If store to be processed is not null a promise that will be resolved when the loading 
 		 * process will be finished.
@@ -155,10 +154,11 @@ define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalida
 			}
 		},
 
+		/**
+		 * Called to process the items returned after querying the store.
+		 * @param {dstore/Collection} collection - Items to be displayed.
+		 */
 		fetch: function (collection) {
-			// summary:
-			//			Called to process the items returned after querying the store
-
 			return when(collection.map(function (item) {
 				// if we have a mapping function between store item and some intermediary items use it
 				return this.itemToRenderItem(item);
@@ -184,8 +184,8 @@ define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalida
 		 * This method is called when an item is removed from an observable store. The default
 		 * implementation actually removes a renderItem from the renderItems array. This can be redefined but
 		 * must not be called directly.
-		 * @param {number} index The index of the render item to remove.
-		 * @param {Object[]} renderItems The array of render items to remove the render item from.
+		 * @param {number} index - The index of the render item to remove.
+		 * @param {Object[]} renderItems - The array of render items to remove the render item from.
 		 * @protected
 		 */
 		itemRemoved: function (index, renderItems) {
@@ -196,9 +196,9 @@ define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalida
 		 * This method is called when an item is added in an observable store. The default
 		 * implementation actually adds the renderItem to the renderItems array. This can be redefined but
 		 * must not be called directly.
-		 * @param {number} index The index where to add the render item.
-		 * @param {Object} renderItem The render item to be added.
-		 * @param {Object[]} renderItems The array of render items to add the render item to.
+		 * @param {number} index - The index where to add the render item.
+		 * @param {Object} renderItem - The render item to be added.
+		 * @param {Object[]} renderItems - The array of render items to add the render item to.
 		 * @protected
 		 */
 		itemAdded: function (index, renderItem, renderItems) {
@@ -209,9 +209,9 @@ define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalida
 		 * This method is called when an item is updated in an observable store. The default
 		 * implementation actually updates the renderItem in the renderItems array. This can be redefined but
 		 * must not be called directly.
-		 * @param {number} index The index of the render item to update.
-		 * @param {Object} renderItem The render item data the render item must be updated with.
-		 * @param {Object[]} renderItems The array of render items to render item to be updated is part of.
+		 * @param {number} index - The index of the render item to update.
+		 * @param {Object} renderItem - The render item data the render item must be updated with.
+		 * @param {Object[]} renderItems - The array of render items to render item to be updated is part of.
 		 * @protected
 		 */
 		itemUpdated: function (index, renderItem, renderItems) {
@@ -223,10 +223,10 @@ define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalida
 		 * This method is called when an item is moved in an observable store. The default
 		 * implementation actually moves the renderItem in the renderItems array. This can be redefined but
 		 * must not be called directly.
-		 * @param {number} previousIndex The previous index of the render item.
-		 * @param {number} newIndex The new index of the render item.
-		 * @param {Object} renderItem The render item to be moved.
-		 * @param {Object[]} renderItems The array of render items to render item to be moved is part of.
+		 * @param {number} previousIndex - The previous index of the render item.
+		 * @param {number} newIndex - The new index of the render item.
+		 * @param {Object} renderItem - The render item to be moved.
+		 * @param {Object[]} renderItems - The array of render items to render item to be moved is part of.
 		 * @protected
 		 */
 		itemMoved: function (previousIndex, newIndex, renderItem, renderItems) {
@@ -238,16 +238,10 @@ define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalida
 		/**
 		 * When the store is observed and an item is removed in the store this method is called to remove the
 		 * corresponding render item. This can be redefined but must not be called directly.
-		 * @param {Event} event The "remove" dstore/Observable event.
-		 * @private
+		 * @param {Event} event - The "remove" `dstore/Observable` event.
+		 * @protected
 		 */
 		_itemRemoved: function (event) {
-			// summary:
-			//		
-			// event: Event
-			//		
-			// tags:
-			//		protected
 			if (event.previousIndex !== undefined) {
 				this.itemRemoved(event.previousIndex, this.renderItems);
 				this.renderItems = this.renderItems;
@@ -257,8 +251,8 @@ define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalida
 
 		/**
 		 * When the store is observed and an item is updated in the store this method is called to update the
-		 * corresponding render item. This can be redefined but must not be called directly.
-		 * @param {Event} event The "update" dstore/Observable event
+		 * corresponding render item.  This can be redefined but must not be called directly.
+		 * @param {Event} event - The "update" `dstore/Observable` event.
 		 * @private
 		 */
 		_itemUpdated: function (event) {
@@ -282,7 +276,7 @@ define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalida
 		/**
 		 * When the store is observed and an item is added in the store this method is called to add the
 		 * corresponding render item. This can be redefined but must not be called directly.
-		 * @param {Event} event The "add" dstore/Observable event.
+		 * @param {Event} event - The "add" `dstore/Observable` event.
 		 * @private
 		 */
 		_itemAdded: function (event) {

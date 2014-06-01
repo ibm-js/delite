@@ -1,17 +1,21 @@
+/**
+ * Accessibility utility functions (keyboard, tab stops, etc.).
+ * @module delite/a11y
+ * */
 define([
 	"dojo/dom",			// dom.byId
 	"dojo/dom-attr", // domAttr.attr domAttr.has
 	"dojo/dom-style" // domStyle.style
 ], function (dom, domAttr, domStyle) {
 
-	// module:
-	//		delite/a11y
-
-	var a11y = {
-		// summary:
-		//		Accessibility utility functions (keyboard, tab stops, etc.)
-
-		_isElementShown: function (/*Element*/ elem) {
+	var a11y = /** @lends module:delite/a11y */ {
+		/**
+		 * Returns true if Element is visible.
+		 * @param {Element} elem - The Element.
+		 * @returns {boolean}
+		 * @private
+		 */
+		_isElementShown: function (elem) {
 			var s = domStyle.get(elem);
 			return (s.visibility !== "hidden")
 				&& (s.visibility !== "collapsed")
@@ -19,10 +23,12 @@ define([
 				&& (domAttr.get(elem, "type") !== "hidden");
 		},
 
-		hasDefaultTabStop: function (/*Element*/ elem) {
-			// summary:
-			//		Tests if element is tab-navigable even without an explicit tabIndex setting
-
+		/**
+		 * Tests if element is tab-navigable even without an explicit tabIndex setting
+		 * @param {Element} elem - The Element.
+		 * @returns {boolean}
+		 */
+		hasDefaultTabStop: function (elem) {
 			/* jshint maxcomplexity:11 */
 
 			// No explicit tabIndex setting, need to investigate node type
@@ -52,11 +58,12 @@ define([
 			}
 		},
 
-		effectiveTabIndex: function (/*Element*/ elem) {
-			// summary:
-			//		Returns effective tabIndex of an element, either a number,
-			//		or undefined if element isn't focusable.
-
+		/**
+		 * Returns effective tabIndex of an element, either a number, or undefined if element isn't focusable.
+		 * @param {Element} elem - The Element.
+		 * @returns {number|undefined}
+		 */
+		effectiveTabIndex: function (elem) {
 			if (domAttr.get(elem, "disabled")) {
 				return undefined;
 			} else if (domAttr.has(elem, "tabIndex")) {
@@ -68,34 +75,39 @@ define([
 			}
 		},
 
-		isTabNavigable: function (/*Element*/ elem) {
-			// summary:
-			//		Tests if an element is tab-navigable
-
+		/**
+		 * Tests if an element is tab-navigable.
+		 * @param {Element} elem - The Element.
+		 * @returns {boolean}
+		 */
+		isTabNavigable: function (elem) {
 			return a11y.effectiveTabIndex(elem) >= 0;
 		},
 
-		isFocusable: function (/*Element*/ elem) {
-			// summary:
-			//		Tests if an element is focusable by tabbing to it, or clicking it with the mouse.
-
+		/**
+		 * Tests if an element is focusable by tabbing to it, or clicking it with the mouse.
+		 * @param {Element} elem - The Element.
+		 * @returns {boolean}
+		 */
+		isFocusable: function (elem) {
 			return a11y.effectiveTabIndex(elem) >= -1;
 		},
 
-		_getTabNavigable: function (/*DOMNode*/ root) {
-			// summary:
-			//		Finds descendants of the specified root node.
-			// description:
-			//		Finds the following descendants of the specified root node:
-			//
-			//		- the first tab-navigable element in document order
-			//		  without a tabIndex or with tabIndex="0"
-			//		- the last tab-navigable element in document order
-			//		  without a tabIndex or with tabIndex="0"
-			//		- the first element in document order with the lowest
-			//		  positive tabIndex value
-			//		- the last element in document order with the highest
-			//		  positive tabIndex value
+		/**
+		 * Finds descendants of the specified root node.
+		 *
+		 * The following descendants of the specified root node are returned:
+		 *
+		 * - the first tab-navigable element in document order without a tabIndex or with tabIndex="0"
+		 * - the last tab-navigable element in document order without a tabIndex or with tabIndex="0"
+		 * - the first element in document order with the lowest positive tabIndex value
+		 * - the last element in document order with the highest positive tabIndex value
+		 *
+		 * @param Element root - The Element.
+		 * @returns {Object} Hash of the format `{first: Element, last: Element, lowest: Element, highest: Element}`.
+		 * @private
+		 */
+		_getTabNavigable: function (root) {
 			var first, last, lowest, lowestTabindex, highest, highestTabindex, radioSelected = {};
 
 			function radioName(node) {
@@ -107,7 +119,7 @@ define([
 
 			var shown = a11y._isElementShown, effectiveTabIndex = a11y.effectiveTabIndex;
 
-			function walkTree(/*DOMNode*/ parent) {
+			function walkTree(/*Element*/ parent) {
 				/* jshint maxcomplexity:14 */
 				for (var child = parent.firstChild; child; child = child.nextSibling) {
 					// Skip text elements, hidden elements
@@ -154,20 +166,26 @@ define([
 			return { first: rs(first), last: rs(last), lowest: rs(lowest), highest: rs(highest) };
 		},
 
-		getFirstInTabbingOrder: function (/*String|DOMNode*/ root, /*Document?*/ doc) {
-			// summary:
-			//		Finds the descendant of the specified root node
-			//		that is first in the tabbing order
+		/**
+		 * Finds the descendant of the specified root node that is first in the tabbing order.
+		 * @param {string|Element} root
+		 * @param {Document} [doc]
+		 * @returns {Element}
+		 */
+		getFirstInTabbingOrder: function (root, doc) {
 			var elems = a11y._getTabNavigable(dom.byId(root, doc));
-			return elems.lowest ? elems.lowest : elems.first; // DomNode
+			return elems.lowest ? elems.lowest : elems.first;
 		},
 
-		getLastInTabbingOrder: function (/*String|DOMNode*/ root, /*Document?*/ doc) {
-			// summary:
-			//		Finds the descendant of the specified root node
-			//		that is last in the tabbing order
+		/**
+		 * Finds the descendant of the specified root node that is last in the tabbing order.
+		 * @param {string|Element} root
+		 * @param {Document} [doc]
+		 * @returns {Element}
+		 */
+		getLastInTabbingOrder: function (root, doc) {
 			var elems = a11y._getTabNavigable(dom.byId(root, doc));
-			return elems.last ? elems.last : elems.highest; // DomNode
+			return elems.last ? elems.last : elems.highest;
 		}
 	};
 

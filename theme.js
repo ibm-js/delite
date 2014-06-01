@@ -1,3 +1,27 @@
+/**
+ * Plugin to load the specified CSS file(s), substituting {{theme}} with the theme for the current page.
+ * 
+ * For example, on an iPhone `theme!./css/{{theme}}/common,./Button/{{theme}}/Button`
+ * will load (in the following order):
+ * 
+ * - ./css/ios/common
+ * - ./Button/ios/Button
+ * 
+ * You can also pass an additional URL parameter string
+ * `theme={theme widget}` to force a specific theme through the browser
+ * URL input. The available theme ids are bootstrap, holodark (theme introduced in Android 3.0)
+ * and ios. The theme names are case-sensitive. If the given
+ * theme does not match, the bootstrap theme is used.
+ *
+ * ```
+ * http://your.server.com/yourapp.html --> automatic detection
+ * http://your.server.com/yourapp.html?theme=holodark --> forces Holodark theme
+ * http://your.server.com/yourapp.html?theme=ios --> forces iPhone theme
+ * ```
+ *
+ * You can also specify a particular user agent through the `ua=...` URL parameter.
+ *  @module delite/theme
+ */
 define([
 	"require",
 	"dojo/has",
@@ -9,47 +33,39 @@ define([
 
 	var config = module.config();
 
-	var load = {
-		// summary:
-		//		Loads the specified CSS file(s), substituting {{theme}} with the theme for the current page.
-		//
-		//		For example, on an iPhone load!./css/{{theme}}/common,./Button/{{theme}}/Button
-		//		will load (in the following order):
-		//
-		//			- ./css/ios/common
-		//			- ./Button/ios/Button
-		//
-		//		You can also pass an additional URL parameter string
-		//		theme={theme widget} to force a specific theme through the browser
-		//		URL input. The available theme ids are bootstrap, holodark (theme introduced in Android 3.0)
-		//		and ios. The theme names are case-sensitive. If the given
-		//		theme does not match, the bootstrap theme is used.
-		//
-		//	|	http://your.server.com/yourapp.html // automatic detection
-		//	|	http://your.server.com/yourapp.html?theme=holodark // forces Holodark theme
-		//	|	http://your.server.com/yourapp.html?theme=ios // forces iPhone theme
-		//
-		//		You can also specify a particular user agent through the ua=... URL parameter.
-
-		// themeMap:
-		//		A map of user-agents to theme files.
-		// description:
-		//		The first array element is a regexp pattern that matches the
-		//		userAgent string.
-		//
-		//		The second array element is a theme folder widget.
-		//
-		//		The matching is performed in the array order, and stops after the
-		//		first match.
+	var load = /** @lends module:delite/theme */ {
+		/**
+		 * A map of user-agents to theme files.
+		 *
+		 * The first array element is a regexp pattern that matches the userAgent string.
+		 * The second array element is a theme folder widget.
+		 * The matching is performed in the array order, and stops after the first match.
+		 *
+		 * Can be overridden by a module-level configuration setting passed to AMD loader:
+		 *
+		 * ```js
+		 * require.config({
+		 *     config: {
+		 *         "delite/theme": {
+		 *             themeMap: ...
+		 *         }
+		 *     }
+		 * });
+		 * ```
+		 * @member {Array}
+		 * @default [[/Holodark|Android/, "holodark"], [/iPhone/iPad/, "ios"], [/.*\/, "bootstrap"]]
+		 */
 		themeMap: config.themeMap || [
 			[/Holodark|Android/, "holodark"],
 			[/iPhone|iPad/, "ios"],
 			[/.*/, "bootstrap"]			// chrome, firefox, IE
 		],
 
+		/**
+		 * Compute the theme name, according to browser and this.themeMap.
+		 * @private
+		 */
 		getTheme: function () {
-			// summary:
-			//		Compute the theme name, according to browser and this.themeMap.
 			var theme = load.theme || config.theme;
 			if (!theme) {
 				var matches = location.search.match(/theme=(\w+)/);
@@ -69,27 +85,25 @@ define([
 			return theme;
 		},
 
-
+		/**
+		 * Convert relative paths to absolute ones.   By default only the first path (in the comma
+		 * separated list) is converted.
+		 * @private
+		 */
 		normalize: function (logicalPaths, normalize) {
-			// summary:
-			//		Convert relative paths to absolute ones.   By default only the first path (in the comma
-			//		separated list) is converted.
-
 			return logicalPaths.split(/, */).map(normalize).join(",");
 		},
 
+		/**
+		 * Load and install the specified CSS files for the given logicalPaths, then call onload().
+		 * @param {string} logicalPaths - Comma separated list of simplified paths.
+		 * They will be expanded to convert {{theme}} to the current theme.
+		 * @param {Function} require - AMD's require() method.
+		 * @param {Function} onload - Callback function which will be called when the loading finishes
+		 * and the stylesheet has been inserted.
+		 * @private
+		 */
 		load: function (logicalPaths, require, onload) {
-			// summary:
-			//		Load and install the specified CSS files for the given logicalPaths, then call onload().
-			// logicalPaths: String
-			//		Comma separated list of simplified paths.  They will be expanded to convert {{theme}} to
-			//		the current theme.
-			// require: Function
-			//		AMD's require() method
-			// onload: Function
-			//		Callback function which will be called when the loading finishes
-			//		and the stylesheet has been inserted.
-
 			// Add CSS file which contains definitions global to the theme.
 			logicalPaths = "./themes/{{theme}}/global_css" + (logicalPaths ? "," + logicalPaths : "");
 

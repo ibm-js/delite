@@ -1,3 +1,19 @@
+/**
+ * Tracks the currently focused node, and which widgets are currently "active".
+ *
+ * A widget is considered active if it or a descendant widget has focus,
+ * or if a non-focusable node of this widget or a descendant was recently clicked.
+ *
+ * Call `focus.watch("curNode", callback)` to track the current focused Element,
+ * or `focus.watch("activeStack", callback)` to track the currently focused stack of widgets.
+ *
+ * Call `focus.on("widget-blur", func)` or `focus.on("widget-focus", ...)` to monitor when
+ * when widgets become active/inactive
+ *
+ * Finally, `focus.focus(node)` will focus a node, suppressing errors if the node doesn't exist.
+ *
+ * @module delite/focus
+ * */
 define([
 	"dcl/advise",
 	"dcl/dcl",
@@ -13,37 +29,25 @@ define([
 	"./a11y"	// a11y.isTabNavigable
 ], function (advise, dcl, dom, domAttr, domClass, domConstruct, Evented, on, domReady, Stateful, winUtils, a11y) {
 
-	// module:
-	//		delite/focus
-
 	// Time of the last touch or focusIn event
 	var lastTouch;
 
 	// TODO: switch to using delite/Stateful, and dcl.advise
 
-	var FocusManager = dcl([Stateful, Evented], {
-		// summary:
-		//		Tracks the currently focused node, and which widgets are currently "active".
-		//		Access via require(["delite/focus"], function(focus){ ... }).
-		//
-		//		A widget is considered active if it or a descendant widget has focus,
-		//		or if a non-focusable node of this widget or a descendant was recently clicked.
-		//
-		//		Call focus.watch("curNode", callback) to track the current focused DOMNode,
-		//		or focus.watch("activeStack", callback) to track the currently focused stack of widgets.
-		//
-		//		Call focus.on("widget-blur", func) or focus.on("widget-focus", ...) to monitor when
-		//		when widgets become active/inactive
-		//
-		//		Finally, focus(node) will focus a node, suppressing errors if the node doesn't exist.
+	var FocusManager = dcl([Stateful, Evented], /** @lends module:delite/focus */ {
 
-		// curNode: DomNode
-		//		Currently focused item on screen
-		// TODO: get rid of curNode and prevNode?   App can just use document.activeElement.
+		// TODO: get rid of curNode and prevNode?  App can just use document.activeElement.
+
+		/**
+		 * Currently focused item on screen.
+		 * @property {Element} curNode
+		 */
 		curNode: null,
 
-		// activeStack: delite/Widget[]
-		//		List of currently active widgets (focused widget and it's ancestors)
+		/**
+		 * List of currently active widgets (focused widget and its ancestors).
+		 * @property {Element[]} activeStack
+		 */
 		activeStack: [],
 
 		constructor: function () {
@@ -61,36 +65,35 @@ define([
 			advise.before(domConstruct, "destroy", check.bind(this));
 		},
 
-		registerIframe: function (/*DomNode*/ iframe) {
-			// summary:
-			//		Registers listeners on the specified iframe so that any click
-			//		or focus event on that iframe (or anything in it) is reported
-			//		as a focus/click event on the `<iframe>` itself.
-			// description:
-			//		Currently only used by editor.
-			// returns:
-			//		Handle with remove() method to deregister.
+		/**
+		 * Registers listeners on the specified iframe so that any click
+		 * or focus event on that iframe (or anything in it) is reported
+		 * as a focus/click event on the `<iframe>` itself.
+		 *
+		 * In dijit this was only used by editor; perhaps it should be removed.
+		 *
+		 * @param {HTMLIframeElement} iframe
+		 * @returns {Object} Handle with `remove()` method to deregister.
+		 */
+		registerIframe: function (iframe) {
 			return this.registerWin(iframe.contentWindow, iframe);
 		},
 
-		registerWin: function (/*Window?*/targetWindow, /*DomNode?*/ effectiveNode) {
-			// summary:
-			//		Registers listeners on the specified window (either the main
-			//		window or an iframe's window) to detect when the user has clicked somewhere
-			//		or focused somewhere.
-			// description:
-			//		Users should call registerIframe() instead of this method.
-			// targetWindow:
-			//		If specified this is the window associated with the iframe,
-			//		i.e. iframe.contentWindow.
-			// effectiveNode:
-			//		If specified, report any focus events inside targetWindow as
-			//		an event on effectiveNode, rather than on evt.target.
-			// returns:
-			//		Handle with remove() method to deregister.
-
-			// TODO: make this function private in 2.0; Editor/users should call registerIframe(),
-
+		/**
+		 * Registers listeners on the specified window (either the main
+		 * window or an iframe's window) to detect when the user has clicked somewhere
+		 * or focused somewhere.
+		 *
+		 * Users should call registerIframe() instead of this method.
+		 *
+		 * @param {Window} [targetWindow] - If specified this is the window associated with the iframe,
+		 *       i.e. iframe.contentWindow.
+		 * @param {Element} [effectiveNode] - If specified, report any focus events inside targetWindow as
+		 *       an event on effectiveNode, rather than on evt.target.
+		 * @returns {Object} Handle with `remove()` method to deregister.
+		 * @private
+		 */
+		registerWin: function (targetWindow, effectiveNode) {
 			// Listen for blur and focus events on targetWindow's document.
 			var _this = this,
 				body = targetWindow.document && targetWindow.document.body;
@@ -155,13 +158,15 @@ define([
 			}
 		},
 
-		_onBlurNode: function (/*DomNode*/ node) { // jshint unused: vars
-			// summary:
-			//		Called when focus leaves a node.
-			//		Usually ignored, _unless_ it *isn't* followed by touching another node,
-			//		which indicates that we tabbed off the last field on the page,
-			//		in which case every widget is marked inactive
-
+		/**
+		 * Called when focus leaves a node.
+		 * Usually ignored, _unless_ it *isn't* followed by touching another node,
+		 * which indicates that we tabbed off the last field on the page,
+		 * in which case every widget is marked inactive.
+		 * @param {Element} node
+		 * @private
+		 */
+		_onBlurNode: function (node) { // jshint unused: vars
 			// If the blur event isn't followed by a focus event, it means the user clicked on something unfocusable,
 			// so clear focus.
 			if (this._clearFocusTimer) {
@@ -182,14 +187,13 @@ define([
 			}.bind(this), 0);
 		},
 
-		_onTouchNode: function (/*DomNode*/ node, /*String*/ by) {
-			// summary:
-			//		Callback when node is focused or mouse-downed
-			// node:
-			//		The node that was touched.
-			// by:
-			//		"mouse" if the focus/touch was caused by a mouse down event
-
+		/**
+		 * Callback when node is focused or mouse-downed.
+		 * @param {Element} node - The node that was touched.
+		 * @param {string} by - "mouse" if the focus/touch was caused by a mouse down event.
+		 * @private
+		 */
+		_onTouchNode: function (node, by) {
 			// Keep track of time of last focusin or touch event.
 			lastTouch = (new Date()).getTime();
 
@@ -237,10 +241,12 @@ define([
 			this._setStack(newStack, by);
 		},
 
-		_onFocusNode: function (/*DomNode*/ node) {
-			// summary:
-			//		Callback when node is focused
-
+		/**
+		 * Callback when node is focused
+		 * @param {Element} node
+		 * @private
+		 */
+		_onFocusNode: function (node) {
 			if (!node) {
 				return;
 			}
@@ -268,14 +274,13 @@ define([
 			this.set("curNode", node);
 		},
 
-		_setStack: function (/*delite/Widget[]*/ newStack, /*String*/ by) {
-			// summary:
-			//		The stack of active widgets has changed.  Send out appropriate events and records new stack.
-			// newStack:
-			//		array of widgets, starting from the top (outermost) widget
-			// by:
-			//		"mouse" if the focus/touch was caused by a mouse down event
-
+		/**
+		 * The stack of active widgets has changed.  Send out appropriate events and records new stack.
+		 * @param {module:delite/Widget[]} newStack - Array of widgets, starting from the top (outermost) widget.
+		 * @param {string} by - "mouse" if the focus/touch was caused by a mouse down event.
+		 * @private
+		 */
+		_setStack: function (newStack, by) {
 			var oldStack = this.activeStack, lastOldIdx = oldStack.length - 1, lastNewIdx = newStack.length - 1;
 
 			if (newStack[lastNewIdx] === oldStack[lastOldIdx]) {
@@ -313,9 +318,11 @@ define([
 			}
 		},
 
+		/**
+		 * Focus the specified node, suppressing errors if they occur.
+		 * @param {Element} node
+		 */
 		focus: function (node) {
-			// summary:
-			//		Focus the specified node, suppressing errors if they occur
 			if (node) {
 				try {
 					node.focus();
@@ -328,6 +335,8 @@ define([
 	var singleton = new FocusManager();
 
 	// register top window and all the iframes it contains
+	// TODO: just use dojo/domReady! in the define() dependencies list.
+	// Also, use window instead of winUtils.get(document)
 	domReady(function () {
 		singleton.registerWin(winUtils.get(document));
 	});

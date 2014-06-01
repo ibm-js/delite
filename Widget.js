@@ -1,3 +1,4 @@
+/** @module delite/Widget */
 define([
 	"dcl/dcl",
 	"dojo/dom", // dom.byId
@@ -10,89 +11,107 @@ define([
 	"./register",
 	"dojo/has!bidi?./Bidi"
 ], function (dcl, dom, domClass, domConstruct, domGeometry, domStyle, has, CustomElement, register, Bidi) {
-
-	// module:
-	//		delite/Widget
-
 	// Flag to enable support for textdir attribute
 	has.add("bidi", false);
 
 	// Used to generate unique id for each widget
 	var cnt = 0;
 
-	var Widget = dcl(CustomElement, {
-		// summary:
-		//		Base class for all widgets, i.e. custom elements that appear visually.
-		//
-		//		Provides stubs for widget lifecycle methods for subclasses to extend, like  buildRendering(),
-		//		postCreate(), startup(), and destroy(), and also public API methods like watch().
+	/**
+	 * Base class for all widgets, i.e. custom elements that appear visually.
+	 *
+	 * Provides stubs for widget lifecycle methods for subclasses to extend, like `buildRendering()`,
+	 * `postCreate()`, `startup()`, and `destroy()`, and also public API methods like `watch()`.
+	 * @mixin module:delite/Widget
+	 * @augments module:delite/CustomElement
+	 * @mixes module:delite/Bidi
+	 */
+	var Widget = dcl(CustomElement, /** @lends module:delite/Widget# */ {
 
-		// baseClass: [protected] String
-		//		Root CSS class of the widget (ex: d-text-box)
+		/**
+		 * Root CSS class of the widget (ex: d-text-box)
+		 * @member {string}
+		 * @protected
+		 */
 		baseClass: "",
 		_setBaseClassAttr: function (value) {
 			domClass.replace(this, value, this.baseClass);
 			this._set("baseClass", value);
 		},
 
-		// focused: [readonly] Boolean
-		//		This widget or a widget it contains has focus, or is "active" because
-		//		it was recently clicked.
+		/**
+		 * This widget or a widget it contains has focus, or is "active" because
+		 * it was recently clicked.
+		 * @member {boolean}
+		 * @default false
+		 * @protected
+		 */
 		focused: false,
+		
+		/**
+		 * Designates where children of the source DOM node will be placed.
+		 * "Children" in this case refers to both DOM nodes and widgets.
+		 *
+		 * containerNode must be defined for any widget that accepts innerHTML
+		 * (like ContentPane or BorderContainer or even Button), and conversely
+		 * is undefined for widgets that don't, like TextBox.
+		 *
+		 * @member {Element}
+		 * @default undefined
+		 * @protected
+		 */
+		containerNode: undefined,
 
-		/*=====
-		 // containerNode: [readonly] DomNode
-		 //		Designates where children of the source DOM node will be placed.
-		 //		"Children" in this case refers to both DOM nodes and widgets.
-		 //
-		 //		containerNode must be defined for any widget that accepts innerHTML
-		 //		(like ContentPane or BorderContainer or even Button), and conversely
-		 //		is undefined for widgets that don't, like TextBox.
-		 containerNode: undefined,
-		 =====*/
-
-		// _started: [readonly] Boolean
-		//		startup() has completed.
+		/**
+		 * Set to true when startup() has completed.
+		 * @member {boolean}
+		 * @protected
+		 */
 		_started: false,
 
-		// register: delite/register
-		//		Convenience pointer to register class.   Used by buildRendering() functions produced from
-		//		handlebars! / template.
+		/**
+		 * Convenience pointer to register class.   Used by buildRendering() functions produced from
+		 * delite/handlebars! / delite/template.
+		 * @member {module:delite/register}
+		 * @protected
+		 */
 		register: register,
 
 
-		// widgetId: [const readonly] Number
-		//		Unique id for this widget, separate from id attribute (which may or may not be set).
-		//		Useful when widget creates subnodes that need unique id's.
+		/**
+		 * Unique id for this widget, separate from id attribute (which may or may not be set).
+		 * Useful when widget creates subnodes that need unique id's.
+		 * @member {number}
+		 * @constant
+		 * @readonly
+		 * @protected
+		 */
 		widgetId: 0,
 
 		//////////// INITIALIZATION METHODS ///////////////////////////////////////
 
+		/**
+		 * Kick off the life-cycle of a widget.
+		 *
+		 * Calls a number of widget methods (`preCreate()`, `buildRendering()`, and `postCreate()`),
+		 * some of which of you'll want to override.
+		 *
+		 * Of course, adventurous developers could override createdCallback entirely, but this should
+		 * only be done as a last resort.
+		 * @protected
+		 */
 		createdCallback: function () {
-			// summary:
-			//		Kick off the life-cycle of a widget
-			// description:
-			//		Create calls a number of widget methods (preCreate, buildRendering, and postCreate),
-			//		some of which of you'll want to override.
-			//
-			//		Of course, adventurous developers could override createdCallback entirely, but this should
-			//		only be done as a last resort.
-			// tags:
-			//		protected
-
 			this.preCreate();
-
-			// Render the widget
 			this.buildRendering();
-
 			this.postCreate();
 		},
 
+		/**
+		 * Called when the widget is first inserted into the document.
+		 * If widget is created programatically then app must call startup() to trigger this method.
+		 * @protected
+		 */
 		attachedCallback: function () {
-			// summary:
-			//		Called when the widget is first inserted into the document.
-			//		If widget is created programatically then app must call startup() to trigger this method.
-
 			this._attached = true;
 
 			// When Widget extends Invalidating some/all of this code should probably be moved to refreshRendering()
@@ -143,46 +162,45 @@ define([
 			}
 		},
 
+		/**
+		 * Processing before `buildRendering()`.
+		 * @protected
+		 */
 		preCreate: function () {
-			// summary:
-			//		Processing before buildRendering()
-			// tags:
-			//		protected
-
 			this.widgetId = ++cnt;
 		},
 
+		/**
+		 * Construct the UI for this widget, filling in subnodes and/or text inside of this.
+		 * Most widgets will leverage delite/handlebars! to implement this method.
+		 * @protected
+		 */
 		buildRendering: function () {
-			// summary:
-			//		Construct the UI for this widget, filling in subnodes and/or text inside of this.
-			//		Most widgets will leverage delite/handlebars! to implement this method.
-			// tags:
-			//		protected
 		},
 
+		/**
+		 * Processing after the DOM fragment is created.
+		 *
+		 * Called after the DOM fragment has been created, but not necessarily
+		 * added to the document.  Do not include any operations which rely on
+		 * node dimensions or placement.
+		 * @protected
+		 */
 		postCreate: function () {
-			// summary:
-			//		Processing after the DOM fragment is created
-			// description:
-			//		Called after the DOM fragment has been created, but not necessarily
-			//		added to the document.  Do not include any operations which rely on
-			//		node dimensions or placement.
-			// tags:
-			//		protected
 		},
 
+		/**
+		 * Processing after the DOM fragment is added to the document.
+		 *
+		 * Called after a widget and its children have been created and added to the page,
+		 * and all related widgets have finished their create() cycle, up through `postCreate()`.
+		 *
+		 * Note that `startup()` may be called while the widget is still hidden, for example if the widget is
+		 * inside a hidden deliteful/Dialog or an unselected tab of a deliteful/TabContainer.
+		 * For widgets that need to do layout, it's best to put that layout code inside `resize()`, and then
+		 * extend delite/LayoutWidget so that `resize()` is called when the widget is visible.
+		 */
 		startup: function () {
-			// summary:
-			//		Processing after the DOM fragment is added to the document
-			// description:
-			//		Called after a widget and its children have been created and added to the page,
-			//		and all related widgets have finished their create() cycle, up through postCreate().
-			//
-			//		Note that startup() may be called while the widget is still hidden, for example if the widget is
-			//		inside a hidden deliteful/Dialog or an unselected tab of a deliteful/TabContainer.
-			//		For widgets that need to do layout, it's best to put that layout code inside resize(), and then
-			//		extend delite/_LayoutWidget so that resize() is called when the widget is visible.
-
 			if (this._started) {
 				return;
 			}
@@ -201,89 +219,86 @@ define([
 		},
 
 		//////////// DESTROY FUNCTIONS ////////////////////////////////
+		
+		/**
+		 * Destroy this widget and its descendants.
+		 */
 		destroy: function () {
-			// summary:
-			//		Destroy this widget and its descendants.
-
 			if (this.bgIframe) {
 				this.bgIframe.destroy();
 				delete this.bgIframe;
 			}
 		},
 
+		/**
+		 * Returns all direct children of this widget, i.e. all widgets or DOM nodes underneath
+		 * `this.containerNode` whose parent is this widget.  Note that it does not return all
+		 * descendants, but rather just direct children.
+		 *
+		 * The result intentionally excludes internally created widgets (a.k.a. supporting widgets)
+		 * outside of `this.containerNode`.
+		 *
+		 * @returns {Element[]}
+		 */
 		getChildren: function () {
-			// summary:
-			//		Returns all direct children of this widget, i.e. all widgets or DOM node underneath
-			//		this.containerNode whose parent is this widget.  Note that it does not return all
-			//		descendants, but rather just direct children.
-			//
-			//		The result intentionally excludes internally created widgets (a.k.a. supporting widgets)
-			//		outside of this.containerNode.
-
 			// use Array.prototype.slice to transform the live HTMLCollection into an Array
-			return this.containerNode ? Array.prototype.slice.call(this.containerNode.children) : []; // []
+			return this.containerNode ? Array.prototype.slice.call(this.containerNode.children) : [];
 		},
 
+		/**
+		 * Returns the parent widget of this widget.
+		 */
 		getParent: function () {
-			// summary:
-			//		Returns the parent widget of this widget.
-
 			return this.getEnclosingWidget(this.parentNode);
 		},
 
+		/**
+		 * Return this widget's explicit or implicit orientation (true for LTR, false for RTL).
+		 * @returns {boolean}
+		 * @protected
+		 */
 		isLeftToRight: function () {
-			// summary:
-			//		Return this widget's explicit or implicit orientation (true for LTR, false for RTL)
-			// tags:
-			//		protected
-			return this.dir ? (this.dir === "ltr") : domGeometry.isBodyLtr(this.ownerDocument); //Boolean
+			return this.dir ? (this.dir === "ltr") : domGeometry.isBodyLtr(this.ownerDocument);
 		},
 
+		/**
+		 * Return true if this widget can currently be focused and false if not.
+		 */
 		isFocusable: function () {
-			// summary:
-			//		Return true if this widget can currently be focused
-			//		and false if not
 			return this.focus && (domStyle.get(this, "display") !== "none");
 		},
 
-		placeAt: function (/* String|DomNode|Widget */ reference, /* String|Int? */ position) {
-			// summary:
-			//		Place this widget somewhere in the DOM based
-			//		on standard domConstruct.place() conventions.
-			// description:
-			//		A convenience function provided in all _Widgets, providing a simple
-			//		shorthand mechanism to put an existing (or newly created) Widget
-			//		somewhere in the dom, and allow chaining.
-			// reference:
-			//		Widget, DOMNode, or id of widget or DOMNode
-			// position:
-			//		If reference is a widget (or id of widget), and that widget has an ".addChild" method,
-			//		it will be called passing this widget instance into that method, supplying the optional
-			//		position index passed.  In this case position (if specified) should be an integer.
-			//
-			//		If reference is a DOMNode (or id matching a DOMNode but not a widget),
-			//		the position argument can be a numeric index or a string
-			//		"first", "last", "before", or "after", same as dojo/dom-construct::place().
-			// returns: delite/Widget
-			//		Provides a useful return of the newly created delite/Widget instance so you
-			//		can "chain" this function by instantiating, placing, then saving the return value
-			//		to a variable.
-			// example:
-			//	|	// create a Button with no srcNodeRef, and place it in the body:
-			//	|	var button = new Button({ label:"click" }).placeAt(document.body);
-			//	|	// now, 'button' is still the widget reference to the newly created button
-			//	|	button.on("click", function (e) { console.log('click'); }));
-			// example:
-			//	|	// create a button out of a node with id="src" and append it to id="wrapper":
-			//	|	var button = new Button({},"src").placeAt("wrapper");
-			// example:
-			//	|	// place a new button as the first element of some div
-			//	|	var button = new Button({ label:"click" }).placeAt("wrapper","first");
-			// example:
-			//	|	// create a contentpane and add it to a TabContainer
-			//	|	var tc = document.getElementById("myTabs");
-			//	|	new ContentPane({ href:"foo.html", title:"Wow!" }).placeAt(tc)
-
+		/**
+		 * Place this widget somewhere in the DOM based
+		 * on standard `domConstruct.place()` conventions.
+		 *
+		 * A convenience function provided in all Widgets, providing a simple
+		 * shorthand mechanism to put an existing (or newly created) Widget
+		 * somewhere in the dom, and allow chaining.
+		 *
+		 * @param {string|Element} reference - Element or id of Element to place this widget relative to.
+		 * @param {string|number} [position] If reference is a widget (or id of widget),
+		 *      and that widget has an `.addChild()` method,
+		 *      it will be called passing this widget instance into that method, supplying the optional
+		 *      position index passed.  In this case position (if specified) should be an integer.
+		 *
+		 *      If reference is a plain Element (or id matching an Element but not a widget),
+		 *      the position argument can be a numeric index or a string
+		 *      "first", "last", "before", or "after", same as dojo/dom-construct::place().
+		 * @returns {module:delite/Widget} This widget, for chaining.
+		 * @protected
+		 * @example
+		 * // create a Button with no srcNodeRef, and place it in the body:
+		 * var button = new Button({ label:"click" }).placeAt(document.body);
+		 * @example
+		 * // place a new button as the first element of some div
+		 * var button = new Button({ label:"click" }).placeAt("wrapper","first");
+		 * @example
+		 * // create a contentpane and add it to a TabContainer
+		 * var tc = document.getElementById("myTabs");
+		 * new ContentPane({ href:"foo.html", title:"Wow!" }).placeAt(tc)
+		 */
+		placeAt: function (reference, position) {
 			reference = dom.byId(reference);
 
 			if (reference && reference.addChild && (!position || typeof position === "number")) {
@@ -308,10 +323,12 @@ define([
 		},
 
 
-		getEnclosingWidget: function (/*DOMNode*/ node) {
-			// summary:
-			//		Returns the widget whose DOM tree contains the specified DOMNode, or null if
-			//		the node is not contained within the DOM tree of any widget
+		/**
+		 * Returns the widget whose DOM tree contains the specified DOMNode, or null if
+		 * the node is not contained within the DOM tree of any widget
+		 * @param {Element} node
+		 */
+		getEnclosingWidget: function (node) {
 			do {
 				if (node.nodeType === 1 && node.buildRendering) {
 					return node;
@@ -321,40 +338,40 @@ define([
 		},
 
 		// Focus related methods.  Used by focus.js.
+		
+		/**
+		 * Called when the widget becomes "active" because
+		 * it or a widget inside of it either has focus, or has recently
+		 * been clicked.
+		 * @param {event} evt - A focus event.
+		 */
 		onFocus: function () {
-			// summary:
-			//		Called when the widget becomes "active" because
-			//		it or a widget inside of it either has focus, or has recently
-			//		been clicked.
-			// tags:
-			//		callback
 		},
 
+		/**
+		 * Called when the widget stops being "active" because
+		 * focus moved to something outside of it, or the user
+		 * clicked somewhere outside of it, or the widget was
+		 * hidden.
+		 */
 		onBlur: function () {
-			// summary:
-			//		Called when the widget stops being "active" because
-			//		focus moved to something outside of it, or the user
-			//		clicked somewhere outside of it, or the widget was
-			//		hidden.
-			// tags:
-			//		callback
 		},
 
+		/**
+		 * This is where widgets do processing for when they are active,
+		 * such as changing CSS classes.  See `onFocus()` for more details.
+		 * @protected
+		 */
 		_onFocus: function () {
-			// summary:
-			//		This is where widgets do processing for when they are active,
-			//		such as changing CSS classes.  See onFocus() for more details.
-			// tags:
-			//		protected
 			this.onFocus();
 		},
 
+		/**
+		 * This is where widgets do processing for when they stop being active,
+		 * such as changing CSS classes.  See `onBlur()` for more details.
+		 * @protected
+		 */
 		_onBlur: function () {
-			// summary:
-			//		This is where widgets do processing for when they stop being active,
-			//		such as changing CSS classes.  See onBlur() for more details.
-			// tags:
-			//		protected
 			this.onBlur();
 		}
 	});

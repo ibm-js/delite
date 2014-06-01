@@ -34,22 +34,26 @@ define(["dcl/dcl", "dojo/_base/lang", "./Store"], function (dcl, lang, Store) {
 	 * consumable by the widget. The mapping can either occur by property (property A in store item
 	 * corresponds to property B in render item) or by function (a function is specified that mapped the
 	 * store item into the value of a property of the render item)..
-	 * 
+	 *
 	 * For each mapped property "foo" from the render item one can provide:
-	 *		* fooAttr property in which case the mapping is looking into the store item property specified
-	 *		by fooAttr
-	 *		* fooFunc property function in which case the mapping is delegating the mapping operation to the
-	 *		fooFunc function.
-	 *		fooFunc is of the following signature (value must be passed only for set operations:
-	 *		fooFunc(item, store, value)
-	 *		* if none of this is provided the mapping is looking into store item "foo" property
-	 *	Mapping property are meant to be added to the widget class using the mixin. One can directly add the
-	 *	mapping properties to an instance but in this case there are two limitations:
-	 *		* The property must be added before the widget is started
-	 *		* If the property is added in the markup only fully lower case properties are supported
-	 *		(e.g. foobar not fooBar)
+	 *
+	 * - fooAttr property in which case the mapping is looking into the store item property specified
+	 *   by fooAttr
+	 * - fooFunc property function in which case the mapping is delegating the mapping operation to the
+	 *   fooFunc function.
+	 * - fooFunc is of the following signature (value must be passed only for set operations:
+	 *   fooFunc(item, store, value)
+	 * - if none of this is provided the mapping is looking into store item "foo" property
+	 *
+	 * Mapping properties are meant to be added to the widget class using the mixin. One can directly add the
+	 * mapping properties to an instance but in this case there are two limitations:
+	 *
+	 * - The property must be added before the widget is started
+	 * - If the property is added in the markup only fully lower case properties are supported
+	 *   (e.g. foobar not fooBar)
+	 *
 	 * @mixin module:delite/StoreMap
-	 * @augments {module:delite/Store}
+	 * @augments module:delite/Store
 	 */
 	return dcl(Store, /** @lends module:delite/StoreMap# */{
 		/**
@@ -142,10 +146,10 @@ define(["dcl/dcl", "dojo/_base/lang", "./Store"], function (dcl, lang, Store) {
 
 		/**
 		 * Creates a store item based from the widget internal item based on the various mapped properties. 
-		 * @param {Object} renderItem The render item
+		 * @param {Object} renderItem - The render item.
 		 * @returns {Object}		
 		 */
-		renderItemToItem: function (/*Object*/ renderItem) {
+		renderItemToItem: function (renderItem) {
 			var item = {}, store = this.store;
 			// special id case
 			item[store.idProperty] = renderItem.id;
@@ -159,7 +163,7 @@ define(["dcl/dcl", "dojo/_base/lang", "./Store"], function (dcl, lang, Store) {
 
 		/**
 		 * Returns the widget internal item for a given store item based on the various mapped properties.
-		 * @param {Object} item The store item
+		 * @param {Object} item - The store item.
 		 * @returns {Object}
 		 * @protected
 		 */
