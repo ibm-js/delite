@@ -166,6 +166,7 @@ define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalida
 		},
 
 		_queryError: function (error) {
+			console.log(error);
 			this.emit("query-error", { error: error, cancelable: false, bubbles: true });
 		},
 
