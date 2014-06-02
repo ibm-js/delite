@@ -8,7 +8,11 @@ define([
 	"./Stateful"
 ], function (dcl, lang, domConstruct, on, Destroyable, Stateful) {
 
-	var div = document.createElement("div");
+	// Need to pass in "global" parameter to lang.getObject() to workaround
+	// https://bugs.dojotoolkit.org/ticket/17829
+
+	var div = document.createElement("div"),
+		global = (function () { return this; })();
 
 	/**
 	 * Base class for all custom elements.
@@ -116,12 +120,8 @@ define([
 					props[name] = value !== "false";
 					break;
 				case "object":
-					// Search for value as global variable.  Need to pass in "global" parameter to workaround
-					// https://bugs.dojotoolkit.org/ticket/17829
-					var global = (function () {
-							return this;
-						})(),
-						obj = lang.getObject(value, false, global);
+					// Search for value as global variable.
+					var obj = lang.getObject(value, false, global);
 					if (obj) {
 						// it's a global, ex: store="myStore"
 						props[name] = obj;
@@ -142,7 +142,7 @@ define([
 					// This can be avoided by setting the function progammatically or by not setting it at all.
 					// This is harmless if you make sure the JavaScript code that is passed to the attribute
 					// is harmless.
-					props[name] = lang.getObject(value, false) || new Function(value);
+					props[name] = lang.getObject(value, false, global) || new Function(value);
 				}
 				delete widget[name]; // make sure custom setters fire
 			}
