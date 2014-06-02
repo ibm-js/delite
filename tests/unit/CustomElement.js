@@ -23,18 +23,23 @@ define([
 			/* global global2:true */
 			global2 = { text: "global var" };
 
+			/* global global3:true */
+			global3 = function () { global = 456; };
+
 			register("test-ce-declarative", [HTMLElement, CustomElement], {
 				boolProp: false,
 				numProp: 0,
 				stringProp: "",
 				funcProp: function () {
 				},
+				funcProp2: function () {
+				},
 				objProp1: { },
 				objProp2: { }
 			});
 			container.innerHTML +=
 				"<test-ce-declarative id='d' boolProp='boolProp' numProp='5' stringProp='hello' " +
-				"funcProp='global=123;' objProp1='foo:1,bar:2' objProp2='global2'/>";
+				"funcProp='global=123;' funcProp2='global3' objProp1='foo:1,bar:2' objProp2='global2'/>";
 			var d = document.getElementById("d");
 			register.upgrade(d);
 			assert.isTrue(d.boolProp, "d.boolProp");
@@ -43,6 +48,8 @@ define([
 			assert.strictEqual(d.stringProp, "hello", "d.stringProp");
 			d.funcProp();
 			assert.strictEqual(global, 123, "d.funcProp() executed");
+			d.funcProp2();
+			assert.strictEqual(global, 456, "d.funcProp2() executed");
 			assert.strictEqual(d.objProp1.foo, 1, "d.objProp1.foo");
 			assert.strictEqual(d.objProp1.bar, 2, "d.objProp1.bar");
 			assert.strictEqual(d.objProp2.text, "global var", "d.objProp2.text");
