@@ -376,7 +376,7 @@ define([
 		}
 	});
 
-	if (has("dojo-bidi")) {
+	if (has("bidi")) {
 		Widget = dcl(Widget, Bidi);
 	}
 
