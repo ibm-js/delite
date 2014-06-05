@@ -3,7 +3,7 @@ define([
 	"delite/CssState",
 	"delite/handlebars!./ExampleWidget/ExampleWidget.html",
 	"delite/theme!./ExampleWidget/themes/{{theme}}/ExampleWidget_css",
-	"dojo/has!dojo-bidi?delite/theme!./ExampleWidget/themes/{{theme}}/ExampleWidget_rtl_css"
+	"dojo/has!bidi?delite/theme!./ExampleWidget/themes/{{theme}}/ExampleWidget_rtl_css"
 ], function (register, CssState, renderer) {
 
 	return register("d-example", [HTMLElement, CssState], {
