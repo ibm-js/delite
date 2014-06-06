@@ -57,11 +57,8 @@ $ yo delite-element{% endhighlight %}
 		Once your component has been generated you can run a generated sample using it.
 	</div>
 	<div class="col-xs-12 col-md-6">
-<pre>
-	<code>
-		$ bower install deliteful
-	</code>
-</pre>
+		{% highlight bash %}
+$ open http://localhost/custom/samples/CustomElement.html{% endhighlight %}
 	</div>
 </div>
 
@@ -75,7 +72,7 @@ $ yo delite-element{% endhighlight %}
 	</div>
 	<div class="col-xs-12 col-md-6">
 {% highlight bash %}
-	$ vi CustomElement.js{% endhighlight %}
+$ vi CustomElement.js{% endhighlight %}
 	</div>
 </div>
 
@@ -88,14 +85,11 @@ $ yo delite-element{% endhighlight %}
 		Yeoman.
 	</div>
 	<div class="col-xs-12 col-md-6">
-	<pre>
-<code>
+		{% highlight bash %}
 	$ npm install -g bower
 	$ bower install delite
 	$ mkdir -p custom && cd $_
-	$ vim CustomElement.js
-</code>
-</pre>
+	$ vi CustomElement.js{% endhighlight %}
 		</div>
 	</div>	
 	
@@ -104,16 +98,14 @@ $ yo delite-element{% endhighlight %}
 </div>
 <div class="container-fluid">
 	<div class="col-xs-12 col-md-6">
+		Don't hesitate to checkout the <a href="docs.html">documentation</a> to go further.
 		Once you have created your own element you might want to mix it with other existing elements from the 
-		<a href="../deliteful/getting-started.html">project</a> and build your application from there.
+		<a href="../deliteful/getting-started.html">project</a> and build your application from there. 
 	</div>
 	<div class="col-xs-12 col-md-6">
-	<pre>
-		<code>
+		{% highlight bash %}
 			$ npm install generator-deliteful-app
-			$ yo deliteful-app
-		</code>
-	</pre>
+			$ yo deliteful-app{% endhighlight %}
 	</div>
 </div>
 
