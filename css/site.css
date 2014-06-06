@@ -1,0 +1,10 @@
+body {
+	padding-top: 70px;
+	padding-bottom: 30px;
+}
+
+#avatar {
+	width: 36px;
+	height: 36px;
+	margin-top: -7px;
+}

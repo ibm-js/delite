@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+
+	<title>deliteful</title>
+
+	<!-- Bootstrap core CSS -->
+	<link href="css/bootstrap.min.css" rel="stylesheet">
+	<!-- Bootstrap theme -->
+	<link href="css/bootstrap-theme.min.css" rel="stylesheet">
+	<!-- prettify -->
+	<link href="css/syntax.css" rel="stylesheet">
+
+	<!-- Custom styles for this template -->
+	<link href="css/site.css" rel="stylesheet">
+
+	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+	<!--[if lt IE 9]>
+	<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+	<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+	<![endif]-->
+</head>
+
+<body role="document">
+
+<!-- Fixed navbar -->
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+	<div class="container">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<!--<a class="navbar-brand" class="active" href="#">Home</a>-->
+			<a class="navbar-brand" href="#"><img src="ibmjs.png" id="avatar"></a>
+		</div>
+		<div class="navbar-collapse collapse">
+			<ul class="nav navbar-nav">
+				<li><a href="getting-started.html">Getting Started</a></li>
+				<li><a href="#Docs">Docs</a></li>
+				<li><a href="#Showcase">Demos</a></li>
+				<li><a href="#Community">Community</a></li>
+				<li><a href="#Blog">Blog</a></li>
+				<li><a href="../index.html">More Projects</a></li>
+			</ul>
+		</div><!--/.nav-collapse -->
+	</div>
+</div>
+
+
+<div class="container" role="main">
+
+<div class="jumbotron">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="col-xs-12 col-md-8">
+			<h2>Getting started with delite</h2>
+			<p>Delite is providing you with a core UI infrastructure for building multi channel, enterprise class Web Components
+				to be used in Web & Mobile Hybrid applications</p>
+		</div>
+		<div class="col-xs-12 col-md-4"><img style="width: 240px; height: 240px" class="img-thumbnail" alt="delite">
+		</div>
+	</div>
+	</div>
+</div>
+
+<p></p>
+
+<h3>xxx</h3> 
+
+<div class="page-header">
+	<h2>Install Delite Generator</h2>
+</div>
+<div class="container-fluid">
+	<div class="col-xs-12 col-md-6">
+		Start with installing Node.js, then you are ready to install Yeoman scaffolder and our delite generator. 
+	</div>
+	<div class="col-xs-12 col-md-6">
+		<pre>
+			{% highlight bash %}
+$ npm install -g yo
+$ npm install -g delite-element-generator
+			{% highlight %}
+		</pre>
+	</div>
+</div>
+
+<div class="page-header">
+	<h2>Scaffold a New Project</h2>
+</div>
+<div class="container-fluid">
+	<div class="col-xs-12 col-md-6">
+		Just ask Yeoman to scaffold a new element in your package directory by answering a simple set of questions.
+	</div>
+	<div class="col-xs-12 col-md-6">
+	<pre>
+		<code>
+			$ mkdir -p custom && cd $_
+			$ yo delite-element
+		</code>
+	</pre>
+	</div>
+</div>
+
+<div class="page-header">
+	<h2>Run it</h2>
+</div>
+<div class="container-fluid">
+	<div class="col-xs-12 col-md-6">
+		Once your component has been generated you can run a generated sample using it.
+	</div>
+	<div class="col-xs-12 col-md-6">
+<pre>
+	<code>
+		$ bower install deliteful
+	</code>
+</pre>
+	</div>
+</div>
+
+
+<div class="page-header">
+	<h2>Hack it</h2>
+</div>
+<div class="container-fluid">
+	<div class="col-xs-12 col-md-6">
+		The default scaffolded element is just a skeleton you are willing to hack on. 
+	</div>
+	<div class="col-xs-12 col-md-6">
+<pre>
+<code>
+	$ vi CustomElement.js
+</code>
+</pre>
+	</div>
+</div>
+
+<div class="page-header">
+	<h2>Alternatively</h2>
+</div>
+<div class="container-fluid">
+	<div class="col-xs-12 col-md-6">
+		Alternatively you could have directly installed delite and build your element from scratch instead of using
+		Yeoman.
+	</div>
+	<div class="col-xs-12 col-md-6">
+	<pre>
+<code>
+	$ npm install -g bower
+	$ bower install delite
+	$ mkdir -p custom && cd $_
+	$ vim CustomElement.js
+</code>
+</pre>
+		</div>
+	</div>	
+	
+<div class="page-header">
+	<h2>Go further</h2>
+</div>
+<div class="container-fluid">
+	<div class="col-xs-12 col-md-6">
+		Once you have created your own element you might want to mix it with other existing elements from the 
+		<a href="deliteful-getting-started.html">project</a> and build your application from there.
+	</div>
+	<div class="col-xs-12 col-md-6">
+	<pre>
+		<code>
+			$ npm install generator-deliteful-app
+			$ yo deliteful-app
+		</code>
+	</pre>
+	</div>
+</div>
+	
+
+</div> <!-- /container -->
+
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="google-code-prettify/prettify.js"></script>
+</body>
+</html>
