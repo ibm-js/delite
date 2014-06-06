@@ -21,36 +21,31 @@ title: delite
 <h3>xxx</h3> 
 
 <div class="page-header">
-	<h2>Install Delite Generator</h2>
+	<h2>Install delite generator</h2>
 </div>
 <div class="container-fluid">
 	<div class="col-xs-12 col-md-6">
 		Start with installing Node.js, then you are ready to install Yeoman scaffolder and our delite generator. 
 	</div>
 	<div class="col-xs-12 col-md-6">
-		<pre>
 			{% highlight bash %}
 $ npm install -g yo
-$ npm install -g delite-element-generator
-			{% highlight %}
-		</pre>
+$ npm install -g delite-element-generator{% endhighlight %}
 	</div>
 </div>
 
 <div class="page-header">
-	<h2>Scaffold a New Project</h2>
+	<h2>Scaffold a new element</h2>
 </div>
 <div class="container-fluid">
 	<div class="col-xs-12 col-md-6">
 		Just ask Yeoman to scaffold a new element in your package directory by answering a simple set of questions.
 	</div>
 	<div class="col-xs-12 col-md-6">
-	<pre>
-		<code>
-			$ mkdir -p custom && cd $_
-			$ yo delite-element
-		</code>
-	</pre>
+			{% highlight bash %}
+$ mkdir -p custom 
+$ cd custom		
+$ yo delite-element{% endhighlight %}
 	</div>
 </div>
 
@@ -79,11 +74,8 @@ $ npm install -g delite-element-generator
 		The default scaffolded element is just a skeleton you are willing to hack on. 
 	</div>
 	<div class="col-xs-12 col-md-6">
-<pre>
-<code>
-	$ vi CustomElement.js
-</code>
-</pre>
+{% highlight bash %}
+	$ vi CustomElement.js{% endhighlight %}
 	</div>
 </div>
 
