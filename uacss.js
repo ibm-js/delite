@@ -13,7 +13,7 @@
 define([
 	"dojo/dom-geometry",
 	"./sniff",
-	"dojo/domReady!"	// so we can check for dir=rtl
+	"requirejs-domready/domReady!"	// so we can check for dir=rtl
 ], function (geometry, has) {
 	var ie = has("ie"),
 		maj = Math.floor,

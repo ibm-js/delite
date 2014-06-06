@@ -4,7 +4,7 @@ define([
 	"dojo/dom-class",
 	"delite/register",
 	"delite/Widget",
-	"dojo/domReady!"
+	"requirejs-domready/domReady!"
 ], function (registerSuite, assert, domClass, register, Widget) {
 	var container;
 	registerSuite({

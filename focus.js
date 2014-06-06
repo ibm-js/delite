@@ -26,7 +26,7 @@ define([
 	"dojo/Stateful",
 	"dojo/window", // winUtils.get
 	"./a11y",	// a11y.isTabNavigable
-	"dojo/domReady!"
+	"requirejs-domready/domReady!"
 ], function (advise, dcl, dom, domAttr, domClass, domConstruct, Evented, on, Stateful, winUtils, a11y) {
 
 	// Time of the last touch or focusIn event

@@ -4,7 +4,7 @@ define([
 	"dcl/advise",
 	"delite/register",
 	"delite/CustomElement",
-	"dojo/domReady!"
+	"requirejs-domready/domReady!"
 ], function (registerSuite, assert, advise, register, CustomElement) {
 
 	var container;

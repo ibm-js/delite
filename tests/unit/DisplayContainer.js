@@ -7,7 +7,7 @@ define([
 	"delite/DisplayContainer",
 	"delite/Widget",
 	"delite/register",
-	"dojo/domReady!"
+	"requirejs-domready/domReady!"
 ], function (require, registerSuite, assert, on, Deferred, DisplayContainer, Widget, register) {
 	var container;
 	registerSuite({

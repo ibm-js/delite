@@ -14,7 +14,7 @@ define([
 	"dojo/on",
 	"dojo/sniff",	// has("ie"), has("ios")
 	"dojo/window", // getBox()
-	"dojo/domReady!"
+	"requirejs-domready/domReady!"
 ], function (Evented, on, has, winUtils) {
 	var Viewport = new Evented();
 
