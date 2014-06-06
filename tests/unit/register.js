@@ -3,7 +3,7 @@ define([
 	"intern/chai!assert",
 	"delite/register",
 	"delite/Stateful",
-	"dojo/domReady!"
+	"requirejs-domready/domReady!"
 ], function (registerSuite, assert, register, Stateful) {
 
 	// The <div> node where we will put all our DOM nodes
