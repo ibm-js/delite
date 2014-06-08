@@ -45,7 +45,15 @@ define({
 	POLL_INTERVAL: 500, // 0.5 seconds
 
 	loader: {
-		baseUrl: typeof window !== "undefined" ? "../../.." : ".."
+		baseUrl: typeof window !== "undefined" ? "../../.." : "..",
+		packages: [
+			{name: "jquery", location: "jquery/src"}
+		],
+		map: {
+			jquery: {
+				"jquery/selector": "jquery/selector-native"	// don't pull in sizzle
+			}
+		}
 	},
 	useLoader: {
 		"host-node": "requirejs",
@@ -60,5 +68,6 @@ define({
 
 	// A regular expression matching URLs to files that should not be included in code coverage analysis
 	excludeInstrumentation:
-		/^(?:dcl|decor|dijit|dojo|dstore|requirejs.*|platform|dpointer|delite\/(tests|node_modules)|.*\/themes)\//
+		/*jshint maxlen:1000*/
+		/^(?:dcl|decor|dijit|dojo|dstore|jquery|requirejs.*|platform|dpointer|delite\/(tests|node_modules)|.*\/themes)\//
 });

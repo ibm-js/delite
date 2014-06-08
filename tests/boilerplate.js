@@ -65,8 +65,14 @@ require = {
 	baseUrl: testDir + "../../",
 	packages: [
 		// TODO: when all tests converted from doh to intern, remove entry for doh
-		{name: "doh", location: "util/doh"}
+		{name: "doh", location: "util/doh"},
+		{name: "jquery", location: "jquery/src"}
 	],
+	map: {
+		jquery: {
+			"jquery/selector": "jquery/selector-native"	// don't pull in sizzle
+		}
+	},
 	locale: locale || "en-us",
 	config: {
 		"requirejs-dplugins/has": {
