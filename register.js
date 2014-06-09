@@ -1,7 +1,7 @@
 /** @module delite/register */
 define([
 	"dcl/dcl",
-	"dojo/has"
+	"requirejs-dplugins/has"
 ], function (dcl, has) {
 	"use strict";
 

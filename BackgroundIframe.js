@@ -1,7 +1,7 @@
 /** @module delite/BackgroundIframe */
 define([
 	"dojo/_base/lang", // lang.extend
-	"dojo/has"
+	"requirejs-dplugins/has"
 ], function (lang, has) {
 
 	// TODO: switch to dcl() to remove dojo/_base/lang dependency

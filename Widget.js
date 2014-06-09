@@ -6,10 +6,10 @@ define([
 	"dojo/dom-construct", // domConstruct.place
 	"dojo/dom-geometry", // isBodyLtr
 	"dojo/dom-style", // domStyle.set, domStyle.get
-	"dojo/has",
+	"requirejs-dplugins/has",
 	"./CustomElement",
 	"./register",
-	"dojo/has!bidi?./Bidi"
+	"requirejs-dplugins/has!bidi?./Bidi"
 ], function (dcl, dom, domClass, domConstruct, domGeometry, domStyle, has, CustomElement, register, Bidi) {
 	// Flag to enable support for textdir attribute
 	has.add("bidi", false);

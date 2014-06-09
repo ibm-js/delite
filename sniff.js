@@ -10,8 +10,10 @@
  * It returns the `has()` function.
  * @module delite/sniff
  */
-define(["dojo/has"], function (has) {
+define(["requirejs-dplugins/has"], function (has) {
 	/* jshint maxcomplexity:20 */
+
+	has.add("host-browser", typeof window !== "undefined");
 
 	if (has("host-browser")) {
 		var n = navigator,
