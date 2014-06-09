@@ -66,14 +66,15 @@ require = {
 	// TODO: when all tests converted from DOH to intern, remove this packages map
 	packages: [
 		{name: "dcl", location: "dcl"},
-		{name: "dojo", location: "dojo"},
 		{name: "delite", location: "delite"},
+		{name: "doh", location: "util/doh"},
+		{name: "dojo", location: "dojo"},
 		{name: "requirejs-domready", location: "requirejs-domready"},
-		{name: "doh", location: "util/doh"}
+		{name: "requirejs-dplugins", location: "requirejs-dplugins"}
 	],
 	locale: locale || "en-us",
 	config: {
-		"dojo/has": {
+		"requirejs-dplugins/has": {
 			"bidi": dir === "rtl"
 		}
 	}

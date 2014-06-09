@@ -24,7 +24,7 @@
  */
 define([
 	"require",
-	"dojo/has",
+	"requirejs-dplugins/has",
 	"module",
 	"./css"		// listed here for builder, so delite/css is included into the layer
 ], function (req, has, module) {

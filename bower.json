@@ -1,16 +1,17 @@
 {
 	"name": "delite",
-	"version": "0.1.4-dev",
+	"version": "0.1.5-dev",
 	"dependencies": {
+		"dcl": "1.1.x",
 		"dojo": ">=1.9.1",
 		"requirejs": "2.1.x",
 		"requirejs-domready": ">=2.0.1",
-		"requirejs-text": ">=2.0.11",
-		"dcl": "1.1.x"
+		"requirejs-dplugins": "master",
+		"requirejs-text": ">=2.0.11"
 	},
 	"devDependencies": {
-		"platform": "Polymer/platform#~0.1.4",
-		"dstore" : ">=0.1.0-dev"
+		"dstore" : ">=0.1.0-dev",
+		"platform": "Polymer/platform#~0.1.4"
 	},
 	"ignore": [
 		".jshintrc",

@@ -9,7 +9,7 @@ define([
 	"dojo/dom-construct", // domConstruct.create domConstruct.destroy
 	"dojo/dom-geometry", // domGeometry.isBodyLtr
 	"dojo/dom-style", // domStyle.set
-	"dojo/has", // has("config-bgIframe")
+	"requirejs-dplugins/has", // has("config-bgIframe")
 	"dojo/keys",
 	"dojo/on",
 	"./place",
