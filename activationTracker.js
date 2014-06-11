@@ -17,11 +17,12 @@
 define([
 	"dcl/advise",
 	"dcl/dcl",
-	"dojo/dom-class",
+	"jquery/core",
 	"decor/Evented",
+	"jquery/attributes/classes",	// hasClass()
 	"dpointer/events",		// so can just monitor for "pointerdown"
 	"requirejs-domready/domReady!"
-], function (advise, dcl, domClass, Evented) {
+], function (advise, dcl, $, Evented) {
 
 	// Time of the last touch/mouse and focusin events
 	var lastPointerDownTime;

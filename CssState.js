@@ -1,9 +1,10 @@
 /** @module delite/CssState */
 define([
 	"dcl/dcl",
-	"dojo/dom-class", // domClass.toggle
-	"./Widget"
-], function (dcl, domClass, Widget) {
+	"jquery/core",
+	"./Widget",
+	"jquery/attributes/classes"	// addClass(), removeClass()
+], function (dcl, $, Widget) {
 
 	/**
 	 * Update the visual state of the widget by setting CSS classes on widget root node
@@ -41,18 +42,17 @@ define([
 			// Monitoring changes to disabled, readonly, etc. state, and update CSS class of root node
 			this.booleanCssProps.forEach(function (name) {
 				if (name in oldVals) {
-					domClass.toggle(this, "d-" + name.toLowerCase(), this[name]);
+					$(this).toggleClass("d-" + name.toLowerCase(), this[name]);
 				}
 			}, this);
 			if ("checked" in oldVals) {
-				domClass.remove(this, oldVals.checked === "mixed" ? "d-mixed" : "d-checked");
+				$(this).removeClass(oldVals.checked === "mixed" ? "d-mixed" : "d-checked");
 				if (this.checked) {
-					domClass.add(this, this.checked === "mixed" ? "d-mixed" : "d-checked");
+					$(this).addClass(this.checked === "mixed" ? "d-mixed" : "d-checked");
 				}
 			}
 			if ("state" in oldVals) {
-				domClass.remove(this, "d-" + oldVals.state.toLowerCase());
-				domClass.add(this, "d-" + this.state.toLowerCase());
+				$(this).removeClass("d-" + oldVals.state.toLowerCase()).addClass("d-" + this.state.toLowerCase());
 			}
 		}
 	});

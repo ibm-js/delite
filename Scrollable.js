@@ -1,13 +1,14 @@
 /** @module delite/Scrollable */
 define([
 	"dcl/dcl",
-	"dojo/dom",
-	"dojo/dom-class",
+	"jquery/css",	// for .css()
 	"dojo/_base/fx",
 	"dojo/fx/easing",
 	"./Widget",
+	"jquery/attributes/classes",	// for toggleClass()
+	"jquery/event",		// for .on()
 	"./theme!./Scrollable/themes/{{theme}}/Scrollable.css"
-], function (dcl, dom, domClass, baseFx, easing, Widget) {
+], function (dcl, $, baseFx, easing, Widget) {
 
 	/**
 	 * A mixin which adds scrolling capabilities to a widget.
@@ -84,16 +85,21 @@ define([
 			if (!this.scrollableNode) {
 				this.scrollableNode = this; // If unspecified, defaults to 'this'.
 			}
-			dom.setSelectable(this.scrollableNode, false);
+
+			// Disable text selection in scrollable node as per
+			// http://stackoverflow.com/questions/2700000/how-to-disable-text-selection-using-jquery
+			this.scrollableNode.setAttribute("unselectable", "on");
+			$(this.scrollableNode)
+				.css("user-select", "none") // maps to WebkitUserSelect, etc.
+				.on("selectstart", false);
 		}),
 
 		refreshRendering: function (props) {
 			if (props.scrollDirection) {
-				domClass.toggle(this.scrollableNode, "d-scrollable", this.scrollDirection !== "none");
-				domClass.toggle(this.scrollableNode, "d-scrollable-h",
-					/^(both|horizontal)$/.test(this.scrollDirection));
-				domClass.toggle(this.scrollableNode, "d-scrollable-v",
-					/^(both|vertical)$/.test(this.scrollDirection));
+				$(this.scrollableNode)
+					.toggleClass("d-scrollable", this.scrollDirection !== "none")
+					.toggleClass("d-scrollable-h", /^(both|horizontal)$/.test(this.scrollDirection))
+					.toggleClass("d-scrollable-v", /^(both|vertical)$/.test(this.scrollDirection));
 			}
 		},
 
