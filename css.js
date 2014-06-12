@@ -27,18 +27,17 @@
  *
  * @module delite/css
  **/
-define(["dojo/dom-construct"], function (domConstruct) {
+define([], function () {
 	"use strict";
 
-	var
-		doc = document,
-		head = doc.head || (doc.head = doc.getElementsByTagName("head")[0]),
+	var doc = document,
+		head = doc.head || doc.getElementsByTagName("head")[0],
 		lastInsertedStylesheet,
 		sheets = {};		// map of which stylesheets have already been inserted
 
 	/**
 	 * Inserts the specified CSS into the document, after any CSS previously inserted
-	 * by this functorion, but before any user-defined CSS.  This lets the app's stylesheets
+	 * by this function, but before any user-defined CSS.  This lets the app's stylesheets
 	 * override the widget's default styling.
 	 * @param {string} css
 	 * @returns {HTMLStyleElement}
@@ -49,7 +48,7 @@ define(["dojo/dom-construct"], function (domConstruct) {
 		var styleSheet = doc.createElement("style");
 		styleSheet.setAttribute("type", "text/css");
 		styleSheet.appendChild(doc.createTextNode(css));
-		domConstruct.place(styleSheet, lastInsertedStylesheet || head, lastInsertedStylesheet ? "after" : "first");
+		head.insertBefore(styleSheet, lastInsertedStylesheet ? lastInsertedStylesheet.nextSibling : head.firstChild);
 		lastInsertedStylesheet = styleSheet;
 		return styleSheet;
 	}
