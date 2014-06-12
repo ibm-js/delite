@@ -1,9 +1,8 @@
 define([
 	"require",
 	"intern!object",
-	"intern/chai!assert",
-	"dojo/dom-style"
-], function (require, registerSuite, assert, domStyle) {
+	"intern/chai!assert"
+], function (require, registerSuite, assert) {
 
 	// Note that as this test is running, other unrelated styles are likely being loaded
 	// from other test suites that load widgets that use theme!.  Make test resilient to this.
@@ -35,8 +34,8 @@ define([
 				"<div class='test1 test2' id=test2></div>" +
 				"<div class='test1 test2 test3' id=test3></div>" +
 				"<div class='test1 test2 test3 userDefined' id=userDefined></div>" +
-				"<span class=native></span>" +
-				"<span class=encoded></span>";
+				"<div><span class=native id=native></span></div>" +
+				"<div><span class=encoded id=encoded></span></div>";
 			document.body.appendChild(container);
 		},
 
@@ -54,12 +53,12 @@ define([
 
 				setTimeout(d.rejectOnError(function () {
 					// If stylesheet loaded, <div id=test1> should have a background-image defined.
-					var backgroundImage = domStyle.get("test1", "backgroundImage");
+					var backgroundImage = getComputedStyle(window.test1).backgroundImage;
 					assert(backgroundImage, "stylesheet loaded");
 
 					// Test that <style> nodes defined by app override the style that was loaded by css!
-					assert.equal(domStyle.get("userDefined", "borderLeftWidth"), "4", "user defined style wins: " +
-						getStyles());
+					assert.strictEqual(getComputedStyle(window.userDefined).borderLeftWidth, "4px",
+							"user defined style wins: " + getStyles());
 
 					// Test that image path was corrected to be relative to the document rather than the CSS file.
 					// Do this by creating <img> node and see if it can load the specified image.
@@ -88,7 +87,7 @@ define([
 		},
 
 		reload: function () {
-			var d = new this.async(1000);
+			var d = this.async(10000);
 
 			// Load another modules that uses delite/css! to load the same test1.css,
 			// just to triple check that the CSS doesn't get reloaded
@@ -102,7 +101,7 @@ define([
 		},
 
 		multiple: function () {
-			var d = new this.async(1000);
+			var d = this.async(10000);
 
 			// Load multiple CSS files via a comma separated list.
 			// Make sure they appear in the specified order and that already loaded test1.css isn't reloaded.
@@ -111,7 +110,7 @@ define([
 				"delite/css!delite/tests/unit/css/test2.css," +
 				"delite/tests/unit/css/test1.css," +
 				"delite/tests/unit/css/test3.css"
-			], d.callback(function () {
+			], d.rejectOnError(function () {
 				// Test that each module loaded exactly once
 				var styles = getStyles();
 				assert.strictEqual(styles.match(/test1/g).length, 1, "test1.css inserted once");
@@ -120,10 +119,11 @@ define([
 
 				setTimeout(d.callback(function () {
 					// Test that test3 overrides test2, etc.
-					assert.equal(domStyle.get("test1", "borderLeftWidth"), "1", "test1 border-width");
-					assert.equal(domStyle.get("test2", "borderLeftWidth"), "2", "test2 border-width");
-					assert.equal(domStyle.get("test3", "borderLeftWidth"), "3", "test3 border-width");
-					assert.equal(domStyle.get("userDefined", "borderLeftWidth"), "4", "userDefined border-width");
+					assert.strictEqual(getComputedStyle(window.test1).borderLeftWidth, "1px", "test1 border-width");
+					assert.strictEqual(getComputedStyle(window.test2).borderLeftWidth, "2px", "test2 border-width");
+					assert.strictEqual(getComputedStyle(window.test3).borderLeftWidth, "3px", "test3 border-width");
+					assert.strictEqual(getComputedStyle(window.userDefined).borderLeftWidth, "4px",
+						"userDefined border-width");
 				}), 10);
 			}));
 
@@ -131,10 +131,10 @@ define([
 		},
 
 		javascript: function () {
-			var d = new this.async(1000);
+			var d = this.async(10000);
 
 			// Test loading JS file generated from CSS file
-			require(["delite/css!delite/tests/unit/css/specialChars_css"], d.callback(function () {
+			require(["delite/css!delite/tests/unit/css/specialChars_css"], d.rejectOnError(function () {
 				setTimeout(d.callback(function () {
 					// specialChars defines the .native and .encoded classes with the same ::before content.
 					// Check that content is defined correctly for each of those classes.
