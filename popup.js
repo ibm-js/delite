@@ -5,10 +5,7 @@
 define([
 	"dcl/advise",
 	"dcl/dcl",
-	"dojo/dom-attr", // domAttr.set
-	"dojo/dom-construct", // domConstruct.create domConstruct.destroy
-	"dojo/dom-geometry", // domGeometry.isBodyLtr
-	"dojo/dom-style", // domStyle.set
+	"dojo/dom-geometry", // domGeometry.position
 	"requirejs-dplugins/has", // has("config-bgIframe")
 	"dojo/keys",
 	"dojo/on",
@@ -16,8 +13,12 @@ define([
 	"./BackgroundIframe",
 	"./Viewport",
 	"./theme!" // d-popup class
-], function (advise, dcl, domAttr, domConstruct, domGeometry, domStyle, has, keys, on,
+], function (advise, dcl, domGeometry, has, keys, on,
 			 place, BackgroundIframe, Viewport) {
+
+	function isDocLtr (doc) {
+		return !(/^rtl$/i).test(doc.body.dir || doc.documentElement.dir);
+	}
 
 	/**
 	 * Arguments to delite/popup#open() method.
@@ -57,7 +58,7 @@ define([
 	 */
 	function destroyWrapper() {
 		if (this._popupWrapper) {
-			domConstruct.destroy(this._popupWrapper);
+			this._popupWrapper.parentNode.removeChild(this._popupWrapper);
 			delete this._popupWrapper;
 		}
 	}
@@ -121,12 +122,12 @@ define([
 				// Create wrapper <div> for when this widget [in the future] will be used as a popup.
 				// This is done early because of IE bugs where creating/moving DOM nodes causes focus
 				// to go wonky, see tests/robot/Toolbar.html to reproduce
-				wrapper = domConstruct.create("div", {
-					"class": "d-popup",
-					style: { display: "none"},
-					role: "region",
-					"aria-label": widget["aria-label"] || widget.label || widget.name || widget.id
-				}, widget.ownerDocument.body);
+				wrapper = widget.ownerDocument.createElement("div");
+				wrapper.className = "d-popup";
+				wrapper.style.display = "none";
+				wrapper.setAttribute("role", "region");
+				wrapper.setAttribute("aria-label", widget["aria-label"] || widget.label || widget.name || widget.id);
+				widget.ownerDocument.body.appendChild(wrapper);
 				wrapper.appendChild(widget);
 
 				var s = widget.style;
@@ -149,19 +150,19 @@ define([
 		 * @returns {HTMLElement}
 		 */
 		moveOffScreen: function (widget) {
-			// Create wrapper if not already there
-			var wrapper = this._createWrapper(widget);
+			// Create wrapper if not already there, then besides setting visibility:hidden,
+			// move it out of the viewport, see #5776, #10111, #13604
+			var wrapper = this._createWrapper(widget),
+				style = wrapper.style,
+				ltr = isDocLtr(widget.ownerDocument);
 
-			// Besides setting visibility:hidden, move it out of the viewport, see #5776, #10111, #13604
-			var ltr = domGeometry.isBodyLtr(widget.ownerDocument),
-				style = {
-					visibility: "hidden",
-					top: "-9999px",
-					display: ""
-				};
+			dcl.mix(style, {
+				visibility: "hidden",
+				top: "-9999px",
+				display: ""
+			});
 			style[ltr ? "left" : "right"] = "-9999px";
 			style[ltr ? "right" : "left"] = "auto";
-			domStyle.set(wrapper, style);
 
 			return wrapper;
 		},
@@ -180,7 +181,7 @@ define([
 			// Create wrapper if not already there
 			var wrapper = this._createWrapper(widget);
 
-			domStyle.set(wrapper, {
+			dcl.mix(wrapper.style, {
 				display: "none",
 				height: "auto",		// Open may have limited the height to fit in the viewport
 				overflow: "visible",
@@ -223,14 +224,14 @@ define([
 		 * popup.open({parent: this, popup: menuWidget, around: this, onClose: function(){...}});
 		 */
 		open: function (args) {
-			/* jshint maxcomplexity:24 */
+			/* jshint maxcomplexity:26 */
 
 			var stack = this._stack,
 				widget = args.popup,
 				orient = args.orient || ["below", "below-alt", "above", "above-alt"],
-				ltr = args.parent ? args.parent.isLeftToRight() : domGeometry.isBodyLtr(widget.ownerDocument),
+				ltr = args.parent ? args.parent.isLeftToRight() : isDocLtr(widget.ownerDocument),
 				around = args.around,
-				id = (args.around && args.around.id) ? (args.around.id + "_dropdown") : ("popup_" + this._idGen++);
+				id = args.around && args.around.id ? args.around.id + "_dropdown" : "popup_" + this._idGen++;
 
 			// If we are opening a new popup that isn't a child of a currently opened popup, then
 			// close currently opened popup(s).   This should happen automatically when the old popups
@@ -262,11 +263,11 @@ define([
 				maxHeight = Math.floor(Math.max(aroundPos.y, viewport.h - (aroundPos.y + aroundPos.h)));
 			}
 			if (popupSize.h > maxHeight) {
-				// Get style of popup's border.  Unfortunately domStyle.get(node, "border") doesn't work on FF or IE,
-				// and domStyle.get(node, "borderColor") etc. doesn't work on FF, so need to use fully qualified names.
-				var cs = domStyle.getComputedStyle(widget),
+				// Get style of popup's border.  Unfortunately getComputedStyle(node).border doesn't work on FF or IE,
+				// and getComputedStyle(node).borderColor etc. doesn't work on FF, so need to use fully qualified names.
+				var cs = getComputedStyle(widget),
 					borderStyle = cs.borderLeftWidth + " " + cs.borderLeftStyle + " " + cs.borderLeftColor;
-				domStyle.set(wrapper, {
+				dcl.mix(wrapper.style, {
 					overflowY: "scroll",
 					height: maxHeight + "px",
 					border: borderStyle	// so scrollbar is inside border
@@ -275,14 +276,12 @@ define([
 				widget.style.border = "none";
 			}
 
-			domAttr.set(wrapper, {
+			dcl.mix(wrapper, {
 				id: id,
-				style: {
-					zIndex: this._beginZIndex + stack.length
-				},
-				"class": "d-popup " + (widget.baseClass || widget["class"] || "").split(" ")[0] + "Popup",
+				className: "d-popup " + (widget.baseClass || widget["class"] || "").split(" ")[0] + "Popup",
 				duiPopupParent: args.parent ? args.parent.id : ""
 			});
+			wrapper.style.zIndex = this._beginZIndex + stack.length;
 
 			if (stack.length === 0 && around) {
 				// First element on stack. Save position of aroundNode and setup listener for changes to that position.
