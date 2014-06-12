@@ -2,11 +2,7 @@
  * Accessibility utility functions (keyboard, tab stops, etc.).
  * @module delite/a11y
  * */
-define([
-	"dojo/dom",			// dom.byId
-	"dojo/dom-attr", // domAttr.attr domAttr.has
-	"dojo/dom-style" // domStyle.style
-], function (dom, domAttr, domStyle) {
+define([], function () {
 
 	var a11y = /** @lends module:delite/a11y */ {
 		/**
@@ -16,11 +12,11 @@ define([
 		 * @private
 		 */
 		_isElementShown: function (elem) {
-			var s = domStyle.get(elem);
-			return (s.visibility !== "hidden")
-				&& (s.visibility !== "collapsed")
-				&& (s.display !== "none")
-				&& (domAttr.get(elem, "type") !== "hidden");
+			var s = getComputedStyle(elem);
+			return s.visibility !== "hidden"
+				&& s.visibility !== "collapsed"
+				&& s.display !== "none"
+				&& elem.type !== "hidden";
 		},
 
 		/**
@@ -35,7 +31,7 @@ define([
 			switch (elem.nodeName.toLowerCase()) {
 			case "a":
 				// An <a> w/out a tabindex is only navigable if it has an href
-				return domAttr.has(elem, "href");
+				return elem.hasAttribute("href");
 			case "area":
 			case "button":
 			case "input":
@@ -64,11 +60,11 @@ define([
 		 * @returns {number|undefined}
 		 */
 		effectiveTabIndex: function (elem) {
-			if (domAttr.get(elem, "disabled")) {
+			if (elem.disabled) {
 				return undefined;
-			} else if (domAttr.has(elem, "tabIndex")) {
+			} else if (elem.hasAttribute("tabIndex")) {
 				// Explicit tab index setting
-				return +domAttr.get(elem, "tabIndex");// + to convert string --> number
+				return +elem.getAttribute("tabIndex");// + to convert string --> number
 			} else {
 				// No explicit tabIndex setting, so depends on node type
 				return a11y.hasDefaultTabStop(elem) ? 0 : undefined;
@@ -145,7 +141,7 @@ define([
 							}
 						}
 						var rn = radioName(child);
-						if (domAttr.get(child, "checked") && rn) {
+						if (child.checked && rn) {
 							radioSelected[rn] = child;
 						}
 					}
@@ -173,7 +169,10 @@ define([
 		 * @returns {Element}
 		 */
 		getFirstInTabbingOrder: function (root, doc) {
-			var elems = a11y._getTabNavigable(dom.byId(root, doc));
+			if (typeof root === "string") {
+				root = (doc || document).getElementById(root);
+			}
+			var elems = a11y._getTabNavigable(root);
 			return elems.lowest ? elems.lowest : elems.first;
 		},
 
@@ -184,7 +183,10 @@ define([
 		 * @returns {Element}
 		 */
 		getLastInTabbingOrder: function (root, doc) {
-			var elems = a11y._getTabNavigable(dom.byId(root, doc));
+			if (typeof root === "string") {
+				root = (doc || document).getElementById(root);
+			}
+			var elems = a11y._getTabNavigable(root);
 			return elems.last ? elems.last : elems.highest;
 		}
 	};
