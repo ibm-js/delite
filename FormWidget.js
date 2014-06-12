@@ -2,10 +2,9 @@
 define([
 	"dcl/dcl",
 	"dojo/window", // winUtils.scrollIntoView
-	"dojo/dom-style", // domStyle
 	"./Widget",
 	"./Invalidating"
-], function (dcl, winUtils, domStyle, Widget, Invalidating) {
+], function (dcl, winUtils, Widget, Invalidating) {
 
 	/**
 	 * Base class for widgets that extend `HTMLElement`, but conceptually correspond
@@ -115,7 +114,7 @@ define([
 		 * @protected
 		 */
 		isFocusable: function () {
-			return !this.disabled && this.focusNode && (domStyle.get(this, "display") !== "none");
+			return !this.disabled && this.focusNode && (getComputedStyle(this).display !== "none");
 		},
 
 		/**
