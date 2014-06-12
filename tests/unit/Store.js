@@ -7,6 +7,7 @@ define([
 	var C = register("test-store", [HTMLElement, Widget, Store]);
 	var M = declare([Memory, Observable], {});
 	registerSuite({
+		name: "Store",
 /*
 // commented out until https://github.com/ibm-js/delite/issues/93 fixed
 		"Error" : function () {

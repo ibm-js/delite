@@ -1,8 +1,8 @@
 /** @module delite/Store */
-define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalidating) {
+define(["dcl/dcl", "dojo/when"], function (dcl, when) {
 
 	var isStoreInvalidated = function (props) {
-		return props.store || props.query;
+		return "store" in props || "query" in props;
 	};
 
 	var setStoreValidate = function (props) {
@@ -20,9 +20,8 @@ define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalida
 	 * will be automatically updated, added or deleted from the items property based on store notifications.
 	 *
 	 * @mixin module:delite/Store
-	 * @augments module:delite/Invalidating
 	 */
-	return dcl(Invalidating, /** @lends module:delite/Store# */{
+	return dcl(null, /** @lends module:delite/Store# */{
 		/**
 		 * The store that contains the items to display.
 		 * @member {dstore/Store}
@@ -53,16 +52,6 @@ define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalida
 		 * @default null
 		 */
 		renderItems: null,
-
-		preCreate: function () {
-			// we want to be able to wait for potentially several of those properties to be set before
-			// actually firing the store request
-			this.addInvalidatingProperties({
-					"store": "invalidateProperty",
-					"query": "invalidateProperty"
-				}
-			);
-		},
 
 		/**
 		 * Creates a store item based from the widget internal item.
@@ -104,7 +93,7 @@ define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalida
 		 * @param props
 		 * @protected
 		 */
-		refreshProperties: function (props) {
+		computeProperties: function (props) {
 			if (isStoreInvalidated(props)) {
 				setStoreValidate(props);
 				this.queryStoreAndInitItems(this.processQueryResult);
