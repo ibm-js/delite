@@ -1,14 +1,12 @@
 /** @module delite/DialogUnderlay */
 define([
-	"dojo/dom-attr", // domAttr.set
-	"dojo/dom-style", // domStyle.getComputedStyle
 	"dojo/on",
-	"dojo/window", // winUtils.getBox, winUtils.get
+	"dojo/window", // winUtils.getBox
 	"./register",
 	"./Widget",
 	"./BackgroundIframe",
 	"./Viewport"
-], function (domAttr, domStyle, on, winUtils, register, Widget, BackgroundIframe, Viewport) {
+], function (on, winUtils, register, Widget, BackgroundIframe, Viewport) {
 
 	// TODO: having show() methods on the instance and also on the module is confusing,
 	// at least when looking at the API doc page.  Should one be renamed?
@@ -88,7 +86,7 @@ define([
 			this.layout();
 			this.bgIframe = new BackgroundIframe(this);
 
-			var win = winUtils.get(this.ownerDocument);
+			var win = this.ownerDocument.defaultView;
 			this._modalConnects = [
 				Viewport.on("resize", this.layout.bind(this)),
 				on(win, "scroll", this.layout.bind(this))
@@ -139,7 +137,7 @@ define([
 				underlay.set(attrs);
 			}
 		}
-		domStyle.set(underlay, "zIndex", zIndex);
+		underlay.style.zIndex = zIndex;
 		if (!underlay.open) {
 			underlay.show();
 		}
