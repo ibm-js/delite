@@ -2,11 +2,10 @@
 define([
 	"dcl/dcl",
 	"dojo/_base/lang",
-	"dojo/dom-construct", // domConstruct.destroy
 	"dojo/on",
 	"./Destroyable",
 	"./Stateful"
-], function (dcl, lang, domConstruct, on, Destroyable, Stateful) {
+], function (dcl, lang, on, Destroyable, Stateful) {
 
 	// Need to pass in "global" parameter to lang.getObject() to workaround
 	// https://bugs.dojotoolkit.org/ticket/17829
@@ -177,8 +176,9 @@ define([
 				}
 			});
 
-			// Destroy this
-			domConstruct.destroy(this);
+			if (this.parentNode) {
+				this.parentNode.removeChild(this);
+			}
 		},
 
 		/**
