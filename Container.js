@@ -1,9 +1,8 @@
 /** @module delite/Container */
 define([
 	"dcl/dcl",
-	"dojo/dom-construct", // domConstruct.place
 	"./Widget"
-], function (dcl, domConstruct, Widget) {
+], function (dcl, Widget) {
 
 	/**
 	 * Widget that contains a set of Element children (either widgets or plain DOM nodes).
@@ -19,35 +18,15 @@ define([
 		}),
 
 		/**
-		 * Inserts specified Element as a child of this widgets's
+		 * Inserts specified Element as a child of this widget's
 		 * container node, and possibly does other processing (such as layout).
 		 * @param {Element} node - Element to add as a child.
 		 * @param {number} [insertIndex] - Position the child as at the specified position relative to other children.
 		 */
 		addChild: function (node, insertIndex) {
-			// I want to just call domConstruct.place(node, this.containerNode, insertIndex), but the counting
-			// is thrown off by text nodes and comment nodes that show up when constructed by markup.
-			// In the future consider stripping those nodes on construction, either in the parser or this widget code.
-			var refNode = this.containerNode;
-			if (insertIndex > 0) {
-				// TODO: use this.children or querySelectorAll() to get list of children, rather than looping
-				refNode = refNode.firstChild;
-				while (insertIndex > 0) {
-					if (refNode.nodeType === 1) {
-						insertIndex--;
-					}
-					refNode = refNode.nextSibling;
-				}
-				if (refNode) {
-					insertIndex = "before";
-				} else {
-					// to support addChild(child, n-1) where there are n children (should add child at end)
-					refNode = this.containerNode;
-					insertIndex = "last";
-				}
-			}
-
-			domConstruct.place(node, refNode, insertIndex);
+			// Note: insertBefore(node, null) equivalent to appendChild().  Null arg is needed (only) on IE.
+			var cn = this.containerNode, nextSibling = cn.children[insertIndex];
+			cn.insertBefore(node, nextSibling || null);
 
 			// If I've been started but the child widget hasn't been started,
 			// start it now.  Make sure to do this after widget has been
