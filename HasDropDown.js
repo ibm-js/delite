@@ -2,10 +2,8 @@
 define([
 	"dcl/dcl",
 	"dojo/Deferred",
-	"dojo/dom-attr", // domAttr.set
 	"dojo/dom-class", // domClass.add domClass.contains domClass.remove
 	"dojo/dom-geometry", // domGeometry.marginBox domGeometry.position
-	"dojo/dom-style", // domStyle.set
 	"requirejs-dplugins/has", // has("touch")
 	"dojo/keys", // keys.DOWN_ARROW keys.ENTER keys.ESCAPE
 	"dojo/on",
@@ -13,7 +11,7 @@ define([
 	"./focus",
 	"./popup",
 	"./Widget"
-], function (dcl, Deferred, domAttr, domClass, domGeometry, domStyle, has, keys, on, touch,
+], function (dcl, Deferred, domClass, domGeometry, has, keys, on, touch,
 			 focus, popup, Widget) {
 
 	// TODO: this needs an overhaul for 2.0, including
