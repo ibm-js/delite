@@ -4,11 +4,8 @@
  */
 define([
 	"dojo/dom-geometry", // domGeometry.position
-	"dojo/dom-style", // domStyle.getComputedStyle
 	"./Viewport" // getEffectiveBox
-], function (domGeometry, domStyle, Viewport) {
-
-	// TODO: correctly document return value from _place(), at(), and around().
+], function (domGeometry, Viewport) {
 
 	/**
 	 * @typedef {Object} module:delite/place.Position
@@ -191,24 +188,21 @@ define([
 		// has sized the node, due to browser quirks when the viewport is scrolled
 		// (specifically that a Tooltip will shrink to fit as though the window was
 		// scrolled to the left).
-		//
-		// In RTL mode, set style.right rather than style.left so in the common case,
-		// window resizes move the popup along with the aroundNode.
 
-		var l = domGeometry.isBodyLtr(node.ownerDocument),
-			top = best.y,
-			side = l ? best.x : view.w - best.x - best.w;
+		var top = best.y,
+			side = best.x,
+			cs = getComputedStyle(node.ownerDocument.body);
 
-		if (/relative|absolute/.test(domStyle.get(node.ownerDocument.body, "position"))) {
+		if (/^(relative|absolute)$/.test(cs.position)) {
 			// compensate for margin on <body>, see #16148
-			top -= domStyle.get(node.ownerDocument.body, "marginTop");
-			side -= (l ? 1 : -1) * domStyle.get(node.ownerDocument.body, l ? "marginLeft" : "marginRight");
+			top -= cs.marginTop;
+			side -= cs.marginLeft;
 		}
 
 		var s = node.style;
 		s.top = top + "px";
-		s[l ? "left" : "right"] = side + "px";
-		s[l ? "right" : "left"] = "auto";	// needed for FF or else tooltip goes to far left
+		s.left = side + "px";
+		s.right = "auto";	// needed for FF or else tooltip goes to far left
 
 		return best;
 	}
@@ -336,16 +330,16 @@ define([
 			// nodes w/scrollbars)
 			if (anchor.parentNode) {
 				// ignore nodes between position:relative and position:absolute
-				var sawPosAbsolute = domStyle.getComputedStyle(anchor).position === "absolute";
+				var sawPosAbsolute = getComputedStyle(anchor).position === "absolute";
 				var parent = anchor.parentNode;
 				// ignoring the body will help performance
 				while (parent && parent.nodeType === 1 && parent.nodeName !== "BODY") {
 					var parentPos = domGeometry.position(parent, true),
-						pcs = domStyle.getComputedStyle(parent);
-					if (/relative|absolute/.test(pcs.position)) {
+						pcs = getComputedStyle(parent);
+					if (/^(relative|absolute)$/.test(pcs.position)) {
 						sawPosAbsolute = false;
 					}
-					if (!sawPosAbsolute && /hidden|auto|scroll/.test(pcs.overflow)) {
+					if (!sawPosAbsolute && /^(hidden|auto|scroll)$/.test(pcs.overflow)) {
 						var bottomYCoord = Math.min(aroundNodePos.y + aroundNodePos.h, parentPos.y + parentPos.h);
 						var rightXCoord = Math.min(aroundNodePos.x + aroundNodePos.w, parentPos.x + parentPos.w);
 						aroundNodePos.x = Math.max(aroundNodePos.x, parentPos.x);
