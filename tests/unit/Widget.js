@@ -155,6 +155,7 @@ define([
 
 	registerSuite({
 		name: "Widget#placeAt",
+
 		setup: function () {
 			container = document.createElement("div");
 			container.id = "container-id";
@@ -166,47 +167,128 @@ define([
 				}
 			});
 		},
+
 		"Place a child": function () {
 			// create a SimpleWidget
 			simple = (new SimpleWidget({id: "simple-place-at-id"})).placeAt(container);
-			assert.deepEqual(container, simple.parentNode, "simple is child of container");
+			assert.strictEqual(container, simple.parentNode, "simple is child of container");
 		},
+
 		"Place as widget child": function () {
 			// add the child to the SimpleWidget now
 			pane1 = (new SimpleWidget({ title: "pane1" })).placeAt("simple-place-at-id");
-			assert.deepEqual(pane1, simple.getChildren()[0], "pane1 is child of SimpleWidget");
-			assert.deepEqual(simple.containerNode, pane1.parentNode, "pane1 added to simple.containerNode not simple");
+			assert.strictEqual(pane1, simple.getChildren()[0], "pane1 is child of SimpleWidget");
+			assert.strictEqual(simple.containerNode, pane1.parentNode, "pane1 added to simple.containerNode");
 		},
+
 		"Place as widget child ordered": function () {
 			// add this child (created second) as the new first child
 			var pane2 = (new SimpleWidget({ title: "pane2" })).placeAt("simple-place-at-id", 0);
-			assert.deepEqual(simple.containerNode, pane2.parentNode, "pane2 added to simple.containerNode not simple");
-			assert.deepEqual(pane2, simple.getChildren()[0], "pane2 is new first child of SimpleWidget");
-			assert.deepEqual(pane1, simple.getChildren()[1], "pane1 is now second child of SimpleWidget");
+			assert.strictEqual(simple.containerNode, pane2.parentNode, "pane2 added to simple.containerNode");
+			assert.strictEqual(pane2, simple.getChildren()[0], "pane2 is new first child of SimpleWidget");
+			assert.strictEqual(pane1, simple.getChildren()[1], "pane1 is now second child of SimpleWidget");
 		},
+
 		"Place before": function () {
-			var TestWidget = register("test-place-before-widget", [HTMLElement, Widget], { });
-			var button = (new TestWidget({})).placeAt(container, "before");
-			assert.deepEqual(container, button.nextSibling, "button is before tab container");
+			var button = document.createElement("button");
+			container.appendChild(button);
+			var widget = (new SimpleWidget({})).placeAt(button, "before");
+			assert.strictEqual(widget.nextSibling, button, "widget before button");
 		},
+
 		"Place before id": function () {
-			var TestWidget = register("test-place-after-widget", [HTMLElement, Widget], { });
-			var button = (new TestWidget({})).placeAt("container-id", "before");
-			assert.deepEqual(container, button.nextSibling, "button is before tab container");
+			var button = document.createElement("button");
+			button.id = "button-id";
+			container.appendChild(button);
+			var widget = (new SimpleWidget({})).placeAt("button-id", "before");
+			assert.strictEqual(widget.nextSibling, button, "widget before button");
 		},
+
+		"Place after": function () {
+			var button = document.createElement("button");
+			container.appendChild(button);
+			var widget = (new SimpleWidget({})).placeAt(button, "after");
+			assert.strictEqual(button.nextSibling, widget, "widget after button");
+		},
+
 		"Place first widget": function () {
 			simple.startup();
 			var pane3 = (new SimpleWidget({ title: "pane3" })).placeAt("simple-place-at-id", "first");
-			assert.deepEqual(simple.containerNode, pane3.parentNode, "pane3 added to simple.containerNode not simple");
-			assert.deepEqual(pane3, simple.getChildren()[0], "pane3 is new first child of SimpleWidget");
+			assert.strictEqual(simple.containerNode, pane3.parentNode, "pane3 added to simple.containerNode");
+			assert.strictEqual(pane3, simple.getChildren()[0], "pane3 is new first child of SimpleWidget");
 			assert.ok(pane3._started, "pane3 was automatically started because simple was already started");
 		},
+
 		"Place last widget": function () {
 			var pane4 = (new SimpleWidget({ title: "pane4" })).placeAt(simple.containerNode, "last");
-			assert.deepEqual(pane4, simple.getChildren()[simple.getChildren().length - 1],
+			assert.strictEqual(pane4, simple.getChildren()[simple.getChildren().length - 1],
 				"pane4 is new last child of SimpleWidget");
 			assert.ok(pane4._started, "pane4 was automatically started because simple was already started");
 		},
+
+		"Place replace": function () {
+			var before = document.createElement("button");
+			container.appendChild(before);
+			var replace = document.createElement("button");
+			container.appendChild(replace);
+			var after = document.createElement("button");
+			container.appendChild(after);
+			var widget = (new SimpleWidget({})).placeAt(replace, "replace");
+			assert.strictEqual(before.nextSibling, widget, "before.nextSibling");
+			assert.strictEqual(after.previousSibling, widget, "after.previousSibling");
+		},
+
+		teardown: function () {
+			container.parentNode.removeChild(container);
+		}
+	});
+
+	function getFragment() {
+		var frag = document.createDocumentFragment();
+		frag.appendChild(document.createElement("div"));
+		frag.appendChild(document.createElement("div"));
+		frag.appendChild(document.createElement("div"));
+		return frag;
+	}
+
+	registerSuite({
+		name: "Widget#placeAt(DocumentFragment)",
+
+		setup: function () {
+			container = document.createElement("div");
+			container.id = "container-id";
+			document.body.appendChild(container);
+		},
+
+		placeAsLastNode: function () {
+			var frag = getFragment();
+			simple = (new SimpleWidget({id: "simple"})).placeAt(frag);
+			assert.strictEqual(simple, frag.lastChild);
+			simple.destroy();
+		},
+
+		placeAsFirstNode: function () {
+			var frag = getFragment();
+			simple = (new SimpleWidget({id: "simple"})).placeAt(frag, "first");
+			assert.strictEqual(simple, frag.firstChild);
+			simple.destroy();
+		},
+
+		placeAsOnlyNode: function () {
+			var frag = getFragment();
+			simple = (new SimpleWidget({id: "simple"})).placeAt(frag, "only");
+			assert.strictEqual(frag.childNodes.length, 1);
+			assert.strictEqual(simple, frag.firstChild);
+			simple.destroy();
+		},
+
+		placeAtPosition: function () {
+			var frag = getFragment();
+			simple = (new SimpleWidget({id: "simple"})).placeAt(frag, 2);
+			assert.strictEqual(simple, frag.childNodes[2]);
+			simple.destroy();
+		},
+
 		teardown: function () {
 			container.parentNode.removeChild(container);
 		}

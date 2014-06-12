@@ -3,14 +3,11 @@ define([
 	"dcl/dcl",
 	"dojo/dom", // dom.byId
 	"dojo/dom-class", // domClass.add domClass.replace
-	"dojo/dom-construct", // domConstruct.place
-	"dojo/dom-geometry", // isBodyLtr
-	"dojo/dom-style", // domStyle.set, domStyle.get
 	"requirejs-dplugins/has",
 	"./CustomElement",
 	"./register",
 	"requirejs-dplugins/has!bidi?./Bidi"
-], function (dcl, dom, domClass, domConstruct, domGeometry, domStyle, has, CustomElement, register, Bidi) {
+], function (dcl, dom, domClass, has, CustomElement, register, Bidi) {
 	// Flag to enable support for textdir attribute
 	has.add("bidi", false);
 
@@ -258,33 +255,30 @@ define([
 		 * @protected
 		 */
 		isLeftToRight: function () {
-			return this.dir ? (this.dir === "ltr") : domGeometry.isBodyLtr(this.ownerDocument);
+			var doc = this.ownerDocument;
+			return !(/^rtl$/i).test(this.dir || doc.body.dir || doc.documentElement.dir);
 		},
 
 		/**
 		 * Return true if this widget can currently be focused and false if not.
 		 */
 		isFocusable: function () {
-			return this.focus && (domStyle.get(this, "display") !== "none");
+			return this.focus && this.style.display !== "none";
 		},
 
 		/**
-		 * Place this widget somewhere in the DOM based
-		 * on standard `domConstruct.place()` conventions.
+		 * Place this widget somewhere in the dom, and allow chaining.
 		 *
-		 * A convenience function provided in all Widgets, providing a simple
-		 * shorthand mechanism to put an existing (or newly created) Widget
-		 * somewhere in the dom, and allow chaining.
-		 *
-		 * @param {string|Element} reference - Element or id of Element to place this widget relative to.
-		 * @param {string|number} [position] If reference is a widget (or id of widget),
-		 *      and that widget has an `.addChild()` method,
-		 *      it will be called passing this widget instance into that method, supplying the optional
-		 *      position index passed.  In this case position (if specified) should be an integer.
-		 *
-		 *      If reference is a plain Element (or id matching an Element but not a widget),
-		 *      the position argument can be a numeric index or a string
-		 *      "first", "last", "before", or "after", same as dojo/dom-construct::place().
+		 * @param {string|Element|DocumentFragment} reference - Element, DocumentFragment,
+		 * or id of Element to place this widget relative to.
+		 * @param {string|number} [position] Numeric index or a string with the values:
+		 * - number - place this widget as n'th child of `reference` node
+		 * - "first" - place this widget as first child of `reference` node
+		 * - "last" - place this widget as last child of `reference` node
+		 * - "before" - place this widget as previous sibling of `reference` node
+		 * - "after" - place this widget as next sibling of `reference` node
+		 * - "replace" - replace specified reference node with this widget
+		 * - "only" - replace all children of `reference` node with this widget
 		 * @returns {module:delite/Widget} This widget, for chaining.
 		 * @protected
 		 * @example
@@ -299,26 +293,36 @@ define([
 		 * new ContentPane({ href:"foo.html", title:"Wow!" }).placeAt(tc)
 		 */
 		placeAt: function (reference, position) {
-			reference = dom.byId(reference);
-
-			if (reference && reference.addChild && (!position || typeof position === "number")) {
-				// Use addChild() if available because it skips over text nodes and comments.
-				reference.addChild(this, position);
-			} else {
-				// "reference" is a plain DOMNode, or we can't use refWidget.addChild().   Use domConstruct.place() and
-				// target refWidget.containerNode for nested placement (position==number, "first", "last", "only"), and
-				// refWidget otherwise ("after"/"before"/"replace").
-				var ref = reference ?
-					(reference.containerNode && !/after|before|replace/.test(position || "") ?
-						reference.containerNode : reference) : dom.byId(reference, this.ownerDocument);
-				domConstruct.place(this, ref, position);
-
-				// Start this iff it has a parent widget that's already started.
-				// TODO: for 2.0 maybe it should also start the widget when this.getParent() returns null??
-				if (!this._started && (this.getParent() || {})._started) {
-					this.startup();
-				}
+			if (typeof reference === "string") {
+				reference = this.ownerDocument.getElementById(reference);
 			}
+
+			/* jshint maxcomplexity:14 */
+			if (position === "replace") {
+				reference.parentNode.replaceChild(this, reference);
+			} else if (position === "only") {
+				// SVG nodes, strict elements, and DocumentFragments don't support innerHTML
+				for (var c; (c = reference.lastChild);) {
+					reference.removeChild(c);
+				}
+				reference.appendChild(this);
+			} else if (/^(before|after)$/.test(position)) {
+				reference.parentNode.insertBefore(this, position === "before" ? reference : reference.nextSibling);
+			} else {
+				// Note: insertBefore(node, null) is equivalent to appendChild().  Second "null" arg needed only on IE.
+				var parent = reference.containerNode || reference,
+					children = parent.children || Array.prototype.filter.call(parent.childNodes, function (node) {
+						return node.nodeType === 1;	// no .children[] on DocumentFragment :-(
+					});
+				parent.insertBefore(this, children[position === "first" ? 0 : position] || null);
+			}
+
+			// Start this iff it has a parent widget that's already started.
+			// TODO: for 2.0 maybe it should also start the widget when this.getParent() returns null??
+			if (!this._started && (this.getParent() || {})._started) {
+				this.startup();
+			}
+
 			return this;
 		},
 
