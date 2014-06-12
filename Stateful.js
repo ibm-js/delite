@@ -1,5 +1,8 @@
 /** @module delite/Stateful */
-define(["dcl/dcl"], function (dcl) {
+define([
+	"dcl/dcl",
+	"decor/Stateful"
+], function (dcl, Stateful) {
 	var apn = {};
 
 	/**
@@ -51,135 +54,26 @@ define(["dcl/dcl"], function (dcl) {
 	 *
 	 * @mixin module:delite/Stateful
 	 */
-	var Stateful = dcl(null, /** @lends module:delite/Stateful# */ {
-		/**
-		 * Returns the list of properties that should be watchable.
-		 * @returns {String[]} List of properties.
-		 * @private
-		 */
-		_getProps: function () {
-			var list = [];
-			for (var prop in this) {
-				if (typeof this[prop] !== "function" && !/^_/.test(prop)) {
-					list.push(prop);
+	return dcl(Stateful, {
+		_set: dcl.superCall(function (sup) {
+			return function (name, value) {
+				var oldValue = this[propNames(name).p];
+				sup.apply(this, arguments);
+				if (this._watchCallbacks) {
+					this._watchCallbacks(name, oldValue, value);
 				}
-			}
-			return list;
-		},
-
-		/**
-		 * Sets up ES5 getters/setters for each class property.
-		 * Inside _introspect(), "this" is a reference to the prototype rather than any individual instance.
-		 * @param String[] props
-		 * @private
-		 */
-		_introspect: function (props) {
-			props.forEach(function (prop) {
-				var names = propNames(prop),
-					shadowProp = names.p,
-					getter = names.g,
-					setter = names.s;
-
-				// Setup ES5 getter and setter for this property, if not already setup.
-				// For a property named foo, saves raw value in _fooAttr.
-				// ES5 setter intentionally does late checking for this[names.s] in case a subclass sets up a
-				// _setFooAttr method.
-				if (!(shadowProp in this)) {
-					this[shadowProp] = this[prop];
-					delete this[prop]; // make sure custom setters fire
-					Object.defineProperty(this, prop, {
-						enumerable: true,
-						set: function (x) {
-							setter in this ? this[setter](x) : this._set(prop, x);
-						},
-						get: function () {
-							return getter in this ? this[getter]() : this[shadowProp];
-						}
-					});
-				}
-			}, this);
-		},
-
-		constructor: dcl.advise({
-			before: function () {
-				// First time this class is instantiated, introspect it.
-				// Use _introspected flag on constructor, rather than prototype, to avoid hits when superclass
-				// was already inspected but this class wasn't.
-				var ctor = this.constructor;
-				if (!ctor._introspected) {
-					// note: inside _introspect() this refs prototype
-					ctor.prototype._introspect(ctor.prototype._getProps());
-					ctor._introspected = true;
-				}
-			},
-
-			after: function (args) {
-				// Automatic setting of params during construction.
-				// In after() advice so that it runs after all the subclass constructor methods.
-				this.processConstructorParameters(args);
-			}
+			};
 		}),
 
-		/**
-		 * Called after Object is created to process parameters passed to constructor.
-		 * @protected
-		 */
-		processConstructorParameters: function (args) {
-			if (args.length) {
-				this.mix(args[0]);
-			}
-		},
-
-		/**
-		 * Set a hash of properties on a Stateful instance.
-		 * @param {Object} hash Hash of properties.
-		 * @example
-		 * myObj.mix({
-		 *     foo: "Howdy",
-		 *     bar: 3
-		 * });
-		 */
-		mix: function (hash) {
-			for (var x in hash) {
-				if (hash.hasOwnProperty(x) && x !== "_watchCallbacks") {
-					this[x] = hash[x];
+		notifyCurrentValue: dcl.superCall(function (sup) {
+			return function (name) {
+				var value = this[propNames(name).p];
+				sup.apply(this, arguments);
+				if (this._watchCallbacks) {
+					this._watchCallbacks(name, value, value); // Old and current are the same here
 				}
-			}
-		},
-
-		/**
-		 * Internal helper for directly setting a property value without calling the custom setter.
-		 *
-		 * Directly change the value of an attribute on an object, bypassing any
-		 * accessor setter.  Also notifies callbacks registered via watch().
-		 * Custom setters should call `_set` to actually record the new value.
-		 * @param {string} name - The property to set.
-		 * @param {*} value - Value to set the property to.
-		 * @protected
-		 */
-		_set: function (name, value) {
-
-			var shadowPropName = propNames(name).p;
-			var oldValue = this[shadowPropName];
-			this[shadowPropName] = value;
-			if (this._watchCallbacks) {
-				this._watchCallbacks(name, oldValue, value);
-			}
-		},
-
-		/**
-		 * Internal helper for directly accessing an attribute value.
-		 *
-		 * Directly get the value of an attribute on an object, bypassing any accessor getter.
-		 * It is designed to be used by descendant class if they want
-		 * to access the value in their custom getter before returning it.
-		 * @param {string} name - Name of property.
-		 * @returns {*} Value of property.
-		 * @protected
-		 */
-		_get: function (name) {
-			return this[propNames(name).p];
-		},
+			};
+		}),
 
 		/**
 		 * Watches a property for changes.
@@ -197,23 +91,30 @@ define(["dcl/dcl"], function (dcl) {
 		 * ```
 		 */
 		watch: function (name, callback) {
+			// TODO(asudoh): Remove this function once we finish the transition
+			console.warn("Stateful.watch() is deprecated. To be removed soon. Use Stateful.observe() instead.");
+
 			var callbacks = this._watchCallbacks;
 			if (!callbacks) {
 				var self = this;
-				callbacks = this._watchCallbacks = function (name, oldValue, value, ignoreCatchall) {
-					var notify = function (propertyCallbacks) {
-						if (propertyCallbacks) {
-							propertyCallbacks = propertyCallbacks.slice();
-							for (var i = 0, l = propertyCallbacks.length; i < l; i++) {
-								propertyCallbacks[i].call(self, name, oldValue, value);
+				Object.defineProperty(this, "_watchCallbacks", { // Make _watchCallbacks() not enumerable
+					value: callbacks = function (name, oldValue, value, ignoreCatchall) {
+						var notify = function (propertyCallbacks) {
+							if (propertyCallbacks) {
+								propertyCallbacks = propertyCallbacks.slice();
+								for (var i = 0, l = propertyCallbacks.length; i < l; i++) {
+									propertyCallbacks[i].call(self, name, oldValue, value);
+								}
 							}
+						};
+						notify(callbacks["_" + name]);
+						if (!ignoreCatchall) {
+							notify(callbacks["*"]); // the catch-all
 						}
-					};
-					notify(callbacks["_" + name]);
-					if (!ignoreCatchall) {
-						notify(callbacks["*"]); // the catch-all
-					}
-				}; // we use a function instead of an object so it will be ignored by JSON conversion
+					},
+					configurable: true,
+					writable: true
+				}); // we use a function instead of an object so it will be ignored by JSON conversion
 			}
 			if (!callback && typeof name === "function") {
 				callback = name;
@@ -238,8 +139,4 @@ define(["dcl/dcl"], function (dcl) {
 			}; //Object
 		}
 	});
-
-	dcl.chainAfter(Stateful, "_introspect");
-
-	return Stateful;
 });
