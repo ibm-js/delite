@@ -1,10 +1,8 @@
 /** @module delite/BackgroundIframe */
 define([
-	"dojo/_base/lang", // lang.extend
-	"requirejs-dplugins/has"
-], function (lang, has) {
-
-	// TODO: switch to dcl() to remove dojo/_base/lang dependency
+	"dcl/dcl",
+	"dojo/has"
+], function (dcl, has) {
 
 	// Flag for whether to create background iframe behind popups like Menus and Dialog.
 	// A background iframe is useful to prevent problems with popups appearing behind applets/pdf files.
@@ -47,18 +45,18 @@ define([
 	/**
 	 * Makes a background iframe as a child of node.  Iframe fills area (and position) of node.
 	 * @param {Element} node
-	 * @constructor module:delite/BackgroundIframe
+	 * @class module:delite/BackgroundIframe
 	 */
-	var BackgroundIframe = function (node) {
-		if (has("config-bgIframe")) {
-			var iframe = (this.iframe = _frames.pop());
-			node.appendChild(iframe);
-			iframe.style.width = "100%";
-			iframe.style.height = "100%";
-		}
-	};
+	return dcl(null, /** @lends module:delite/BackgroundIframe# */ {
+		constructor: function (node) {
+			if (has("config-bgIframe")) {
+				var iframe = (this.iframe = _frames.pop());
+				node.appendChild(iframe);
+				iframe.style.width = "100%";
+				iframe.style.height = "100%";
+			}
+		},
 
-	lang.extend(BackgroundIframe, /** @lends module:delite/BackgroundIframe# */ {
 		/**
 		 * Destroy the iframe.
 		 */
@@ -73,6 +71,4 @@ define([
 			}
 		}
 	});
-
-	return BackgroundIframe;
 });
