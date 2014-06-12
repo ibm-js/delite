@@ -1,9 +1,8 @@
 /** @module delite/FormWidget */
 define([
 	"dcl/dcl",
-	"./Widget",
-	"./Invalidating"
-], function (dcl, Widget, Invalidating) {
+	"./Widget"
+], function (dcl, Widget) {
 
 	/**
 	 * Base class for widgets that extend `HTMLElement`, but conceptually correspond
@@ -15,10 +14,8 @@ define([
 	 *
 	 * @mixin module:delite/FormWidget
 	 * @augments module:delite/Widget
-	 * @augments module:delite/Invalidating
 	 */
-	return dcl([Widget, Invalidating], /** @lends module:delite/FormWidget# */ {
-
+	return dcl(Widget, /** @lends module:delite/FormWidget# */ {
 		/**
 		 * Name used when submitting form; same as "name" attribute or plain HTML elements.
 		 * @member {string} module:delite/FormWidget.name
@@ -58,21 +55,13 @@ define([
 		 */
 		disabled: false,
 
-		preCreate: function () {
-			this.addInvalidatingProperties(
-				"disabled",
-				"tabStops",
-				"tabIndex"
-			);
-		},
-
 		refreshRendering: dcl.after(function (args) {
 			// Handle disabled and tabIndex, across the tabStops and root node.
 			// No special processing is needed for tabStops other than just to refresh disable and tabIndex.
-			var props = args[0];
+			var oldValues = args[0];
 			var self = this;
 			var tabStops = this.tabStops.split(/[ ,]/);
-			if (props.tabStops || props.disabled) {
+			if ("tabStops" in oldValues || "disabled" in oldValues) {
 				var isDisabled = this.disabled;
 				if (this.valueNode && this.valueNode !== this) {
 					this.valueNode.disabled = isDisabled; // prevent submit
@@ -92,7 +81,7 @@ define([
 					this.removeAttribute("disabled");
 				}
 			}
-			if (props.tabStops || props.tabIndex || props.disabled) {
+			if ("tabStops" in oldValues || "tabIndex" in oldValues || "disabled" in oldValues) {
 				tabStops.forEach(
 					function (nodeName) {
 						var node = self[nodeName];
@@ -107,7 +96,7 @@ define([
 					this
 				);
 			}
-			return props; // for after advice
+			return oldValues; // for after advice
 		}),
 
 		/**

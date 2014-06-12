@@ -1,9 +1,10 @@
 /** @module delite/CustomElement */
 define([
 	"dcl/dcl",
+	"decor/Observable",
 	"decor/Destroyable",
 	"./Stateful"
-], function (dcl, Destroyable, Stateful) {
+], function (dcl, Observable, Destroyable, Stateful) {
 
 	/**
 	 * Get a property from a dot-separated string, such as "A.B.C".
@@ -62,6 +63,11 @@ define([
 
 		createdCallback: dcl.advise({
 			before: function () {
+				// Mark this object as observable with Object.observe() shim
+				if (!this._observable) {
+					Observable.call(this);
+				}
+
 				// Get parameters that were specified declaratively on the widget DOMNode.
 				this._parsedAttributes = this._mapAttributes();
 

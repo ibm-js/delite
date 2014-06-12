@@ -124,27 +124,8 @@ define(["dcl/dcl", "./Store"], function (dcl, Store) {
 			}
 
 			this._mappedKeys = mappedKeys;
-			this.validateProperties();
+			this.deliver();
 		},
-
-
-		validateProperties: dcl.superCall(function (sup) {
-			return function (props) {
-				// if we are not yet started we delay the validation because we need the mapping to be configured first
-				if (this._started) {
-					sup.call(this, props);
-				}
-			};
-		}),
-
-		validateRendering: dcl.superCall(function (sup) {
-			return function (props) {
-				// if we are not yet started we delay the validation because we need the mapping to be configured first
-				if (this._started) {
-					sup.call(this, props);
-				}
-			};
-		}),
 
 		/**
 		 * Creates a store item based from the widget internal item based on the various mapped properties. 

@@ -26,15 +26,9 @@ define([
 		 */
 		readOnly: false,
 
-		preCreate: function () {
-			this.addInvalidatingProperties(
-				"readOnly"
-			);
-		},
-
 		refreshRendering: dcl.after(function (args) {
-			var props = args[0];
-			if (props.readOnly) {
+			var oldValues = args[0];
+			if ("readOnly" in oldValues) {
 				var isReadOnly = this.readOnly;
 				if (this.valueNode && this.valueNode !== this) {
 					this.valueNode.readOnly = isReadOnly; // inform screen reader
