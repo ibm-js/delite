@@ -1,9 +1,8 @@
 /** @module delite/FormValueWidget */
 define([
 	"dcl/dcl",
-	"dojo/dom-attr", // domAttr.set
 	"./FormWidget"
-], function (dcl, domAttr, FormWidget) {
+], function (dcl, FormWidget) {
 
 	/**
 	 * Mixin for widgets corresponding to native HTML elements such as `<input>` or `<select>`
