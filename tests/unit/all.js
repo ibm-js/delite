@@ -17,7 +17,6 @@ define([
 	"./StoreMap",
 	"./Store",
 	"./Scrollable",
-	"./Invalidating",
 	"./KeyNav",
 	"./FormValueWidget"
 ]);

@@ -6,9 +6,8 @@ define([
 	"dojo/_base/fx",
 	"dojo/fx/easing",
 	"delite/Widget",
-	"delite/Invalidating",
 	"delite/theme!./Scrollable/themes/{{theme}}/Scrollable_css"
-], function (dcl, dom, domClass, baseFx, easing, Widget, Invalidating) {
+], function (dcl, dom, domClass, baseFx, easing, Widget) {
 
 	/**
 	 * A mixin which adds scrolling capabilities to a widget.
@@ -42,9 +41,8 @@ define([
 	 *
 	 * @mixin module:delite/Scrollable
 	 * @augments module:delite/Widget
-	 * @augments module:delite/Invalidating
 	 */
-	return dcl([Widget, Invalidating], /** @lends module:delite/Scrollable# */{
+	return dcl(Widget, /** @lends module:delite/Scrollable# */{
 
 		/**
 		 * The direction of the interactive scroll. Possible values are:
@@ -76,12 +74,8 @@ define([
 		 */
 		scrollableNode: null,
 
-		preCreate: function () {
-			this.addInvalidatingProperties("scrollDirection");
-		},
-
 		postCreate: function () {
-			this.invalidateRendering("scrollDirection");
+			this.deliver();
 		},
 
 		buildRendering: dcl.after(function () {

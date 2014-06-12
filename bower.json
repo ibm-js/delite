@@ -9,7 +9,8 @@
 		"requirejs": "2.1.x",
 		"requirejs-domready": ">=2.0.1",
 		"requirejs-dplugins": ">=0.2.2-dev",
-		"requirejs-text": ">=2.0.11"
+		"requirejs-text": ">=2.0.11",
+		"decor": "#master"
 	},
 	"devDependencies": {
 		"dstore" : ">=0.1.0-dev",
