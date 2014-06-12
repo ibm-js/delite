@@ -4,8 +4,7 @@
  * A widget is considered active if it or a descendant widget has focus,
  * or if a non-focusable node of this widget or a descendant was recently clicked.
  *
- * Call `focus.watch("curNode", callback)` to track the current focused Element,
- * or `focus.watch("activeStack", callback)` to track the currently focused stack of widgets.
+ * Call `focus.on("active-widget-stack", callback)` to track the currently focused stack of widgets.
  *
  * Call `focus.on("widget-blur", func)` or `focus.on("widget-focus", ...)` to monitor when
  * when widgets become active/inactive
@@ -17,53 +16,26 @@
 define([
 	"dcl/advise",
 	"dcl/dcl",
-	"dojo/dom", // dom.byId
-	"dojo/dom-attr", // domAttr.get
 	"dojo/dom-class",
-	"dojo/dom-construct", // connect to domConstruct.empty, domConstruct.destroy
 	"dojo/Evented",
 	"dojo/on",
-	"dojo/Stateful",
-	"dojo/window", // winUtils.get
 	"./a11y",	// a11y.isTabNavigable
 	"requirejs-domready/domReady!"
-], function (advise, dcl, dom, domAttr, domClass, domConstruct, Evented, on, Stateful, winUtils, a11y) {
+], function (advise, dcl, domClass, Evented, on, a11y) {
 
-	// Time of the last touch or focusIn event
-	var lastTouch;
+	// Time of the last focusin event
+	var lastFocusin;
 
-	// TODO: switch to using delite/Stateful, and dcl.advise
+	// Time of the last touch/mousedown or focusin event
+	var lastTouchOrFocusin;
 
-	var FocusManager = dcl([Stateful, Evented], /** @lends module:delite/focus */ {
-
-		// TODO: get rid of curNode and prevNode?  App can just use document.activeElement.
-
-		/**
-		 * Currently focused item on screen.
-		 * @property {Element} curNode
-		 */
-		curNode: null,
+	var FocusManager = dcl(Evented, /** @lends module:delite/focus */ {
 
 		/**
 		 * List of currently active widgets (focused widget and its ancestors).
 		 * @property {Element[]} activeStack
 		 */
 		activeStack: [],
-
-		constructor: function () {
-			// Don't leave curNode/prevNode pointing to bogus elements
-			function check(node) {
-				if (this.curNode && this.curNode.contains(node)) {
-					this.set("curNode", null);
-				}
-				if (this.prevNode && this.prevNode.contains(node)) {
-					this.set("prevNode", null);
-				}
-			}
-
-			advise.before(domConstruct, "empty", check.bind(this));
-			advise.before(domConstruct, "destroy", check.bind(this));
-		},
 
 		/**
 		 * Registers listeners on the specified iframe so that any click
@@ -99,9 +71,12 @@ define([
 				body = targetWindow.document && targetWindow.document.body;
 
 			if (body) {
-				// TODO: change this to run on capture phase rather than bubbling phase after that option is added to
-				// dojo/on (see #16596)
-				var mdh = on(targetWindow.document, "mousedown, touchstart", function (evt) {
+				// Listen for touches or mousedowns... could also use dpointer here.
+				// TODO: change this to run on capture phase rather than bubbling phase.
+				var event = "onpointerdown" in document ? "pointerdown" :
+					"msMaxTouchPoints" in navigator ? "MSPointerDown" :
+					"ontouchstart" in document ? "mousedown, touchstart" : "mousedown";
+				var mdh = on(targetWindow.document, event, function (evt) {
 					// workaround weird IE bug where the click is on an orphaned node
 					// (first time clicking a Select/DropDownButton inside a TooltipDialog).
 					// actually, strangely this is happening on latest chrome too.
@@ -136,13 +111,6 @@ define([
 				});
 
 				var foh = on(body, "focusout", function (evt) {
-					// IE9+ and chrome have a problem where focusout events come after the corresponding focusin event.
-					// For chrome problem see https://bugs.dojotoolkit.org/ticket/17668.
-					// IE problem happens when moving focus from the Editor's <iframe> to a normal DOMNode.
-					if ((new Date()).getTime() < lastTouch + 100) {
-						return;
-					}
-
 					_this._onBlurNode(effectiveNode || evt.target);
 				});
 
@@ -167,20 +135,28 @@ define([
 		 * @private
 		 */
 		_onBlurNode: function (node) { // jshint unused: vars
-			// If the blur event isn't followed by a focus event, it means the user clicked on something unfocusable,
-			// so clear focus.
-			if (this._clearFocusTimer) {
-				clearTimeout(this._clearFocusTimer);
-			}
-			this._clearFocusTimer = setTimeout(function () {
-				this.set("prevNode", this.curNode);
-				this.set("curNode", null);
-			}.bind(this), 0);
+			var now = (new Date()).getTime();
 
-			// If the blur event isn't followed by a focus or touch event then mark all widgets as inactive.
+			// IE9+ and chrome have a problem where focusout events come after the corresponding focusin event.
+			// For chrome problem see https://bugs.dojotoolkit.org/ticket/17668.
+			// IE problem happens when moving focus from the Editor's <iframe> to a normal DOMNode.
+			if (now < lastFocusin + 100) {
+				return;
+			}
+
+			// Unset timer to zero-out widget stack; we'll reset it below if appropriate.
 			if (this._clearActiveWidgetsTimer) {
 				clearTimeout(this._clearActiveWidgetsTimer);
 			}
+
+			if (now < lastTouchOrFocusin + 100) {
+				// This blur event is coming late (after the call to _onTouchNode() rather than before.
+				// So let _onTouchNode() handle setting the widget stack.
+				// See https://bugs.dojotoolkit.org/ticket/17668
+				return;
+			}
+
+			// If the blur event isn't followed (or preceded) by a focus or touch event, mark all widgets as inactive.
 			this._clearActiveWidgetsTimer = setTimeout(function () {
 				delete this._clearActiveWidgetsTimer;
 				this._setStack([]);
@@ -195,10 +171,10 @@ define([
 		 */
 		_onTouchNode: function (node, by) {
 			// Keep track of time of last focusin or touch event.
-			lastTouch = (new Date()).getTime();
+			lastTouchOrFocusin = (new Date()).getTime();
 
-			// ignore the recent blurNode event
 			if (this._clearActiveWidgetsTimer) {
+				// forget the recent blur event
 				clearTimeout(this._clearActiveWidgetsTimer);
 				delete this._clearActiveWidgetsTimer;
 			}
@@ -213,9 +189,9 @@ define([
 			var newStack = [];
 			try {
 				while (node) {
-					var popupParent = domAttr.get(node, "duiPopupParent");
+					var popupParent = node.getAttribute("duiPopupParent");
 					if (popupParent) {
-						node = dom.byId(popupParent);
+						node = node.ownerDocument.getElementById(popupParent);
 					} else if (node.tagName && node.tagName.toLowerCase() === "body") {
 						// is this the root of the document or just the root of an iframe?
 						if (node === document.body) {
@@ -224,7 +200,7 @@ define([
 						}
 						// otherwise, find the iframe this node refers to (can't access it via parentNode,
 						// need to do this trick instead). window.frameElement is supported in IE/FF/Webkit
-						node = winUtils.get(node.ownerDocument).frameElement;
+						node = node.ownerDocument.defaultView.frameElement;
 					} else {
 						// if this node is the root node of a widget, then add widget id to stack,
 						// except ignore clicks on disabled widgets (actually focusing a disabled widget still works,
@@ -242,7 +218,7 @@ define([
 		},
 
 		/**
-		 * Callback when node is focused
+		 * Callback when node is focused.
 		 * @param {Element} node
 		 * @private
 		 */
@@ -258,20 +234,17 @@ define([
 				return;
 			}
 
-			// There was probably a blur event right before this event, but since we have a new focus, don't
-			// do anything with the blur
+			// Keep track of time of last focusin event.
+			lastFocusin = (new Date()).getTime();
+
+			// There was probably a blur event right before this event, but since we have a new focus,
+			// forget about the blur
 			if (this._clearFocusTimer) {
 				clearTimeout(this._clearFocusTimer);
 				delete this._clearFocusTimer;
 			}
 
 			this._onTouchNode(node);
-
-			if (node === this.curNode) {
-				return;
-			}
-			this.set("prevNode", this.curNode);
-			this.set("curNode", node);
 		},
 
 		/**
@@ -288,7 +261,8 @@ define([
 				return;
 			}
 
-			this.set("activeStack", newStack);
+			this.activeStack = newStack;
+			this.emit("active-widget-stack", newStack);
 
 			var widget, i;
 
