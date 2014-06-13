@@ -22,9 +22,11 @@ Before proceeding, checkout [setup page](setup.md) on how to setup a project usi
 ## Using Selection
 
 On a widget extending `delite/Selection` one can choose several selection modes through the `selectionMode` property:
+
   * `"multiple"` which means the application user can select interactively several items at the same time
   * `"single"` which means the application user can only select interactively a single item at the time, this is the default.
   * `"none"` which means the application user can not interactively select an item
+
 Note that this mode does not impact selection by the `selectedItem(s)` APIs which are always available and always allow 
 several items to be selected. If you want to restrict selection by those APIs you have to make sure code calling the 
 selection method is doing that accordingly to the `selectionMode` or to specialize `delite/Selection` for that purpose.
@@ -36,6 +38,7 @@ Once a selection mode has been set there are three ways to modify the selection 
   * use the `setSelected()` function to toggle on or off the selection state of a particular item
 
 You can know the selection state by querying either:
+
   * the `selectedItem` property to get the last selected item
   * the `selectedItems` property to get all the selected items
 

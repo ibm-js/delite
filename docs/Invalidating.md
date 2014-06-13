@@ -151,12 +151,15 @@ Once setup you don't need anything special to use the invalidating class. You ju
 properties and the refresh methods will be called automatically for you.
 
 If for some reason you want to invalidate a particular property without setting it explicitly then you can call:
+  
   * `invalidateProperty()` to invalidate for refresh properties phase
   * `invalidateRendering()` to invalidate for refresh rendering phase
+
 You will need to pass the name of the property to invalidate to the invalidation function.
 
 In some cases you might want to force the rendering to occur right after a given property has been set. For that you can
 use one of the following function:
+
   * `validateRendering()` to only trigger the refresh rendering phase
   * `validateProperties()` to trigger the refresh properties phase which will itself trigger the refresh rendering phase
   * `validate()` to directly trigger both the refresh properties & rendering phases.
