@@ -155,22 +155,22 @@ define([
 		},
 
 		/**
-		  * Callback on mouseup/touchend after mousedown/touchstart on the arrow icon.
-		  * Note that this function is called regardless of what node the event occurred on (but only after
-		  * a mousedown/touchstart on the arrow).
-		  *
-		  * If the drop down is a simple menu and the cursor is over the menu, we execute it, otherwise,
-		  * we focus our drop down widget.  If the event is missing, then we are not a mouseup event.
-		  *
-		  * This is useful for the common mouse movement pattern with native browser `<select>` nodes:
-		  *
-		  * 1. mouse down on the select node (probably on the arrow)
-		  * 2. move mouse to a menu item while holding down the mouse button
-		  * 3. mouse up; this selects the menu item as though the user had clicked it
-		  *
-		  * @param {Event} [e]
-		  * @private
-		  */
+		 * Callback on mouseup/touchend after mousedown/touchstart on the arrow icon.
+		 * Note that this function is called regardless of what node the event occurred on (but only after
+		 * a mousedown/touchstart on the arrow).
+		 *
+		 * If the drop down is a simple menu and the cursor is over the menu, we execute it, otherwise,
+		 * we focus our drop down widget.  If the event is missing, then we are not a mouseup event.
+		 *
+		 * This is useful for the common mouse movement pattern with native browser `<select>` nodes:
+		 *
+		 * 1. mouse down on the select node (probably on the arrow)
+		 * 2. move mouse to a menu item while holding down the mouse button
+		 * 3. mouse up; this selects the menu item as though the user had clicked it
+		 *
+		 * @param {Event} [e]
+		 * @private
+		 */
 		_onDropDownMouseUp: function (e) {
 			/* jshint maxcomplexity:14 */	// TODO: simplify this method?
 
@@ -387,6 +387,7 @@ define([
 				this.openDropDown();
 				d.resolve(this.dropDown);
 			}
+
 			if (!this.isLoaded()) {
 				this.loadDropDown(afterLoad.bind(this));
 			} else {
@@ -444,13 +445,20 @@ define([
 			// Set width of drop down if necessary, so that dropdown width + width of scrollbar (from popup wrapper)
 			// matches width of aroundNode
 			if (this.forceWidth || (this.autoWidth && aroundNode.offsetWidth > dropDown._popupWrapper.offsetWidth)) {
+				var widthAdjust = aroundNode.offsetWidth - dropDown._popupWrapper.offsetWidth;
 				var resizeArgs = {
-					w: aroundNode.offsetWidth - (dropDown._popupWrapper.offsetWidth - dropDown.offsetWidth)
+					w: dropDown.offsetWidth + widthAdjust
 				};
 				if (typeof dropDown.resize === "function") {
 					dropDown.resize(resizeArgs);
 				} else {
 					domGeometry.setMarginBox(dropDown, resizeArgs);
+				}
+
+				// If dropdown is right-aligned then compensate for width change by changing horizontal position
+				if (retVal.corner[1] === "R") {
+					dropDown._popupWrapper.style.left =
+						(dropDown._popupWrapper.style.left.replace("px", "") - widthAdjust) + "px";
 				}
 			}
 
