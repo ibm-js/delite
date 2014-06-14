@@ -10,6 +10,7 @@
 	<script language="JavaScript" type="text/javascript">
 		var ready = false; // set to true when the test page is ready
 		require([
+			"delite/a11yclick",
 			"delite/register",
 			"dojo/dom",
 			"delite/Widget",
@@ -17,7 +18,7 @@
 			"delite/KeyNav",
 			"dojo/query",		// required when childSelector is a string
 			"requirejs-domready/domReady!"
-		], function (register, dom, Widget, Container, KeyNav) {
+		], function (a11yclick, register, dom, Widget, Container, KeyNav) {
 
 			// Complex KeyNav subclass with string childSelector
 			register("my-grid", [HTMLElement, KeyNav], {
@@ -93,6 +94,9 @@
 
 			// Simple KeyNav widget that extends Container. childSelector is function.
 			var TestContainer = register("my-list", [HTMLElement, Container, KeyNav], {
+				// Id of node to update when there's an a11yclick event
+				clickCountNodeId: "",
+
 				childSelector: function (child) {
 					return child !== this;
 				},
@@ -113,8 +117,16 @@
 					if (previousChild) {
 						this.focusChild(previousChild);
 					}
+				},
+				postCreate: function () {
+					// If the caller has specified a counter node, increment it whenever there's an a11yclick event
+					this.on(a11yclick.click, function () {
+						if (this.clickCountNodeId) {
+							window[this.clickCountNodeId].innerHTML = window[this.clickCountNodeId].innerHTML - -1;
+						}
+					}.bind(this));
 				}
-			});
+		});
 
 			// Child of TestContainer
 			var TestContained = register("my-list-item", [HTMLElement, Widget], { });
@@ -226,9 +238,24 @@
 	<input type="text" tabindex=6 value="tabindex=6">
 
 	<h3>Empty KeyNav container tabindex=7</h3>
-
 	<p>Note: currently gets exceptions if you tab to it, not sure we want to support this anyway.</p>
 	<my-list id="emptyContainer" style="height: 40px; width: 40px;" tabindex="7">
 	</my-list>
+
+	<h3>Test for keyboard search with spaces</h3>
+	<input id="keyboardInput" type="text" tabindex="9" value="input before keyboard">
+	<my-list id="keyboard" clickCountNodeId="clicks" tabIndex="9">
+		<my-list-item value="AL" id="keyboardFirst">Alabama</my-list-item>
+		<my-list-item value="AK">Alaska</my-list-item>
+		<my-list-item value="AZ">Arizona</my-list-item>
+		<my-list-item value="AR">Arkansas</my-list-item>
+		<my-list-item value="CA">California</my-list-item>
+		<my-list-item value="NH">New Hampshire</my-list-item>
+		<my-list-item value="NJ">New Jersey</my-list-item>
+		<my-list-item value="NM">New Mexico</my-list-item>
+		<my-list-item value="NY">New York</my-list-item>
+	</my-list>
+	a11yclick events: <span id="clicks">0</span>
+
 </body>
 </html>

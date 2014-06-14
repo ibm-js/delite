@@ -363,13 +363,18 @@ define([
 		 * @private
 		 */
 		_onContainerKeypress: function (evt) {
-			if (takesInput(evt.target) || evt.charCode < keys.SPACE || evt.ctrlKey || evt.altKey || evt.metaKey ||
-				(evt.charCode === keys.SPACE && this._searchTimer)) {
-				// Ignore characters typed on <input> controls.
-				// Also, avoid duplicate events on firefox (ex: arrow key that will be handled by keydown handler),
-				// and also control sequences like CMD-Q
+			// Ignore:
+			//		- keystrokes on <input> and <textarea>
+			// 		- duplicate events on firefox (ex: arrow key that will be handled by keydown handler)
+			//		- control sequences like CMD-Q.
+			//		- the SPACE key (only occurs on FF)
+			//
+			// Note: if there's no search in progress, then SPACE should be ignored.   If there is a search
+			// in progress, then SPACE is handled in _onContainerKeyDown.
+			if (takesInput(evt.target) || evt.charCode <= keys.SPACE || evt.ctrlKey || evt.altKey || evt.metaKey) {
 				return;
 			}
+
 			if (/^(checkbox|radio)$/.test(evt.target.type) &&
 				(evt.charCode === keys.SPACE || evt.charCode === keys.ENTER)) {
 				// Ignore keyboard clicks on checkbox controls
