@@ -17,6 +17,7 @@ define(["intern!object",
 				// SafariDriver doesn't support tabbing, see https://code.google.com/p/selenium/issues/detail?id=5403
 				return;
 			}
+			this.timeout = 10000;
 			return this.remote.execute("return document.activeElement.value")
 				.elementById("focus")
 				.click()
@@ -63,7 +64,7 @@ define(["intern!object",
 				});
 
 		},
-		"arrow navigation": function () {
+		"grid arrow navigation": function () {
 			if (/safari|iphone/.test(this.remote.environmentType.browserName)) {
 				// SafariDriver apparently doesn't support arrow keys either
 				return;
@@ -105,7 +106,7 @@ define(["intern!object",
 				});
 		},
 
-		"letter search": function () {
+		"grid letter search": function () {
 			if (/safari|iphone/.test(this.remote.environmentType.browserName)) {
 				// SafariDriver just doesn't work testing keystrokes ...
 				return;
@@ -137,6 +138,48 @@ define(["intern!object",
 				.execute("return document.activeElement.textContent")
 				.then(function (value) {
 					assert.strictEqual(value, "blueberry", "bl");
+				});
+		},
+
+		"multi char search with spaces": function () {
+			if (/safari|iphone/.test(this.remote.environmentType.browserName)) {
+				// SafariDriver just doesn't work testing keystrokes ...
+				return;
+			}
+			return this.remote
+				.elementById("keyboardInput")
+				.click()
+				.keys("\uE004") // tab
+				.execute("return document.activeElement.textContent")
+				.then(function (value) {
+					assert.equal(value, "Alabama", "clicked Alabama");
+				})
+				.execute("return clicks.textContent")
+				.then(function (value) {
+					assert.equal(value, "0", "no click events yet");
+				})
+				.keys("new m")
+				.execute("return document.activeElement.textContent")
+				.then(function (value) {
+					assert.equal(value, "New Mexico", "new m");
+				})
+				.execute("return clicks.textContent")
+				.then(function (value) {
+					assert.equal(value, "0", "no click events after 'new m' search");
+				})
+				.wait(1000)
+				// Now that 1000ms have elapsed, the search should be canceled, and each space typed
+				// should generate an a11y click event
+				.keys("   ")
+				.execute("return clicks.textContent")
+				.then(function (value) {
+					assert.equal(value, "3", "space key outside of search causes click events");
+				})
+				// And make sure that we can search to somewhere else
+				.keys("n")
+				.execute("return document.activeElement.textContent")
+				.then(function (value) {
+					assert.equal(value, "New York", "n");
 				});
 		},
 
