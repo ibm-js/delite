@@ -2,11 +2,11 @@
 define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalidating) {
 
 	var isStoreInvalidated = function (props) {
-		return props.store || props.query;
+		return props.store || props.query || props.startIndex || props.endIndex;
 	};
 
 	var setStoreValidate = function (props) {
-		props.store = props.query = false;
+		props.store = props.query = props.startIndex = props.endIndex = false;
 	};
 
 	/**
@@ -38,23 +38,27 @@ define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalida
 		query: {},
 
 		/**
+		 * Range start index. If 0 and `endIndex` is Infinity no ranging will occur. Ranging is applied after tracking.
+		 * @member {number}
+		 * @default {0}
+		 */
+		startIndex: 0,
+
+		/**
+		 * Range end index. If Infinity and `startIndex` is 0 no ranging will occur. Ranging is applied after tracking.
+		 * @member {number}
+		 * @default {Infinity}
+		 */
+		endIndex: Infinity,
+
+		/**
 		 * A function that processes the store/collection and returns a new collection (to sort it,
-		 * range it etc...). This processing is applied before potentially tracking the store for modifications 
+		 * filter it etc...). This processing is applied before potentially tracking the store for modifications 
 		 * (if Observable).
 		 * Changing this function on the instance will not automatically refresh the class.
 		 * @default identity function
 		 */
-		preProcessStore: function (store) { return store; },
-
-		/**
-		 * A function that processes the store/collection and returns a new collection (to sort it,
-		 * range it etc...).
-		 * This processing is applied after potentially tracking the store for modifications (if Observable).
-		 * This allows for example to be notified of modifications that occurred outside of the range.
-		 * Changing this function on the instance will not automatically refresh the class.
-		 * @default identity function
-		 */
-		postProcessStore: function (store) { return store; },
+		processStore: function (store) { return store; },
 
 		/**
 		 * The render items corresponding to the store items for this widget. This is filled from the store and
@@ -117,7 +121,7 @@ define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalida
 		refreshProperties: function (props) {
 			if (isStoreInvalidated(props)) {
 				setStoreValidate(props);
-				this.queryStoreAndInitItems(this.preProcessStore, this.postProcessStore);
+				this.queryStoreAndInitItems(this.processStore);
 			}
 		},
 
@@ -128,18 +132,16 @@ define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalida
 		 * This method is not supposed to be called by application developer.
 		 * It will be called automatically when modifying the store related properties or by the subclass
 		 * if needed.
-		 * @param preProcessStore - A function that processes the store/collection and returns a new collection
-		 * (to sort it, range it etc...), applied before tracking.
-		 * @param postProcessStore - A function that processes the store/collection and returns a new collection
-		 * (to sort it, range it etc...), applied after tracking.
+		 * @param processStore - A function that processes the store/collection and returns a new collection
+		 * (to sort it, filter it etc...), applied before tracking.
 		 * @returns {Promise} If store to be processed is not null a promise that will be resolved when the loading 
 		 * process will be finished.
 		 * @protected
 		 */
-		queryStoreAndInitItems: function (preProcessStore, postProcessStore) {
+		queryStoreAndInitItems: function (processStore) {
 			this._untrack();
 			if (this.store != null) {
-				var collection = preProcessStore.call(this, this.store.filter(this.query));
+				var collection = processStore.call(this, this.store.filter(this.query));
 				if (collection.track) {
 					// user asked us to observe the store
 					var tracked = this._tracked = collection.track();
@@ -147,7 +149,9 @@ define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalida
 					tracked.on("update", this._itemUpdated.bind(this));
 					tracked.on("remove", this._itemRemoved.bind(this));
 				}
-				collection = postProcessStore.call(this, collection);
+				if (this.startIndex !== 0 || this.endIndex !== Infinity) {
+					collection = collection.range(this.startIndex, this.endIndex);
+				}
 				return this.fetch(collection);
 			} else {
 				this.initItems([]);
@@ -176,6 +180,10 @@ define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalida
 				this._tracked = null;
 			}
 		},
+		
+		_isIndexInRange: function (index) {
+			return index >= this.startIndex && index <= this.endIndex;
+		},
 
 		destroy: function () {
 			this._untrack();
@@ -185,7 +193,7 @@ define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalida
 		 * This method is called when an item is removed from an observable store. The default
 		 * implementation actually removes a renderItem from the renderItems array. This can be redefined but
 		 * must not be called directly.
-		 * @param {number} index - The index of the render item to remove.
+		 * @param {number} index - The index of the render item to remove in the range.
 		 * @param {Object[]} renderItems - The array of render items to remove the render item from.
 		 * @protected
 		 */
@@ -197,7 +205,7 @@ define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalida
 		 * This method is called when an item is added in an observable store. The default
 		 * implementation actually adds the renderItem to the renderItems array. This can be redefined but
 		 * must not be called directly.
-		 * @param {number} index - The index where to add the render item.
+		 * @param {number} index - The index where to add the render item in the range.
 		 * @param {Object} renderItem - The render item to be added.
 		 * @param {Object[]} renderItems - The array of render items to add the render item to.
 		 * @protected
@@ -210,7 +218,7 @@ define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalida
 		 * This method is called when an item is updated in an observable store. The default
 		 * implementation actually updates the renderItem in the renderItems array. This can be redefined but
 		 * must not be called directly.
-		 * @param {number} index - The index of the render item to update.
+		 * @param {number} index - The index of the render item to update in the range.
 		 * @param {Object} renderItem - The render item data the render item must be updated with.
 		 * @param {Object[]} renderItems - The array of render items to render item to be updated is part of.
 		 * @protected
@@ -224,16 +232,16 @@ define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalida
 		 * This method is called when an item is moved in an observable store. The default
 		 * implementation actually moves the renderItem in the renderItems array. This can be redefined but
 		 * must not be called directly.
-		 * @param {number} previousIndex - The previous index of the render item.
-		 * @param {number} newIndex - The new index of the render item.
+		 * @param {number} previousIndex - The previous index of the render item in the range.
+		 * @param {number} newIndex - The new index of the render item in the range.
 		 * @param {Object} renderItem - The render item to be moved.
 		 * @param {Object[]} renderItems - The array of render items to render item to be moved is part of.
 		 * @protected
 		 */
 		itemMoved: function (previousIndex, newIndex, renderItem, renderItems) {
 			// we want to keep the same item object and mixin new values into old object
-			this.itemRemoved(previousIndex, renderItems);
-			this.itemAdded(newIndex, renderItem, renderItems);
+			this.itemRemoved(previousIndex - this.startIndex, renderItems);
+			this.itemAdded(newIndex - this.startIndex, renderItem, renderItems);
 		},
 
 		/**
@@ -243,8 +251,8 @@ define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalida
 		 * @protected
 		 */
 		_itemRemoved: function (event) {
-			if (event.previousIndex !== undefined) {
-				this.itemRemoved(event.previousIndex, this.renderItems);
+			if (event.previousIndex !== undefined && this._isIndexInRange(event.previousIndex)) {
+				this.itemRemoved(event.previousIndex - this.startIndex, this.renderItems);
 				this.renderItems = this.renderItems;
 			}
 			// if no previousIndex the items is removed outside of the range we monitor so we don't care
@@ -259,16 +267,35 @@ define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalida
 		_itemUpdated: function (event) {
 			if (event.index === undefined) {
 				// this is actually a remove
-				this.itemRemoved(event.previousIndex, this.renderItems);
+				if (this._isIndexInRange(event.previousIndex)) {
+					this.itemRemoved(event.previousIndex - this.startIndex, this.renderItems);
+				}
 			} else if (event.previousIndex === undefined) {
 				// this is actually a add
-				this.itemAdded(event.index, this.itemToRenderItem(event.target), this.renderItems);
+				if (this._isIndexInRange(event.index)) {
+					this.itemAdded(event.index - this.startIndex, this.itemToRenderItem(event.target), this.renderItems);
+				}
 			} else if (event.index !== event.previousIndex) {
-				// this is a move
-				this.itemMoved(event.previousIndex, event.index, this.itemToRenderItem(event.target), this.renderItems);
+				if (this._isIndexInRange(event.index)) {
+					if (this._isIndexInRange(event.previousIndex)) {
+						// this is a move
+						this.itemMoved(event.previousIndex - this.startIndex, event.index,
+							this.itemToRenderItem(event.target), this.renderItems);
+					} else {
+						// this a add for our range
+						this.itemAdded(event.index - this.startIndex, this.itemToRenderItem(event.target),
+							this.renderItems);
+					}
+				} else if (this._isIndexInRange(event.previousIndex)) {
+					// this a remove for our range
+					this.itemRemoved(event.previousIndex - this.startIndex, this.renderItems);
+				}
 			} else {
-				// we want to keep the same item object and mixin new values into old object
-				this.itemUpdated(event.index, this.itemToRenderItem(event.target), this.renderItems);
+				if (this._isIndexInRange(event.index)) {
+					// we want to keep the same item object and mixin new values into old object
+					this.itemUpdated(event.index - this.startIndex, this.itemToRenderItem(event.target),
+						this.renderItems);
+				}
 			}
 			// set back the modified items property
 			this.renderItems = this.renderItems;
@@ -281,8 +308,8 @@ define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalida
 		 * @private
 		 */
 		_itemAdded: function (event) {
-			if (event.index !== undefined) {
-				this.itemAdded(event.index, this.itemToRenderItem(event.target), this.renderItems);
+			if (event.index !== undefined && this._isIndexInRange(event.index)) {
+				this.itemAdded(event.index - this.startIndex, this.itemToRenderItem(event.target), this.renderItems);
 				// set back the modified items property
 				this.renderItems = this.renderItems;
 			}

@@ -131,28 +131,30 @@ define([
 		"StoreFuncRange": function () {
 			var d = this.async(1500);
 			var store = new C();
-			store.preProcessStore = function (store) {
-				return store.range(1);
-			};
+			store.startIndex = 1;
+			store.endIndex = 2;
 			var myData = [
 				{ id: "foo", name: "Foo" },
-				{ id: "bar", name: "Bar" }
+				{ id: "bar", name: "Bar" },
+				{ id: "xx", name: "Bar" },
+				{ id: "zz", name: "Bar" }
 			];
 			store.on("query-success", d.callback(function () {
 				assert(store.renderItems instanceof Array);
-				// TODO: actual tests are commented out pending SitePen/dstore#5
-				// TODO: once fixed also add postProcessStore tests
-				//assert.equal(store.renderItems.length, 1);
+				assert.equal(store.renderItems.length, 1);
 				myStore.put({ id: "foo", name: "Foo2" });
 				// this works because put is synchronous & same for add etc...
-				//assert.equal(store.renderItems.length, 1);
-				//assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo2" });
+				assert.equal(store.renderItems.length, 1);
+				assert.deepEqual(store.renderItems[0], { id: "bar", name: "Bar" });
 				myStore.add({ id: "fb", name: "FB" });
-				//assert.equal(store.renderItems.length, 1);
-				//assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo2" });
-				myStore.remove("bar");
-				//assert.equal(store.renderItems.length, 1);
-				//assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo2" });
+				assert.equal(store.renderItems.length, 1);
+				assert.deepEqual(store.renderItems[0], { id: "bar", name: "Bar" });
+				myStore.put({ id: "bar", name: "Bar2" });
+				assert.equal(store.renderItems.length, 1);
+				assert.deepEqual(store.renderItems[0], { id: "bar", name: "Bar2" });
+				myStore.remove("foo");
+				assert.equal(store.renderItems.length, 1);
+				assert.deepEqual(store.renderItems[0], { id: "bar", name: "Bar2" });
 			}));
 			store.startup();
 			// use empty model to easy comparison
@@ -163,7 +165,7 @@ define([
 		"StoreFuncSort": function () {
 			var d = this.async(1500);
 			var store = new C();
-			store.preProcessStore = function (store) {
+			store.processStore = function (store) {
 				return store.sort("index");
 			};
 			var myData = [
