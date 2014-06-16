@@ -33,7 +33,7 @@ selection method is doing that accordingly to the `selectionMode` or to speciali
 
 Once a selection mode has been set there are three ways to modify the selection on the instance:
  
-  * setting the `selectedItem` property to the an item to select it and only it
+  * setting the `selectedItem` property to an item to select it and only it
   * setting the `selectedItems` to an array of items to select all those items and on only them
   * use the `setSelected()` function to toggle on or off the selection state of a particular item
 
@@ -72,7 +72,7 @@ require(["delite/register", "delite/Selection", "delite/StoreMap"/*, ...*/],
     getIdentity: function (renderItem) {
       return renderItem.id;
     },
-    updateRenders: function (renderItems) {
+    updateRenderers: function (renderItems) {
       for (var i = 0; i < renderItems.length; i++) {
         var child = this._childHash[items[i].id];
     	var selected = this.isSelected(items[i]);
