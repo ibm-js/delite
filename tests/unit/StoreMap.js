@@ -162,7 +162,7 @@ define([
 				fooAttr: "name"
 			});
 			/* global fct:true */
-			fct = function () { return "fct" };
+			fct = function () { return "fct"; };
 			var tag = "<test-storemap-5 id='ts6' barAttr='firstname' mFunc='fct'></test-storemap-6>";
 			var tagHolder = document.createElement("div");
 			tagHolder.innerHTML = tag;
