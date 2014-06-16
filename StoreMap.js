@@ -1,6 +1,8 @@
 /** @module delite/StoreMap */
 define(["dcl/dcl", "dojo/_base/lang", "./Store"], function (dcl, lang, Store) {
 
+	var global = (function () { return this; })();
+	
 	var getvalue = function (map, item, key, store) {
 		if (map[key + "Func"]) {
 			return map[key + "Func"](item, store);
@@ -109,7 +111,7 @@ define(["dcl/dcl", "dojo/_base/lang", "./Store"], function (dcl, lang, Store) {
 						// This can be avoided by using mapping by function progammatically or by not using it at all.
 						// This is harmless if you make sure the JavaScript code that is passed to the attribute
 						// is harmless.
-						this[name] = lang.getObject(value, false) || new Function(value);
+						this[name] = lang.getObject(value, false, global) || new Function(value);
 					}
 				}
 			}
