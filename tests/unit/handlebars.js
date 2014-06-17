@@ -11,11 +11,14 @@ define([
 ], function (registerSuite, assert, on, handlebars, register, Widget, simpleHBTmpl, buttonHBTmpl, svgTmpl) {
 	var container, myButton;
 	registerSuite({
+
 		name: "handlebars",
+
 		setup: function () {
 			container = document.createElement("div");
 			document.body.appendChild(container);
 		},
+
 		load: function () {
 			// Test that function returned from delite/handlebars! creates the template correctly
 			var TestButton = register("handlebars-button", [HTMLButtonElement, Widget], {
@@ -277,6 +280,42 @@ define([
 			});
 			var sc = new SelfClosing();
 			assert.strictEqual(sc.childNodes.length, 4, "# of child nodes");
+		},
+
+		nestedProperties: function () {
+			// Testing that nested properties work, with the caveat that updates are only detected if
+			// the top level property is changed.
+
+			var TestNested = register("handlebars-nested", [HTMLElement, Widget], {
+				item: {
+					first: "Tom",
+					last: "Cruise",
+					className: "white",
+				},
+
+				buildRendering: handlebars.compile(
+					"<span class={{item.className}}>Hello {{item.first}} {{item.last}}!</span>")
+			});
+
+			var node = new TestNested();
+			assert.strictEqual(node.className, "white", "class #1");
+			assert.strictEqual(node.textContent.trim(), "Hello Tom Cruise!", "textContent #1");
+
+			node.item = {
+				first: "Tom",
+				last: "Jones",
+				className: "red"
+			};
+			assert.strictEqual(node.className, "red", "class #2");
+			assert.strictEqual(node.textContent.trim(), "Hello Tom Jones!", "textContent #2");
+
+			node.item = {
+				first: "Fred",
+				last: "Smith",
+				className: "blue"
+			};
+			assert.strictEqual(node.className, "blue", "class #3");
+			assert.strictEqual(node.textContent.trim(), "Hello Fred Smith!", "textContent #3");
 		},
 
 		teardown: function () {
