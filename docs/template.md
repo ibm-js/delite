@@ -40,11 +40,8 @@ It gets compiled into a function like:
 The AST format (the JSON shown above) is custom-designed.  The alternative was to use
 [JSONML](http://www.ibm.com/developerworks/library/x-jsonml/#c7).  It's a slightly terser syntax
 (which would be important if we are sending templates over the wire), but I worry slightly that
-it's hard to insert new features into that syntax like:
-
-* data-dojo-attach-point
-* marking which properties need to track changes, vs. which properties can just be read when the
-  template is initially instantiated
+it's hard to insert new features into that syntax like marking which properties need to track changes,
+vs. which properties can just be read when the template is initially instantiated
 
 
 ## Notes on template compilation

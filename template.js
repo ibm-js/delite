@@ -129,8 +129,10 @@ define(["./register"], function (register) {
 					var textNodeName = childName + "t" + (idx + 1);
 					text += "var " + textNodeName + " = doc.createTextNode(this." + child.property + ");\n";
 					text += nodeName + ".appendChild(" + textNodeName + ");\n";
-					text += "this.watch('" + child.property + "', function(a,o,n){ " + textNodeName +
-						".nodeValue = n; });\n";
+
+					// watch for changes; if it's a nested property like item.foo then watch top level prop (item)
+					text += "this.watch('" + child.property.replace(/[^\w].*/, "") +
+						"', function(a,o,n){ " + textNodeName + ".nodeValue = widget." + child.property + "; });\n";
 				} else {
 					// static text
 					text += nodeName + ".appendChild(doc.createTextNode(" + singleQuote(child) + "));\n";
@@ -181,7 +183,8 @@ define(["./register"], function (register) {
 					// Also get list of properties that we need to watch for changes.
 					var watchProps = [], js = parts.map(function (part) {
 						if (part.property) {
-							watchProps.push(part.property);
+							// if it's a nested property like item.foo then watch top level prop (item)
+							watchProps.push(part.property.replace(/[^\w].*/, ""));
 							return "widget." + part.property;	// note: "this" not available in func passed to watch()
 						} else {
 							return singleQuote(part);
@@ -208,7 +211,7 @@ define(["./register"], function (register) {
 		/**
 		 * Given an object tree as described in the module summary,
 		 * returns the text for a function to generate DOM corresponding to that template,
-		 * and setup listeners (using `Widget.watch()`) to propagate changes in the widget
+		 * and setup listeners (using `Stateful#watch()`) to propagate changes in the widget
 		 * properties to the templates.
 		 *
 		 * Code assumes that the root node already exists as "this".
@@ -225,7 +228,7 @@ define(["./register"], function (register) {
 		/**
 		 * Given an object tree as described in the module summary,
 		 * returns a function to generate DOM corresponding to that template,
-		 * and setup listeners (using `Stateful.watch()`) to propagate changes in the widget
+		 * and setup listeners (using `Stateful#watch()`) to propagate changes in the widget
 		 * properties to the templates.
 		 * @param {Object} tree
 		 * @returns {Function}
