@@ -16,7 +16,7 @@ define([
 ], function (advise, dcl, domGeometry, has, keys, on,
 			 place, BackgroundIframe, Viewport) {
 
-	function isDocLtr (doc) {
+	function isDocLtr(doc) {
 		return !(/^rtl$/i).test(doc.body.dir || doc.documentElement.dir);
 	}
 

@@ -44,7 +44,8 @@ define(["intern!object",
 				.keys("\uE004") // tab
 				.execute("return document.activeElement.textContent")
 				.then(function (value) {
-					assert.strictEqual(value, "one", "tabbed to first element on programmatic KeyNav w/implicit tabIndex");
+					assert.strictEqual(value, "one",
+						"tabbed to first element on programmatic KeyNav w/implicit tabIndex");
 				})
 				.execute("secondInput.focus()")// don't tab from previous KeyNav, it goes to address bar [on chrome]
 				.execute("return document.activeElement.value")
@@ -60,7 +61,8 @@ define(["intern!object",
 				.keys("\uE004") // tab
 				.execute("return document.activeElement.textContent")
 				.then(function (value) {
-					assert.strictEqual(value, "seven", "tabbed past INPUT to programmatic KeyNav with tabindex=5 setting");
+					assert.strictEqual(value, "seven",
+						"tabbed past INPUT to programmatic KeyNav with tabindex=5 setting");
 				});
 
 		},
