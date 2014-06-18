@@ -55,6 +55,9 @@ The limitations of using paths are:
    referencing `foo` (for example, `{{foo.bar}}`) will cause a DOM update, even if the value of `foo.bar`
    itself hasn't changed. This may cause unnecessary browser redraw/recalculation, for example due to
    unnecessarily resetting a node's class.
+3. If the last property in a path is undefined or null, an empty string is substituted.  For example, if
+   `foo.bar.zaz` is undefined, then `class="{{foo.bar.zaz}}"` becomes `class=""`.  However, this doesn't
+   work if a parent property is null/undefined, i.e. if `foo.bar` is undefined.
 
 
 ## Widgets in templates

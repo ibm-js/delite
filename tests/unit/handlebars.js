@@ -285,12 +285,11 @@ define([
 		nestedProperties: function () {
 			// Testing that nested properties work, with the caveat that updates are only detected if
 			// the top level property is changed.
+			// Also tests that undefined values convert to "" rather than "undefined".
 
 			var TestNested = register("handlebars-nested", [HTMLElement, Widget], {
 				item: {
-					first: "Tom",
-					last: "Cruise",
-					className: "white",
+					first: "Bob"
 				},
 
 				buildRendering: handlebars.compile(
@@ -298,16 +297,14 @@ define([
 			});
 
 			var node = new TestNested();
-			assert.strictEqual(node.className, "white", "class #1");
-			assert.strictEqual(node.textContent.trim(), "Hello Tom Cruise!", "textContent #1");
+			assert.strictEqual(node.className, "", "class #1");
+			assert.strictEqual(node.textContent.trim(), "Hello Bob !", "textContent #1");
 
 			node.item = {
-				first: "Tom",
-				last: "Jones",
-				className: "red"
+				first: "Tom"
 			};
-			assert.strictEqual(node.className, "red", "class #2");
-			assert.strictEqual(node.textContent.trim(), "Hello Tom Jones!", "textContent #2");
+			assert.strictEqual(node.className, "", "class #2");
+			assert.strictEqual(node.textContent.trim(), "Hello Tom !", "textContent #2");
 
 			node.item = {
 				first: "Fred",

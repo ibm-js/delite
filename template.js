@@ -127,12 +127,12 @@ define(["./register"], function (register) {
 				} else if (child.property) {
 					// text node bound to a widget property, ex: this.label
 					var textNodeName = childName + "t" + (idx + 1);
-					text += "var " + textNodeName + " = doc.createTextNode(this." + child.property + ");\n";
+					text += "var " + textNodeName + " = doc.createTextNode(this." + child.property + " || '');\n";
 					text += nodeName + ".appendChild(" + textNodeName + ");\n";
 
 					// watch for changes; if it's a nested property like item.foo then watch top level prop (item)
-					text += "this.watch('" + child.property.replace(/[^\w].*/, "") +
-						"', function(a,o,n){ " + textNodeName + ".nodeValue = widget." + child.property + "; });\n";
+					text += "this.watch('" + child.property.replace(/[^\w].*/, "") + "', function(a,o,n){ "
+						+ textNodeName + ".nodeValue = (widget." + child.property + ") || ''; });\n";
 				} else {
 					// static text
 					text += nodeName + ".appendChild(doc.createTextNode(" + singleQuote(child) + "));\n";
@@ -183,9 +183,10 @@ define(["./register"], function (register) {
 					// Also get list of properties that we need to watch for changes.
 					var watchProps = [], js = parts.map(function (part) {
 						if (part.property) {
-							// if it's a nested property like item.foo then watch top level prop (item)
+							// If it's a nested property like item.foo then watch top level prop (item).
+							// Also note that "this" not available in func passed to watch(), so use "widget".
 							watchProps.push(part.property.replace(/[^\w].*/, ""));
-							return "widget." + part.property;	// note: "this" not available in func passed to watch()
+							return "(widget." + part.property + ") || ''";
 						} else {
 							return singleQuote(part);
 						}
