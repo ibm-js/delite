@@ -7,7 +7,7 @@ define([
 	"./register",
 	"./CustomElement",
 	"./Widget",
-	"./handlebars",
+	"./Templated",
 	"./HasDropDown",
 	"./CssState",
 	"./Container",
