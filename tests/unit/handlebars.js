@@ -5,10 +5,9 @@ define([
 	"delite/handlebars",
 	"delite/register",
 	"delite/Widget",
-	"delite/handlebars!./templates/SimpleHandleBarsButton.html",
 	"delite/handlebars!./templates/HandlebarsButton.html",
 	"delite/handlebars!./templates/SvgWidget.html"
-], function (registerSuite, assert, on, handlebars, register, Widget, simpleHBTmpl, buttonHBTmpl, svgTmpl) {
+], function (registerSuite, assert, on, handlebars, register, Widget, buttonHBTmpl, svgTmpl) {
 	var container, myButton;
 	registerSuite({
 
@@ -24,7 +23,7 @@ define([
 			var TestButton = register("handlebars-button", [HTMLButtonElement, Widget], {
 				iconClass: "originalClass",
 				label: "original label",
-				buildRendering: simpleHBTmpl
+				buildRendering: buttonHBTmpl
 			});
 			myButton = new TestButton();
 			assert.strictEqual(myButton.tagName.toLowerCase(), "button", "root node exists");
@@ -59,40 +58,6 @@ define([
 			assert.strictEqual(node.root2.tagName.toLowerCase(), "handlebars-data-attach-point", "node.root");
 			assert.strictEqual(node.myButton.tagName.toLowerCase(), "button", "node.myButton");
 			assert.strictEqual(node.myButton2.tagName.toLowerCase(), "button", "node.myButton2");
-		},
-
-		branching: function () {
-			var NoLabelButton = register("handlebars-no-label-button", [HTMLButtonElement, Widget], {
-				iconClass: "originalClass",
-				showLabel: false,
-				label: "original label",
-				buildRendering: buttonHBTmpl
-			});
-			myButton = new NoLabelButton();
-			assert.strictEqual(myButton.tagName.toLowerCase(), "button", "root node exists");
-			assert.strictEqual(myButton.firstChild.tagName.toLowerCase(), "span", "icon node exists too");
-			assert.strictEqual(myButton.firstChild.className, "d-reset originalClass", "icon class set");
-			assert.strictEqual(myButton.textContent.trim(), "", "no label");
-			myButton.label = "new label";
-			assert.strictEqual(myButton.textContent.trim(), "", "still no label");
-
-			// Test true if condition
-			var LabelButton = register("handlebars-label-button", [HTMLButtonElement, Widget], {
-				iconClass: "originalClass",
-				showLabel: true,
-				label: "original label",
-				buildRendering: buttonHBTmpl
-			});
-			myButton = new LabelButton();
-			assert.strictEqual(myButton.tagName.toLowerCase(), "button", "root node exists");
-			assert.strictEqual(myButton.firstChild.tagName.toLowerCase(), "span", "icon node exists too");
-			assert.strictEqual(myButton.firstChild.className, "d-reset originalClass", "icon class set");
-			assert.strictEqual(myButton.textContent.trim(), "original label", "label");
-
-			// Make sure that changes still work
-			myButton.label = "new label";
-			assert.strictEqual(myButton.textContent.trim(), "new label", "label updated");
-
 		},
 
 		"special props": function () {

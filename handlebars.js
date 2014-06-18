@@ -13,9 +13,7 @@
  * ```html
  * <button>
  *   <span class="d-reset {{iconClass}}"></span>
- *   {{#if showLabel}}
- *     {{label}}
- *   {{/if}}
+ *   {{label}}
  * </button>
  * ```
  * 
@@ -62,13 +60,8 @@ define(["./template"], function (template) {
 	}
 
 	var handlebars = /** @lends module:delite/handlebars */ {
-		//		TODO: loops like <ul>{{#each ary}}<span>{{foo}}</span>{{/each}}</ul>
-		//		where ary is an array like [{foo: 123},...].  In this case the parent node
-		//		(<ul> in this example) can't have any other children besides what's defined by
-		//		the {{#each ary}}...{{/ary}} block.
-
 		/**
-		 * Scan a single Element (not text node, not branching node like {{#if}}, but regular DOM node.
+		 * Scan a single Element (not text node, but regular DOM node).
 		 * @param {Element} templateNode
 		 * @param {string} [xmlns] - Used primarily for SVG nodes.
 		 * @returns {Object} Object in format
@@ -121,13 +114,7 @@ define(["./template"], function (template) {
 
 			for (var child = templateNode.firstChild; child; child = child.nextSibling) {
 				var childType = child.nodeType;
-				if (/each|if/i.test(child.tagName)) {
-					children.push({
-						branch: child.attributes.condition.nodeValue,
-						children: this.parseChildren(child, xmlns)
-					});
-					// TODO: handle <each> tags
-				} else if (childType === 1) {
+				if (childType === 1) {
 					// Standard DOM node, recurse
 					children.push(handlebars.parseNode(child, xmlns));
 				} else if (childType === 3) {
@@ -173,25 +160,20 @@ define(["./template"], function (template) {
 		 * @private
 		 */
 		parse: function (templateText) {
-			// Adjust the template, putting if statements and looping statements inside their own
-			// <each> and <if> blocks.
-			var adjustedTemplate = templateText.replace(/{{#(each|if) +([^}]+)}}/g,
-					"<$1 condition='$2'>").replace(/{{\/[^}]+}}/g, "</$1>");
-
-			// Also, rename all the custom elements in the template so that browsers with native
+			// Rename all the custom elements in the template so that browsers with native
 			// document.createElement() support don't start instantiating nested widgets, creating internal nodes etc.
 			// Regex designed to match <foo-bar> and <button is=...> but not <!-- comment -->, and not
 			// native tags like <br>...except for <template> itself, which needs to be renamed for some reason.
-			adjustedTemplate = adjustedTemplate.replace(
+			templateText = templateText.replace(
 				/(<\/? *)([a-zA-Z0-9]+-[-a-zA-Z0-9]+|template|[a-zA-Z]+[^>]+is=)/g, "$1template-$2");
 
 			// Create DOM tree from template.
 			// If template contains SVG nodes then parse as XML, to preserve case of attributes like viewBox.
 			// Otherwise parse as HTML, to allow for missing closing tags, ex: <ul> <li>1 <li>2 </ul>.
 			var root;
-			if (/<svg/.test(templateText)) {
+			if (/<template-svg/.test(templateText)) {
 				var parser = new DOMParser();
-				root = parser.parseFromString(adjustedTemplate, "text/xml").firstChild;
+				root = parser.parseFromString(templateText, "text/xml").firstChild;
 				while (root.nodeType !== 1) {
 					// Skip top level comment and move to "real" template root node.
 					// Needed since there's no .firstElementChild or .nextElementSibling for SVG nodes on FF.
@@ -200,7 +182,7 @@ define(["./template"], function (template) {
 			} else {
 				// Use innerHTML because Safari doesn't support DOMParser.parseFromString(str, "text/html")
 				var container = document.createElement("div");
-				container.innerHTML = adjustedTemplate;
+				container.innerHTML = templateText;
 				root = container.firstElementChild; // use .firstElementChild to skip possible top level comment
 			}
 
