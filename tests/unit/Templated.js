@@ -4,10 +4,10 @@ define([
 	"dojo/on",
 	"delite/register",
 	"delite/Templated",
-	"requirejs-text/text!./templates/HandlebarsButton.html",
-	"requirejs-text/text!./templates/SvgWidget.html",
+	"delite/Templated!./templates/HandlebarsButton.html",
+	"delite/Templated!./templates/SvgWidget.html",
 	"delite/theme!"		// to get CSS rules for d-hidden
-], function (registerSuite, assert, on, register, Templated, buttonHBTmpl, svgTmpl) {
+], function (registerSuite, assert, on, register, Templated, ButtonTemplated, SvgTemplated) {
 	var container, myButton;
 	registerSuite({
 		name: "Templated",
@@ -19,10 +19,9 @@ define([
 
 		load: function () {
 			// Test that function returned from requirejs-text/text! creates the template correctly
-			var TestButton = register("handlebars-button", [HTMLButtonElement, Templated], {
+			var TestButton = register("handlebars-button", [HTMLButtonElement, ButtonTemplated], {
 				iconClass: "originalClass",
-				label: "original label",
-				template: buttonHBTmpl
+				label: "original label"
 			});
 			myButton = new TestButton();
 			assert.strictEqual(myButton.tagName.toLowerCase(), "button", "root node exists");
@@ -177,9 +176,7 @@ define([
 			//		3. tags of SVG nodes are lowercase
 			//		4. attribute names are case sensitive
 
-			var TestSvg = register("handlebars-svg", [HTMLElement, Templated], {
-				template: svgTmpl
-			});
+			var TestSvg = register("handlebars-svg", [HTMLElement, SvgTemplated]);
 
 			var node = new TestSvg();
 			assert.strictEqual(node.tagName.toLowerCase(), "handlebars-svg", "root node exists");
