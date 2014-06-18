@@ -113,14 +113,7 @@ define(["./register"], function (register) {
 
 			children.forEach(function (child, idx) {
 				var childName = (nodeName === "this" ? "" : nodeName) + "c" + (idx + 1);
-				if (child.branch) {
-					// {{#if ...}} in Handlebars syntax
-					text += "if(this." + child.branch + "){\n";
-					text += this.generateNodeChildrenCode(nodeName, child.children);
-					text += "}\n";
-				} else if (child.each) {
-					throw new Error("TODO: each not supported yet");
-				} else if (child.tag) {
+				if (child.tag) {
 					// Standard DOM node, recurse
 					text += this.generateNodeCode(childName, child);
 					text += nodeName + ".appendChild(" + childName + ");\n";

@@ -6,9 +6,7 @@ DOM as the widget's `iconClass` and `label` properties were changed:
 
 	<button>
 		<span class="d-reset {{iconClass}}"></span>
-		{{#if showLabel}}
-			{{label}}
-		{{/if}}
+		{{label}}
 	</button>
 
 
