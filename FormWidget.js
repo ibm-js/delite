@@ -11,6 +11,9 @@ define([
 	 * to native HTML elements such as `<checkbox>` or `<button>`,
 	 * which can be children of a `<form>` node.
 	 *
+	 * Note that FormWidget requires that this.focusNode be a sub-node of theAdd widget, rather than the
+	 * root node.  This is because of it's processing of `tabIndex`.
+	 *
 	 * @mixin module:delite/FormWidget
 	 * @augments module:delite/Widget
 	 * @augments module:delite/Invalidating
