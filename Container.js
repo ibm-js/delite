@@ -68,40 +68,6 @@ define([
 		 */
 		getIndexOfChild: function (child) {
 			return this.getChildren().indexOf(child);
-		},
-
-		/**
-		 * Returns next or previous sibling of specified node.
-		 * @param {Element} node - The node.
-		 * @param {string} which - Either "next" or "previous".
-		 * @returns {Element}
-		 * @private
-		 */
-		_getSibling: function (node, which) {
-			do {
-				node = node[which + "Sibling"];
-			} while (node && node.nodeType !== 1);
-			return node;
-		},
-
-		/**
-		 * Returns null if this is the first child of the parent,
-		 * otherwise returns the next element sibling to the "left".
-		 * @param {Element} node
-		 * @returns {Element}
-		 */
-		getPreviousSibling: function (node) {
-			return this._getSibling(node, "previous");
-		},
-
-		/**
-		 * Returns null if this is the last child of the parent,
-		 * otherwise returns the next element sibling to the "right".
-		 * @param {Element} node
-		 * @returns {Element}
-		 */
-		getNextSibling: function (node) {
-			return this._getSibling(node, "next");
 		}
 	});
 });
