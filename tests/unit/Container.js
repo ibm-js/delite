@@ -56,16 +56,6 @@ define([
 			assert.deepEqual(-1, c.getIndexOfChild(document.getElementById("outsideCont")), "outsideCont test");
 
 		},
-		"basic tests getNextSibling": function () {
-			var c = document.getElementById("container");
-			assert.deepEqual("one", c.getNextSibling(document.getElementById("zero")).id, "zero next");
-			assert(!c.getNextSibling(document.getElementById("four")), "four next");
-		},
-		"basic tests getPreviousSibling": function () {
-			var c = document.getElementById("container");
-			assert.deepEqual("zero", c.getPreviousSibling(document.getElementById("one")).id, "one prev");
-			assert(!c.getPreviousSibling(document.getElementById("zero")), "zero prev");
-		},
 		"basic tests removeChild": function () {
 			var c = document.getElementById("container");
 			var children = c.getChildren();
