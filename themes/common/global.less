@@ -37,3 +37,14 @@
 	padding: 0;
 	vertical-align: middle;
 }
+
+// Hide a node via class="d-hidden", or in templates, via either d-hidden="{{hideFlag}}" or d-shown="{{showFlag}}".
+// Note that template.js doesn't have an architecture for creating/removing attributes, and all falsy
+// attribute values are converted to an empty string, so the attribute setting from a template will be
+// either d-hidden="true" or d-hidden="".
+.d-hidden, [d-hidden=true], [d-shown]:not([d-shown=true]) {
+	display: none
+}
+.d-invisible, [d-invisible=true], [d-visible]:not([d-visible=true]) {
+	visibility: hidden
+}

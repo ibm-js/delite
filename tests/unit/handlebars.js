@@ -6,7 +6,8 @@ define([
 	"delite/register",
 	"delite/Widget",
 	"delite/handlebars!./templates/HandlebarsButton.html",
-	"delite/handlebars!./templates/SvgWidget.html"
+	"delite/handlebars!./templates/SvgWidget.html",
+	"delite/theme!"		// to get CSS rules for d-hidden
 ], function (registerSuite, assert, on, handlebars, register, Widget, buttonHBTmpl, svgTmpl) {
 	var container, myButton;
 	registerSuite({
@@ -280,18 +281,10 @@ define([
 			assert.strictEqual(node.textContent.trim(), "Hello Fred Smith!", "textContent #3");
 		},
 
-		hide: function () {
-			// Testing poor man's solution to hide nodes depending on boolean widget property.
-
-			// Template.js doesn't have any provisions for creating/removing attributes, and all falsy
-			// attributes are converted to an empty string, so the attribute setting will be either hide="true"
-			// or hide="".
-			container.insertAdjacentHTML("beforeend",
-				"<style>[hide=true] { display: none; }</style>");
-
+		"d-hidden": function () {
 			var TestNested = register("handlebars-hide", [HTMLElement, Widget], {
 				hideSpan: true,
-				buildRendering: handlebars.compile("<span hide={{hideSpan}}>hello world</span>")
+				buildRendering: handlebars.compile("<span d-hidden={{hideSpan}}>hello world</span>")
 			});
 
 			var node = new TestNested();
@@ -302,18 +295,10 @@ define([
 			assert.strictEqual(getComputedStyle(node).display, "inline", "not hidden");
 		},
 
-		show: function () {
-			// Testing poor man's solution to show nodes depending on boolean widget property
-
-			// Template.js doesn't have any provisions for creating/removing attributes, and all falsy
-			// attributes are converted to an empty string, so the attribute setting will be either show="true"
-			// or show="".  I thought [show=''] as a CSS selector would work but for some reason it doesn't.
-			container.insertAdjacentHTML("beforeend",
-				"<style>[show]:not([show=true]) { display: none; }</style>");
-
+		"d-shown": function () {
 			var TestNested = register("handlebars-show", [HTMLElement, Widget], {
 				showSpan: true,
-				buildRendering: handlebars.compile("<span show={{showSpan}}>hello world</span>")
+				buildRendering: handlebars.compile("<span d-shown={{showSpan}}>hello world</span>")
 			});
 
 			var node = new TestNested();

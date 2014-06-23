@@ -81,6 +81,21 @@ Note that the template text can still be put into a file, and the file loaded wi
 		...
 	}
 
+## Hiding and showing nodes in a template
+
+Although we don't support `{{#if}}`, you can show/hide nodes in a template like:
+
+	<template>
+		<div d-hidden="{{myHideFlag}}">...</div>
+		<div d-shown="{{myShowFlag}}">...</div>
+	</template>
+
+Note that this requires including the common CSS defined by the themes (coming from themes/common/global.less),
+so your widget must reference the `delite/theme!` plugin:
+
+	define([..., "delite/theme!"], function(...) { ...
+
+
 ## Unsupported constructs
 
 1. Helpers like `{{fullName author}}`. But plan to support helpers in the future.

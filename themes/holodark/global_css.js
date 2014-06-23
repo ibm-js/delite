@@ -23,6 +23,16 @@ define(function () {
   padding: 0;\
   vertical-align: middle;\
 }\
+.d-hidden,\
+[d-hidden=true],\
+[d-shown]:not([d-shown=true]) {\
+  display: none;\
+}\
+.d-invisible,\
+[d-invisible=true],\
+[d-visible]:not([d-visible=true]) {\
+  visibility: hidden;\
+}\
 html,\
 body {\
   width: 100%;\
