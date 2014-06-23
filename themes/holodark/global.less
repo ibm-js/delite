@@ -12,20 +12,20 @@
 // Tag selectors
 // ----------------------------------------------
 html, body {
-  width: 100%;
-  margin: 0;
-  padding: 0;
+	width: 100%;
+	margin: 0;
+	padding: 0;
 }
 
 body {
-  overflow-x: hidden;
-  .text-size-adjust(none);
-  //.mobile-body-styles;
-  font-family: Helvetica;
-  font-size: 17px;
-  color: @holo-color;
-  //.d-background-styles;
-  background-color: @holo-base-color;
+	overflow-x: hidden;
+	.text-size-adjust(none);
+	//.mobile-body-styles;
+	font-family: Helvetica;
+	font-size: 17px;
+	color: @holo-color;
+	//.d-background-styles;
+	background-color: @holo-base-color;
 }
 
 // ----------------------------------------------
@@ -33,17 +33,17 @@ body {
 // ----------------------------------------------
 // Popup items have a wrapper div (d-popup) with the real popup inside, and maybe an iframe too
 .d-popup {
-  position: absolute;
-  background-color: transparent;
-  margin: 0;
-  border: 0;
-  padding: 0;
-  -webkit-overflow-scrolling: touch;
-  .box-shadow(0 1px 5px rgba(0,0,0,0.25));
+	position: absolute;
+	background-color: transparent;
+	margin: 0;
+	border: 0;
+	padding: 0;
+	-webkit-overflow-scrolling: touch;
+	.box-shadow(0 1px 5px rgba(0,0,0,0.25));
 }
 
 .d-tooltip-dialog-popup {
-  // exception popups: do not use a shadow on these because they aren't rectangular
-  .box-shadow(none);
+	// exception popups: do not use a shadow on these because they aren't rectangular
+	.box-shadow(none);
 }
 // EOF
