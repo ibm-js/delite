@@ -50,7 +50,7 @@ In order for a widget to leverage `delite/Selection` it must extend it and imple
 
 ```js
 require(["delite/register", "delite/Selection", "delite/StoreMap"/*, ...*/], 
-  function (register, Widget, Selection/*, ...*/) {
+  function (register, Widget, Selection, StoreMap/*, ...*/) {
   return register("my-widget", [HTMElement, Selection, StoreMap], {
     labelAttr: "label",
     preCreate: function () {
@@ -74,13 +74,13 @@ require(["delite/register", "delite/Selection", "delite/StoreMap"/*, ...*/],
     },
     updateRenderers: function (renderItems) {
       for (var i = 0; i < renderItems.length; i++) {
-        var child = this._childHash[items[i].id];
-    	var selected = this.isSelected(items[i]);
-      	if (selected) {
-      	  child.setAttribute("class", "selected");
-      	} else {
-      	  child.setAttribute("class", "");
-      	}
+        var child = this._childHash[renderItems[i].id];
+        var selected = this.isSelected(renderItems[i]);
+        if (selected) {
+          child.setAttribute("class", "selected");
+        } else {
+          child.setAttribute("class", "");
+        }
       }    
     }
   });
