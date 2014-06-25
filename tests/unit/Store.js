@@ -128,11 +128,12 @@ define([
 			store.store = myStore;
 			return d;
 		},
-		"StoreFuncRange": function () {
+		"StoreFuncFetchRange": function () {
 			var d = this.async(1500);
 			var store = new C();
-			store.preProcessStore = function (store) {
-				return store.range(1);
+			store.fetch = function (collection) {
+				// if we have a mapping function between store item and some intermediary items use it
+				this.initItems(collection.map(this.itemToRenderItem.bind(this)).fetchRange({start: 1, end: 2}));
 			};
 			var myData = [
 				{ id: "foo", name: "Foo" },
