@@ -12,7 +12,7 @@
 define([
 	"dojo/Evented",
 	"dojo/on",
-	"dojo/sniff",	// has("ie"), has("ios")
+	"delite/sniff",	// has("ie"), has("ios")
 	"dojo/window", // getBox()
 	"requirejs-domready/domReady!"
 ], function (Evented, on, has, winUtils) {
