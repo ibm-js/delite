@@ -190,7 +190,7 @@ define(["dcl/dcl", "./sniff", "./Widget"], function (dcl, has, Widget) {
 		/**
 		 * Applies selection triggered by an user interaction.
 		 * @param {Event} event - The source event of the user interaction.
-		 * @param {Object} value - The render item that has been selected/deselected.
+		 * @param {Object} item - The item that has been selected/deselected.
 		 * @param {Object} renderer - The visual renderer of the selected/deselected item.
 		 * @param {boolean} dispatch - Whether an event must be dispatched or not.
 		 * @returns {boolean} True if the selection has changed and false otherwise.
