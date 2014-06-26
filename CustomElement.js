@@ -2,10 +2,9 @@
 define([
 	"dcl/dcl",
 	"dojo/_base/lang",
-	"dojo/on",
 	"./Destroyable",
 	"./Stateful"
-], function (dcl, lang, on, Destroyable, Stateful) {
+], function (dcl, lang, Destroyable, Stateful) {
 
 	// Need to pass in "global" parameter to lang.getObject() to workaround
 	// https://bugs.dojotoolkit.org/ticket/17829
@@ -231,27 +230,29 @@ define([
 		 *
 		 * @param {string} type - Name of event.
 		 * @param {Object} [eventObj] - Properties to mix in to emitted event.
-		 * @returns {boolean} Whether or not the event was prevented.
+		 * @returns {boolean} True if the event was *not* canceled, false if it was canceled.
 		 * @example
 		 * myWidget.emit("query-success", {});
 		 * @protected
 		 */
 		emit: function (type, eventObj) {
-			// Specify fallback values for bubbles, cancelable in case they are not set in eventObj.
-			// Also set pointer to widget, although since we can't add a pointer to the widget for native events
-			// (see #14729), maybe we shouldn't do it here?
-			eventObj = eventObj || {};
-			if (eventObj.bubbles === undefined) {
-				eventObj.bubbles = true;
-			}
-			if (eventObj.cancelable === undefined) {
-				eventObj.cancelable = true;
-			}
-
 			// Emit event, but (for the case of the Widget subclass)
 			// avoid spurious emit()'s as parent sets properties on child during startup/destroy
 			if (this._started !== false && !this._beingDestroyed) {
-				return on.emit(this, type, eventObj);
+				eventObj = eventObj || {};
+				var bubbles = "bubbles" in eventObj ? eventObj.bubbles : true;
+				var cancelable = "cancelable" in eventObj ? eventObj.cancelable : true;
+
+				// Note: can't use jQuery.trigger() because it doesn't work with addEventListener(),
+				// see http://bugs.jquery.com/ticket/11047
+				var nativeEvent = this.ownerDocument.createEvent("HTMLEvents");
+				nativeEvent.initEvent(type, bubbles, cancelable);
+				for (var i in eventObj) {
+					if (!(i in nativeEvent)) {
+						nativeEvent[i] = eventObj[i];
+					}
+				}
+				return this.dispatchEvent(nativeEvent);
 			}
 		},
 
@@ -263,9 +264,32 @@ define([
 		 * @param {string|Function} type - Name of event (ex: "click") or extension event like `touch.press`.
 		 * @param {Function} func - Callback function.
 		 * @param {Element} [node] - Element to attach handler to, defaults to `this`.
+		 * @returns {Object} Handle with `remove()` method to cancel the event.
 		 */
 		on: function (type, func, node) {
-			return this.own(on(node || this, type, func))[0];
+			// Shim support for focusin/focusout, plus treat on(focus, "...") like on("focusin", ...) since
+			// conceptually when widget.focusNode gets focus, it means the widget itself got focus.
+			var captures = {
+					focusin: "focus",
+					focus: "focus",
+					focusout: "blur",
+					blur: "blur"
+				},
+				capture = type in captures,
+				adjustedType = capture ? captures[type] : type;
+
+			// TODO: would it be better if node was the first parameter (but optional)?
+			node = node || this;
+
+			// Use addEventListener() because jQuery's on() returns a wrapped event object that
+			// doesn't have custom properties we add to custom events.  The downside is that we don't
+			// get any event normalization like "focusin".
+			node.addEventListener(adjustedType, func, capture);
+			return this.own({
+				remove: function () {
+					node.removeEventListener(adjustedType, func, capture);
+				}
+			})[0];
 		},
 
 		// Utility functions previously in registry.js

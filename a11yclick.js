@@ -2,9 +2,8 @@
   * @module delite/a11yclick
  */
 define([
-	"dojo/keys", // keys.ENTER keys.SPACE
-	"dojo/on"
-], function (keys, on) {
+	"dojo/keys" // keys.ENTER keys.SPACE
+], function (keys) {
 
 	// TODO: add functional tests
 
@@ -28,7 +27,7 @@ define([
 
 	var lastKeyDownNode;
 
-	on(document, "keydown", function (e) {
+	document.addEventListener("keydown", function (e) {
 		//console.log("a11yclick: onkeydown, e.target = ", e.target, ", lastKeyDownNode was ",
 		// lastKeyDownNode, ", equality is ", (e.target === lastKeyDownNode));
 		if (!e.defaultPrevented && clickKey(e)) {
@@ -42,7 +41,7 @@ define([
 		}
 	});
 
-	on(document, "keyup", function (e) {
+	document.addEventListener("keyup", function (e) {
 		//console.log("a11yclick: onkeyup, e.target = ", e.target, ", lastKeyDownNode was ",
 		// lastKeyDownNode, ", equality is ", (e.target === lastKeyDownNode));
 		if (clickKey(e) && e.target === lastKeyDownNode) {
@@ -52,15 +51,27 @@ define([
 			// prevent scroll
 			e.preventDefault();
 
-			on.emit(e.target, "click", {
-				cancelable: true,
-				bubbles: true,
-				ctrlKey: e.ctrlKey,
-				shiftKey: e.shiftKey,
-				metaKey: e.metaKey,
-				altKey: e.altKey,
-				_origType: e.type
-			});
+			var doc = e.target.ownerDocument,
+				clickEvent = doc.createEvent("MouseEvents");
+
+			clickEvent.initMouseEvent(
+				"click",
+				true,
+				true,
+				doc.defaultView,
+				0,
+				0,
+				0,
+				0,
+				0,
+				e.ctrlKey,
+				e.altKey,
+				e.shiftKey,
+				e.metaKey,
+				0,
+				doc.body	// relatedTarget, for mouseout events
+			);
+			e.target.dispatchEvent(clickEvent);
 		}
 	});
 

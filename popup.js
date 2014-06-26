@@ -8,13 +8,11 @@ define([
 	"dojo/dom-geometry", // domGeometry.position
 	"requirejs-dplugins/has", // has("config-bgIframe")
 	"dojo/keys",
-	"dojo/on",
 	"./place",
 	"./BackgroundIframe",
 	"./Viewport",
 	"./theme!" // d-popup class
-], function (advise, dcl, domGeometry, has, keys, on,
-			 place, BackgroundIframe, Viewport) {
+], function (advise, dcl, domGeometry, has, keys, place, BackgroundIframe, Viewport) {
 
 	function isDocLtr(doc) {
 		return !(/^rtl$/i).test(doc.body.dir || doc.documentElement.dir);
@@ -143,7 +141,7 @@ define([
 				// Need to be careful though that you can still focus <input>'s and click <button>'s in a TooltipDialog.
 				// Also, be careful not to break (native) scrolling of dropdown like ComboBox's options list.
 				if ("ontouchend" in document) {
-					on(wrapper, "touchend", function (evt) {
+					wrapper.addEventListener("touchend", function (evt) {
 						if (!/^(input|button|textarea)$/i.test(evt.target.tagName)) {
 							evt.preventDefault();
 						}
@@ -320,7 +318,7 @@ define([
 
 			// provide default escape and tab key handling
 			// (this will work for any widget, not just menu)
-			handlers.push(on(wrapper, "keydown", function (evt) {
+			function onKeyDown(evt) {
 				if (evt.keyCode === keys.ESCAPE && args.onCancel) {
 					evt.stopPropagation();
 					evt.preventDefault();
@@ -333,7 +331,13 @@ define([
 						topPopup.onCancel();
 					}
 				}
-			}));
+			}
+			wrapper.addEventListener("keydown", onKeyDown);
+			handlers.push({
+				remove: function () {
+					wrapper.removeEventListener("keydown", onKeyDown);
+				}
+			});
 
 			// watch for cancel/execute events on the popup and notify the caller
 			// (for a menu, "execute" means clicking an item)

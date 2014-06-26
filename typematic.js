@@ -5,9 +5,13 @@
  * Only one such event is allowed to occur on the browser page at one time.
  * @module delite/typematic
  */
-define([
-	"dojo/on"
-], function (on) {
+define([], function () {
+
+	// TODO: do we still need this module at all?
+
+	// TODO: wouldn't this be easier to use as a widget base class (although we would need to make sure the function
+	// names wouldn't likely conflict with other general method names)?
+
 	var typematic = /** @lends module:delite/typematic */ {
 		_fireEventAndReload: function () {
 			this._timer = null;
@@ -120,7 +124,7 @@ define([
 				attr = "keyCode" in keyObject ? "keyCode" : "charCode";
 
 			var handles = [
-				on(node, type, function (evt) {
+				_this.on(type, function (evt) {
 					if (evt[attr] === keyObject[attr] &&
 						(keyObject.ctrlKey === undefined || keyObject.ctrlKey === evt.ctrlKey) &&
 						(keyObject.altKey === undefined || keyObject.altKey === evt.altKey) &&
@@ -133,18 +137,20 @@ define([
 					} else if (typematic._obj === keyObject) {
 						typematic.stop();
 					}
-				}),
-				on(node, "keyup", function () {
+				}, node),
+				_this.on("keyup", function () {
 					if (typematic._obj === keyObject) {
 						typematic.stop();
 					}
-				})
+				}, node)
 			];
-			return { remove: function () {
-				handles.forEach(function (h) {
-					h.remove();
-				});
-			} };
+			return {
+				remove: function () {
+					handles.forEach(function (h) {
+						h.remove();
+					});
+				}
+			};
 		},
 
 		/**
@@ -171,25 +177,25 @@ define([
 		addMouseListener: function (node,  _this, callback,
 				subsequentDelay, initialDelay, minDelay) {
 			var handles = [
-				on(node, "mousedown", function (evt) {
+				_this.on("mousedown", function (evt) {
 					evt.preventDefault();
 					typematic.trigger(evt, _this, node, callback, node, subsequentDelay, initialDelay, minDelay);
-				}),
-				on(node, "mouseup", function (evt) {
+				}, node),
+				_this.on("mouseup", function (evt) {
 					if (this._obj) {
 						evt.preventDefault();
 					}
 					typematic.stop();
-				}.bind(this)),
-				on(node, "mouseout", function (evt) {
+				}.bind(this), node),
+				_this.on("mouseout", function (evt) {
 					if (this._obj) {
 						evt.preventDefault();
 					}
 					typematic.stop();
-				}.bind(this)),
-				on(node, "dblclick", function (evt) {
+				}.bind(this), node),
+				_this.on("dblclick", function (evt) {
 					evt.preventDefault();
-				})
+				}, node)
 			];
 			return { remove: function () {
 				handles.forEach(function (h) {
