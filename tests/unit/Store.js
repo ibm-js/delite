@@ -195,9 +195,9 @@ define([
 			var d = this.async(1500);
 			var store = new C();
 			var myData = [
-							{ id: "foo", name: "Foo" },
-							{ id: "bar", name: "Bar" }
-						];
+				{ id: "foo", name: "Foo" },
+				{ id: "bar", name: "Bar" }
+			];
 			var myStore = new M({ data: myData.slice(0), model: null});
 			var liveCollection = null;
 			var initialFetch = store.fetch;
@@ -220,7 +220,7 @@ define([
 			store.startup();
 			store.store = myStore;
 			return d;
-		}, 
+		},
 		teardown: function () {
 			//container.parentNode.removeChild(container);
 		}

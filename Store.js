@@ -38,9 +38,9 @@ define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalida
 		query: {},
 
 		/**
-		 * A function that processes the collection returned by the store query and returns a new collection (to sort it,
-		 * range it etc...). This processing is applied before potentially tracking the store for modifications 
-		 * (if Observable).
+		 * A function that processes the collection returned by the store query and returns a new collection
+		 * (to sort it, range it etc...). This processing is applied before potentially tracking the store
+		 * for modifications (if Observable).
 		 * Changing this function on the instance will not automatically refresh the class.
 		 * @default identity function
 		 */
