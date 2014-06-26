@@ -347,10 +347,8 @@ define([
 				evt.preventDefault();
 				this._searchString = ""; // so a DOWN_ARROW b doesn't search for ab
 			} else if (evt.keyCode === keys.SPACE && this._searchTimer && !(evt.ctrlKey || evt.altKey || evt.metaKey)) {
-				// stop a11yclick and _HasDropdown from seeing SPACE if we're doing keyboard searching
-				evt.stopImmediatePropagation();
-
-				// stop IE from scrolling, and most browsers (except FF) from sending keypress
+				// Stop a11yclick from interpreting key as a click event.
+				// Also stop IE from scrolling, and most browsers (except FF) from sending keypress.
 				evt.preventDefault();
 
 				this._keyboardSearch(evt, " ");

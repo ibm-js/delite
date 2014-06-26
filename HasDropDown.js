@@ -310,7 +310,7 @@ define([
 				e.preventDefault();
 			} else if (!this.opened &&
 				(e.keyCode === keys.DOWN_ARROW ||
-					// ignore unmodified SPACE if _KeyNavMixin has active searching in progress
+					// ignore unmodified SPACE if KeyNav has search in progress
 					((e.keyCode === keys.ENTER || (e.keyCode === keys.SPACE &&
 						(!this._searchTimer || (e.ctrlKey || e.altKey || e.metaKey)))) &&
 						//ignore enter and space if the event is for a text input
