@@ -258,6 +258,11 @@ define(["dcl/dcl", "./sniff", "./Widget"], function (dcl, has, Widget) {
 				renderer: renderer,
 				triggerEvent: triggerEvent
 			});
-		}
+		},
+
+		/**
+		 * Hook for selection-change event in markup.
+		 */
+		"onselection-change": function () {}
 	});
 });
