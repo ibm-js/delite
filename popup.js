@@ -266,7 +266,7 @@ define([
 			if ("maxHeight" in args && args.maxHeight !== -1) {
 				maxHeight = args.maxHeight || Infinity;
 			} else {
-				var viewport = Viewport.getEffectiveBox(this.ownerDocument),
+				var viewport = Viewport.getEffectiveBox(widget.ownerDocument),
 					aroundPos = around ? domGeometry.position(around, false) : {
 						y: args.y - (args.padding || 0),
 						h: (args.padding || 0) * 2

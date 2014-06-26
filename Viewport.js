@@ -12,33 +12,24 @@
 define([
 	"dojo/Evented",
 	"dojo/on",
-	"delite/sniff",	// has("ie"), has("ios")
-	"dojo/window", // getBox()
+	"delite/sniff",	// has("ios")
 	"requirejs-domready/domReady!"
-], function (Evented, on, has, winUtils) {
+], function (Evented, on, has) {
 	var Viewport = new Evented();
 
-	var focusedNode;
-
-	var oldBox = winUtils.getBox();
+	var html = document.documentElement,
+		oldWidth = html.clientWidth,
+		oldHeight = html.clientHeight;
 	Viewport._rlh = on(window, "resize", function () {
-		var newBox = winUtils.getBox();
-		if (oldBox.h === newBox.h && oldBox.w === newBox.w) {
+		var width = html.clientWidth,
+			height = html.clientHeight;
+		if (height === oldHeight && width === oldWidth) {
 			return;
 		}
-		oldBox = newBox;
+		oldWidth = width;
+		oldHeight = height;
 		Viewport.emit("resize");
 	});
-
-	// On iOS, keep track of the focused node so we can guess when the keyboard is/isn't being displayed.
-	if (has("ios")) {
-		on(document, "focusin", function (evt) {
-			focusedNode = evt.target;
-		});
-		on(document, "focusout", function () {
-			focusedNode = null;
-		});
-	}
 
 	/**
 	 * Get the size of the viewport, or on mobile devices, the part of the viewport not obscured by the
@@ -47,10 +38,17 @@ define([
 	 * @param {Document} doc - The document, typically the global variable `document`.
 	 */
 	Viewport.getEffectiveBox = function (doc) {
-		var box = winUtils.getBox(doc);
+		var html = doc.documentElement,
+			box = {
+				w: html.clientWidth,
+				h: html.clientHeight,
+				t: doc.body.scrollTop,
+				l: doc.body.scrollLeft
+			};
 
 		// Account for iOS virtual keyboard, if it's being shown.  Unfortunately no direct way to check or measure.
-		var tag = focusedNode && focusedNode.tagName && focusedNode.tagName.toLowerCase();
+		var focusedNode = doc.activeElement,
+			tag = focusedNode && focusedNode.tagName && focusedNode.tagName.toLowerCase();
 		if (has("ios") && focusedNode && !focusedNode.readOnly && (tag === "textarea" || (tag === "input" &&
 			/^(color|email|number|password|search|tel|text|url)$/.test(focusedNode.type)))) {
 
