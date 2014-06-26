@@ -1,14 +1,12 @@
-/** @module delite/a11yclick */
+/**
+  * @module delite/a11yclick
+ */
 define([
 	"dojo/keys", // keys.ENTER keys.SPACE
-	"dojo/mouse",
-	"dojo/on",
-	"dojo/touch" // touch support for click is now there
-], function (keys, mouse, on, touch) {
+	"dojo/on"
+], function (keys, on) {
 
-	// TODO: switch from dojo/touch to dpointer (https://github.com/ibm-js/delite/issues/129)
 	// TODO: add functional tests
-	// TODO: rename to a11yevents?  It's more than just click.
 
 	function clickKey(/*Event*/ e) {
 		// Test if this keyboard event should be tracked as the start (if keydown) or end (if keyup) of a click event.
@@ -18,9 +16,10 @@ define([
 		if ((e.keyCode === keys.ENTER || e.keyCode === keys.SPACE) &&
 				!/input|button|textarea/i.test(e.target.nodeName)) {
 
-			// Test if a node or its ancestor has been marked with the dojoClick property to indicate special processing
+			// Test if a node or its ancestor has been marked with the d-keyboard-click property
+			// to indicate special processing
 			for (var node = e.target; node; node = node.parentNode) {
-				if (node.dojoClick) {
+				if (node.hasAttribute && node.hasAttribute("d-keyboard-click")) {
 					return true;
 				}
 			}
@@ -32,9 +31,12 @@ define([
 	on(document, "keydown", function (e) {
 		//console.log("a11yclick: onkeydown, e.target = ", e.target, ", lastKeyDownNode was ",
 		// lastKeyDownNode, ", equality is ", (e.target === lastKeyDownNode));
-		if (clickKey(e)) {
+		if (!e.defaultPrevented && clickKey(e)) {
 			// needed on IE for when focus changes between keydown and keyup - otherwise dropdown menus do not work
 			lastKeyDownNode = e.target;
+
+			// prevent scroll
+			e.preventDefault();
 		} else {
 			lastKeyDownNode = null;
 		}
@@ -46,6 +48,9 @@ define([
 		if (clickKey(e) && e.target === lastKeyDownNode) {
 			// need reset here or have problems in FF when focus returns to trigger element after closing popup/alert
 			lastKeyDownNode = null;
+
+			// prevent scroll
+			e.preventDefault();
 
 			on.emit(e.target, "click", {
 				cancelable: true,
@@ -60,86 +65,20 @@ define([
 	});
 
 	/**
-	 * Custom press, release, and click synthetic events
-	 * that trigger on a left mouse click, touch, or space/enter keyup.
-	 * @namespace module:delite/a11yclick
+	 * When this module is loaded, pressing SPACE or ENTER while focused on an Element with a `d-keyboard-click`
+	 * attribute will fire a synthetic click event on that Element. Also works if the event target's ancestor
+	 * has that attribute set.
+	 *
+	 * Usually this functionality is not necessary.  Rather, you should just make the focused Element a `<button>`,
+	 * and then the browser does the same thing natively.
+	 * This module is usually only needed when a custom element itself (ex: `<d-my-checkbox>`)
+	 * gets the focus rather than an Element inside of a custom element.
+	 *
+	 * Returns a convenience function to set `d-keyboard-click` on an Element.
+	 * @param {Element} node - Element that can be "clicked" via SPACE/ENTER key (when focused).
+	 * @function module:delite/a11yclick
 	 */
-	return /** @lends module:delite/a11yclick# */ {
-
-		/**
-		 * Logical click operation for mouse, touch, or keyboard (space/enter key).
-		 * @param {Element} node
-		 * @param {Function} listener
-		 * @returns {Object} Handle with remove() method to stop listening.
-		 */
-		click: function (node, listener) {
-			// Set flag on node so that keydown/keyup above emits click event.
-			// Also enables fast click processing from dojo/touch.
-			node.dojoClick = true;
-
-			return on(node, "click", listener);
-		},
-
-		/**
-		 * Mousedown (left button), touchstart, or keydown (space or enter) corresponding to logical
-		 * "mousedown" operation.
-		 * @param {Element} node
-		 * @param {Function} listener
-		 * @returns {Object} Handle with remove() method to stop listening.
-		 */
-		press: function (node, listener) {
-			var touchListener = on(node, touch.press, function (evt) {
-				if (evt.type === "mousedown" && !mouse.isLeft(evt)) {
-					// Ignore right click
-					return;
-				}
-				listener(evt);
-			}), keyListener = on(node, "keydown", function (evt) {
-				if (evt.keyCode === keys.ENTER || evt.keyCode === keys.SPACE) {
-					listener(evt);
-				}
-			});
-			return {
-				remove: function () {
-					touchListener.remove();
-					keyListener.remove();
-				}
-			};
-		},
-
-		/**
-		 * Mouseup (left button), touchend, or keyup (space or enter) corresponding to logical "mouse up" operation.
-		 * @param {Element} node
-		 * @param {Function} listener
-		 * @returns {Object} Handle with remove() method to stop listening.
-		 */
-		release: function (node, listener) {
-			var touchListener = on(node, touch.release, function (evt) {
-				if (evt.type === "mouseup" && !mouse.isLeft(evt)) {
-					// Ignore right click
-					return;
-				}
-				listener(evt);
-			}), keyListener = on(node, "keyup", function (evt) {
-				if (evt.keyCode === keys.ENTER || evt.keyCode === keys.SPACE) {
-					listener(evt);
-				}
-			});
-			return {
-				remove: function () {
-					touchListener.remove();
-					keyListener.remove();
-				}
-			};
-		},
-
-		/**
-		 * Mousemove or touchmove operation.
-		 * @param {Element} node
-		 * @param {Function} listener
-		 * @returns {Object} Handle with remove() method to stop listening.
-		 * @method
-		 */
-		move: touch.move,	// just for convenience
+	return function (node) {
+		node.setAttribute("d-keyboard-click", "true");
 	};
 });
