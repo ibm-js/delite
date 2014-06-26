@@ -83,7 +83,7 @@ define([
 	 * @private
 	 */
 	function _place(node, choices, layoutNode, aroundNodeCoords) {
-		// get {x: 10, y: 10, w: 100, h:100} type obj representing position of
+		// get {l: 10, t: 10, w: 100, h:100} type obj representing position of
 		// viewport over document
 		var view = Viewport.getEffectiveBox(node.ownerDocument);
 
