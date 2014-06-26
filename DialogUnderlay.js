@@ -1,12 +1,11 @@
 /** @module delite/DialogUnderlay */
 define([
-	"dojo/on",
-	"dojo/window", // winUtils.getBox
 	"./register",
 	"./Widget",
 	"./BackgroundIframe",
-	"./Viewport"
-], function (on, winUtils, register, Widget, BackgroundIframe, Viewport) {
+	"./Viewport",
+	"./theme!./DialogUnderlay/themes/{{theme}}/DialogUnderlay_css"
+], function (register, Widget, BackgroundIframe, Viewport) {
 
 	// TODO: having show() methods on the instance and also on the module is confusing,
 	// at least when looking at the API doc page.  Should one be renamed?
@@ -23,16 +22,6 @@ define([
 	var DialogUnderlay = register("d-dialog-underlay", [HTMLElement, Widget],
 			/** @lends module:delite/DialogUnderlay# */ {
 
-		/**
-		 * This class name is used on the DialogUnderlay node, in addition to d-dialog-underlay.
-		 * @member {string}
-		 */
-		"class": "",
-		_setClassAttr: function (clazz) {
-			this.node.className = "d-dialog-underlay " + clazz;
-			this._set("class", clazz);
-		},
-
 		// This will get overwritten as soon as show() is call, but leave an empty array in case hide() or destroy()
 		// is called first.  The array is shared between instances but that's OK because we never write into it.
 		_modalConnects: [],
@@ -40,17 +29,14 @@ define([
 		buildRendering: function () {
 			// Outer div is used for fade-in/fade-out, and also to hold background iframe.
 			// Inner div has opacity specified in CSS file.
-			this.domNode.class = "d-dialog-underlay";
-			this.node = this.ownerDocument.createElement("div");
-			this.node.setAttribute("tabindex", "-1");
-			this.domNode.appendChild(this.node);
+			this.className = "d-dialog-underlay";
 		},
 
 		postCreate: function () {
 			// Append the underlay to the body
 			this.ownerDocument.body.appendChild(this);
 
-			this.own(on(this, "keydown", this._onKeyDown.bind(this)));
+			this.on("keydown", this._onKeyDown.bind(this));
 		},
 
 		/**
@@ -60,51 +46,51 @@ define([
 		 * @private
 		 */
 		layout: function () {
-			var is = this.node.style,
-				os = this.style;
+			var s = this.style;
 
 			// hide the background temporarily, so that the background itself isn't
 			// causing scrollbars to appear (might happen when user shrinks browser
 			// window and then we are called to resize)
-			os.display = "none";
+			s.display = "none";
 
 			// then resize and show
-			var viewport = winUtils.getBox(this.ownerDocument);
-			os.top = viewport.t + "px";
-			os.left = viewport.l + "px";
-			is.width = viewport.w + "px";
-			is.height = viewport.h + "px";
-			os.display = "block";
+			// could alternately use $(window).scrollTop() and $(window).height(), etc.
+			var html = this.ownerDocument.documentElement;
+			s.width = html.clientWidth + "px";
+			s.height = html.clientHeight + "px";
+
+			s.display = "";
 		},
 
 		/**
 		 * Show the dialog underlay (instance method).
 		 */
 		show: function () {
-			this.style.display = "block";
-			this.open = true;
-			this.layout();
-			this.bgIframe = new BackgroundIframe(this);
+			if (!this._open) {
+				this.style.display = "block";
+				this._open = true;
+				this.layout();
+				this.bgIframe = new BackgroundIframe(this);
 
-			var win = this.ownerDocument.defaultView;
-			this._modalConnects = [
-				Viewport.on("resize", this.layout.bind(this)),
-				on(win, "scroll", this.layout.bind(this))
-			];
-
+				this._modalConnects = [
+					Viewport.on("resize", function () { this.layout(); }.bind(this))
+				];
+			}
 		},
 
 		/**
-		 * Hide the dialog underlay (instance method).ore fixes
+		 * Hide the dialog underlay (instance method).
 		 */
 		hide: function () {
-			this.bgIframe.destroy();
-			delete this.bgIframe;
-			this.style.display = "none";
-			while (this._modalConnects.length) {
-				(this._modalConnects.pop()).remove();
+			if (this._open) {
+				this.bgIframe.destroy();
+				delete this.bgIframe;
+				this.style.display = "none";
+				while (this._modalConnects.length) {
+					(this._modalConnects.pop()).remove();
+				}
+				this._open = false;
 			}
-			this.open = false;
 		},
 
 		destroy: register.before(function () {
@@ -134,13 +120,11 @@ define([
 			underlay = DialogUnderlay._singleton = new DialogUnderlay(attrs);
 		} else {
 			if (attrs) {
-				underlay.set(attrs);
+				underlay.mix(attrs);
 			}
 		}
 		underlay.style.zIndex = zIndex;
-		if (!underlay.open) {
-			underlay.show();
-		}
+		underlay.show();
 	};
 
 	/**
