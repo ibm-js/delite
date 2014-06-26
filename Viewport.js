@@ -11,16 +11,16 @@
  */
 define([
 	"dojo/Evented",
-	"dojo/on",
 	"delite/sniff",	// has("ios")
 	"requirejs-domready/domReady!"
-], function (Evented, on, has) {
+], function (Evented, has) {
 	var Viewport = new Evented();
 
 	var html = document.documentElement,
 		oldWidth = html.clientWidth,
 		oldHeight = html.clientHeight;
-	Viewport._rlh = on(window, "resize", function () {
+
+	window.addEventListener("resize", function () {
 		var width = html.clientWidth,
 			height = html.clientHeight;
 		if (height === oldHeight && width === oldWidth) {
