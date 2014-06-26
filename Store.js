@@ -38,23 +38,13 @@ define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalida
 		query: {},
 
 		/**
-		 * A function that processes the store/collection and returns a new collection (to sort it,
+		 * A function that processes the collection returned by the store query and returns a new collection (to sort it,
 		 * range it etc...). This processing is applied before potentially tracking the store for modifications 
 		 * (if Observable).
 		 * Changing this function on the instance will not automatically refresh the class.
 		 * @default identity function
 		 */
-		preProcessStore: function (store) { return store; },
-
-		/**
-		 * A function that processes the store/collection and returns a new collection (to sort it,
-		 * range it etc...).
-		 * This processing is applied after potentially tracking the store for modifications (if Observable).
-		 * This allows for example to be notified of modifications that occurred outside of the range.
-		 * Changing this function on the instance will not automatically refresh the class.
-		 * @default identity function
-		 */
-		postProcessStore: function (store) { return store; },
+		processQueryResult: function (store) { return store; },
 
 		/**
 		 * The render items corresponding to the store items for this widget. This is filled from the store and
@@ -117,7 +107,7 @@ define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalida
 		refreshProperties: function (props) {
 			if (isStoreInvalidated(props)) {
 				setStoreValidate(props);
-				this.queryStoreAndInitItems(this.preProcessStore, this.postProcessStore);
+				this.queryStoreAndInitItems(this.processQueryResult);
 			}
 		},
 
@@ -128,26 +118,23 @@ define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalida
 		 * This method is not supposed to be called by application developer.
 		 * It will be called automatically when modifying the store related properties or by the subclass
 		 * if needed.
-		 * @param preProcessStore - A function that processes the store/collection and returns a new collection
-		 * (to sort it, range it etc...), applied before tracking.
-		 * @param postProcessStore - A function that processes the store/collection and returns a new collection
-		 * (to sort it, range it etc...), applied after tracking.
+		 * @param processQueryResult - A function that processes the collection returned by the store query
+		 * and returns a new collection (to sort it, range it etc...)., applied before tracking.
 		 * @returns {Promise} If store to be processed is not null a promise that will be resolved when the loading 
 		 * process will be finished.
 		 * @protected
 		 */
-		queryStoreAndInitItems: function (preProcessStore, postProcessStore) {
+		queryStoreAndInitItems: function (processQueryResult) {
 			this._untrack();
 			if (this.store != null) {
-				var collection = preProcessStore.call(this, this.store.filter(this.query));
+				var collection = processQueryResult.call(this, this.store.filter(this.query));
 				if (collection.track) {
 					// user asked us to observe the store
-					var tracked = this._tracked = collection.track();
-					tracked.on("add", this._itemAdded.bind(this));
-					tracked.on("update", this._itemUpdated.bind(this));
-					tracked.on("remove", this._itemRemoved.bind(this));
+					collection = this._tracked = collection.track();
+					collection.on("add", this._itemAdded.bind(this));
+					collection.on("update", this._itemUpdated.bind(this));
+					collection.on("remove", this._itemRemoved.bind(this));
 				}
-				collection = postProcessStore.call(this, collection);
 				return this.fetch(collection);
 			} else {
 				this.initItems([]);

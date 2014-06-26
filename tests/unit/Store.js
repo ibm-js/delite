@@ -131,7 +131,7 @@ define([
 		"StoreFuncRange": function () {
 			var d = this.async(1500);
 			var store = new C();
-			store.preProcessStore = function (store) {
+			store.processQueryResult = function (store) {
 				return store.range(1);
 			};
 			var myData = [
@@ -141,7 +141,6 @@ define([
 			store.on("query-success", d.callback(function () {
 				assert(store.renderItems instanceof Array);
 				// TODO: actual tests are commented out pending SitePen/dstore#5
-				// TODO: once fixed also add postProcessStore tests
 				//assert.equal(store.renderItems.length, 1);
 				myStore.put({ id: "foo", name: "Foo2" });
 				// this works because put is synchronous & same for add etc...
@@ -163,7 +162,7 @@ define([
 		"StoreFuncSort": function () {
 			var d = this.async(1500);
 			var store = new C();
-			store.preProcessStore = function (store) {
+			store.processQueryResult = function (store) {
 				return store.sort("index");
 			};
 			var myData = [
@@ -192,6 +191,36 @@ define([
 			store.store = myStore;
 			return d;
 		},
+		"Fetch parameter can be cached": function () {
+			var d = this.async(1500);
+			var store = new C();
+			var myData = [
+							{ id: "foo", name: "Foo" },
+							{ id: "bar", name: "Bar" }
+						];
+			var myStore = new M({ data: myData.slice(0), model: null});
+			var liveCollection = null;
+			var initialFetch = store.fetch;
+			store.fetch = function (collection) {
+					liveCollection = collection;
+					initialFetch.apply(this, arguments);
+				};
+			store.on("query-success", d.callback(function () {
+				assert.equal(liveCollection.data.length, 2);
+				assert.deepEqual(liveCollection.data[0], myData[0]);
+				assert.deepEqual(liveCollection.data[1], myData[1]);
+				myStore.remove("foo");
+				assert.equal(liveCollection.data.length, 1);
+				assert.deepEqual(liveCollection.data[0], myData[1]);
+				myStore.add(myData[0]);
+				assert.equal(liveCollection.data.length, 2);
+				assert.deepEqual(liveCollection.data[0], myData[1]);
+				assert.deepEqual(liveCollection.data[1], myData[0]);
+			}));
+			store.startup();
+			store.store = myStore;
+			return d;
+		}, 
 		teardown: function () {
 			//container.parentNode.removeChild(container);
 		}
