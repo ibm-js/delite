@@ -1,10 +1,9 @@
 /** @module delite/FormWidget */
 define([
 	"dcl/dcl",
-	"dojo/window", // winUtils.scrollIntoView
 	"./Widget",
 	"./Invalidating"
-], function (dcl, winUtils, Widget, Invalidating) {
+], function (dcl, Widget, Invalidating) {
 
 	/**
 	 * Base class for widgets that extend `HTMLElement`, but conceptually correspond
