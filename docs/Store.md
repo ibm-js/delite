@@ -17,8 +17,7 @@ The store is queried each time one of the following properties is set on the ins
 
   * store: references a `dstore/api/Store` implementation
   * query: a query object to be passed to the store `filter()` function
-  * preProcessStore: a `Function` that allows one to process the store to sort or slice it once the filter query has been run but before the optional observation tracking is started.
-  * postProcessStore: a `Function` that allows one to process the store to sort or slice it once the filter query has been run and after the optional observation tracking has been done.
+  * processQueryResult: a `Function` that allows one to process the result of the store query to sort or slice it once the filter query has been run but before the optional observation tracking is started.
 
    
 When the store is queried, render items are created using the `itemToRenderItem()` function which by default just returns the
