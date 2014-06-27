@@ -263,6 +263,6 @@ define(["dcl/dcl", "./sniff", "./Widget"], function (dcl, has, Widget) {
 		/**
 		 * Hook for selection-change event in markup.
 		 */
-		"onselection-change": function () {}
+		"onselection-change": function (/*jshint unused: vars*/event) {}
 	});
 });

@@ -134,14 +134,23 @@ define([
 					}
 					break;
 				case "function":
-					/* jshint evil:true */
-					// This will only be executed if you have properties that are of function type if your widget
-					// and that you set them in your tag attributes:
-					// <my-tag whatever="myfunc"></my-tag>
-					// This can be avoided by setting the function progammatically or by not setting it at all.
-					// This is harmless if you make sure the JavaScript code that is passed to the attribute
-					// is harmless.
-					props[name] = lang.getObject(value, false, global) || new Function(value);
+					props[name] = lang.getObject(value, false, global);
+					if (!props[name]) {
+						var functionString = widget[name].toString().replace(/(\/\*([\s\S]*?)\*\/)|(\/\/(.*)$)/gm, "");
+						var functionArgs = functionString.match(/^function\s*[^\(]*\(\s*([^\)]*)\)/m)[1].split();
+						functionArgs.unshift(undefined);
+						functionArgs.push(value);
+						// use Function.bind to get a partial on Function constructor (trick to call it with an array 
+						// of args instead list of args)
+						/* jshint evil:true */
+						// This will only be executed if you have properties that are of function type in your widget
+						// and that you use them in your tag attributes as follows:
+						// <my-tag whatever="console.log(param)"></my-tag>
+						// This can be avoided by setting the function progammatically or by not setting it at all.
+						// This is harmless if you make sure the JavaScript code that is passed to the attribute
+						// is harmless.
+						props[name] = new (Function.bind.apply(Function, functionArgs))();
+					}
 				}
 				delete widget[name]; // make sure custom setters fire
 			}

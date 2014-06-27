@@ -34,12 +34,14 @@ define([
 				},
 				funcProp2: function () {
 				},
+				funcPropWithParams: function (/*jshint unused: vars*//*a 1st param*/param1,
+					/* and a second one */param2) {},
 				objProp1: { },
 				objProp2: { }
 			});
 			container.innerHTML +=
 				"<test-ce-declarative id='d' boolProp='boolProp' numProp='5' stringProp='hello' " +
-				"funcProp='global=123;' funcProp2='global3' objProp1='foo:1,bar:2' objProp2='global2'/>";
+				"funcProp='global=123;' funcProp2='global3' funcPropWithParams='global=param1+param2' objProp1='foo:1,bar:2' objProp2='global2'/>";
 			var d = document.getElementById("d");
 			register.upgrade(d);
 			assert.isTrue(d.boolProp, "d.boolProp");
@@ -50,6 +52,8 @@ define([
 			assert.strictEqual(global, 123, "d.funcProp() executed");
 			d.funcProp2();
 			assert.strictEqual(global, 456, "d.funcProp2() executed");
+			d.funcPropWithParams(1, 2);
+			assert.strictEqual(global, 3, "d.funcPropWithParams() executed");
 			assert.strictEqual(d.objProp1.foo, 1, "d.objProp1.foo");
 			assert.strictEqual(d.objProp1.bar, 2, "d.objProp1.bar");
 			assert.strictEqual(d.objProp2.text, "global var", "d.objProp2.text");
