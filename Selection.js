@@ -252,17 +252,26 @@ define(["dcl/dcl", "./sniff", "./Widget"], function (dcl, has, Widget) {
 		 * @protected
 		 */
 		dispatchSelectionChange: function (oldSelectedItem, newSelectedItem, renderer, triggerEvent) {
+			/**
+			 * Selection change event. Dispatched after the selection has
+			 * been modified through user interaction.
+			 * @example
+			 * widget.on("selection-change", function (evt) {
+			 *	console.log("old value: " + evt.oldValue);
+			 *	console.log("new value: " + evt.newValue);
+			 * }
+			 * @event module:delite/Selection#selection-change
+			 * @property {number} oldValue - The previously selected item.
+			 * @property {number} newValue- The new selected item.
+			 * @property {Object} renderer - The visual renderer of the selected/deselected item.
+			 * @property {Event} triggerEvent - The event that lead to the selection of the item.
+			 */
 			this.emit("selection-change", {
 				oldValue: oldSelectedItem,
 				newValue: newSelectedItem,
 				renderer: renderer,
 				triggerEvent: triggerEvent
 			});
-		},
-
-		/**
-		 * Hook for selection-change event in markup.
-		 */
-		"onselection-change": function (/*jshint unused: vars*/event) {}
+		}
 	});
 });

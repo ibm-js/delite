@@ -10,8 +10,7 @@ define([
 	// Need to pass in "global" parameter to lang.getObject() to workaround
 	// https://bugs.dojotoolkit.org/ticket/17829
 
-	var div = document.createElement("div"),
-		global = (function () { return this; })();
+	var global = (function () { return this; })();
 
 	/**
 	 * Base class for all custom elements.
@@ -70,7 +69,11 @@ define([
 
 				// Now that creation has finished, apply parameters that were specified declaratively.
 				// This is consistent with the timing that parameters are applied for programmatic creation.
-				dcl.mix(this, this._declaredParams);
+				dcl.mix(this, this._declaredParams.props);
+				var connects = this._declaredParams.connects;
+				for (var key in connects) {
+					this.on(key.substring(3), connects[key]);
+				}
 			}
 		}),
 
@@ -89,7 +92,7 @@ define([
 		 * <my-widget funcAttr="console.log('hello world');">
 		 * ```
 		 *
-		 * Markup corresponds to methods in the widget, for example:
+		 * Markup can correspond to methods in the widget, for example:
 		 *
 		 * ```
 		 * register("my-widget", ... {
@@ -101,6 +104,14 @@ define([
 		 * ```
 		 * <my-widget funcAttr="console.log(param1, param2);">
 		 * ```
+		 *
+		 * Alternately, it can be an event handler with no corresponding widget method, ex:
+		 *
+		 * ```
+		 * <my-widget on-selection-change="console.log(event);"`>
+		 * ```
+		 *
+		 * As shown above, in the latter case, there's a single parameter named `event`.
 		 *
 		 * @param {string} name - Name of attribute.
 		 * @param {string} value - Value of attribute.
@@ -118,7 +129,7 @@ define([
 					functionArgs.unshift(undefined);
 					functionArgs.push(value);
 				} else {
-					functionArgs = [undefined, "event"];
+					functionArgs = [undefined, "event", value];
 				}
 				// use Function.bind to get a partial on Function constructor (trick to call it with an array
 				// of args instead list of args)
@@ -142,7 +153,7 @@ define([
 			var pcm = this._propCaseMap,
 				attr,
 				idx = 0,
-				props = {};
+				props = {}, connects = {};
 
 			// inner functions useful to reduce cyclomatic complexity when using jshint
 			function stringToObject(value) {
@@ -193,23 +204,7 @@ define([
 					}
 					break;
 				case "function":
-					props[name] = lang.getObject(value, false, global);
-					if (!props[name]) {
-						var functionString = widget[name].toString().replace(/(\/\*([\s\S]*?)\*\/)|(\/\/(.*)$)/gm, "");
-						var functionArgs = functionString.match(/^function\s*[^\(]*\(\s*([^\)]*)\)/m)[1].split();
-						functionArgs.unshift(undefined);
-						functionArgs.push(value);
-						// use Function.bind to get a partial on Function constructor (trick to call it with an array 
-						// of args instead list of args)
-						/* jshint evil:true */
-						// This will only be executed if you have properties that are of function type in your widget
-						// and that you use them in your tag attributes as follows:
-						// <my-tag whatever="console.log(param)"></my-tag>
-						// This can be avoided by setting the function progammatically or by not setting it at all.
-						// This is harmless if you make sure the JavaScript code that is passed to the attribute
-						// is harmless.
-						props[name] = new (Function.bind.apply(Function, functionArgs))();
-					}
+					props[name] = widget._parseFunctionAttr(name, value);
 				}
 				delete widget[name]; // make sure custom setters fire
 			}
@@ -219,7 +214,10 @@ define([
 				// Map all attributes except for things like onclick="..." since the browser already handles them.
 				var name = attr.name.toLowerCase();	// note: will be lower case already except for IE9
 				if (name in pcm) {
-					setTypedValue(this, pcm[name]/* convert to correct case for widget */, attr.value);
+					setTypedValue(this, pcm[name] /* convert to correct case for widget */, attr.value);
+					attrsToRemove.push(name);
+				} else if (/^on-/.test(name)) {
+					connects[name] = this._parseFunctionAttr(name, attr.value);
 					attrsToRemove.push(name);
 				}
 			}
@@ -228,7 +226,7 @@ define([
 			// while we are looping through it.   (See CustomElement-attr.html test failure on IE10.)
 			attrsToRemove.forEach(this.removeAttribute, this);
 
-			return props;
+			return {props: props, connects: connects};
 		},
 
 		/**
@@ -258,6 +256,7 @@ define([
 		 *
 		 * @param {string} type - Name of event.
 		 * @param {Object} [eventObj] - Properties to mix in to emitted event.
+		 * @returns {boolean} Whether or not the event was prevented.
 		 * @example
 		 * myWidget.emit("query-success", {});
 		 * @protected
@@ -277,18 +276,8 @@ define([
 			// Emit event, but (for the case of the Widget subclass)
 			// avoid spurious emit()'s as parent sets properties on child during startup/destroy
 			if (this._started !== false && !this._beingDestroyed) {
-				// Call onType() method if one exists.   But skip functions like onchange and onclick
-				// because the browser will call them automatically when the event is emitted.
-				var ret, callback = this["on" + type];
-				if (callback && !("on" + type.toLowerCase() in div)) {
-					ret = callback.call(this, eventObj);
-				}
-
-				// Emit the event
-				on.emit(this, type, eventObj);
+				return on.emit(this, type, eventObj);
 			}
-
-			return ret;
 		},
 
 		/**

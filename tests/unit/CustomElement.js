@@ -130,30 +130,52 @@ define([
 
 	registerSuite({
 		name: "CustomElement#on",
+
 		setup: function () {
 			container = document.createElement("div");
 			document.body.appendChild(container);
-			container.innerHTML =
-				"<my-custom-element-on id='MyCustomElement' onclick='globalClicked++;' " +
-				"oncustom='globalCustom++;'>hi</my-CustomElement-on>";
 		},
-		"declarative": function () {
-			// Test that declarative instantiation (onfoo=...) works,
+
+		programmatic: function () {
+			// Create a custom element with a custom "foo" event, plus the standard "click" event.
+			var MyCustomElement = register("my-widget2-on", [HTMLElement, CustomElement], {
+				foo: function () {
+					return this.emit("foo");
+				},
+				click: function () {
+					this.emit("click");
+				}
+			});
+
+			var evt = null, clicked = 0;
+			var w = new MyCustomElement({});
+			w.on("foo", function (e) {
+				evt = e;
+			});
+			w.on("click", function () {
+				clicked++;
+			});
+			container.appendChild(w);
+
+			w.foo();
+			assert.isNotNull(evt, "on('foo', ...) was called with event object");
+
+			w.click();
+			assert.strictEqual(clicked, 1, "one click event");
+		},
+
+		declarative: function () {
+			// Test that declarative instantiation (on-foo=...) works,
 			// and also that CustomElement.on() works.
 
 			// Define a custom element that emits two events, "click" and "custom".
-			// You can catch the events via either on("click", ...) or oncustom=... syntax.
-			// Note that the HTMLElement prototype already defines onclick() so we don't need to.
+			// You can catch the events via either programmatic on("click", ...) or declarative on-custom=... syntax.
 			MyCustomElement = register("my-custom-element-on", [HTMLElement, CustomElement], {
 				emitCustomEvent: function () {
 					this.emit("custom");
 				},
 				emitClickEvent: function () {
 					this.emit("click");
-				},
-				oncustom: function () {
-					// summary:
-					//		User can set oncustom=... rather than using on("custom", ...)
 				}
 			});
 
@@ -162,8 +184,13 @@ define([
 			globalClicked = 0;
 			/* global globalCustom:true */
 			globalCustom = 0;
+			/* global globalType:true */
+			globalType = null;
 
-			register.parse();
+			container.innerHTML =
+				"<my-custom-element-on id='MyCustomElement' on-click='globalClicked++;' " +
+				"on-custom='globalCustom++; globalType=event.type;'>hi</my-CustomElement-on>";
+			register.parse(container);
 
 			var MyCustomElement = document.getElementById("MyCustomElement");
 
@@ -182,38 +209,9 @@ define([
 			MyCustomElement.emitCustomEvent();
 			assert.strictEqual(custom, 1, ".on('custom', ...)");
 			assert.strictEqual(globalCustom, 1, "oncustom='...'");
-
+			assert.strictEqual(globalType, "custom", "event parameter passed into handler");
 		},
-		"programmatic": function () {
-			// Create a custom element with a custom "foo" event, plus the standard "click" event.
-			var MyCustomElement = register("my-widget2-on", [HTMLElement, CustomElement], {
-				foo: function () {
-					return this.emit("foo");
-				},
-				onfoo: function () {
-				},
-				click: function () {
-					this.emit("click");
-				}
-			});
 
-			var evt = null, clicked = 0;
-			var w = new MyCustomElement({
-				onfoo: function (e) {
-					evt = e;
-				},
-				onclick: function () {
-					clicked++;
-				}
-			});
-			container.appendChild(w);
-
-			w.foo();
-			assert.isNotNull(evt, "onfoo was called with event object");
-
-			w.click();
-			assert.strictEqual(clicked, 1, "one click event");
-		},
 		teardown: function () {
 			container.parentNode.removeChild(container);
 		}
