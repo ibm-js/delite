@@ -1,39 +1,15 @@
 /**
- * Plugin that loads a Handlebars template from a specified MID, and returns a function to
- * generate DOM corresponding to that template, and set up handlers
+ * Module to generate a function to
+ * generate DOM corresponding to a specified handlebars template, and set up handlers
  * to modify the generated DOM as widget properties change.  The returned function is meant
  * to run in the context of the widget, so that properties are available through `this` and
  * so is a `watch()` method to monitor changes to those properties.
  *
- * Could also theoretically be used by a build-tool to precompile templates, assuming you loaded
- * [jsdom](https://github.com/tmpvar/jsdom) to provide methods like `document.createElement()`.
- *
- * Template has a format like:
- *
- * ```html
- * <button>
- *   <span class="d-reset {{iconClass}}"></span>
- *   {{label}}
- * </button>
- * ```
- * 
- * Usage is typically like:
- * 
- * ```js
- * define([..., "delite/handlebars!./templates/MyTemplate.html"], function(..., renderFunc){
- *     ...
- *     buildRendering: renderFunc,
- *     ...
- * });
- * ```
+ * Used from delite/Templated.
  * 
  * @module delite/handlebars
  */
 define(["./template"], function (template) {
-
-	// Text plugin to load the templates and do the build.
-	var textPlugin = "requirejs-text/text";
-
 
 	/**
 	 * Given a string like "hello {{foo}} world", split it into static text and property references,
@@ -206,24 +182,7 @@ define(["./template"], function (template) {
 			var tree = handlebars.parse(templateText);
 			var func = template.compile(tree);
 			return func;
-		},
-
-		/**
-		 * Returns a function to generate the DOM specified by the template.
-		 * This is the function run when you use this module as a plugin.
-		 * @param {string} mid - Absolute path to the resource.
-		 * @param {Function} require - AMD's require() method.
-		 * @param {Function} onload - Callback function which will be called, when the loading finishes
-		 *     and the stylesheet has been inserted.
-		 * @private
-		 */
-		load: function (mid, require, onload) {
-			require([textPlugin + "!" + mid], function (template) {
-				onload(handlebars.compile(template));
-			});
-		},
-
-		pluginBuilder: textPlugin
+		}
 	};
 
 	return handlebars;
