@@ -19,5 +19,6 @@ define([
 	"./StoreMap",
 	"./Store",
 	"./Scrollable",
-	"./Invalidating"
+	"./Invalidating",
+	"./Templated"
 ]);
