@@ -73,7 +73,7 @@ define(["./template"], function (template) {
 			var tag = templateNode.tagName.replace(/^template-/i, "").toLowerCase();
 
 			// Process attributes
-			var attributes = {}, attachPoints;
+			var attributes = {}, connects = {}, attachPoints;
 			var i = 0, item, attrs = templateNode.attributes;
 			for (i = 0; (item = attrs[i]); i++) {
 				if (item.value) {
@@ -88,7 +88,13 @@ define(["./template"], function (template) {
 						attachPoints = item.value.split(/, */);
 						break;
 					default:
-						attributes[item.name] = tokenize(item.value);
+						if (/^on-/.test(item.name)) {
+							// on-click="{{handlerMethod}}" sets connects.click = "handlerMethod"
+							connects[item.name.substring(3)] = item.value.replace(/\s*({{|}})\s*/g, "");
+						} else {
+							// x="hello {{foo}} world" sets attributes.x = ["hello ", {property: "foo"}, " world"]
+							attributes[item.name] = tokenize(item.value);
+						}
 					}
 				}
 			}
@@ -97,6 +103,7 @@ define(["./template"], function (template) {
 				tag: tag,
 				xmlns: xmlns,
 				attributes: attributes,
+				connects: connects,
 				children: handlebars.parseChildren(templateNode, xmlns),
 				attachPoints: attachPoints
 			};

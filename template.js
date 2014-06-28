@@ -36,19 +36,6 @@ define(["./register"], function (register) {
 		return elementCache[tag];
 	}
 
-	/**
-	 * Return true if tag.attrName is a function, for example button.onclick
-	 * @param {string} tag
-	 * @param {string} attrName
-	 * @returns {boolean}
-	 * @private
-	 */
-	function isFuncAttr(tag, attrName) {
-		// Unfortunately since onclick is null, typeof button.onclick returns "object" not "function".
-		// Need heuristic (or hardcoded list) to tell which attributes are handlers.
-		return (/^on/).test(attrName) && attrName in getElement(tag);
-	}
-
 	var attrMap = {};
 
 	/**
@@ -167,33 +154,36 @@ define(["./register"], function (register) {
 				// List of strings and property names that define the attribute/property value
 				var parts = templateNode.attributes[attr];
 
-				if (isFuncAttr(templateNode.tag, attr)) {
-					// Functional property setting, ex: onclick="console.log('hi');".
-					// Bind variables not currently supported.  That would require using new Function().
-					text += nodeName + "." + attr + " = function(){" + parts.join("") + "};";
-				} else {
-					// Get expression for the value of this property, ex: 'duiReset ' + this.baseClass.
-					// Also get list of properties that we need to watch for changes.
-					var watchProps = [], js = parts.map(function (part) {
-						if (part.property) {
-							// If it's a nested property like item.foo then watch top level prop (item).
-							// Also note that "this" not available in func passed to watch(), so use "widget".
-							watchProps.push(part.property.replace(/[^\w].*/, ""));
-							return "(widget." + part.property + ") || ''";
-						} else {
-							return singleQuote(part);
-						}
-					}).join(" + ");
+				// Get expression for the value of this property, ex: 'duiReset ' + this.baseClass.
+				// Also get list of properties that we need to watch for changes.
+				var watchProps = [], js = parts.map(function (part) {
+					if (part.property) {
+						// If it's a nested property like item.foo then watch top level prop (item).
+						// Also note that "this" not available in func passed to watch(), so use "widget".
+						watchProps.push(part.property.replace(/[^\w].*/, ""));
+						return "(widget." + part.property + ") || ''";
+					} else {
+						return singleQuote(part);
+					}
+				}).join(" + ");
 
-					// Generate code to set this property or attribute
-					var propName = getProp(templateNode.tag, attr);
-					var codeToSetProp = propName ? nodeName + "." + propName + "=" + js + ";" :
-						nodeName + ".setAttribute('" + attr + "', " + js + ");";
-					text += codeToSetProp + "\n";
-					watchProps.forEach(function (wp) {
-						text += "this.watch('" + wp + "', function(){ " + codeToSetProp + " });\n";
-					});
-				}
+				// Generate code to set this property or attribute
+				var propName = getProp(templateNode.tag, attr);
+				var codeToSetProp = propName ? nodeName + "." + propName + "=" + js + ";" :
+					nodeName + ".setAttribute('" + attr + "', " + js + ");";
+				text += codeToSetProp + "\n";
+				watchProps.forEach(function (wp) {
+					text += "this.watch('" + wp + "', function(){ " + codeToSetProp + " });\n";
+				});
+			}
+
+			// Setup connections
+			for (var type in templateNode.connects) {
+				var handler = templateNode.connects[type];
+				var callback = /^[a-zA-Z0-9_]+$/.test(handler) ?
+					"this." + handler + ".bind(this)" :		// standard case, connecting to a method in the widget
+					"function(event){" + handler + "}";	// connect to anon func, ex: on-click="g++;". used by dapp.
+				text += "on(" + nodeName + ", '" + type + "', " + callback + ");\n";
 			}
 
 			// Create descendant Elements and text nodes
@@ -216,6 +206,7 @@ define(["./register"], function (register) {
 		 */
 		codegen: function (tree) {
 			return "var widget = this, doc = this.ownerDocument, register = this.register;\n" +
+				"function on(node, type, callback){ widget.on(type, callback, node); }\n" +
 				this.generateNodeCode("this", tree);
 		},
 
