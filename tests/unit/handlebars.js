@@ -106,13 +106,29 @@ define([
 			assert.strictEqual(myList.firstChild.textContent, "\"\\bill'\\\n\twas \n\there'", "node text");
 		},
 
-		events: function () {
-			// Test that listeners like onclick work.
+		"attach-event-widget-callback": function () {
+			// Test for syntax connecting to a method in the widget: on-click='{{clickHandler}}'
+			var TestListener = register("handlebars-attach-events", [HTMLElement, Widget], {
+				buildRendering: handlebars.compile(
+					"<template><span on-click='{{clickHandler}}'>click me</span></template>"),
+				clicks: 0,
+				clickHandler: function () {
+					this.clicks++;
+				}
+			});
+			var myListener = new TestListener();
+			myListener.placeAt(container);
+			on.emit(myListener.firstChild, "click", {});
+			assert.strictEqual(myListener.clicks, 1, "click callback fired");
+		},
+
+		"attach-event-anonymous-function": function () {
+			// Test for syntax with an inline function definition.  Apparently used by dapp.
 			/* global g:true */
 			g = 1;
-			var TestClick = register("handlebars-events", [ HTMLElement, Widget], {
+			var TestClick = register("handlebars-events", [HTMLElement, Widget], {
 				buildRendering: handlebars.compile(
-					"<template><span onclick='g = 2;'>click me</span></template>")
+					"<template><span on-click='g = 2;'>click me</span></template>")
 			});
 			var myClick = new TestClick();
 			myClick.placeAt(container);

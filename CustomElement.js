@@ -262,9 +262,10 @@ define([
 		 * in the widget's scope you must do `myWidget.on("click", myWidget.func.bind(myWidget))`.
 		 * @param {string|Function} type - Name of event (ex: "click") or extension event like `touch.press`.
 		 * @param {Function} func - Callback function.
+		 * @param {Element} [node] - Element to attach handler to, defaults to `this`.
 		 */
-		on: function (type, func) {
-			return this.own(on(this, type, func))[0];
+		on: function (type, func, node) {
+			return this.own(on(node || this, type, func))[0];
 		},
 
 		// Utility functions previously in registry.js
