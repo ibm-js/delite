@@ -61,14 +61,14 @@ define(["./template"], function (template) {
 
 	var handlebars = /** @lends module:delite/handlebars */ {
 		/**
-		 * Scan a single Element (not text node, but regular DOM node).
-		 * @param {Element} templateNode
+		 * Given a template in DOM, returns the Object tree representing that template.
+		 * @param {Element} templateNode - Root node of template.
 		 * @param {string} [xmlns] - Used primarily for SVG nodes.
 		 * @returns {Object} Object in format
 		 * `{tag: string, xmlns: string, attributes: {}, children: Object[], attachPoints: string[]}`.
 		 * @private
 		 */
-		parseNode: function (templateNode, xmlns) {
+		parse: function (templateNode, xmlns) {
 			// Get tag name, reversing the tag renaming done in parse()
 			var tag = templateNode.tagName.replace(/^template-/i, "").toLowerCase();
 
@@ -116,7 +116,7 @@ define(["./template"], function (template) {
 				var childType = child.nodeType;
 				if (childType === 1) {
 					// Standard DOM node, recurse
-					children.push(handlebars.parseNode(child, xmlns));
+					children.push(handlebars.parse(child, xmlns));
 				} else if (childType === 3) {
 					// Text node likely containing variables like {{foo}}.
 					children = children.concat(tokenize(child.nodeValue));
@@ -152,14 +152,13 @@ define(["./template"], function (template) {
 
 
 		/**
-		 * Given a template, returns the tree representing that template.
+		 * Given a template string, returns the DOM tree representing that template.
 		 * Will only run in a browser, or in node.js with https://github.com/tmpvar/jsdom.
 		 * @param {string} templateText - HTML text for template.
-		 * @returns {Object} Object in format
-		 * `{tag: string, xmlns: string, attributes: {}, children: Object[], attachPoints: string[]}`.
+		 * @returns {Element} Root element of tree
 		 * @private
 		 */
-		parse: function (templateText) {
+		toDom: function (templateText) {
 			// Rename all the custom elements in the template so that browsers with native
 			// document.createElement() support don't start instantiating nested widgets, creating internal nodes etc.
 			// Regex designed to match <foo-bar> and <button is=...> but not <!-- comment -->, and not
@@ -186,7 +185,7 @@ define(["./template"], function (template) {
 				root = container.firstElementChild; // use .firstElementChild to skip possible top level comment
 			}
 
-			return handlebars.parseNode(root);
+			return root;
 		},
 
 		/**
@@ -203,13 +202,15 @@ define(["./template"], function (template) {
 		 * then creates the rest of the DOMNodes in the template.
 		 */
 		compile: function (templateText) {
-			var tree = handlebars.parse(templateText);
+			var templateDom = handlebars.toDom(templateText);
+			var tree = handlebars.parse(templateDom);
 			var func = template.compile(tree);
 			return func;
 		},
 
 		/**
 		 * Returns a function to generate the DOM specified by the template.
+		 * Also loads any AMD dependencies specified on the template's root node via the `data-requires` property.
 		 * This is the function run when you use this module as a plugin.
 		 * @param {string} mid - Absolute path to the resource.
 		 * @param {Function} require - AMD's require() method.
@@ -218,8 +219,15 @@ define(["./template"], function (template) {
 		 * @private
 		 */
 		load: function (mid, require, onload) {
-			require([textPlugin + "!" + mid], function (template) {
-				onload(handlebars.compile(template));
+			require([textPlugin + "!" + mid], function (templateText) {
+				var templateDom = handlebars.toDom(templateText),
+					requires = templateDom.getAttribute("data-requires") || "";
+				templateDom.removeAttribute("data-requires");
+				require(requires.split(/,\s*/), function () {
+					var tree = handlebars.parse(templateDom);
+					var func = template.compile(tree);
+					onload(func);
+				});
 			});
 		},
 
