@@ -60,26 +60,15 @@ The limitations of using paths are:
 
 ## Widgets in templates
 
-A template can contain widgets in addition to plain DOM nodes.  In this case, the main widget
-class is responsible for loading the supporting widgets before compiling the template.
-Therefore, rather than using the plugin syntax, it must use the `compile()` method, for example:
+A template can contain widgets in addition to plain DOM nodes.  In this case, the template
+must list the required AMD modules via the `requires` attribute on the root node:
 
-	define([..., "delite/handlebars", "acme/SupportingWidget"], function(..., handlebars){
-		...
-		buildRendering: handlebars.compile(
-			'<supporting-widget class="d-reset {{iconClass}}">{{label}}</supporting-widget>'
-		),
-		...
-	}
+	<template requires="deliteful/Button, deliteful/ProgressIndicator">
+		<d-button>{{buttonText}}</d-button>
+		<d-progress-indicator value={{piValue}}></d-progress-indicator>
+	</template>
 
-Note that the template text can still be put into a file, and the file loaded with the text! plugin:
-
-	define([..., "delite/handlebars", "text!./templates/myTemplate.html", "acme/SupportingWidget"],
-			function(..., handlebars, text){
-		...
-		buildRendering: handlebars.compile(text),
-		...
-	}
+This technique can also be used to load other required modules, such as `delite/a11yclick`.
 
 ## Hiding and showing nodes in a template
 

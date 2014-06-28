@@ -7,8 +7,9 @@ define([
 	"delite/Widget",
 	"delite/handlebars!./templates/HandlebarsButton.html",
 	"delite/handlebars!./templates/SvgWidget.html",
+	"delite/handlebars!./templates/CompoundWidget.html",
 	"delite/theme!"		// to get CSS rules for d-hidden
-], function (registerSuite, assert, on, handlebars, register, Widget, buttonHBTmpl, svgTmpl) {
+], function (registerSuite, assert, on, handlebars, register, Widget, buttonHBTmpl, svgTmpl, compoundTmpl) {
 	var container, myButton;
 	registerSuite({
 
@@ -174,6 +175,21 @@ define([
 			});
 			assert.strictEqual(headingWidget.textContent, "new heading", "heading changed");
 			assert.strictEqual(buttonWidget.textContent.trim(), "new button label", "button changed");
+		},
+
+		"requires": function () {
+			// Another test of widgets in templates, but this time loading the template from a file.
+			// This makes sure that the requires attribute (in the top level <template> node)
+			// will pull in the specified modules.
+			var CompoundWidget = register("test-compound-widget", [HTMLElement, Widget], {
+				buildRendering: compoundTmpl
+			});
+
+			var myCompoundWidget = new CompoundWidget(),
+				sub1 = myCompoundWidget.getElementsByTagName("test-widget-1")[0],
+				sub2 = myCompoundWidget.getElementsByTagName("test-widget-2")[0];
+			assert(sub1.buildRendering, "sub1 instantiated");
+			assert(sub2.buildRendering, "sub2 instantiated");
 		},
 
 		html: function () {
