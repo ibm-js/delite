@@ -19,7 +19,6 @@ define([
 		// test with no controller
 		original: function () {
 			this.timeout = 2500;
-			var deferred = new Deferred();
 			register("test-default-display-container", [HTMLElement, Widget, DisplayContainer]);
 			var dcontainer = register.createElement("test-default-display-container");
 
@@ -37,30 +36,25 @@ define([
 			var view1 = document.createElement("div");
 			initView(view1);
 			var view2 = document.createElement("div");
-			view2.setAttribute("id", "view");
+			view2.setAttribute("id", "original-view");
 			initView(view2);
 			container.appendChild(dcontainer);
 			dcontainer.startup();
-			// by node
-			var transitionDeferred = dcontainer.show(view1);
-			transitionDeferred.then(function () {
-				testView(view1);
-				// by id
-				// test that a delite-after-show event is fired, if is not fired the test will fail by timeout
-				on.once(dcontainer, "delite-after-show", function () {
-					// test is finished
-					deferred.resolve(true);
-				});
-				transitionDeferred = dcontainer.show("view");
-				transitionDeferred.then(function () {
-					testView(view2);
-				});
+			var beforeShowCalled = false;
+			dcontainer.on("delite-before-show", function () {
+				beforeShowCalled = true;
 			});
-			return deferred.promise;
+			return dcontainer.show(view1).then(function () {
+				assert(beforeShowCalled, "before-show event must be dispatched");
+				testView(view1);
+			}).then(function () {
+				return dcontainer.show("original-view");
+			}).then(function () {
+				testView(view2);
+			});
 		},
 		hide: function () {
 			this.timeout = 2500;
-			var deferred = new Deferred();
 			register("test-hide-display-container", [HTMLElement, Widget, DisplayContainer]);
 			var dcontainer = register.createElement("test-hide-display-container");
 
@@ -78,35 +72,27 @@ define([
 			var view1 = document.createElement("div");
 			initView(view1);
 			var view2 = document.createElement("div");
-			view2.setAttribute("id", "view");
+			view2.setAttribute("id", "hide-view");
 			initView(view2);
 			container.appendChild(dcontainer);
 			dcontainer.startup();
-			var beforeDisplayCalled = false;
+			var beforeHideCalled = false;
 			dcontainer.on("delite-before-hide", function () {
-				beforeDisplayCalled = true;
+				beforeHideCalled = true;
 			});
 			// by node
-			var transitionDeferred = dcontainer.hide(view1);
-			transitionDeferred.then(function () {
-				assert(beforeDisplayCalled, "before-hide event must be dispatched");
+			return dcontainer.hide(view1).then(function () {
+				assert(beforeHideCalled, "before-hide event must be dispatched");
 				testView(view1);
-				// by id
-				// test that a delite-after-show event is fired, if is not fired the test will fail by timeout
-				on.once(dcontainer, "delite-after-hide", function () {
-					// test is finished
-					deferred.resolve(true);
-				});
-				transitionDeferred = dcontainer.hide("view");
-				transitionDeferred.then(function () {
-					testView(view2);
-				});
+			}).then(function () {
+				return dcontainer.hide("hide-view");
+			}).then(function () {
+				testView(view2);
 			});
-			return deferred.promise;
 		},
 		event: function () {
 			this.timeout = 2500;
-			var deferred = new Deferred(), handler;
+			var handler;
 
 			function initView(view, id) {
 				view.style.visibility = "hidden";
@@ -132,18 +118,15 @@ define([
 				beforeDisplayCalled = true;
 			});
 			// by node
-			var transitionDeferred = dcontainer.show("view1-event");
-			transitionDeferred.then(function () {
+			return dcontainer.show("view1-event").then(function () {
 				assert(beforeDisplayCalled, "before show event must be dispatched");
 				document.removeEventListener("delite-display-load", handler);
-				deferred.resolve(true);
 			});
-			return deferred.promise;
 		},
 		// test with a controller
 		custom: function () {
-			this.timeout = 2500;
-			var deferred = new Deferred(), handler;
+			this.tiemout = 2500;
+			var handler;
 
 			function initView(view, id) {
 				view.style.visibility = "hidden";
@@ -171,18 +154,14 @@ define([
 			}
 
 			// by node
-			var transitionDeferred = dcontainer.show("view1");
-			transitionDeferred.then(function () {
+			return dcontainer.show("view1").then(function () {
 				testView(document.getElementById("view1"));
-				transitionDeferred = dcontainer.show("view2");
-				transitionDeferred.then(function () {
-					testView(document.getElementById("view2"));
-					document.removeEventListener("delite-display-load", handler);
-					// test is finished
-					deferred.resolve(true);
-				});
+			}).then(function () {
+				return dcontainer.show("view2");
+			}).then(function () {
+				testView(document.getElementById("view2"));
+				document.removeEventListener("delite-display-load", handler);
 			});
-			return deferred.promise;
 		},
 		teardown: function () {
 			container.parentNode.removeChild(container);
