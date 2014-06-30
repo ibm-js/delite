@@ -57,7 +57,7 @@ define([
 		createdCallback: dcl.advise({
 			before: function () {
 				// Get parameters that were specified declaratively on the widget DOMNode.
-				this._declaredParams = this._mapAttributes();
+				this._parsedAttributes = this._mapAttributes();
 
 				// FF has a native watch() method that overrides our Stateful.watch() method and breaks custom setters,
 				// so that any command like this.label = "hello" sets label to undefined instead.  Try to workaround.
@@ -69,93 +69,24 @@ define([
 
 				// Now that creation has finished, apply parameters that were specified declaratively.
 				// This is consistent with the timing that parameters are applied for programmatic creation.
-				dcl.mix(this, this._declaredParams.props);
-				var connects = this._declaredParams.connects;
-				for (var key in connects) {
-					this.on(key.substring(3), connects[key]);
-				}
+				this._parsedAttributes.forEach(function (pa) {
+					if (pa.event) {
+						this.on(pa.event, pa.callback);
+					} else {
+						this[pa.prop] = pa.value;
+					}
+				}, this);
 			}
 		}),
 
 		/**
-		 * Helper to parse function attributes in markup.
-		 *
-		 * In markup, you can specify the name of a global function, for example:
-		 *
-		 * ```
-		 * <my-widget funcAttr="globalFunction">
-		 * ```
-		 *
-		 * or alternately, inline function content:
-		 *
-		 * ```
-		 * <my-widget funcAttr="console.log('hello world');">
-		 * ```
-		 *
-		 * Markup can correspond to methods in the widget, for example:
-		 *
-		 * ```
-		 * register("my-widget", ... {
-		 *      funcAttr: function(param1, param2){ ... }
-		 * ```
-		 *
-		 * allows markup like:
-		 *
-		 * ```
-		 * <my-widget funcAttr="console.log(param1, param2);">
-		 * ```
-		 *
-		 * Alternately, it can be an event handler with no corresponding widget method, ex:
-		 *
-		 * ```
-		 * <my-widget on-selection-change="console.log(event);"`>
-		 * ```
-		 *
-		 * As shown above, in the latter case, there's a single parameter named `event`.
-		 *
-		 * @param {string} name - Name of attribute.
-		 * @param {string} value - Value of attribute.
+		 * Returns value for widget property based on attribute value in markup.
+		 * @param {string} name - Name of widget property.
+		 * @param {string} value - Value of attribute in markup.
 		 * @private
 		 */
-		_parseFunctionAttr: function (name, value) {
-			var globalFunc = lang.getObject(value, false, global);
-			if (globalFunc) {
-				return globalFunc;
-			} else {
-				var functionArgs;	// param to pass to Function.bind.apply()
-				if (this[name]) {
-					var functionString = this[name].toString().replace(/(\/\*([\s\S]*?)\*\/)|(\/\/(.*)$)/gm, "");
-					functionArgs = functionString.match(/^function\s*[^\(]*\(\s*([^\)]*)\)/m)[1].split();
-					functionArgs.unshift(undefined);
-					functionArgs.push(value);
-				} else {
-					functionArgs = [undefined, "event", value];
-				}
-				// use Function.bind to get a partial on Function constructor (trick to call it with an array
-				// of args instead list of args)
-				/* jshint evil:true */
-				// This will only be executed if you have properties that are of function type in your widget
-				// and that you use them in your tag attributes as follows:
-				// <my-tag whatever="console.log(param)"></my-tag>
-				// This can be avoided by setting the function progammatically or by not setting it at all.
-				// This is harmless if you make sure the JavaScript code that is passed to the attribute
-				// is harmless.
-				return new (Function.bind.apply(Function, functionArgs))();
-			}
-		},
-
-		/**
-		 * Get declaratively specified attributes for widget properties.
-		 * @returns {Object} Hash mapping attribute names to their values.
-		 * @private
-		 */
-		_mapAttributes: function () {
-			var pcm = this._propCaseMap,
-				attr,
-				idx = 0,
-				props = {}, connects = {};
-
-			// inner functions useful to reduce cyclomatic complexity when using jshint
+		_parsePrototypeAttr: function (name, value) {
+			// inner function useful to reduce cyclomatic complexity when using jshint
 			function stringToObject(value) {
 				var obj;
 
@@ -177,48 +108,93 @@ define([
 				return obj;
 			}
 
-			function setTypedValue(widget, name, value) {
-				switch (typeof widget[name]) {
-				case "string":
-					props[name] = value;
-					break;
-				case "number":
-					props[name] = value - 0;
-					break;
-				case "boolean":
-					props[name] = value !== "false";
-					break;
-				case "object":
-					// Search for value as global variable.
-					var obj = lang.getObject(value, false, global);
-					if (obj) {
-						// it's a global, ex: store="myStore"
-						props[name] = obj;
-					} else {
-						// it's an expression, ex: constraints="min: 10, max: 100"
-						props[name] = (widget[name] instanceof Array)
-							? (value
-							? value.split(/\s+/)
-							: [])
-							: stringToObject(value);
-					}
-					break;
-				case "function":
-					props[name] = widget._parseFunctionAttr(name, value);
-				}
-				delete widget[name]; // make sure custom setters fire
+			switch (typeof this[name]) {
+			case "string":
+				return value;
+			case "number":
+				return value - 0;
+			case "boolean":
+				return value !== "false";
+			case "object":
+				// Try to interpret value as global variable, ex: store="myStore", array of strings
+				// ex: "1, 2, 3", or expression, ex: constraints="min: 10, max: 100"
+				return lang.getObject(value, false, global) ||
+					(this[name] instanceof Array ? (value ? value.split(/\s+/) : []) : stringToObject(value));
+			case "function":
+				return this._parseFunctionAttr(value, []);
 			}
+		},
 
-			var attrsToRemove = [];
+		/**
+		 * Helper to parse function attribute in markup.  Unlike _parsePrototypeAttr(), does not require a
+		 * corresponding widget property.  Functions can be specified as a global variables or as inline javascript:
+		 *
+		 * ```
+		 * <my-widget funcAttr="globalFunction" on-click="console.log(event.pageX);">
+		 * ```
+		 *
+		 * @param {string} value - Value of the attribute.
+		 * @param {string[]} params - When generating a function from inline javascript, give it these parameter names.
+		 * @protected
+		 */
+		_parseFunctionAttr: function (value, params) {
+			// use Function.bind to get a partial on Function constructor (trick to call it with an array
+			// of args instead list of args)
+			/* jshint evil:true */
+			// This will only be executed if you have properties that are of function type in your widget
+			// and that you use them in your tag attributes as follows:
+			// <my-tag whatever="console.log(param)"></my-tag>
+			// This can be avoided by setting the function progammatically or by not setting it at all.
+			// This is harmless if you make sure the JavaScript code that is passed to the attribute
+			// is harmless.
+			return lang.getObject(value, false, global) || new (Function.bind.apply(Function,
+				[undefined].concat(params).concat([value])))();
+		},
+
+		/**
+		 * Helper for _mapAttributes().  Interpret a given attribute specified in markup, returning either:
+		 *
+		 * - undefined: ignore
+		 * - {prop: prop, value: value}: set this[prop] = value
+		 * - {event: event, callback: callback}: call this.on(event, callback);
+		 *
+		 * @param {string} name - Attribute name.
+		 * @param {string} value - Attribute value.
+		 * @protected
+		 */
+		_parseAttr: function (name, value) {
+			var pcm = this._propCaseMap;
+			if (name in pcm) {
+				name =  pcm[name]; // convert to correct case for widget
+				return {
+					prop: name,
+					value: this._parsePrototypeAttr(name, value)
+				};
+			} else if (/^on-/.test(name)) {
+				return {
+					event: name.substring(3),
+					callback: this._parseFunctionAttr(value, ["event"])
+				};
+			}
+		},
+
+		/**
+		 * Parse declaratively specified attributes for widget properties and connects.
+		 * @returns {Array} Info about the attributes and their values as returned by _parseAttr().
+		 * @private
+		 */
+		_mapAttributes: function () {
+			var attr,
+				idx = 0,
+				parsedAttrs = [],
+				attrsToRemove = [];
+
 			while ((attr = this.attributes[idx++])) {
-				// Map all attributes except for things like onclick="..." since the browser already handles them.
 				var name = attr.name.toLowerCase();	// note: will be lower case already except for IE9
-				if (name in pcm) {
-					setTypedValue(this, pcm[name] /* convert to correct case for widget */, attr.value);
-					attrsToRemove.push(name);
-				} else if (/^on-/.test(name)) {
-					connects[name] = this._parseFunctionAttr(name, attr.value);
-					attrsToRemove.push(name);
+				var parsedAttr = this._parseAttr(name, attr.value);
+				if (parsedAttr) {
+					parsedAttrs.push(parsedAttr);
+					attrsToRemove.push(attr);
 				}
 			}
 
@@ -226,7 +202,7 @@ define([
 			// while we are looping through it.   (See CustomElement-attr.html test failure on IE10.)
 			attrsToRemove.forEach(this.removeAttribute, this);
 
-			return {props: props, connects: connects};
+			return parsedAttrs;
 		},
 
 		/**
