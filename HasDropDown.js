@@ -27,7 +27,7 @@ define([
 	return dcl(Widget, /** @lends module:delite/HasDropDown# */ {
 		/**
 		 * The button/icon/node to click to display the drop down.
-		 * Can be set in a template via a `data-attach-point` assignment.
+		 * Can be set in a template via a `attach-point` assignment.
 		 * If missing, then either `this.focusNode` or `this.domNode` (if `focusNode` is also missing) will be used.
 		 * @member {Element}
 		 * @protected
@@ -37,7 +37,7 @@ define([
 		/**
 		 * Will set CSS class `d-up-arrow-button`, `d-down-arrow-button`, `d-right-arrow-button` etc. on this node
 		 * depending on where the drop down is set to be positioned.
-		 * Can be set in a template via a `data-attach-point` assignment.
+		 * Can be set in a template via a `attach-point` assignment.
 		 * If missing, then `this._buttonNode` will be used.
 		 * @member {Element}
 		 * @protected
@@ -46,7 +46,7 @@ define([
 
 		/**
 		 * The node to set the aria-expanded class on.
-		 * Can be set in a template via a `data-attach-point` assignment.
+		 * Can be set in a template via a `attach-point` assignment.
 		 * If missing, then `this.focusNode` or `this._buttonNode` (if `focusNode` is missing) will be used.
 		 * @member {Element}
 		 * @protected
@@ -55,7 +55,7 @@ define([
 
 		/**
 		 * The node to display the popup around.
-		 * Can be set in a template via a `data-attach-point` assignment.
+		 * Can be set in a template via a `attach-point` assignment.
 		 * If missing, then `this.domNode` will be used.
 		 * @member {Element}
 		 * @protected

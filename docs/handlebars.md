@@ -103,7 +103,7 @@ and setting up event handlers on those nodes.
 A template like:
 
 	<template>
-		<button data-attach-point=focusNode on-click={{clickHandler}}>click me</button>
+		<button attach-point=focusNode on-click={{clickHandler}}>click me</button>
 	</template>
 
 will set `this.focusNode` to point to the `<button>`, and setup a listener for the "click" event to call
