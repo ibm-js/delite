@@ -163,7 +163,8 @@ define([
 			});
 			/* global fct:true */
 			fct = function () { return "fct"; };
-			var tag = "<test-storemap-5 id='ts6' barAttr='firstname' mFunc='fct'></test-storemap-6>";
+			var tag = "<test-storemap-5 id='ts6' barAttr='firstname' mFunc='fct' " +
+				"nFunc='return item.name + item.firstname;'></test-storemap-6>";
 			var tagHolder = document.createElement("div");
 			tagHolder.innerHTML = tag;
 			register.parse(tagHolder);
@@ -176,22 +177,22 @@ define([
 			store.on("query-success", d.callback(function () {
 				assert(store.renderItems instanceof Array);
 				assert.equal(store.renderItems.length, 2);
-				assert.deepEqual(store.renderItems[0], { id: "foo", foo: "Foo", bar: "1", m: "fct" });
-				assert.deepEqual(store.renderItems[1], { id: "bar", foo: "Bar", bar: "2", m: "fct" });
+				assert.deepEqual(store.renderItems[0], { id: "foo", foo: "Foo", bar: "1", m: "fct", n: "Foo1" });
+				assert.deepEqual(store.renderItems[1], { id: "bar", foo: "Bar", bar: "2", m: "fct", n: "Bar2" });
 				myStore.put({ id: "foo", name: "Foo2", firstname: "3" });
 				// this works because put is synchronous & same for add etc...
 				assert.equal(store.renderItems.length, 2);
-				assert.deepEqual(store.renderItems[0], { id: "foo", foo: "Foo2", bar: "3", m: "fct" });
-				assert.deepEqual(store.renderItems[1], { id: "bar", foo: "Bar", bar: "2", m: "fct" });
+				assert.deepEqual(store.renderItems[0], { id: "foo", foo: "Foo2", bar: "3", m: "fct", n: "Foo23" });
+				assert.deepEqual(store.renderItems[1], { id: "bar", foo: "Bar", bar: "2", m: "fct", n: "Bar2" });
 				myStore.add({ id: "fb", name: "FB", firstname: "4" });
 				assert.equal(store.renderItems.length, 3);
-				assert.deepEqual(store.renderItems[0], { id: "foo", foo: "Foo2", bar: "3", m: "fct" });
-				assert.deepEqual(store.renderItems[1], { id: "bar", foo: "Bar", bar: "2", m: "fct" });
-				assert.deepEqual(store.renderItems[2], { id: "fb", foo: "FB", bar: "4", m: "fct" });
+				assert.deepEqual(store.renderItems[0], { id: "foo", foo: "Foo2", bar: "3", m: "fct", n: "Foo23" });
+				assert.deepEqual(store.renderItems[1], { id: "bar", foo: "Bar", bar: "2", m: "fct", n: "Bar2" });
+				assert.deepEqual(store.renderItems[2], { id: "fb", foo: "FB", bar: "4", m: "fct", n: "FB4" });
 				myStore.remove("bar");
 				assert.equal(store.renderItems.length, 2);
-				assert.deepEqual(store.renderItems[0], { id: "foo", foo: "Foo2", bar: "3", m: "fct" });
-				assert.deepEqual(store.renderItems[1], { id: "fb", foo: "FB", bar: "4", m: "fct" });
+				assert.deepEqual(store.renderItems[0], { id: "foo", foo: "Foo2", bar: "3", m: "fct", n: "Foo23" });
+				assert.deepEqual(store.renderItems[1], { id: "fb", foo: "FB", bar: "4", m: "fct", n: "FB4" });
 			}));
 			var myStore = new M({ data: myData });
 			store.store = myStore;
