@@ -1,6 +1,6 @@
 /** @module delite/DisplayContainer */
-define(["dcl/dcl", "dojo/on", "dojo/Deferred", "dojo/when", "delite/Container"],
-	function (dcl, on, Deferred, when, Container) {
+define(["dcl/dcl", "dojo/Deferred", "dojo/when", "delite/Container"],
+	function (dcl, Deferred, when, Container) {
 	/**
 	 * Mixin for widget containers that need to show on or off a child.
 	 *
@@ -25,9 +25,7 @@ define(["dcl/dcl", "dojo/on", "dojo/Deferred", "dojo/when", "delite/Container"],
 			// we need to warn potential app controller we are going to load a view & transition
 			var event = {
 				dest: dest,
-				loadDeferred: new Deferred(),
-				bubbles: true,
-				cancelable: true
+				loadDeferred: new Deferred()
 			};
 			var self = this, displayDeferred = new Deferred();
 			dcl.mix(event, params);
@@ -36,7 +34,7 @@ define(["dcl/dcl", "dojo/on", "dojo/Deferred", "dojo/when", "delite/Container"],
 			// otherwise call the container load method
 			// we should probably be using event.defaultPrevented here but dojo/on does not return the native event
 			// when it has been prevented but false value instead...
-			var loadDeferred = on.emit(this, "delite-display-load", event) ? this.load(dest) : event.loadDeferred;
+			var loadDeferred = this.emit("delite-display-load", event) ? this.load(dest) : event.loadDeferred;
 			when(loadDeferred, function (value) {
 				// if view is not already a child this means we loaded a new view (div), add it
 				if (self.getIndexOfChild(value.child) === -1) {
@@ -46,7 +44,6 @@ define(["dcl/dcl", "dojo/on", "dojo/Deferred", "dojo/when", "delite/Container"],
 				// notify everyone we are going to proceed
 				event = {
 					dest: dest,
-					bubbles: true,
 					cancelable: false
 				};
 				dcl.mix(event, params);
@@ -86,7 +83,7 @@ define(["dcl/dcl", "dojo/on", "dojo/Deferred", "dojo/when", "delite/Container"],
 			// otherwise call the container load method
 			// we should probably be using event.defaultPrevented here but dojo/on does not return the native event
 			// when it has been prevented but false value instead...
-			var loadDeferred = on.emit(this, "delite-display-load", event) ? this.load(dest) : event.loadDeferred;
+			var loadDeferred = this.emit("delite-display-load", event) ? this.load(dest) : event.loadDeferred;
 			when(loadDeferred, function (value) {
 				// the child is here, actually perform the display
 				// notify everyone we are going to proceed
