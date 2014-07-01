@@ -1,8 +1,6 @@
 /** @module delite/StoreMap */
-define(["dcl/dcl", "dojo/_base/lang", "./Store"], function (dcl, lang, Store) {
+define(["dcl/dcl", "./Store"], function (dcl, Store) {
 
-	var global = (function () { return this; })();
-	
 	var getvalue = function (map, item, key, store) {
 		if (map[key + "Func"]) {
 			return map[key + "Func"](item, store);
@@ -84,37 +82,40 @@ define(["dcl/dcl", "dojo/_base/lang", "./Store"], function (dcl, lang, Store) {
 		 */
 		copyAllItemProps: false,
 
-		startup: function () {
-			var match, attr, idx = 0, value;
-			var mappedKeys = [];
-			// look into properties of the instance for keys to map
-			for (var prop in this) {
-				match = null;
-				if ((match = propregexp.exec(prop)) && mappedKeys.indexOf(match[0]) === -1) {
-					mappedKeys.push(match[0]);
-				}
-			}
-			// look into attributes as well because only pre-declared properties are mapped from attr -> prop
-			while ((attr = this.attributes[idx++])) {
-				var name = attr.name.toLowerCase();	// note: will be lower case already except for IE9
-				match = null;
+		// Called for each attribute specified declaratively.  Overrides CustomElement#_parseAttribute().
+		// Convert all attributes like foofunc="..." or fooattr="..." to instance properties.
+		// foofunc="return item.value" converted to property named fooFunc w/value
+		// function(item, store, value){ return item.value; }
+		_parseAttr: dcl.superCall(function (sup) {
+			return function (name, value) {
+				var match;
 				if ((match = attrregexp.exec(name))) {
-					name = name.replace(capitalize, capitalize.exec(name)[0].toUpperCase());
+					name = this._propCaseMap[name] ||
+							name.replace(capitalize, capitalize.exec(name)[0].toUpperCase());
+					return {
+						prop: name,
+						value: /Attr$/.test(name) ? value :
+							this._parseFunctionAttr(value, ["item", "store", "value"])
+					};
+				} else {
+					return sup.apply(this, arguments);
+				}
+			};
+		}),
+
+		startup: function () {
+			// This runs after the attributes have been processed (and converted into properties),
+			// and after any properties specified to the constructor have been mixed in.
+
+			// look into properties of the instance for keys to map
+			var mappedKeys = [];
+			for (var prop in this) {
+				var match = propregexp.exec(prop);
+				if (match && mappedKeys.indexOf(match[0]) === -1) {
 					mappedKeys.push(match[0]);
-					value = attr.value;
-					if (name.lastIndexOf("Attr") === name.length - 4) {
-						this[name] = value;
-					} else {
-						/* jshint evil:true */
-						// This will be executed only if you use StoreMap mapping by function in your tag attributes:
-						// <my-tag labelFunc="myfunc"></my-tag>
-						// This can be avoided by using mapping by function progammatically or by not using it at all.
-						// This is harmless if you make sure the JavaScript code that is passed to the attribute
-						// is harmless.
-						this[name] = lang.getObject(value, false, global) || new Function(value);
-					}
 				}
 			}
+
 			// which are the considered keys in the store item itself
 			if (this.copyAllItemProps) {
 				this._itemKeys = [];
@@ -123,6 +124,7 @@ define(["dcl/dcl", "dojo/_base/lang", "./Store"], function (dcl, lang, Store) {
 						this[mappedKeys[i] + "Attr"] : mappedKeys[i]);
 				}
 			}
+
 			this._mappedKeys = mappedKeys;
 			this.validateProperties();
 		},

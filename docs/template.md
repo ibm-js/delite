@@ -15,7 +15,11 @@ An AST would look like:
 				attributes: {
 					class: ["d-reset ", {property: "iconClass"}]
 				},
-				children: []
+				connect: {
+					click: "myClickHandler"		// name of method in widget to call on click event
+				},
+				attachPoints: [ "focusNode" ],
+				children: [ ... ]
 			},
 			{property: "label"}
 		]
