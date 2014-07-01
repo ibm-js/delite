@@ -134,7 +134,7 @@ define(["./register"], function (register) {
 		generateNodeCode: function (nodeName, templateNode) {
 			var text = "";
 
-			// Helper string for setting up data-attach-point(s), ex: "this.foo = this.bar = ".
+			// Helper string for setting up attach-point(s), ex: "this.foo = this.bar = ".
 			var ap = (templateNode.attachPoints || []).map(function (n) {
 				return  "this." + n + " = ";
 			}).join("");
@@ -145,7 +145,7 @@ define(["./register"], function (register) {
 					"doc.createElementNS('" + templateNode.xmlns + "', '" + templateNode.tag + "');\n" :
 					"register.createElement('" + templateNode.tag + "');\n");
 			} else if (ap) {
-				// weird case that someone set data-attach-point on root node
+				// weird case that someone set attach-point on root node
 				text += ap + "this;";
 			}
 

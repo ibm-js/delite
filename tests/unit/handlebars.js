@@ -42,12 +42,14 @@ define([
 
 		},
 
-		"data-attach-point": function () {
-			// Testing that data-attach-point works
+		"attach-point": function () {
+			// Testing that attach-point works
 
-			var TestHtml = register("handlebars-data-attach-point", [HTMLElement, Widget], {
+			var TestHtml = register("handlebars-attach-point", [HTMLElement, Widget], {
+				// We support attach-point for most people, and data-attach-point for people that want to use
+				// an HTML5 validator.
 				buildRendering: handlebars.compile(
-						"<template data-attach-point='root,root2'>" +
+						"<template attach-point='root,root2'>" +
 						"<button data-attach-point='myButton, myButton2'>hi</button>" +
 						"</template>"
 				)
@@ -55,8 +57,8 @@ define([
 
 			var node = new TestHtml();
 
-			assert.strictEqual(node.root.tagName.toLowerCase(), "handlebars-data-attach-point", "node.root");
-			assert.strictEqual(node.root2.tagName.toLowerCase(), "handlebars-data-attach-point", "node.root");
+			assert.strictEqual(node.root.tagName.toLowerCase(), "handlebars-attach-point", "node.root");
+			assert.strictEqual(node.root2.tagName.toLowerCase(), "handlebars-attach-point", "node.root");
 			assert.strictEqual(node.myButton.tagName.toLowerCase(), "button", "node.myButton");
 			assert.strictEqual(node.myButton2.tagName.toLowerCase(), "button", "node.myButton2");
 		},

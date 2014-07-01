@@ -84,7 +84,8 @@ define(["./template"], function (template) {
 					case "is":
 						tag = item.value;
 						break;
-					case "data-attach-point":
+					case "attach-point":
+					case "data-attach-point":		// in case user wants to use HTML validator
 						attachPoints = item.value.split(/, */);
 						break;
 					default:
