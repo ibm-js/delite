@@ -133,14 +133,7 @@ define([
 
 		programmatic: function () {
 			// Create a custom element with a custom "foo" event, plus the standard "click" event.
-			var MyCustomElement = register("my-widget2-on", [HTMLElement, CustomElement], {
-				foo: function () {
-					return this.emit("foo");
-				},
-				click: function () {
-					this.emit("click");
-				}
-			});
+			var MyCustomElement = register("my-widget2-on", [HTMLElement, CustomElement], {});
 
 			var evt = null, clicked = 0;
 			var w = new MyCustomElement({});
@@ -152,10 +145,10 @@ define([
 			});
 			container.appendChild(w);
 
-			w.foo();
+			w.emit("foo");
 			assert.isNotNull(evt, "on('foo', ...) was called with event object");
 
-			w.click();
+			w.emit("click");
 			assert.strictEqual(clicked, 1, "one click event");
 		},
 
@@ -165,14 +158,7 @@ define([
 
 			// Define a custom element that emits two events, "click" and "custom".
 			// You can catch the events via either programmatic on("click", ...) or declarative on-custom=... syntax.
-			MyCustomElement = register("my-custom-element-on", [HTMLElement, CustomElement], {
-				emitCustomEvent: function () {
-					this.emit("custom");
-				},
-				emitClickEvent: function () {
-					this.emit("click");
-				}
-			});
+			MyCustomElement = register("my-custom-element-on", [HTMLElement, CustomElement], { });
 
 			// Create variables accessed from the declarative custom element (see definition in <body>)
 			/* global globalClicked:true */
@@ -193,7 +179,7 @@ define([
 			MyCustomElement.on("click", function () {
 				clicked++;
 			});
-			MyCustomElement.emitClickEvent();
+			MyCustomElement.emit("click");
 			assert.strictEqual(clicked, 1, ".on('clicked', ...)");
 			assert.strictEqual(globalClicked, 1, "onclick='...'");
 
@@ -201,7 +187,7 @@ define([
 			MyCustomElement.on("custom", function () {
 				custom++;
 			});
-			MyCustomElement.emitCustomEvent();
+			MyCustomElement.emit("custom");
 			assert.strictEqual(custom, 1, ".on('custom', ...)");
 			assert.strictEqual(globalCustom, 1, "oncustom='...'");
 			assert.strictEqual(globalType, "custom", "event parameter passed into handler");
