@@ -11,6 +11,8 @@ define([
 ], function (registerSuite, assert, domGeom, keys, on, register, HasDropDown, Widget, helpers) {
 	var container, SimplePopup, SimpleDropDownButton, NonFocusableDropDownButton, popup, dd, ndd;
 
+	// TODO: convert this to functional test; no need to simulate clicks and keystrokes.
+
 	function key(node, keyCode) {
 		on.emit(node, "keydown", {
 			keyCode: keyCode,
@@ -23,16 +25,14 @@ define([
 	}
 
 	function click(node) {
-		on.emit(node, navigator.pointerEnabled ? "pointerdown" :
-				navigator.msPointerEnabled ? "MSPointerDown" : "mousedown", {
-			button: 0,	// left button (except on IE quirks mode, when it's 1)
+		on.emit(node, "pointerdown", {
 			bubbles: true
 		});
-		on.emit(node, navigator.pointerEnabled ? "pointerup" :
-				navigator.msPointerEnabled ? "MSPointerUp" : "mouseup", {
-			button: 0,	// left button (except on IE quirks mode, when it's 1)
+
+		on.emit(node, "pointerup", {
 			bubbles: true
 		});
+
 		on.emit(node, "click", {
 			bubbles: true
 		});
@@ -212,11 +212,11 @@ define([
 			// open
 			click(dd);
 			assert.ok(helpers.isVisible(popup), "popup visible");
-			assert.deepEqual(1, require("delite/popup")._stack.length, "in popup manager stack");
+			assert.strictEqual(1, require("delite/popup")._stack.length, "in popup manager stack");
 
 			// destroy
 			dd.destroy();
-			assert.deepEqual(0, require("delite/popup")._stack.length, "popup was closed");
+			assert.strictEqual(0, require("delite/popup")._stack.length, "popup was closed");
 		},
 
 		teardown: function () {
