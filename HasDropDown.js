@@ -6,13 +6,11 @@ define([
 	"dojo/dom-geometry", // domGeometry.marginBox domGeometry.position
 	"requirejs-dplugins/has", // has("touch")
 	"dojo/keys", // keys.DOWN_ARROW keys.ENTER keys.ESCAPE
-	"dojo/on",
-	"dojo/touch",
 	"./focus",
 	"./popup",
-	"./Widget"
-], function (dcl, Deferred, domClass, domGeometry, has, keys, on, touch,
-			 focus, popup, Widget) {
+	"./Widget",
+	"dpointer/events"
+], function (dcl, Deferred, domClass, domGeometry, has, keys, focus, popup, Widget) {
 
 	// TODO: this needs an overhaul for 2.0, including
 	//	- use deferreds instead of callbacks
@@ -149,7 +147,7 @@ define([
 				e.preventDefault();
 			}
 
-			this._docHandler = this.own(on(this.ownerDocument, touch.release, this._onDropDownMouseUp.bind(this)))[0];
+			this._docHandler = this.on("pointerup", this._onDropDownMouseUp.bind(this), this.ownerDocument.body);
 
 			this.toggleDropDown();
 		},
@@ -258,13 +256,10 @@ define([
 		}),
 
 		postCreate: function () {
-			var keyboardEventNode = this.focusNode || this;
-			this.own(
-				on(this._buttonNode, touch.press, this._onDropDownMouseDown.bind(this)),
-				on(this._buttonNode, "click", this._onDropDownClick.bind(this)),
-				on(keyboardEventNode, "keydown", this._onKey.bind(this)),
-				on(keyboardEventNode, "keyup", this._onKeyUp.bind(this))
-			);
+			this.on("pointerdown", this._onDropDownMouseDown.bind(this), this._buttonNode);
+			this.on("click", this._onDropDownClick.bind(this), this._buttonNode);
+			this.on("keydown", this._onKey.bind(this), this.focusNode || this);
+			this.on("keyup", this._onKeyUp.bind(this), this.focusNode || this);
 		},
 
 		destroy: function () {
