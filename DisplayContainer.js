@@ -32,8 +32,7 @@ define(["dcl/dcl", "dojo/Deferred", "dojo/when", "delite/Container"],
 			// we now need to warn potential app controller we need to load a new child
 			// when the controller told us it will handle child loading use the deferred from the event
 			// otherwise call the container load method
-			// we should probably be using event.defaultPrevented here but dojo/on does not return the native event
-			// when it has been prevented but false value instead...
+			// note: emit() does not return the native event when it has been prevented but false value instead...
 			var loadDeferred = this.emit("delite-display-load", event) ? this.load(dest) : event.loadDeferred;
 			when(loadDeferred, function (value) {
 				// if view is not already a child this means we loaded a new view (div), add it
@@ -81,8 +80,7 @@ define(["dcl/dcl", "dojo/Deferred", "dojo/when", "delite/Container"],
 			// get a hand on it)
 			// when the controller told us it will handle child loading use the deferred from the event
 			// otherwise call the container load method
-			// we should probably be using event.defaultPrevented here but dojo/on does not return the native event
-			// when it has been prevented but false value instead...
+			// note: emit() does not return the native event when it has been prevented but false value instead.
 			var loadDeferred = this.emit("delite-display-load", event) ? this.load(dest) : event.loadDeferred;
 			when(loadDeferred, function (value) {
 				// the child is here, actually perform the display
