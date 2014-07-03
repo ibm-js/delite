@@ -28,69 +28,29 @@
 				// Reduce from default of 1000 to speed up testing
 				multiCharSearchDuration: 100,
 
-				// Home/End key support
-				_getFirst: function () {
-					// first item in first list widget
-					return this.firstElementChild._getFirst();
-				},
-				_getLast: function () {
-					// last item in last list widget
-					return this.lastElementChild._getLast();
-				},
-
 				// Simple arrow key support.
 				_onLeftArrow: function () {
 					var listItem = this.focusedChild.parentNode;
-					this.focusChild(listItem._getPrev(this.focusedChild) || listItem._getLast());
+					this.focusChild(this.focusedChild.previousElementSibling || listItem.lastElementChild);
 				},
 				_onRightArrow: function () {
 					var listItem = this.focusedChild.parentNode;
-					this.focusChild(listItem._getNext(this.focusedChild) || listItem._getFirst());
+					this.focusChild(this.focusedChild.nextElementSibling || listItem.firstElementChild);
 				},
 				_onDownArrow: function () {
 					// For simplicity I'll just go to the first field in the next row
 					var listItem = this.focusedChild.parentNode;
-					this.focusChild(listItem.nextElementSibling ? listItem.nextElementSibling._getFirst() :
-							this.firstElementChild._getFirst());
+					this.focusChild((listItem.nextElementSibling || this.firstElementChild).firstElementChild);
 				},
 				_onUpArrow: function () {
 					// For simplicity I'll just go to the first field in the previous row
 					var listItem = this.focusedChild.parentNode;
-					this.focusChild(listItem.previousElementSibling ? listItem.previousElementSibling._getFirst() :
-							this.lastElementChild._getFirst());
-				},
-
-				// Letter key navigation support, loops through all fields of all list-items.
-				_getNext: function (child) {
-					// Return either:
-					//		1. next field in current list item (if there is one)
-					//		2. first field in next list item (if there is one)
-					var listItem = child.parentNode;
-					return listItem._getNext(child) ||
-							(listItem.nextElementSibling && listItem.nextElementSibling._getFirst());
+					this.focusChild((listItem.previousElementSibling || this.lastElementChild).firstElementChild);
 				}
 			});
 
 			// Child of my-grid
-			register("my-row", [HTMLElement], {
-				// Interface from List to ListItem to navigate fields
-				_getFirst: function () {
-					// first field
-					return this.firstElementChild;
-				},
-				_getLast: function () {
-					// last field
-					return this.lastElementChild;
-				},
-				_getNext: function (child) {
-					// field after child
-					return child.nextElementSibling;
-				},
-				_getPrev: function (child) {
-					// field before child
-					return child.previousElementSibling;
-				}
-			});
+			register("my-row", [HTMLElement], { });
 
 			// Simple KeyNav widget that extends Container. childSelector is function.
 			var TestContainer = register("my-list", [HTMLElement, Container, KeyNav], {
@@ -99,12 +59,6 @@
 
 				childSelector: function (child) {
 					return child !== this;
-				},
-				_getFirst: function () {
-					return this.firstElementChild;
-				},
-				_getLast: function () {
-					return this.lastElementChild;
 				},
 				_onDownArrow: function () {
 					var nextChild = this._getNext(this.focusedChild, 1);
@@ -133,6 +87,7 @@
 				postCreate: function () {
 					// With help of delite/a11yclick, convert SPACE/ENTER key to click event.
 					a11yclick(this);
+					this.tabIndex = "-1";
 				}
 			});
 
