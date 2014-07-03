@@ -37,9 +37,11 @@ title: delite
 	<li><a href="http://www.w3.org/TR/html-templates/">Templates</a></li>
 	<li><a href="http://www.w3.org/TR/pointerevents/">Pointer Events</a></li>
 	<li><a href="http://www.ecma-international.org/ecma-402/1.0/">ECMA402</a> JavaScript Internationalization</li>
+	<li><a href="http://www.ecma-international.org/ecma-262/5.1/#sec-11.1.5">ES5 getter & setters</a></li>
+	<li><a href="http://wiki.ecmascript.org/doku.php?id=harmony:observe">ES6 Object.observe</a></li>
 </ul>
 <p>
-	This makes delite-based elements fully interoperable with other custom elements including Polymer elements.
+	Relying on custom elements makes delite-based elements fully interoperable with other custom elements including Polymer elements.
 </p>
 
 <div class="page-header">
@@ -73,7 +75,8 @@ title: delite
 <p>Another example would be the binding engine for our elements templates. This binding engine leverages
 	<a href="http://handlebarsjs.com/">handlebars</a> syntax but is designed with code size and runtime and runtime
 	performance in mind, providing just the feature set needed by most elements. For those with more advance needs
-	in terms of binding our architecture is open enough to be able to leverage any other binding engine if required.</p>
+	in terms of binding our architecture is open enough to be able to leverage any other binding engine if required.
+	You might want to checkout the <a href="https://github.com/ibm-js/liaison">liaison</a> project for alternate advanced data binding</p>
 
 <div class="page-header">
 	<h2>Consistent Approach to APIs</h2>
