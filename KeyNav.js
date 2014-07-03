@@ -2,10 +2,19 @@
 define([
 	"dcl/dcl",
 	"dojo/keys", // keys.END keys.HOME, keys.LEFT_ARROW etc.
-	"dojo/on",
+	"requirejs-dplugins/has",
 	"./Widget",
-	"./focus"
-], function (dcl, keys, on, Widget) {
+	"./focus"	// causes _onBlur() to be called when focus removed from KeyNav and logical descendants
+], function (dcl, keys, has, Widget) {
+
+	// Returns the name of the method to test if an element matches a CSS selector.
+	has.add("dom-matches", function () {
+		var node = document.body;
+		if (node.matches) { return "matches"; }
+		if (node.webkitMatchesSelector) { return "webkitMatchesSelector"; }
+		if (node.mozMatchesSelector) { return "mozMatchesSelector"; }
+		if (node.msMatchesSelector) { return "msMatchesSelector"; }
+	});
 
 	/**
 	 * Return true if node is an `<input>` or similar that responds to keyboard input.
@@ -26,13 +35,11 @@ define([
 	  * 
 	  * To use this mixin, the subclass must:
 	  * 
-	  * - Implement `_getNext()`, `_getFirst()`, `_getLast()`, `_onLeftArrow()`, `_onRightArrow()`
-	  * `_onDownArrow()`, `_onUpArrow()` methods to handle home/end/left/right/up/down keystrokes.
-	  * Next and previous in this context refer to a linear ordering of the descendants used
-	  * by letter key search.
+	  * - Implement `_onLeftArrow()`, `_onRightArrow()``_onDownArrow()`, `_onUpArrow()` methods to handle
+	  *   left/right/up/down keystrokes.
 	  * - Set all navigable descendants' initial tabIndex to "-1"; both initial descendants and any
 	  * descendants added later, by for example `addChild()`.
-	  * - Define `childSelector` AS a function or string that identifies focusable child Elements.
+	  * - Define `childSelector` as a function or string that identifies focusable child Elements.
 	  * 
 	  * Note the word "child" in this class is used loosely, to refer to any descendant Element.
 	  * If the child elements contain text though, they should have a label attribute.  KeyNav uses the label
@@ -63,14 +70,34 @@ define([
 		_keyNavCodes: null,
 
 		/**
-		 * Selector (passed to on.selector()) to identify what to treat as a navigable descendant.  Used to
-		 * monitor focus events and set `this.focusedChild`.  Must be set by implementing class.  If this is
-		 * a string (ex: "> *"), then the implementing class must require() `dojo/query`.
+		 * Selector to identify which descendants Elements are navigable via arrow keys or
+		 * keyboard search.  Note that for subclasses like a Tree, one navigable node could be a descendant of another.
+		 *
+		 * By default, the direct DOM children of this widget are considered as the children.
+		 *
+		 * Must be set in the prototype rather than on the instance.
+		 *
 		 * @member {string|Function}
 		 * @protected
-		 * @abstract
+		 * @constant
 		 */
 		childSelector: null,
+
+		/**
+		 * Figure out effective target of this event, either a navigable node (a.k.a. a child),
+		 * or this widget itself.
+		 * The meaning of "child" here is complicated because this could be a Tree with nested children.
+		 * @param evt
+		 * @private
+		 */
+		_getTargetElement: function (evt) {
+			for (var child = evt.target; child !== this; child = child.parentNode) {
+				if (this._selectorFunc(child)) {
+					return child;
+				}
+			}
+			return this;
+		},
 
 		postCreate: function () {
 			// If the user hasn't specified a tabindex declaratively, then set to default value.
@@ -78,10 +105,19 @@ define([
 				this.tabIndex = "0";
 			}
 
-			var self = this,
-				childSelector = typeof this.childSelector === "string"
-					? this.childSelector
-					: this.childSelector.bind(this);
+			var self = this;
+
+			// Setup function to check which child nodes are navigable.
+			if (typeof this.childSelector === "string") {
+				var matchesFuncName = has("dom-matches");
+				this._selectorFunc = function (elem) {
+					return elem[matchesFuncName](this.childSelector);
+				};
+			} else if (this.childSelector) {
+				this._selectorFunc = this.childSelector;
+			} else {
+				this._selectorFunc = function (child) { return child.parentNode === self.containerNode; };
+			}
 
 			if (!this._keyNavCodes) {
 				var keyCodes = this._keyNavCodes = {};
@@ -97,15 +133,16 @@ define([
 				keyCodes[keys.DOWN_ARROW] = this._onDownArrow.bind(this);
 			}
 
-			this.own(
-				on(this, "keypress", this._onContainerKeypress.bind(this)),
-				on(this, "keydown", this._onContainerKeydown.bind(this)),
-				on(this, "focus", this._onContainerFocus.bind(this)),
-				on(this.containerNode || this, on.selector(childSelector, "focusin"), function (evt) {
-					// "this" refers to the Element that matched the selector
-					self._onChildFocus(this, evt);
-				})
-			);
+			this.on("keypress", this._onContainerKeypress.bind(this)),
+			this.on("keydown", this._onContainerKeydown.bind(this)),
+			this.on("focusin", function (evt) {
+				var target = self._getTargetElement(evt);
+				if (target === self) {
+					self._onContainerFocus(evt);
+				} else {
+					self._onChildFocus(target, evt);
+				}
+			});
 		},
 
 		/**
@@ -212,16 +249,15 @@ define([
 		 * @param {Event} evt
 		 * @private
 		 */
-		_onContainerFocus: function (evt) {
+		_onContainerFocus: function () {
 			// Note that we can't use _onFocus() because switching focus from the
 			// _onFocus() handler confuses the focus.js code
 			// (because it causes _onFocusNode() to be called recursively).
 			// Also, _onFocus() would fire when focus went directly to a child widget due to mouse click.
 
-			// Ignore spurious focus events:
-			//	1. focus on a child widget bubbles on FF
-			//	2. on IE, clicking the scrollbar of a select dropdown moves focus from the focused child item to me
-			if (evt.target !== this || this.focusedChild) {
+			// Ignore spurious focus event:
+			// On IE, clicking the scrollbar of a select dropdown moves focus from the focused child item to me
+			if (this.focusedChild) {
 				return;
 			}
 
@@ -445,49 +481,22 @@ define([
 		_getNextFocusableChild: function (child, dir) {
 			var wrappedValue = child;
 			do {
-				if (!child) {
-					child = this[dir > 0 ? "_getFirst" : "_getLast"]();
-					if (!child) {
-						break;
-					}
-				} else {
-					child = this._getNext(child, dir);
-				}
+				child = this._getNext(child || this, dir);
+
+				// TODO: roll isFocusable() check into _getNext() ?  We're repeating the _getNext() logic in this func.
 				if (child && child !== wrappedValue && this.isFocusable.call(child)) {
 					return child;
 				}
 			} while (child !== wrappedValue);
+
 			// no focusable child found
 			return null;
 		},
 
 		/**
-		 * Returns the first child.
-		 * Subclasses should override this method with a more efficient implementation.
-		 * @returns {Element}
-		 * @protected
-		 * @abstract
-		 */
-		_getFirst: function () {
-			return this._getNavigableChildren()[0];
-		},
-
-		/**
-		 * Returns the last descendant.
-		 * Subclasses should override this method with a more efficient implementation.
-		 * @returns {Element}
-		 * @protected
-		 * @abstract
-		 */
-		_getLast: function () {
-			var children = this._getNavigableChildren();
-			return children[children.length - 1];
-		},
-
-
-		/**
 		 * Returns the next or previous navigable child, relative to "child".
-		 * Subclasses should override this method with a more efficient implementation.
+		 * If "child" is this, then it return the first focusable child (when dir === 1)
+		 * or last focusable child (when dir === -1).
 		 * @param {Element} child - The current child Element.
 		 * @param {number} dir - 1 = after, -1 = before
 		 * @returns {Element}
@@ -495,19 +504,30 @@ define([
 		 * @abstract
 		 */
 		_getNext: function (child, dir) {
-			var children = this._getNavigableChildren(),
-				index = children.indexOf(child);
-			return children[(index + children.length + dir) % children.length];
-		},
-
-		/**
-		 * Helper method to get list of navigable children (navigable via arrow keys and letter keys).
-		 */
-		_getNavigableChildren: function () {
-			if (typeof this.childSelector === "function") {
-				return Array.prototype.filter.call(this.querySelectorAll("*"), this.childSelector);
-			} else {
-				return Array.prototype.slice.call(this.querySelectorAll(this.childSelector));	// convert to array
+			var root = this, origChild = child;
+			function dfsNext(node) {
+				if (node.firstElementChild) { return node.firstElementChild; }
+				while (node !== root) {
+					if (node.nextElementSibling) { return node.nextElementSibling; }
+					node = node.parentNode;
+				}
+				return root;	// loop around, plus corner case when no children
+			}
+			function dfsLast(node) {
+				while (node.lastElementChild) { node = node.lastElementChild; }
+				return node;
+			}
+			function dfsPrev(node) {
+				return node === root ? dfsLast(root) : // loop around, plus corner case when no children
+					(node.previousElementSibling && dfsLast(node.previousElementSibling)) || node.parentNode;
+			}
+			while (true) {
+				child = dir > 0 ? dfsNext(child) : dfsPrev(child);
+				if (child === origChild) {
+					return null;	// looped back to original child
+				} else if (this._selectorFunc(child)) {
+					return child;	// this child matches
+				}
 			}
 		}
 	});
