@@ -24,6 +24,18 @@
 		display: inline-block;
 		vertical-align: middle;
 	}
+
+	iframe {
+		height: 50px;
+	}
+
+	fake-popup {
+		display: block;
+		background: gray;
+		border: solid black 1px;
+		min-height: 100px;
+		min-width: 200px;
+	}
 </style>
 <script type="text/javascript">
 require([
@@ -31,10 +43,11 @@ require([
 	"dcl/dcl",
 	"dojo/on",
 	"delite/focus",
+	"delite/popup",
 	"delite/register",
 	"delite/Widget",
 	"requirejs-domready/domReady!"
-], function (doh, dcl, on, focus, register, Widget) {
+], function (doh, dcl, on, focus, popupUtil, register, Widget) {
 
 	//////////////////////////////////////////////////////
 	// Test widgets
@@ -71,6 +84,69 @@ require([
 		buildRendering: function () {
 			this.innerHTML = "<input><span class='button'>&uarr;</span><span class='button'>&darr;</span>";
 			this.focusNode = this.firstElementChild;	// the <input>
+		}
+	});
+
+	/**
+	 * A trivial popup widget.
+	 */
+	var PopupWidget = register("fake-popup", [HTMLElement, Widget], {
+		buildRendering: function () {
+			this.id = "popup";
+			this.textContent = "i'm a popup";
+		}
+	});
+
+	/**
+	 * A button that shows a popup.
+	 */
+	register("fake-dropdown-button", [HTMLButtonElement, Widget], {
+		postCreate: function () {
+			this.on("click", this.onClick.bind(this));
+			this.popup = new PopupWidget();
+		},
+
+		onClick: function (e) {
+			this._openPopup();
+		},
+
+		_openPopup: function () {
+			var self = this;
+
+			popupUtil.open({
+				popup: this.popup,
+				parent: this,
+				around: this,
+				orient: this.orient,
+				onCancel: function () {
+					console.log(self.id + ": cancel of child");
+				},
+				onExecute: function () {
+					console.log(self.id + ": execute of child");
+
+					// allow click w/out closing popup
+					// popupUtil.close(self.popup);
+					// self.open = false;
+				}
+			});
+
+			this.open = true;
+		},
+
+		closePopup: function () {
+			if (this.open) {
+				popupUtil.close(this.popup);
+				this.open = false;
+			}
+		},
+
+		/**
+		 * Called from focus manager and when we get the signal we need to close the drop down.
+		 * @private
+		 */
+		_onBlur: function () {
+			console.log(this.id + ": close popup due to blur");
+			this.closePopup();
 		}
 	});
 
@@ -274,7 +350,25 @@ require([
 
 				return d;
 			}
+		},
+
+		{
+			name: "drop down",
+			timeout: 4000,
+			runTest: function () {
+				var d = new doh.Deferred();
+
+				click(document.getElementById("dropdownButton"));
+				click(document.querySelector("fake-popup"));
+
+				setTimeout(d.getTestCallback(function () {
+					doh.is("form, dropdownButton, popup", activeStack, "active stack");
+				}), 500);
+
+				return d;
+			}
 		}
+
 	]);
 
 	doh.run();
@@ -319,6 +413,7 @@ require([
 			<fake-spinner id=spinner></fake-spinner>
 		</fieldset>
 
+		<button id="dropdownButton" type="button" is="fake-dropdown-button">show dropdown</button>
 		<button tabIndex="-1" id="minusOne" type="button">non tab-navigable button</button>
 		<button id="disabledButton" type="button" disabled>disabled button</button>
 	</form>

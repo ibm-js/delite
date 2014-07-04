@@ -289,10 +289,10 @@ define([
 
 			dcl.mix(wrapper, {
 				id: id,
-				className: "d-popup " + (widget.baseClass || widget["class"] || "").split(" ")[0] + "Popup",
-				duiPopupParent: args.parent ? args.parent.id : ""
+				className: "d-popup " + (widget.baseClass || widget["class"] || "").split(" ")[0] + "Popup"
 			});
 			wrapper.style.zIndex = this._beginZIndex + stack.length;
+			wrapper.setAttribute("d-popup-parent", args.parent ? args.parent.id : "");
 
 			if (stack.length === 0 && around) {
 				// First element on stack. Save position of aroundNode and setup listener for changes to that position.
