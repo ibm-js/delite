@@ -3,14 +3,6 @@
 .default-blue-button-background-image () { .background-image-linear-gradient-top-bottom-2-stops(#7a9de9, #2362dd, 0.5, #366edf, 0.5, #215fdc); }
 @default-blue-button-background-image-gecko: -moz-linear-gradient(top, #7a9de9 0%, #366edf 50%, #215fdc 50%, #2362dd 100%);
 
-.dui-color-blue-45 () { .background-image-linear-gradient-top-left-bottom-right-2-stops(#7a9de9, #2362dd, 0.5, #366edf, 0.5, #215fdc); }
-.dui-color-default-45 () { .background-image-linear-gradient-top-left-bottom-right-3-stops(#222222, #4a6c9b, 0.02, #8ea4c1, 0.5, #5877a2, 0.5, #476999); }
-.dui-color-default-sel-45 () { .background-image-linear-gradient-top-left-bottom-right-2-stops(#7c87a4, #263e6c, 0.5, #394d77, 0.5, #243b69); }
-
-@dui-color-blue-45-gecko: -moz-linear-gradient(top left, #7a9de9 0%, #366edf 50%, #215fdc 50%, #2362dd 100%);
-@dui-color-default-45-gecko: -moz-linear-gradient(top left, #222222 0%, #8ea4c1 2%, #5877a2 50%, #476999 50%, #4a6c9b 100%);
-@dui-color-default-sel-45-gecko: -moz-linear-gradient(top left, #7c87a4 0%, #394d77 50%, #243b69 50%, #263e6c 100%);
-
 @default-button-color: white;
 @default-button-background-color: #5877a2;
 .default-button-background-image () { .background-image-linear-gradient-top-bottom-3-stops(#222, #4a6c9b, .02, #8ea4c1, 0.5, #5877a2, 0.5, #476999); }
@@ -57,8 +49,6 @@
 @d-button-checked-background-image-gecko: @default-blue-button-background-image-gecko;
 
 // common.less
-.duiView-styles () {
-}
 
 .d-color-blue-styles () {
 	color: @default-blue-button-color;
