@@ -343,6 +343,7 @@ define([
 		 * @param {event} evt - A focus event.
 		 */
 		onFocus: function () {
+			// TODO: we should be firing an event, not calling a callback method?
 		},
 
 		/**
