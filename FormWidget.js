@@ -111,15 +111,6 @@ define([
 		}),
 
 		/**
-		 * Returns whether or not this widget is focusable.  Used internally by delite.
-		 * @returns {boolean}
-		 * @protected
-		 */
-		isFocusable: function () {
-			return !this.disabled && this.focusNode && (getComputedStyle(this).display !== "none");
-		},
-
-		/**
 		 * Put focus on this widget.
 		 */
 		focus: function () {
