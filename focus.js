@@ -18,10 +18,9 @@ define([
 	"dcl/dcl",
 	"dojo/dom-class",
 	"dojo/Evented",
-	"dojo/on",
-	"./a11y",	// a11y.isTabNavigable
+	"dpointer/events",		// so can just monitor for "pointerdown"
 	"requirejs-domready/domReady!"
-], function (advise, dcl, domClass, Evented, on, a11y) {
+], function (advise, dcl, domClass, Evented) {
 
 	// Time of the last focusin event
 	var lastFocusin;
@@ -68,15 +67,12 @@ define([
 		registerWin: function (targetWindow, effectiveNode) {
 			// Listen for blur and focus events on targetWindow's document.
 			var _this = this,
-				body = targetWindow.document && targetWindow.document.body;
+				doc = targetWindow.document,
+				body = doc && doc.body;
 
 			if (body) {
-				// Listen for touches or mousedowns... could also use dpointer here.
-				// TODO: change this to run on capture phase rather than bubbling phase.
-				var event = "onpointerdown" in document ? "pointerdown" :
-					"msMaxTouchPoints" in navigator ? "MSPointerDown" :
-					"ontouchstart" in document ? "mousedown, touchstart" : "mousedown";
-				var mdh = on(targetWindow.document, event, function (evt) {
+				// Listen for touches or mousedowns.
+				function pointerDownHandler(evt) {
 					// workaround weird IE bug where the click is on an orphaned node
 					// (first time clicking a Select/DropDownButton inside a TooltipDialog).
 					// actually, strangely this is happening on latest chrome too.
@@ -85,42 +81,36 @@ define([
 					}
 
 					_this._onTouchNode(effectiveNode || evt.target, "mouse");
-				});
+				}
+				doc.addEventListener("pointerdown", pointerDownHandler, true);
 
-				var fih = on(body, "focusin", function (evt) {
+				function focusHandler(evt) {
 					// When you refocus the browser window, IE gives an event with an empty srcElement
 					if (!evt.target.tagName) {
 						return;
 					}
 
-					// IE reports that nodes like <body> have gotten focus, even though they have tabIndex=-1,
-					// ignore those events
+					// IE reports that nodes like <body> have gotten focus, even though they don't have a
+					// tabindex setting.  Ignore those events.
 					var tag = evt.target.tagName.toLowerCase();
 					if (tag === "#document" || tag === "body") {
 						return;
 					}
 
-					if (a11y.isFocusable(evt.target)) {
-						_this._onFocusNode(effectiveNode || evt.target);
-					} else {
-						// Previous code called _onTouchNode() for any activate event on a non-focusable node.   Can
-						// probably just ignore such an event as it will be handled by onmousedown handler above, but
-						// leaving the code for now.
-						_this._onTouchNode(effectiveNode || evt.target);
-					}
-				});
+					_this._onFocusNode(effectiveNode || evt.target);
+				}
+				body.addEventListener("focus", focusHandler, true);	// need true since focus doesn't bubble
 
-				var foh = on(body, "focusout", function (evt) {
+				function blurHandler(evt) {
 					_this._onBlurNode(effectiveNode || evt.target);
-				});
+				}
+				body.addEventListener("blur", blurHandler, true);	// need true since blur doesn't bubble
 
 				return {
 					remove: function () {
-						mdh.remove();
-						fih.remove();
-						foh.remove();
-						mdh = fih = foh = null;
-						body = null;	// prevent memory leak (apparent circular reference via closure)
+						doc.removeEventListener("pointerdown", pointerDownHandler, true);
+						body.removeEventListener("focus", focusHandler, true);
+						body.removeEventListener("blur", blurHandler, true);
 					}
 				};
 			}
