@@ -180,7 +180,7 @@ define([
 			var newStack = [];
 			try {
 				while (node) {
-					var popupParent = node.getAttribute("duiPopupParent");
+					var popupParent = node.getAttribute("d-popup-parent");
 					if (popupParent) {
 						node = node.ownerDocument.getElementById(popupParent);
 					} else if (node.tagName && node.tagName.toLowerCase() === "body") {
