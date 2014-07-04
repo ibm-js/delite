@@ -187,31 +187,11 @@ define([
 		},
 
 		/**
-		 * Returns first child that can be focused.
-		 * @returns {Element}
-		 * @protected
-		 */
-		_getFirstFocusableChild: function () {
-			// Leverage _getNextFocusableChild() to skip disabled children
-			return this._getNextFocusableChild(null, 1);
-		},
-
-		/**
-		 * Returns last child that can be focused.
-		 * @returns {Element}
-		 * @protected
-		 */
-		_getLastFocusableChild: function () {
-			// Leverage _getNextFocusableChild() to skip disabled children
-			return this._getNextFocusableChild(null, -1);
-		},
-
-		/**
 		 * Focus the first focusable child in the container.
 		 * @protected
 		 */
 		focusFirstChild: function () {
-			this.focusChild(this._getFirstFocusableChild());
+			this.focusChild(this._getNext(this, 1));
 		},
 
 		/**
@@ -219,7 +199,7 @@ define([
 		 * @protected
 		 */
 		focusLastChild: function () {
-			this.focusChild(this._getLastFocusableChild());
+			this.focusChild(this._getNext(this, -1));
 		},
 
 		/**
@@ -450,7 +430,7 @@ define([
 			}, this.multiCharSearchDuration);
 			var currentItem = this.focusedChild || null;
 			if (searchLen === 1 || !currentItem) {
-				currentItem = this._getNextFocusableChild(currentItem, 1); // skip current
+				currentItem = this._getNext(currentItem, 1); // skip current
 				if (!currentItem) {
 					return;
 				} // no items
@@ -465,43 +445,20 @@ define([
 					numMatches = -1;
 					break;
 				}
-				currentItem = this._getNextFocusableChild(currentItem, 1);
+				currentItem = this._getNext(currentItem, 1);
 			} while (currentItem !== stop);
 
 			this.onKeyboardSearch(matchedItem, evt, searchString, numMatches);
 		},
 
 		/**
-		 * Returns the next or previous focusable child, relative to "child".
-		 * @param {Element} child
-		 * @param {number} dir - 1 for after, -1 for before
-		 * @returns {Element}
-		 * @protected
-		 */
-		_getNextFocusableChild: function (child, dir) {
-			var wrappedValue = child;
-			do {
-				child = this._getNext(child || this, dir);
-
-				// TODO: roll isFocusable() check into _getNext() ?  We're repeating the _getNext() logic in this func.
-				if (child && child !== wrappedValue && this.isFocusable.call(child)) {
-					return child;
-				}
-			} while (child !== wrappedValue);
-
-			// no focusable child found
-			return null;
-		},
-
-		/**
 		 * Returns the next or previous navigable child, relative to "child".
-		 * If "child" is this, then it return the first focusable child (when dir === 1)
+		 * If "child" is this, then it returns the first focusable child (when dir === 1)
 		 * or last focusable child (when dir === -1).
 		 * @param {Element} child - The current child Element.
 		 * @param {number} dir - 1 = after, -1 = before
 		 * @returns {Element}
-		 * @private
-		 * @abstract
+		 * @protected
 		 */
 		_getNext: function (child, dir) {
 			var root = this, origChild = child;

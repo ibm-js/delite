@@ -260,13 +260,6 @@ define([
 		},
 
 		/**
-		 * Return true if this widget can currently be focused and false if not.
-		 */
-		isFocusable: function () {
-			return this.focus && this.style.display !== "none";
-		},
-
-		/**
 		 * Place this widget somewhere in the dom, and allow chaining.
 		 *
 		 * @param {string|Element|DocumentFragment} reference - Element, DocumentFragment,
