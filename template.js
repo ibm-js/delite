@@ -154,7 +154,7 @@ define(["./register"], function (register) {
 				// List of strings and property names that define the attribute/property value
 				var parts = templateNode.attributes[attr];
 
-				// Get expression for the value of this property, ex: 'duiReset ' + this.baseClass.
+				// Get expression for the value of this property, ex: 'd-reset ' + this.baseClass.
 				// Also get list of properties that we need to watch for changes.
 				var watchProps = [], js = parts.map(function (part) {
 					if (part.property) {
