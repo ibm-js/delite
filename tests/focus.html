@@ -6,6 +6,25 @@
 
 <script type="text/javascript" src="boilerplate.js"></script>
 
+<style>
+	form {
+		margin: 5px;
+		border: dotted gray 3px;
+		padding: 5px;
+	}
+
+	fieldset {
+		margin: 2px;
+		border: solid gray 2px;
+		padding: 2px;
+		background: #eee;
+	}
+
+	textarea, fake-editor {
+		display: inline-block;
+		vertical-align: middle;
+	}
+</style>
 <script type="text/javascript">
 require([
 	"doh/runner",
@@ -30,13 +49,10 @@ require([
 
 		postCreate: function () {
 			focus.registerIframe(this.containerNode);
+		},
 
-			// On IE10 focus() needs to be defined on the instance, otherwise it's ignored.
-			// I'm confused about this because I thought we already did that for all properties for IE,
-			// since prototype swizzling doesn't work.
-			this.focus = function focusEditor() {
-				this.containerNode.contentDocument.body.firstChild.focus();
-			};
+		focus: function () {
+			this.containerNode.contentDocument.body.firstChild.focus();
 		}
 	});
 
@@ -70,6 +86,7 @@ require([
 			focus.on("active-widget-stack", function (fs) {
 				activeStack = fs.map(function(elem){ return elem.id; }).join(", ");
 				console.log("New active stack: " + activeStack);
+				document.getElementById("focusStack").textContent = activeStack;
 				activeStackChangeNotifications++;
 			});
 			return register.parse();
@@ -84,17 +101,6 @@ require([
 				w.onBlur = function () {
 					blurCallbacks[id] = true;
 				};
-/***
-				// new API is to watch "focused" attribute
-				w.watch("focused", function (name, oldValue, newValue) {
-					// keep track of current state
-					focusedState[name] = newValue;
-
-					// keep log of every watch notification
-					var nvs = newValue ? "focused" : "blurred";
-					focusedWatchLog[w.id] = !focusedWatchLog[w.id] ? nvs : focusedWatchLog[w.id] + ", " + nvs;
-				});
-***/
 			});
 		}
 	]);
@@ -103,7 +109,9 @@ require([
 		// These are objects used to track calls to _onFocus and _onBlur in various widgets
 		focusCallbacks = {};
 		blurCallbacks = {};
+
 		activeStack = "";
+		document.getElementById("focusStack").textContent = activeStack;
 		activeStackChangeNotifications = 0;
 	}
 
@@ -277,38 +285,40 @@ require([
 
 	<h3>delite/focus Automated Test</h3>
 
-	<label>a form ContentPane widget:</label><br>
+	<span id="focusStackLabel">Focus stack:</span>
+	<span id="focusStack"></span>
+	<br><br>
 
+	<label>Form widget:</label><br>
 	<form id="form" is="fake-form">
-		<label for="first">simple input: </label><input id="first"/><br>
-		<label for="second">another simple input: </label><input id="second"/><br>
+		<label for="first">First input: </label><input id="first"/><br>
+		<label for="second">Second input: </label><input id="second"/><br>
 
-		<label>a fieldset ContentPane widget:</label><br>
 		<fieldset id=fieldset1 is="fake-fieldset">
-			<span id="combobox-label">a ComboBox widget:</span>
+			<legend>Fieldset widget</legend>
+			<span id="combobox-label">ComboBox widget:</span>
 			<fake-combobox id=combobox aria-labelledby="combobox-label">
 				<option>this</option>
 				<option>is</option>
 				<option>a</option>
 				<option>list</option>
 			</fake-combobox>
-			<label for="plain">a plain input:</label>
+			<label for="plain">Plain input:</label>
 			<input id=plain value=plain/>
 		</fieldset>
-		<label>Editor:</label><br>
 
-		<fake-editor id=editor>
-			Hello world, this is an <i>editor</i>
-		</fake-editor>
+		<label>Editor widget:</label>
+		<fake-editor id=editor></fake-editor>
 		<br>
-		<label>another fieldset ContentPane:</label><br>
-		<fieldset id=fieldset2 is="fake-fieldset">
-			<label for="textarea">a plain textarea:</label><br>
-			<textarea id=textarea>hello there!</textarea><br>
 
-			<span id="spinner-label">a Spinner widget:</span>
+		<fieldset id=fieldset2 is="fake-fieldset">
+			<legend>Another fieldset widget</legend>
+			<label for="textarea">Plain textarea:</label>
+			<textarea id=textarea>hello there!</textarea><br>
+			<span id="spinner-label">Spinner widget:</span>
 			<fake-spinner id=spinner></fake-spinner>
 		</fieldset>
+
 		<button tabIndex="-1" id="minusOne" type="button">non tab-navigable button</button>
 		<button id="disabledButton" type="button" disabled>disabled button</button>
 	</form>

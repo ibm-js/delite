@@ -70,40 +70,41 @@ define([
 				doc = targetWindow.document,
 				body = doc && doc.body;
 
+			function pointerDownHandler(evt) {
+				// workaround weird IE bug where the click is on an orphaned node
+				// (first time clicking a Select/DropDownButton inside a TooltipDialog).
+				// actually, strangely this is happening on latest chrome too.
+				if (evt && evt.target && evt.target.parentNode == null) {
+					return;
+				}
+
+				_this._onTouchNode(effectiveNode || evt.target, "mouse");
+			}
+
+			function focusHandler(evt) {
+				// When you refocus the browser window, IE gives an event with an empty srcElement
+				if (!evt.target.tagName) {
+					return;
+				}
+
+				// IE reports that nodes like <body> have gotten focus, even though they don't have a
+				// tabindex setting.  Ignore those events.
+				var tag = evt.target.tagName.toLowerCase();
+				if (tag === "#document" || tag === "body") {
+					return;
+				}
+
+				_this._onFocusNode(effectiveNode || evt.target);
+			}
+
+			function blurHandler(evt) {
+				_this._onBlurNode(effectiveNode || evt.target);
+			}
+
 			if (body) {
 				// Listen for touches or mousedowns.
-				function pointerDownHandler(evt) {
-					// workaround weird IE bug where the click is on an orphaned node
-					// (first time clicking a Select/DropDownButton inside a TooltipDialog).
-					// actually, strangely this is happening on latest chrome too.
-					if (evt && evt.target && evt.target.parentNode == null) {
-						return;
-					}
-
-					_this._onTouchNode(effectiveNode || evt.target, "mouse");
-				}
 				doc.addEventListener("pointerdown", pointerDownHandler, true);
-
-				function focusHandler(evt) {
-					// When you refocus the browser window, IE gives an event with an empty srcElement
-					if (!evt.target.tagName) {
-						return;
-					}
-
-					// IE reports that nodes like <body> have gotten focus, even though they don't have a
-					// tabindex setting.  Ignore those events.
-					var tag = evt.target.tagName.toLowerCase();
-					if (tag === "#document" || tag === "body") {
-						return;
-					}
-
-					_this._onFocusNode(effectiveNode || evt.target);
-				}
 				body.addEventListener("focus", focusHandler, true);	// need true since focus doesn't bubble
-
-				function blurHandler(evt) {
-					_this._onBlurNode(effectiveNode || evt.target);
-				}
 				body.addEventListener("blur", blurHandler, true);	// need true since blur doesn't bubble
 
 				return {
