@@ -1,7 +1,11 @@
-// run grunt --help for help on how to run
+// Run grunt --help for help on how to run from the command line.
+// Alternately, load this URL to run from the browser:
+// http://localhost/delite/node_modules/intern/client.html?config=tests/intern&suites=delite/tests/unit/all
+
 // Learn more about configuring this file at <https://github.com/theintern/intern/wiki/Configuring-Intern>.
 // These default settings work OK for most people. The options that *must* be changed below are the
 // packages, suites, excludeInstrumentation, and (if you want functional tests) functionalSuites.
+
 define({
 	// The port on which the instrumenting proxy will listen
 	proxyPort: 9000,
@@ -38,7 +42,7 @@ define({
 	},
 
 	loader: {
-		baseUrl: ".."
+		baseUrl: typeof window !== "undefined" ? "../../.." : ".."
 	},
 	useLoader: {
 		"host-node": "requirejs",
