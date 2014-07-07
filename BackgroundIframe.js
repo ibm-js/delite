@@ -1,7 +1,7 @@
 /** @module delite/BackgroundIframe */
 define([
 	"dcl/dcl",
-	"dojo/has"
+	"requirejs-dplugins/has"
 ], function (dcl, has) {
 
 	// Flag for whether to create background iframe behind popups like Menus and Dialog.
