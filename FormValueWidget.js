@@ -11,19 +11,13 @@ define([
 	 * Each FormValueWidget represents a single input value, and has a (possibly hidden) `<input>` element,
 	 * to which it serializes its input value, so that form submission works as expected.
 	 *
-	 * The subclass should call `_handleOnChange()` to make the widget fire onchange events as the value changes.
+	 * The subclass should call `handleOnChange()` and `handleOnInput()` to make the widget fire `change` and
+	 * `input`events as the value changes.
 	 *
 	 * @mixin module:delite/FormValueWidget
 	 * @augments module:delite/FormWidget
 	 */
 	return dcl(FormWidget, /** @lends module:delite/FormValueWidget# */{
-		/**
-		 * Whether onchange is fired for each value change or only on blur.
-		 * @member {boolean}
-		 * @default false
-		 */
-		intermediateChanges: false,
-
 		/**
 		 * If true, this widget won't respond to user input.
 		 * Similar to disabled except readOnly form values are submitted.
@@ -52,13 +46,6 @@ define([
 		}),
 
 		/**
-		 * The last value fired to onChange.
-		 * @member {*} previousOnChangeValue
-		 * @private
-		 */
-		previousOnChangeValue: undefined,
-
-		/**
 		 * Compare two values (of this widget).
 		 * @param {*} val1
 		 * @param {*} val2
@@ -78,32 +65,57 @@ define([
 		},
 
 		/**
-		 * Call when the value of the widget is set.  Calls onChange() if appropriate.
+		 * Set value and fire a change event if the value changed since the last call.
 		 * @param {*} newValue - The new value.
-		 * @param {boolean} [priorityChange] - For a slider, for example, dragging the slider is priorityChange==false,
-		 * but on mouse up, it's priorityChange==true.  If intermediateChanges==false,
-		 * onChange() is only called form priorityChange=true events.
-		 * @private
+		 * @protected
 		 */
-		_handleOnChange: function (newValue, priorityChange) {
-			this._pendingOnChange = this._pendingOnChange
-				|| (typeof newValue !== typeof this.previousOnChangeValue)
-				|| (this.compare(newValue, this.previousOnChangeValue) !== 0);
-			if ((this.intermediateChanges || priorityChange || priorityChange === undefined) && this._pendingOnChange) {
-				this.previousOnChangeValue = newValue;
-				this._pendingOnChange = false;
-				if (this._onChangeHandle) {
-					this._onChangeHandle.remove();
+		handleOnChange: genHandler("change", "_previousOnChangeValue", "_onChangeHandle"),
+
+		/**
+		 * Set value and fire an input event if the value changed since the last call.
+		 * @param {*} newValue - The new value.
+		 * @protected
+		 */
+		handleOnInput: genHandler("input", "_previousOnInputValue", "_onInputHandle"),
+
+		startup: dcl.after(function () {
+			// initialize previous values (avoids firing unnecessary change/input event
+			// if user just select and release the Slider handle for example)
+			this._previousOnChangeValue = this.value;
+			this._previousOnInputValue = this.value;
+		})
+	});
+
+	/**
+	 * Returns a method to set a new value and fire an event (change or input) if the value changed since the last
+	 * call. Widget should use `handleOnChange()` or `handleOnInput()`.
+	 * @param {string} eventType - The event type. Can be "change" or "input".
+	 * @param {string} prevValueProp - The name of the property to hold the previous value.
+	 * @param {string} deferHandleProp - The name of the property to hold the defer method that fire the event.
+	 * @returns {Function}
+	 * @private
+	 */
+	function genHandler(eventType, prevValueProp, deferHandleProp) {
+		// Set value and fire an input event if the value changed since the last call.
+		// @param {*} newValue - The new value.
+		return function (newValue) {
+			if ((typeof newValue !== typeof this[prevValueProp]) ||
+				(this.compare(newValue, this[prevValueProp]) !== 0)) {
+				this[prevValueProp] = this.value = newValue;
+				if (this[deferHandleProp]) {
+					this[deferHandleProp].remove();
 				}
 				// defer allows hidden value processing to run and
 				// also the onChange handler can safely adjust focus, etc
-				this._onChangeHandle = this.defer(
+				this[deferHandleProp] = this.defer(
 					function () {
-						this._onChangeHandle = null;
-						this.emit("change");
+						this[deferHandleProp] = null;
+						// force validation to make sure rendering is in sync when event handlers are called
+						this.validateProperties();
+						this.emit(eventType);
 					}
-				); // try to collapse multiple onChange's fired faster than can be processed
+				);
 			}
-		}
-	});
+		};
+	}
 });
