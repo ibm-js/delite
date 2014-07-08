@@ -18,13 +18,6 @@ define([
 	 */
 	return dcl(FormWidget, /** @lends module:delite/FormValueWidget# */{
 		/**
-		 * Whether onchange is fired for each value change or only on blur.
-		 * @member {boolean}
-		 * @default false
-		 */
-		intermediateChanges: false,
-
-		/**
 		 * If true, this widget won't respond to user input.
 		 * Similar to disabled except readOnly form values are submitted.
 		 * @member {boolean}
@@ -59,6 +52,13 @@ define([
 		previousOnChangeValue: undefined,
 
 		/**
+		 * The last value fired to onInput.
+		 * @member {*} previousOnInputValue
+		 * @private
+		 */
+		previousOnInputValue: undefined,
+
+		/**
 		 * Compare two values (of this widget).
 		 * @param {*} val1
 		 * @param {*} val2
@@ -78,20 +78,17 @@ define([
 		},
 
 		/**
-		 * Call when the value of the widget is set.  Calls onChange() if appropriate.
+		 * Set value and fire a change event if the value changed since the last call.
 		 * @param {*} newValue - The new value.
-		 * @param {boolean} [priorityChange] - For a slider, for example, dragging the slider is priorityChange==false,
-		 * but on mouse up, it's priorityChange==true.  If intermediateChanges==false,
-		 * onChange() is only called form priorityChange=true events.
 		 * @private
 		 */
-		_handleOnChange: function (newValue, priorityChange) {
-			this._pendingOnChange = this._pendingOnChange
-				|| (typeof newValue !== typeof this.previousOnChangeValue)
-				|| (this.compare(newValue, this.previousOnChangeValue) !== 0);
-			if ((this.intermediateChanges || priorityChange || priorityChange === undefined) && this._pendingOnChange) {
+		_handleOnChange: function (newValue) {
+			if ((typeof newValue !== typeof this.previousOnChangeValue) ||
+				(this.compare(newValue, this.previousOnChangeValue) !== 0)) {
+				this.value = newValue;
+				// force validation to make sure value is in sync when event handlers are called
+				this.validateProperties();
 				this.previousOnChangeValue = newValue;
-				this._pendingOnChange = false;
 				if (this._onChangeHandle) {
 					this._onChangeHandle.remove();
 				}
@@ -103,6 +100,30 @@ define([
 						this.emit("change");
 					}
 				); // try to collapse multiple onChange's fired faster than can be processed
+			}
+		},
+
+		/**
+		 * Set value and fire an input event if the value changed since the last call.
+		 * @param {*} newValue - The new value.
+		 * @private
+		 */
+		_handleOnInput: function (newValue) {
+			if ((typeof newValue !== typeof this.previousOnInputValue) ||
+				(this.compare(newValue, this.previousOnInputValue) !== 0)) {
+				this.value = newValue;
+				// force validation to make sure value is in sync when event handlers are called
+				this.validateProperties();
+				this.previousOnInputValue = newValue;
+				if (this._onInputHandle) {
+					this._onInputHandle.remove();
+				}
+				this._onInputHandle = this.defer(
+					function () {
+						this._onInputHandle = null;
+						this.emit("input");
+					}
+				);
 			}
 		}
 	});
