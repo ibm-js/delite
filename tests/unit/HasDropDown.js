@@ -2,7 +2,7 @@ define([
 	"intern!object",
 	"intern/chai!assert",
 	"dojo/dom-geometry",
-	"dojo/keys",
+	"delite/keys",
 	"dojo/on",
 	"delite/register",
 	"delite/HasDropDown",
