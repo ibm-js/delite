@@ -17,7 +17,7 @@ define([
 	"dcl/advise",
 	"dcl/dcl",
 	"dojo/dom-class",
-	"dojo/Evented",
+	"decor/Evented",
 	"dpointer/events",		// so can just monitor for "pointerdown"
 	"requirejs-domready/domReady!"
 ], function (advise, dcl, domClass, Evented) {

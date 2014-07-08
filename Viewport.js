@@ -10,7 +10,7 @@
  * @module delite/Viewport
  */
 define([
-	"dojo/Evented",
+	"decor/Evented",
 	"delite/sniff",	// has("ios")
 	"requirejs-domready/domReady!"
 ], function (Evented, has) {

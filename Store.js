@@ -11,7 +11,7 @@ define(["dcl/dcl", "dojo/when", "./Invalidating"], function (dcl, when, Invalida
 
 	/**
 	 * Mixin for widgets for store management that creates widget render items from store items after
-	 * querying the store. The receiving class must extend delite/Stateful and dojo/Evented or
+	 * querying the store. The receiving class must extend delite/Stateful and decor/Evented or
 	 * delite/Widget.
 	 *
 	 * Classes extending this mixin automatically create render items that are consumable by the widget
