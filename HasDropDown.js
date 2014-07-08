@@ -5,7 +5,7 @@ define([
 	"dojo/dom-class", // domClass.add domClass.contains domClass.remove
 	"dojo/dom-geometry", // domGeometry.marginBox domGeometry.position
 	"requirejs-dplugins/has", // has("touch")
-	"dojo/keys", // keys.DOWN_ARROW keys.ENTER keys.ESCAPE
+	"delite/keys", // keys.DOWN_ARROW keys.ENTER keys.ESCAPE
 	"./focus",
 	"./popup",
 	"./Widget",

@@ -7,7 +7,7 @@ define([
 	"dcl/dcl",
 	"dojo/dom-geometry", // domGeometry.position
 	"requirejs-dplugins/has", // has("config-bgIframe")
-	"dojo/keys",
+	"delite/keys",
 	"./place",
 	"./BackgroundIframe",
 	"./Viewport",

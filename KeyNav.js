@@ -1,7 +1,7 @@
 /** @module delite/KeyNav */
 define([
 	"dcl/dcl",
-	"dojo/keys", // keys.END keys.HOME, keys.LEFT_ARROW etc.
+	"delite/keys", // keys.END keys.HOME, keys.LEFT_ARROW etc.
 	"requirejs-dplugins/has",
 	"./Widget",
 	"./focus"	// causes _onBlur() to be called when focus removed from KeyNav and logical descendants

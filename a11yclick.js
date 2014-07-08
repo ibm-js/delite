@@ -2,7 +2,7 @@
   * @module delite/a11yclick
  */
 define([
-	"dojo/keys" // keys.ENTER keys.SPACE
+	"delite/keys" // keys.ENTER keys.SPACE
 ], function (keys) {
 
 	// TODO: add functional tests
