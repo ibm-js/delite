@@ -1,15 +1,22 @@
 /** @module delite/CustomElement */
 define([
 	"dcl/dcl",
-	"dojo/_base/lang",
 	"./Destroyable",
 	"./Stateful"
-], function (dcl, lang, Destroyable, Stateful) {
+], function (dcl, Destroyable, Stateful) {
 
-	// Need to pass in "global" parameter to lang.getObject() to workaround
-	// https://bugs.dojotoolkit.org/ticket/17829
-
-	var global = (function () { return this; })();
+	/**
+	 * Get a property from a dot-separated string, such as "A.B.C".
+	 */
+	function getObject(name) {
+		try {
+			return name.split(".").reduce(function (context, part) {
+				return context[part];
+			}, this);	// "this" is the global object (i.e. window on browsers)
+		} catch (e) {
+			// Return undefined to indicate that object doesn't exist.
+		}
+	}
 
 	/**
 	 * Base class for all custom elements.
@@ -117,7 +124,7 @@ define([
 			case "object":
 				// Try to interpret value as global variable, ex: store="myStore", array of strings
 				// ex: "1, 2, 3", or expression, ex: constraints="min: 10, max: 100"
-				return lang.getObject(value, false, global) ||
+				return getObject(value) ||
 					(this[name] instanceof Array ? (value ? value.split(/\s+/) : []) : stringToObject(value));
 			case "function":
 				return this._parseFunctionAttr(value, []);
@@ -145,7 +152,7 @@ define([
 			// This is harmless if you make sure the JavaScript code that is passed to the attribute is harmless.
 			// Use Function.bind to get a partial on Function constructor (trick to call it with an array
 			// of args instead list of args).
-			return lang.getObject(value, false, global) ||
+			return getObject(value) ||
 				new (Function.bind.apply(Function, [undefined].concat(params).concat([value])))();
 		},
 

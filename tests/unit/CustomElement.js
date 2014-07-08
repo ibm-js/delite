@@ -20,11 +20,13 @@ define([
 			/* global global:true */
 			global = 0;
 
-			/* global global2:true */
-			global2 = { text: "global var" };
+			/* global globalObj:true */
+			globalObj = { text: "global var" };
 
-			/* global global3:true */
-			global3 = function () { global = 456; };
+			/* global globalInstance:true */
+			globalInstance = {
+				func: function () { global = 456; }
+			};
 
 			register("test-ce-declarative", [HTMLElement, CustomElement], {
 				boolProp: false,
@@ -39,7 +41,7 @@ define([
 			});
 			container.innerHTML +=
 				"<test-ce-declarative id='d' boolProp='boolProp' numProp='5' stringProp='hello' " +
-				"funcProp='global=123;' funcProp2='global3' objProp1='foo:1,bar:2' objProp2='global2'/>";
+				"funcProp='global=123;' funcProp2='globalInstance.func' objProp1='foo:1,bar:2' objProp2='globalObj'/>";
 			var d = document.getElementById("d");
 			register.upgrade(d);
 			assert.isTrue(d.boolProp, "d.boolProp");
