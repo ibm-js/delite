@@ -2,7 +2,7 @@
  * Definitions for common key values.  Client code should test keyCode against these named constants.
  * @module delite/keys
  */
-define(["./sniff"], function(has){
+define(["./sniff"], function (has) {
 	return {
 		BACKSPACE: 8,
 		TAB: 9,
@@ -68,6 +68,6 @@ define(["./sniff"], function(has){
 		LEFT_DPAD: 177,
 		RIGHT_DPAD: 178,
 		// virtual key mapping
-		copyKey: has("mac") ? (has("safari") ? 91 : 224 ) : 17
+		copyKey: has("mac") ? (has("safari") ? 91 : 224) : 17
 	};
 });
