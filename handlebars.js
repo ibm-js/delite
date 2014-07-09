@@ -169,10 +169,16 @@ define(["./template"], function (template) {
 		toDom: function (templateText) {
 			// Rename all the custom elements in the template so that browsers with native
 			// document.createElement() support don't start instantiating nested widgets, creating internal nodes etc.
-			// Regex designed to match <foo-bar> and <button is=...> but not <!-- comment -->, and not
-			// native tags like <br>...except for <template> itself, which needs to be renamed for some reason.
+			// Regex designed to match:
+			//    - <foo-bar>
+			//    - <button is=...>
+			//    - <template> - needs to be renamed for some reason on browsers with native <template> support
+			//    - <select> - otherwise <select size={{size}}> gets converted to <select size=0> on webkit
+			// Regex will not match:
+			//    - <!-- comment -->
+			//    - native tags not mentioned above
 			templateText = templateText.replace(
-				/(<\/? *)([a-zA-Z0-9]+-[-a-zA-Z0-9]+|template|[a-zA-Z]+[^>]+is=)/g, "$1template-$2");
+				/(<\/? *)([a-zA-Z0-9]+-[-a-zA-Z0-9]+|template|select|[a-zA-Z]+[^>]+is=)/g, "$1template-$2");
 
 			// Create DOM tree from template.
 			// If template contains SVG nodes then parse as XML, to preserve case of attributes like viewBox.
