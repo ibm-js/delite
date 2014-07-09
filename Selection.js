@@ -16,8 +16,13 @@ define(["dcl/dcl", "decor/sniff", "./Widget"], function (dcl, has, Widget) {
 		 * Valid values are:
 		 *
 		 * 1. "none": No selection can be done.
-		 * 2. "single": Only one item can be selected at a time.
-		 * 3. "multiple": Several item can be selected using the control key modifier.
+		 * 2. "single": Only one or zero items can be selected at a time. Interactively selecting a new item deselects
+		 * the previously selected one.
+		 * 3. "radio":  Initially only one or zero items can be selected. Once an item has been selected, interactively 
+		 * selecting another item deselects the previously selected item, and the user cannot deselect the currently 
+		 * selected item. 
+		 * 4. "multiple": Multiple items can be selected. By default ctrl key must be used to select additional items.
+		 * However that behavior might be specialized by subclasses.
 		 *
 		 * Changing this value impacts the current selected items to adapt the selection to the new mode. However
 		 * whatever the selection mode is you can always set several selected items using the selectItem(s) API.
@@ -29,14 +34,14 @@ define(["dcl/dcl", "decor/sniff", "./Widget"], function (dcl, has, Widget) {
 		selectionMode: "single",
 
 		_setSelectionModeAttr: function (value) {
-			if (value !== "none" && value !== "single" && value !== "multiple") {
+			if (value !== "none" && value !== "single" && value !== "multiple" && value !== "radio") {
 				throw new TypeError("selectionMode invalid value");
 			}
 			if (value !== this.selectionMode) {
 				this._set("selectionMode", value);
 				if (value === "none") {
 					this.selectedItems = null;
-				} else if (value === "single" && this.selectedItem) {
+				} else if ((value === "single" || value === "radio") && this.selectedItem) {
 					this.selectedItems = [this.selectedItem];
 				}
 			}
@@ -139,7 +144,6 @@ define(["dcl/dcl", "decor/sniff", "./Widget"], function (dcl, has, Widget) {
 		updateRenderers: function (/*jshint unused: vars */items) {
 		},
 
-
 		/**
 		 * Change the selection state of an item.
 		 * @param {Object} item - The item to change the selection state for.
@@ -153,14 +157,15 @@ define(["dcl/dcl", "decor/sniff", "./Widget"], function (dcl, has, Widget) {
 			this._setSelected(item, value);
 		},
 
+		/* jshint maxcomplexity: 11*/
 		_setSelected: function (item, value) {
 			// copy is returned
 			var sel = this.selectedItems, res, identity;
 
-			if (this.selectionMode === "single") {
+			if (this.selectionMode === "single" || this.selectionMode === "radio") {
 				if (value) {
 					this.selectedItem = item;
-				} else if (this.isSelected(item)) {
+				} else if (this.selectionMode === "single" && this.isSelected(item)) {
 					this.selectedItems = null;
 				}
 			} else { // multiple
@@ -186,6 +191,7 @@ define(["dcl/dcl", "decor/sniff", "./Widget"], function (dcl, has, Widget) {
 				}
 			}
 		},
+		/* jshint maxcomplexity: 10*/
 
 		/**
 		 * Applies selection triggered by an user interaction.
@@ -224,7 +230,7 @@ define(["dcl/dcl", "decor/sniff", "./Widget"], function (dcl, has, Widget) {
 					changed = true;
 				}
 			} else { // single
-				if (this.hasSelectionModifier(event)) {
+				if (this.selectionMode === "single" && this.hasSelectionModifier(event)) {
 					//if the object is selected deselects it.
 					this.selectedItem = (selected ? null : item);
 					changed = true;
