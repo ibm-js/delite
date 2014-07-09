@@ -11,7 +11,8 @@ define([
 	 * Each FormValueWidget represents a single input value, and has a (possibly hidden) `<input>` element,
 	 * to which it serializes its input value, so that form submission works as expected.
 	 *
-	 * The subclass should call `_handleOnChange()` to make the widget fire onchange events as the value changes.
+	 * The subclass should call `_handleOnChange()` and `_handleOnInput()` to make the widget fire `change` and
+	 * `input`events as the value changes.
 	 *
 	 * @mixin module:delite/FormValueWidget
 	 * @augments module:delite/FormWidget
@@ -45,20 +46,6 @@ define([
 		}),
 
 		/**
-		 * The last value fired to onChange.
-		 * @member {*} previousOnChangeValue
-		 * @private
-		 */
-		previousOnChangeValue: undefined,
-
-		/**
-		 * The last value fired to onInput.
-		 * @member {*} previousOnInputValue
-		 * @private
-		 */
-		previousOnInputValue: undefined,
-
-		/**
 		 * Compare two values (of this widget).
 		 * @param {*} val1
 		 * @param {*} val2
@@ -83,24 +70,7 @@ define([
 		 * @private
 		 */
 		_handleOnChange: function (newValue) {
-			if ((typeof newValue !== typeof this.previousOnChangeValue) ||
-				(this.compare(newValue, this.previousOnChangeValue) !== 0)) {
-				this.value = newValue;
-				// force validation to make sure value is in sync when event handlers are called
-				this.validateProperties();
-				this.previousOnChangeValue = newValue;
-				if (this._onChangeHandle) {
-					this._onChangeHandle.remove();
-				}
-				// defer allows hidden value processing to run and
-				// also the onChange handler can safely adjust focus, etc
-				this._onChangeHandle = this.defer(
-					function () {
-						this._onChangeHandle = null;
-						this.emit("change");
-					}
-				); // try to collapse multiple onChange's fired faster than can be processed
-			}
+			this._handleUserInput(newValue, "change");
 		},
 
 		/**
@@ -109,22 +79,56 @@ define([
 		 * @private
 		 */
 		_handleOnInput: function (newValue) {
-			if ((typeof newValue !== typeof this.previousOnInputValue) ||
-				(this.compare(newValue, this.previousOnInputValue) !== 0)) {
-				this.value = newValue;
-				// force validation to make sure value is in sync when event handlers are called
-				this.validateProperties();
-				this.previousOnInputValue = newValue;
-				if (this._onInputHandle) {
-					this._onInputHandle.remove();
+			this._handleUserInput(newValue, "input");
+		},
+
+		_userInputVarName: {
+			"change": {
+				name: "change",
+				previousValue: "_previousOnChangeValue",
+				deferHandle: "_onChangeHandle"
+			},
+			"input": {
+				name: "input",
+				previousValue: "_previousOnInputValue",
+				deferHandle: "_onInputHandle"
+			}
+		},
+
+		/**
+		 * Set value and fire an event (change or input) if the value changed since the last call.
+		 * Widget should use `_handleOnChange()` or `_handleOnInput()`.
+		 * @param {*} newValue - The new value.
+		 * @param {string} type - The event type. Can be "change" or "input".
+		 * @private
+		 */
+		_handleUserInput: function (newValue, type) {
+			var variableName = this._userInputVarName[type].previousValue;
+			if ((typeof newValue !== typeof this[variableName]) ||
+				(this.compare(newValue, this[variableName]) !== 0)) {
+				this[variableName] = this.value = newValue;
+				variableName = this._userInputVarName[type].deferHandle;
+				if (this[variableName]) {
+					this[variableName].remove();
 				}
-				this._onInputHandle = this.defer(
+				// defer allows hidden value processing to run and
+				// also the onChange handler can safely adjust focus, etc
+				this[variableName] = this.defer(
 					function () {
-						this._onInputHandle = null;
-						this.emit("input");
+						this[variableName] = null;
+						// force validation to make sure rendering is in sync when event handlers are called
+						this.validateProperties();
+						this.emit(this._userInputVarName[type].name);
 					}
 				);
 			}
-		}
+		},
+
+		startup: dcl.after(function () {
+			// initialize previous values (avoids firing unnecessary change/input event
+			// if user just select and release the Slider handle for example)
+			this[this._userInputVarName.change.previousValue] = this.value;
+			this[this._userInputVarName.input.previousValue] = this.value;
+		})
 	});
 });
