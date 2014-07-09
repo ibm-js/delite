@@ -26,7 +26,6 @@ define([
 			assert.deepEqual(o.selectedItems, ["1"]);
 			assert.isTrue(o.isSelected("1"));
 			assert.isFalse(o.isSelected("2"));
-
 		},
 		"multipletosingle": function () {
 			var o = new C();
@@ -41,8 +40,30 @@ define([
 			o.selectionMode = "single";
 			assert.deepEqual(o.selectedItems, []);
 		},
+		"multipletoradio": function () {
+			var o = new C();
+			o.selectionMode = "multiple";
+			o.selectedItems = ["2", "3"];
+			assert.deepEqual(o.selectedItems, ["2", "3"]);
+			o.selectionMode = "radio";
+			assert.deepEqual(o.selectedItems, ["2"]);
+			o.selectionMode = "multiple";
+			o.selectedItems = [];
+			assert.deepEqual(o.selectedItems, []);
+			o.selectionMode = "radio";
+			assert.deepEqual(o.selectedItems, []);
+		},
 		"singletonone": function () {
 			var o = new C();
+			o.selectedItem = "1";
+			assert.deepEqual("1", o.selectedItem);
+			o.selectionMode = "none";
+			assert.equal(o.selectedItem, null);
+			assert.deepEqual(o.selectedItems, []);
+		},
+		"radiotonone": function () {
+			var o = new C();
+			o.selectionMode = "radio";
 			o.selectedItem = "1";
 			assert.deepEqual("1", o.selectedItem);
 			o.selectionMode = "none";
@@ -77,6 +98,14 @@ define([
 			o.selectFromEvent({ ctrlKey: true, metaKey: true }, "1", null, true);
 			assert.deepEqual(o.selectedItems, ["1", "2"]);
 			o.selectFromEvent({ ctrlKey: true, metaKey: true }, "1", null, true);
+			assert.deepEqual(o.selectedItems, ["2"]);
+			o.selectionMode = "single";
+			o.selectFromEvent({ ctrlKey: true, metaKey: true }, "2", null, true);
+			assert.deepEqual(o.selectedItems, []);
+			o.selectFromEvent({ ctrlKey: true, metaKey: true }, "2", null, true);
+			assert.deepEqual(o.selectedItems, ["2"]);
+			o.selectionMode = "radio";
+			o.selectFromEvent({ ctrlKey: true, metaKey: true }, "2", null, true);
 			assert.deepEqual(o.selectedItems, ["2"]);
 		},
 		teardown: function () {

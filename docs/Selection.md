@@ -23,8 +23,11 @@ Before proceeding, checkout [setup page](setup.md) on how to setup a project usi
 
 On a widget extending `delite/Selection` one can choose several selection modes through the `selectionMode` property:
 
-  * `"multiple"` which means the application user can select interactively several items at the same time
+  * `"multiple"` which means the application user can select interactively several items at the time
   * `"single"` which means the application user can only select interactively a single item at the time, this is the default.
+  * `"radio"` which means the application user can only select interactively a single item at the time. Once an item has 
+  been selected, interactively selecting another item deselects the previously selected item, and the user 
+  cannot deselect the selected item. 
   * `"none"` which means the application user can not interactively select an item
 
 Note that this mode does not impact selection by the `selectedItem(s)` APIs which are always available and always allow 
