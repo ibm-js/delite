@@ -2,13 +2,12 @@
 define([
 	"dcl/dcl",
 	"jquery/css",	// for .css()
-	"dojo/_base/fx",
-	"dojo/fx/easing",
 	"./Widget",
 	"jquery/attributes/classes",	// for toggleClass()
+	"jquery/effects",	// for .animate()
 	"jquery/event",		// for .on()
 	"./theme!./Scrollable/themes/{{theme}}/Scrollable.css"
-], function (dcl, $, baseFx, easing, Widget) {
+], function (dcl, $, Widget) {
 
 	/**
 	 * A mixin which adds scrolling capabilities to a widget.
@@ -225,44 +224,29 @@ define([
 					x: to.x !== undefined ? scrollableNode.scrollLeft : undefined,
 					y: to.y !== undefined ? scrollableNode.scrollTop : undefined
 				};
+				// See http://james.padolsey.com/javascript/fun-with-jquerys-animate/
 				var self = this;
-				var anim = function () {
-					// dojo/_base/fx._Line cannot be used for animating several
-					// properties at once (scrollTop and scrollLeft in our case). 
-					// Hence, using instead a custom function:
-					var Curve = function (/*int*/ start, /*int*/ end) {
-						this.start = start;
-						this.end = end;
-					};
-					Curve.prototype.getValue = function (/*float*/ n) {
-						return {
-							x: ((to.x - from.x) * n) + from.x,
-							y: ((to.y - from.y) * n) + from.y
-						};
-					};
-					var animation = new baseFx.Animation({
-						beforeBegin: function () {
-							if (this.curve) {
-								delete this.curve;
-							}
-							animation.curve = new Curve(from, to);
-						},
-						onAnimate: function (val) {
-							if (val.x !== undefined) {
-								scrollableNode.scrollLeft = val.x;
-							}
-							if (val.y !== undefined) {
-								scrollableNode.scrollTop = val.y;
-							}
-						},
-						easing: easing.expoInOut, // TODO: IMPROVEME
-						duration: duration,
-						rate: 20 // TODO: IMPROVEME
-					});
-					self._animation = animation;
-					return animation;
-				};
-				anim().play();
+				return self._animation = $(from).animate(to, {
+					duration: duration,
+					rate: 20, // TODO: IMPROVEME
+					step: function(val) {
+						if (this.x !== undefined) {
+							scrollableNode.scrollLeft = this.x;
+						}
+						if (this.y !== undefined) {
+							scrollableNode.scrollTop = this.y;
+						}
+					},
+					complete: function () {
+						if (this.x !== undefined) {
+							scrollableNode.scrollLeft = this.x;
+						}
+						if (this.y !== undefined) {
+							scrollableNode.scrollTop = this.y;
+						}
+						delete self._animation;
+					}
+				});
 			}
 		},
 
@@ -271,7 +255,7 @@ define([
 		 * Does nothing otherwise.
 		 */
 		_stopAnimation: function () {
-			if (this._animation && this._animation.status() === "playing") {
+			if (this._animation) {
 				this._animation.stop();
 			}
 		}
