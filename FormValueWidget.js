@@ -11,7 +11,7 @@ define([
 	 * Each FormValueWidget represents a single input value, and has a (possibly hidden) `<input>` element,
 	 * to which it serializes its input value, so that form submission works as expected.
 	 *
-	 * The subclass should call `_handleOnChange()` and `_handleOnInput()` to make the widget fire `change` and
+	 * The subclass should call `handleOnChange()` and `handleOnInput()` to make the widget fire `change` and
 	 * `input`events as the value changes.
 	 *
 	 * @mixin module:delite/FormValueWidget
@@ -67,16 +67,16 @@ define([
 		/**
 		 * Set value and fire a change event if the value changed since the last call.
 		 * @param {*} newValue - The new value.
-		 * @private
+		 * @protected
 		 */
-		_handleOnChange: genHandler("change", "_previousOnChangeValue", "_onChangeHandle"),
+		handleOnChange: genHandler("change", "_previousOnChangeValue", "_onChangeHandle"),
 
 		/**
 		 * Set value and fire an input event if the value changed since the last call.
 		 * @param {*} newValue - The new value.
-		 * @private
+		 * @protected
 		 */
-		_handleOnInput: genHandler("input", "_previousOnInputValue", "_onInputHandle"),
+		handleOnInput: genHandler("input", "_previousOnInputValue", "_onInputHandle"),
 
 		startup: dcl.after(function () {
 			// initialize previous values (avoids firing unnecessary change/input event
@@ -88,7 +88,7 @@ define([
 
 	/**
 	 * Returns a method to set a new value and fire an event (change or input) if the value changed since the last
-	 * call. Widget should use `_handleOnChange()` or `_handleOnInput()`.
+	 * call. Widget should use `handleOnChange()` or `handleOnInput()`.
 	 * @param {string} eventType - The event type. Can be "change" or "input".
 	 * @param {string} prevValueProp - The name of the property to hold the previous value.
 	 * @param {string} deferHandleProp - The name of the property to hold the defer method that fire the event.
