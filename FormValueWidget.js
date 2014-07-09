@@ -69,66 +69,53 @@ define([
 		 * @param {*} newValue - The new value.
 		 * @private
 		 */
-		_handleOnChange: function (newValue) {
-			this._handleUserInput(newValue, "change");
-		},
+		_handleOnChange: genHandler("change", "_previousOnChangeValue", "_onChangeHandle"),
 
 		/**
 		 * Set value and fire an input event if the value changed since the last call.
 		 * @param {*} newValue - The new value.
 		 * @private
 		 */
-		_handleOnInput: function (newValue) {
-			this._handleUserInput(newValue, "input");
-		},
-
-		_userInputVarName: {
-			"change": {
-				name: "change",
-				previousValue: "_previousOnChangeValue",
-				deferHandle: "_onChangeHandle"
-			},
-			"input": {
-				name: "input",
-				previousValue: "_previousOnInputValue",
-				deferHandle: "_onInputHandle"
-			}
-		},
-
-		/**
-		 * Set value and fire an event (change or input) if the value changed since the last call.
-		 * Widget should use `_handleOnChange()` or `_handleOnInput()`.
-		 * @param {*} newValue - The new value.
-		 * @param {string} type - The event type. Can be "change" or "input".
-		 * @private
-		 */
-		_handleUserInput: function (newValue, type) {
-			var variableName = this._userInputVarName[type].previousValue;
-			if ((typeof newValue !== typeof this[variableName]) ||
-				(this.compare(newValue, this[variableName]) !== 0)) {
-				this[variableName] = this.value = newValue;
-				variableName = this._userInputVarName[type].deferHandle;
-				if (this[variableName]) {
-					this[variableName].remove();
-				}
-				// defer allows hidden value processing to run and
-				// also the onChange handler can safely adjust focus, etc
-				this[variableName] = this.defer(
-					function () {
-						this[variableName] = null;
-						// force validation to make sure rendering is in sync when event handlers are called
-						this.validateProperties();
-						this.emit(this._userInputVarName[type].name);
-					}
-				);
-			}
-		},
+		_handleOnInput: genHandler("input", "_previousOnInputValue", "_onInputHandle"),
 
 		startup: dcl.after(function () {
 			// initialize previous values (avoids firing unnecessary change/input event
 			// if user just select and release the Slider handle for example)
-			this[this._userInputVarName.change.previousValue] = this.value;
-			this[this._userInputVarName.input.previousValue] = this.value;
+			this._previousOnChangeValue = this.value;
+			this._previousOnInputValue = this.value;
 		})
 	});
+
+	/**
+	 * Returns a method to set a new value and fire an event (change or input) if the value changed since the last
+	 * call. Widget should use `_handleOnChange()` or `_handleOnInput()`.
+	 * @param {string} eventType - The event type. Can be "change" or "input".
+	 * @param {string} prevValueProp - The name of the property to hold the previous value.
+	 * @param {string} deferHandleProp - The name of the property to hold the defer method that fire the event.
+	 * @returns {Function}
+	 * @private
+	 */
+	function genHandler(eventType, prevValueProp, deferHandleProp) {
+		// Set value and fire an input event if the value changed since the last call.
+		// @param {*} newValue - The new value.
+		return function (newValue) {
+			if ((typeof newValue !== typeof this[prevValueProp]) ||
+				(this.compare(newValue, this[prevValueProp]) !== 0)) {
+				this[prevValueProp] = this.value = newValue;
+				if (this[deferHandleProp]) {
+					this[deferHandleProp].remove();
+				}
+				// defer allows hidden value processing to run and
+				// also the onChange handler can safely adjust focus, etc
+				this[deferHandleProp] = this.defer(
+					function () {
+						this[deferHandleProp] = null;
+						// force validation to make sure rendering is in sync when event handlers are called
+						this.validateProperties();
+						this.emit(eventType);
+					}
+				);
+			}
+		};
+	}
 });
