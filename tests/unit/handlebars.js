@@ -90,8 +90,29 @@ define([
 			assert.strictEqual(input.value, "new value", "value changed");
 			assert.strictEqual(input.className, "newClass", "class changed");
 			assert.strictEqual(input.getAttribute("role"), "newRole", "role changed");
+		},
 
-			// TODO: implement and then test reverse binding, from input.value --> widget.value?
+		"special props 2": function () {
+			var MyWidget = register("handlebars-special-props-2", [HTMLElement, Widget], {
+				foo: 0,
+				size: 0,
+				multiple: false,
+				buildRendering: handlebars.compile(
+						"<template><select data-attach-point='select' foo='{{foo}}' " +
+						"size='{{size}}' multiple='{{multiple}}'></select></template>"
+				)
+			});
+
+			var myWidget = new MyWidget({ // custom values
+				foo: 2,
+				size: 2,
+				multiple: true
+			});
+
+			var select = myWidget.select;
+			assert.strictEqual(select.getAttribute("foo"), "2", "foo");
+			assert.strictEqual(select.size, 2, "size");
+			assert.strictEqual(select.multiple, true, "multiple");
 		},
 
 		"special characters": function () {
