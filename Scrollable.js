@@ -75,7 +75,7 @@ define([
 		scrollableNode: null,
 
 		postCreate: function () {
-			this.deliver();
+			this.notifyCurrentValue("scrollDirection");
 		},
 
 		buildRendering: dcl.after(function () {
