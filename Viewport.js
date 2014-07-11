@@ -11,7 +11,7 @@
  */
 define([
 	"dojo/Evented",
-	"delite/sniff",	// has("ios")
+	"decor/sniff",	// has("ios")
 	"requirejs-domready/domReady!"
 ], function (Evented, has) {
 	var Viewport = new Evented();

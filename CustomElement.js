@@ -1,7 +1,7 @@
 /** @module delite/CustomElement */
 define([
 	"dcl/dcl",
-	"./Destroyable",
+	"decor/Destroyable",
 	"./Stateful"
 ], function (dcl, Destroyable, Stateful) {
 
@@ -27,7 +27,7 @@ define([
 	 *
 	 * @mixin module:delite/CustomElement
 	 * @augments module:delite/Stateful
-	 * @augments module:delite/Destroyable
+	 * @augments module:decor/Destroyable
 	 */
 	return dcl([Stateful, Destroyable], /** @lends module:delite/CustomElement# */{
 		_getProps: function () {

@@ -9,7 +9,7 @@
  *
  * @module delite/uacss
  */
-define(["./sniff"], function (has) {
+define(["decor/sniff"], function (has) {
 	var ie = has("ie"),
 		maj = Math.floor,
 		ff = has("ff"),

@@ -1,5 +1,5 @@
 /** @module delite/Invalidating */
-define(["dcl/dcl", "dojo/_base/lang", "./Stateful", "./Destroyable"], function (dcl, lang, Stateful, Destroyable) {
+define(["dcl/dcl", "dojo/_base/lang", "./Stateful", "decor/Destroyable"], function (dcl, lang, Stateful, Destroyable) {
 
 	/**
 	 * Mixin for classes (usually widgets) that watch a set of invalidating properties
@@ -13,7 +13,7 @@ define(["dcl/dcl", "dojo/_base/lang", "./Stateful", "./Destroyable"], function (
 	 * thus allowing the receiving class to refresh itself based on the new values.
 	 * @mixin module:delite/Invalidating
 	 * @augments module:delite/Stateful
-	 * @augments module:delite/Destroyable
+	 * @augments module:decor/Destroyable
 	 */
 	return dcl([Stateful, Destroyable], /** @lends module:delite/Invalidating# */{
 
