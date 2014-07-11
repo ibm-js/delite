@@ -8,7 +8,7 @@ module.exports = function (grunt) {
 		jshint: {
 			src: [
 				"**/*.js",
-				"!{node_modules,dijit,form,layout,mobile}/**/*.js",
+				"!node_modules/**/*.js",
 
 				// Note: skip this file since it gives a JSHint error about a character being silently deleted.
 				// It will have to be fixed by the translators.
@@ -48,8 +48,7 @@ module.exports = function (grunt) {
 						expand: true,
 						src: [
 							"*/themes/*/*.less",
-							"samples/ExampleWidget/themes/*/*.less",
-							"!{dijit,mobile}/themes/*/*.less"
+							"samples/ExampleWidget/themes/*/*.less"
 						],
 						ext: ".css"
 					}
@@ -69,8 +68,7 @@ module.exports = function (grunt) {
 
 					// widgets
 					"*/themes/*/*.css",
-					"samples/ExampleWidget/themes/*/*.css",
-					"!{dijit,mobile}/themes/*/*.css"
+					"samples/ExampleWidget/themes/*/*.css"
 				],
 				options: {
 					remove: true
