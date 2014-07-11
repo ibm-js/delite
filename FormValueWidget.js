@@ -110,8 +110,8 @@ define([
 				this[deferHandleProp] = this.defer(
 					function () {
 						this[deferHandleProp] = null;
-						// force validation to make sure rendering is in sync when event handlers are called
-						this.validateProperties();
+						// make sure rendering is in sync when event handlers are called
+						this.deliver();
 						this.emit(eventType);
 					}
 				);
