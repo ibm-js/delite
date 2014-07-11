@@ -4,41 +4,42 @@ define([
 	"delite/register",
 	"delite/FormValueWidget"
 ], function (registerSuite, assert, register, FormValueWidget) {
-	var FormValueWidgetTest = register("form-value-widget-test", [HTMLElement, FormValueWidget], {});
-	var parentNode = document.body;
+	var container, FormValueWidgetTest, widget;
 
 	registerSuite({
 		name: "FormValueWidget",
 
-		"handleOnChange": function () {
+		setup: function() {
+			FormValueWidgetTest = register("form-value-widget-test", [HTMLElement, FormValueWidget], {});
+		},
+
+		beforeEach: function () {
+			container = document.createElement("div");
+			document.body.appendChild(container);
+			widget = new FormValueWidgetTest().placeAt(container);
+			widget.startup();
+		},
+
+		handleOnInput: function () {
 			var d = this.async(3000);
-			initEventTest(d, "change").handleOnChange("change value");
+			container.addEventListener("input", d.callback(function (e) {
+				assert.strictEqual(e.type, "input");
+			}));
+			widget.handleOnInput("input value");
 			return d;
 		},
-		"handleOnInput": function () {
+
+		handleOnChange: function () {
 			var d = this.async(3000);
-			initEventTest(d, "input").handleOnInput("input value");
+			container.addEventListener("change", d.callback(function (e) {
+				assert.strictEqual(e.type, "change");
+			}));
+			widget.handleOnChange("change value");
 			return d;
+		},
+
+		afterEach: function () {
+			container.parentNode.removeChild(container);
 		}
-
 	});
-	
-	function initEventTest(d, eventType) {
-		var widget = new FormValueWidgetTest().placeAt(parentNode);
-		widget.startup();
-
-		var handler = d.callback(function (e) {
-			assert.strictEqual(e.type, eventType);
-		});
-
-		parentNode.addEventListener(eventType, handler);
-
-		d.then(function () {
-			widget.destroy();
-			parentNode.removeChild(widget);
-			parentNode.removeEventListener(eventType, handler, false);
-		});
-		return widget;
-	}
-	
 });
