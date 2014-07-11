@@ -1,14 +1,6 @@
 /** @module delite/Store */
 define(["dcl/dcl", "dojo/when"], function (dcl, when) {
 
-	var isStoreInvalidated = function (props) {
-		return "store" in props || "query" in props;
-	};
-
-	var setStoreValidate = function (props) {
-		props.store = props.query = false;
-	};
-
 	/**
 	 * Mixin for widgets for store management that creates widget render items from store items after
 	 * querying the store. The receiving class must extend delite/Stateful and dojo/Evented or
@@ -94,8 +86,7 @@ define(["dcl/dcl", "dojo/when"], function (dcl, when) {
 		 * @protected
 		 */
 		computeProperties: function (props) {
-			if (isStoreInvalidated(props)) {
-				setStoreValidate(props);
+			if ("store" in props || "query" in props) {
 				this.queryStoreAndInitItems(this.processQueryResult);
 			}
 		},
