@@ -3,5 +3,6 @@ define([
 	"./TabIndex",
 	"./KeyNav",
 	"./polymer",
-	"./popup"
+	"./popup",
+	"./DojoParser"
 ]);
