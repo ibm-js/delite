@@ -57,13 +57,19 @@ define([
 			return d;
 		},
 		"NullStore": function () {
-			var d = this.async(1500);
-			var store = new C();
-			store.on("query-success", d.callback(function () {
-				assert.equal(store.renderItems.length, 0);
-			}));
+			var d = this.async(1500), callbacks = 0;
+			var store = new C({
+				store: new M({ data: [{id: "foo", name: "Foo" }], model: null})
+			});
+			setTimeout(function () {
+				store.on("query-success", d.callback(function () {
+					assert.equal(store.renderItems.length, 0);
+				}));
+
+				// Test the change store to null triggers a so-called query
+				store.store = null;
+			}, 100);
 			store.startup();
-			store.store = null;
 			return d;
 		},
 		"Destroy": function () {
