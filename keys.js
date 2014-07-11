@@ -2,7 +2,7 @@
  * Definitions for common key values.  Client code should test keyCode against these named constants.
  * @module delite/keys
  */
-define(["./sniff"], function (has) {
+define(["decor/sniff"], function (has) {
 	return {
 		BACKSPACE: 8,
 		TAB: 9,

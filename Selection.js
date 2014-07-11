@@ -1,5 +1,5 @@
 /** @module delite/Selection */
-define(["dcl/dcl", "./sniff", "./Widget"], function (dcl, has, Widget) {
+define(["dcl/dcl", "decor/sniff", "./Widget"], function (dcl, has, Widget) {
 	/**
 	 * Mixin for widgets that manage a list of selected data items.
 	 * @mixin module:delite/Selection

@@ -2,7 +2,6 @@
 define([
 	"./css",
 	"./theme",
-	"./Destroyable",
 	"./DisplayContainer",
 	"./register",
 	"./CustomElement",
@@ -12,7 +11,6 @@ define([
 	"./CssState",
 	"./Container",
 	"./a11y",
-	"./sniff",
 	"./uacss",
 	"./Stateful",
 	"./Selection",
