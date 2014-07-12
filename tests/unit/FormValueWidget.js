@@ -9,7 +9,7 @@ define([
 	registerSuite({
 		name: "FormValueWidget",
 
-		setup: function() {
+		setup: function () {
 			FormValueWidgetTest = register("form-value-widget-test", [HTMLElement, FormValueWidget], {});
 		},
 
