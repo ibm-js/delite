@@ -4,10 +4,11 @@ define([
 	"dojo/dom", // dom.byId
 	"dojo/dom-class", // domClass.add domClass.replace
 	"requirejs-dplugins/has",
+	"decor/Invalidating",
 	"./CustomElement",
 	"./register",
 	"requirejs-dplugins/has!bidi?./Bidi"
-], function (dcl, dom, domClass, has, CustomElement, register, Bidi) {
+], function (dcl, dom, domClass, has, Invalidating, CustomElement, register, Bidi) {
 	// Flag to enable support for textdir attribute
 	has.add("bidi", false);
 
@@ -21,9 +22,10 @@ define([
 	 * `postCreate()`, `startup()`, and `destroy()`, and also public API methods like `watch()`.
 	 * @mixin module:delite/Widget
 	 * @augments module:delite/CustomElement
+	 * @augments module:decor/Invalidating
 	 * @mixes module:delite/Bidi
 	 */
-	var Widget = dcl(CustomElement, /** @lends module:delite/Widget# */ {
+	var Widget = dcl([CustomElement, Invalidating], /** @lends module:delite/Widget# */ {
 
 		/**
 		 * Root CSS class of the widget (ex: d-text-box)

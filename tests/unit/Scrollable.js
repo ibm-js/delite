@@ -46,7 +46,7 @@ define([
 		"Default CSS": function () {
 			var w = (new MyScrollableWidget({id: "mysw"})).placeAt(container);
 			w.startup();
-			w.validateRendering();
+			w.deliver();
 
 			assert.equal(w.scrollableNode, w,
 				"The scrollableNode should be the widget itself!");
@@ -76,7 +76,7 @@ define([
 				});
 			var w = (new ScrollableWithCustomScrollableNode()).placeAt(container);
 			w.startup();
-			w.validateRendering();
+			w.deliver();
 			assert.equal(w.scrollableNode, w.createdScrollableNode,
 				"The scrollableNode property has changed since it was set in buildRendering!");
 			// Test that the CSS class d-scrollable has been added by the mixin delite/Scrollable
