@@ -57,7 +57,7 @@ define([
 			return d;
 		},
 		"NullStore": function () {
-			var d = this.async(1500), callbacks = 0;
+			var d = this.async(1500);
 			var store = new C({
 				store: new M({ data: [{id: "foo", name: "Foo" }], model: null})
 			});
