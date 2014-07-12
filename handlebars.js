@@ -3,7 +3,7 @@
  * generate DOM corresponding to that template, and set up handlers
  * to modify the generated DOM as widget properties change.  The returned function is meant
  * to run in the context of the widget, so that properties are available through `this` and
- * so is a `watch()` method to monitor changes to those properties.
+ * so is an `observe()` method to monitor changes to those properties.
  *
  * Could also theoretically be used by a build-tool to precompile templates, assuming you loaded
  * [jsdom](https://github.com/tmpvar/jsdom) to provide methods like `document.createElement()`.
@@ -204,7 +204,7 @@ define(["./template"], function (template) {
 
 		/**
 		 * Given a template, returns a function to generate DOM corresponding to that template,
-		 * and setup listeners (using `Widget.watch()`) to propagate changes in the widget
+		 * and setup listeners (using `Stateful#observe()`) to propagate changes in the widget
 		 * properties to the templates.
 		 *
 		 * This method is usually only called directly when your template contains custom elements,
