@@ -31,22 +31,32 @@ define([
 		booleanCssProps: ["disabled", "readOnly", "selected", "focused", "opened"],
 
 		postCreate: function () {
-			var toggle = domClass.toggle.bind(domClass, this);
+			["checked", "state"].concat(this.booleanCssProps).forEach(function (name) {
+				if (this[name]) {
+					this.notifyCurrentValue(name);
+				}
+			});
+		},
+
+		refreshRendering: dcl.after(function (args) {
+			var oldVals = args[0];
 
 			// Monitoring changes to disabled, readonly, etc. state, and update CSS class of root node
 			this.booleanCssProps.forEach(function (name) {
-				this.watch(name, function (name, oval, nval) {
-					toggle("d-" + name.toLowerCase(), nval);
-				});
+				if (name in oldVals) {
+					domClass.toggle(this, "d-" + name.toLowerCase(), this[name]);
+				}
 			}, this);
-			this.watch("checked", function (name, oval, nval) {
-				toggle(oval === "mixed" ? "d-mixed" : "d-checked", false);
-				toggle(nval === "mixed" ? "d-mixed" : "d-checked", nval);
-			});
-			this.watch("state", function (name, oval, nval) {
-				toggle("d-" + oval.toLowerCase(), false);
-				toggle("d-" + nval.toLowerCase(), true);
-			});
-		}
+			if ("checked" in oldVals) {
+				domClass.remove(this, oldVals.checked === "mixed" ? "d-mixed" : "d-checked");
+				if (this.checked) {
+					domClass.add(this, this.checked === "mixed" ? "d-mixed" : "d-checked");
+				}
+			}
+			if ("state" in oldVals) {
+				domClass.remove(this, "d-" + oldVals.state.toLowerCase());
+				domClass.add(this, "d-" + this.state.toLowerCase());
+			}
+		})
 	});
 });
