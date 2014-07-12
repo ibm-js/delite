@@ -35,12 +35,20 @@ define([
 		},
 
 		update: function () {
+			var d = this.async(1000);
+
 			myButton.label = "new label";
-			assert.strictEqual(myButton.textContent.trim(), "new label", "label updated");
+			setTimeout(d.rejectOnError(function () {
+				assert.strictEqual(myButton.textContent.trim(), "new label", "label updated");
 
-			myButton.iconClass = "newClass";
-			assert.strictEqual(myButton.firstChild.className, "d-reset newClass", "icon class set");
+				myButton.iconClass = "newClass";
 
+				setTimeout(d.callback(function () {
+					assert.strictEqual(myButton.firstChild.className, "d-reset newClass", "icon class set");
+				}), 10);
+			}), 10);
+
+			return d;
 		},
 
 		"attach-point": function () {
@@ -87,9 +95,16 @@ define([
 				inputValue: "new value",
 				role: "newRole"
 			});
-			assert.strictEqual(input.value, "new value", "value changed");
-			assert.strictEqual(input.className, "newClass", "class changed");
-			assert.strictEqual(input.getAttribute("role"), "newRole", "role changed");
+
+			var d = this.async(1000);
+
+			setTimeout(d.callback(function () {
+				assert.strictEqual(input.value, "new value", "value changed");
+				assert.strictEqual(input.className, "newClass", "class changed");
+				assert.strictEqual(input.getAttribute("role"), "newRole", "role changed");
+			}), 10);
+
+			return d;
 		},
 
 		"special props 2": function () {
@@ -109,10 +124,16 @@ define([
 				multiple: true
 			});
 
-			var select = myWidget.select;
-			assert.strictEqual(select.getAttribute("foo"), "2", "foo");
-			assert.strictEqual(select.size, 2, "size");
-			assert.strictEqual(select.multiple, true, "multiple");
+			var d = this.async(1000);
+
+			setTimeout(d.callback(function () {
+				var select = myWidget.select;
+				assert.strictEqual(select.getAttribute("foo"), "2", "foo");
+				assert.strictEqual(select.size, 2, "size");
+				assert.strictEqual(select.multiple, true, "multiple");
+			}), 10);
+
+			return d;
 		},
 
 		"special characters": function () {
@@ -183,19 +204,30 @@ define([
 			var myComplexWidget = new ComplexWidget(),
 				headingWidget = myComplexWidget.getElementsByTagName("handlebars-heading")[0],
 				buttonWidget = myComplexWidget.getElementsByTagName("button")[0];
-			assert.ok(headingWidget.buildRendering, "heading widget was instantiated");
-			assert.strictEqual(headingWidget.textContent, "original heading",
-				"heading widget got title from main widget");
-			assert.ok(buttonWidget.buildRendering, "button widget was instantiated");
-			assert.strictEqual(buttonWidget.textContent.trim(), "original button label",
-				"button widget got label from main widget");
 
-			myComplexWidget.mix({
-				heading: "new heading",
-				buttonLabel: "new button label"
-			});
-			assert.strictEqual(headingWidget.textContent, "new heading", "heading changed");
-			assert.strictEqual(buttonWidget.textContent.trim(), "new button label", "button changed");
+			assert.ok(headingWidget.buildRendering, "heading widget was instantiated");
+			assert.ok(buttonWidget.buildRendering, "button widget was instantiated");
+
+			var d = this.async(1000);
+
+			setTimeout(d.rejectOnError(function () {
+				assert.strictEqual(headingWidget.textContent, "original heading",
+					"heading widget got title from main widget");
+				assert.strictEqual(buttonWidget.textContent.trim(), "original button label",
+					"button widget got label from main widget");
+
+				myComplexWidget.mix({
+					heading: "new heading",
+					buttonLabel: "new button label"
+				});
+
+				setTimeout(d.callback(function () {
+					assert.strictEqual(headingWidget.textContent, "new heading", "heading changed");
+					assert.strictEqual(buttonWidget.textContent.trim(), "new button label", "button changed");
+				}), 10);
+			}), 10);
+
+			return d;
 		},
 
 		"requires": function () {
@@ -321,19 +353,27 @@ define([
 			assert.strictEqual(node.className, "", "class #1");
 			assert.strictEqual(node.textContent.trim(), "Hello Bob !", "textContent #1");
 
+			var d = this.async(1000);
+
 			node.item = {
 				first: "Tom"
 			};
-			assert.strictEqual(node.className, "", "class #2");
-			assert.strictEqual(node.textContent.trim(), "Hello Tom !", "textContent #2");
+			setTimeout(d.rejectOnError(function () {
+				assert.strictEqual(node.className, "", "class #2");
+				assert.strictEqual(node.textContent.trim(), "Hello Tom !", "textContent #2");
 
-			node.item = {
-				first: "Fred",
-				last: "Smith",
-				className: "blue"
-			};
-			assert.strictEqual(node.className, "blue", "class #3");
-			assert.strictEqual(node.textContent.trim(), "Hello Fred Smith!", "textContent #3");
+				node.item = {
+					first: "Fred",
+					last: "Smith",
+					className: "blue"
+				};
+				setTimeout(d.callback(function () {
+					assert.strictEqual(node.className, "blue", "class #3");
+					assert.strictEqual(node.textContent.trim(), "Hello Fred Smith!", "textContent #3");
+				}), 10);
+			}), 10);
+
+			return d;
 		},
 
 		"d-hidden": function () {
@@ -346,8 +386,14 @@ define([
 			node.placeAt(container);
 			assert.strictEqual(getComputedStyle(node).display, "none", "hidden");
 
+			var d = this.async(1000);
+
 			node.hideSpan = false;
-			assert.strictEqual(getComputedStyle(node).display, "inline", "not hidden");
+			setTimeout(d.callback(function () {
+				assert.strictEqual(getComputedStyle(node).display, "inline", "not hidden");
+			}), 10);
+
+			return d;
 		},
 
 		"d-shown": function () {
@@ -360,8 +406,14 @@ define([
 			node.placeAt(container);
 			assert.strictEqual(getComputedStyle(node).display, "inline", "not hidden");
 
+			var d = this.async(1000);
+
 			node.showSpan = false;
-			assert.strictEqual(getComputedStyle(node).display, "none", "hidden");
+			setTimeout(d.callback(function () {
+				assert.strictEqual(getComputedStyle(node).display, "none", "hidden");
+			}), 10);
+
+			return d;
 		},
 
 		teardown: function () {

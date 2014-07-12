@@ -75,8 +75,6 @@ define(["./register"], function (register) {
 	}
 
 	return /** @lends module:delite/template. */ {
-		// TODO: possibly add support to control which properties are / aren't bound (for performance)
-
 		// Note: this is generating actual JS code since:
 		// 		- that's 3x faster than looping over the object tree every time...
 		//		- so the build system can eliminate this file (and just use the generated code
@@ -89,51 +87,53 @@ define(["./register"], function (register) {
 		// like [tag, attributesHash, child1, child2, child3].  Should we do the same?   But attach points are tricky.
 
 		/**
-		 * Return JS code to create and add children to a node named nodeName.
+		 * Generate JS code to create and add children to a node named nodeName.
 		 * @param {string} nodeName
 		 * @param {Object[]} children
-		 * @returns {string}
+		 * @param {string[]} buildText - (output param) add code to build the DOM to this array
+		 * @param {string[]} observeText - (output param) add code to run in this.observe() callback to this array
 		 * @private
 		 */
-		generateNodeChildrenCode: function (nodeName, children) {
-			var text = "";
-
+		generateNodeChildrenCode: function (nodeName, children, buildText, observeText) {
 			children.forEach(function (child, idx) {
 				var childName = (nodeName === "this" ? "" : nodeName) + "c" + (idx + 1);
 				if (child.tag) {
 					// Standard DOM node, recurse
-					text += this.generateNodeCode(childName, child);
-					text += nodeName + ".appendChild(" + childName + ");\n";
+					this.generateNodeCode(childName, child, buildText, observeText);
+					buildText.push(
+						nodeName + ".appendChild(" + childName + ");"
+					);
 				} else if (child.property) {
 					// text node bound to a widget property, ex: this.label
 					var textNodeName = childName + "t" + (idx + 1);
-					text += "var " + textNodeName + " = doc.createTextNode(this." + child.property + " || '');\n";
-					text += nodeName + ".appendChild(" + textNodeName + ");\n";
+					buildText.push(
+						"var " + textNodeName + " = doc.createTextNode(this." + child.property + " || '');",
+						nodeName + ".appendChild(" + textNodeName + ");"
+					);
 
 					// watch for changes; if it's a nested property like item.foo then watch top level prop (item)
-					text += "this.watch('" + child.property.replace(/[^\w].*/, "") + "', function(a,o,n){ "
-						+ textNodeName + ".nodeValue = (widget." + child.property + ") || ''; });\n";
+					observeText.push(
+						"if(" + singleQuote(child.property.replace(/[^\w].*/, "")) + " in props)",
+						"\t" + textNodeName + ".nodeValue = (widget." + child.property + " || '');"
+					);
 				} else {
 					// static text
-					text += nodeName + ".appendChild(doc.createTextNode(" + singleQuote(child) + "));\n";
+					buildText.push(nodeName + ".appendChild(doc.createTextNode(" + singleQuote(child) + "));");
 				}
 			}, this);
-
-			return text;
 		},
 
 		/**
-		 * Return JS code to create a node called nodeName based on templateNode.
+		 * Generate JS code to create a node called nodeName based on templateNode.
 		 * Works recursively according to descendants of templateNode.
 		 * @param {string} nodeName - The node will be created in a variable with this name.
 		 * If "this", indicates that the node already exists and should be referenced as "this".
 		 * @param {Object} templateNode - An object representing a node in the template, as described in module summary.
-		 * @returns {string}
+		 * @param {string[]} buildText - (output param) add code to build the DOM to this array
+		 * @param {string[]} observeText - (output param) add code to run in this.observe() callback to this array
 		 * @private
 		 */
-		generateNodeCode: function (nodeName, templateNode) {
-			var text = "";
-
+		generateNodeCode: function (nodeName, templateNode, buildText, observeText) {
 			// Helper string for setting up attach-point(s), ex: "this.foo = this.bar = ".
 			var ap = (templateNode.attachPoints || []).map(function (n) {
 				return  "this." + n + " = ";
@@ -141,12 +141,14 @@ define(["./register"], function (register) {
 
 			// Create node
 			if (nodeName !== "this") {
-				text += "var " + nodeName + " = " + ap + (templateNode.xmlns ?
-					"doc.createElementNS('" + templateNode.xmlns + "', '" + templateNode.tag + "');\n" :
-					"register.createElement('" + templateNode.tag + "');\n");
+				buildText.push(
+					"var " + nodeName + " = " + ap + (templateNode.xmlns ?
+					"doc.createElementNS('" + templateNode.xmlns + "', '" + templateNode.tag + "');" :
+					"register.createElement('" + templateNode.tag + "');")
+				);
 			} else if (ap) {
 				// weird case that someone set attach-point on root node
-				text += ap + "this;";
+				buildText.push(ap + "this;");
 			}
 
 			// Set attributes/properties
@@ -156,12 +158,12 @@ define(["./register"], function (register) {
 
 				// Get expression for the value of this property, ex: 'd-reset ' + this.baseClass.
 				// Also get list of properties that we need to watch for changes.
-				var watchProps = [], js = parts.map(function (part) {
+				var wp = [], js = parts.map(function (part) {
 					if (part.property) {
 						// If it's a nested property like item.foo then watch top level prop (item).
-						// Also note that "this" not available in func passed to watch(), so use "widget".
-						watchProps.push(part.property.replace(/[^\w].*/, ""));
-						return "(widget." + part.property + ") || ''";
+						// Also note that "this" not available in func passed to observe(), so use "widget".
+						wp.push(part.property.replace(/[^\w].*/, ""));
+						return "(widget." + part.property + " || '')";
 					} else {
 						return singleQuote(part);
 					}
@@ -171,10 +173,15 @@ define(["./register"], function (register) {
 				var propName = getProp(templateNode.tag, attr);
 				var codeToSetProp = propName ? nodeName + "." + propName + "=" + js + ";" :
 					nodeName + ".setAttribute('" + attr + "', " + js + ");";
-				text += codeToSetProp + "\n";
-				watchProps.forEach(function (wp) {
-					text += "this.watch('" + wp + "', function(){ " + codeToSetProp + " });\n";
-				});
+				buildText.push(codeToSetProp);
+				if (wp.length) {
+					observeText.push(
+						"if(" + wp.map(function (prop) {
+							return singleQuote(prop) + " in props";
+						}).join(" || ") + ")",
+						"\t" + codeToSetProp
+					);
+				}
 			}
 
 			// Setup connections
@@ -183,19 +190,17 @@ define(["./register"], function (register) {
 				var callback = /^[a-zA-Z0-9_]+$/.test(handler) ?
 					"this." + handler + ".bind(this)" :		// standard case, connecting to a method in the widget
 					"function(event){" + handler + "}";	// connect to anon func, ex: on-click="g++;". used by dapp.
-				text += "on(" + nodeName + ", '" + type + "', " + callback + ");\n";
+				buildText.push("on(" + nodeName + ", '" + type + "', " + callback + ");");
 			}
 
 			// Create descendant Elements and text nodes
-			text += this.generateNodeChildrenCode(nodeName, templateNode.children);
-
-			return text;
+			this.generateNodeChildrenCode(nodeName, templateNode.children, buildText, observeText);
 		},
 
 		/**
 		 * Given an object tree as described in the module summary,
 		 * returns the text for a function to generate DOM corresponding to that template,
-		 * and setup listeners (using `Stateful#watch()`) to propagate changes in the widget
+		 * and setup listeners (using `Stateful#observe()`) to propagate changes in the widget
 		 * properties to the templates.
 		 *
 		 * Code assumes that the root node already exists as "this".
@@ -205,15 +210,27 @@ define(["./register"], function (register) {
 		 * @private
 		 */
 		codegen: function (tree) {
-			return "var widget = this, doc = this.ownerDocument, register = this.register;\n" +
-				"function on(node, type, callback){ widget.on(type, callback, node); }\n" +
-				this.generateNodeCode("this", tree);
+			// Code to build the initial DOM
+			var buildText = [
+				"var widget = this, doc = this.ownerDocument, register = this.register;",
+				"function on(node, type, callback){ widget.on(type, callback, node); }"
+			];
+
+			// Code to observe changes in the widget and update the DOM
+			var observeText = [
+				"this.observe(function(props){"
+			];
+
+			this.generateNodeCode("this", tree, buildText, observeText);
+
+			return buildText.concat(observeText).join("\n") +
+				"\n});\n";
 		},
 
 		/**
 		 * Given an object tree as described in the module summary,
 		 * returns a function to generate DOM corresponding to that template,
-		 * and setup listeners (using `Stateful#watch()`) to propagate changes in the widget
+		 * and setup listeners (using `Stateful#observe()`) to propagate changes in the widget
 		 * properties to the templates.
 		 * @param {Object} tree
 		 * @returns {Function}
