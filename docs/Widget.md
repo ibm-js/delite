@@ -46,7 +46,7 @@ so you don't need to worry about setting up code to call the superclasses' metho
 
 ## Placement
 
-DELITE widgets are DOM Custom Elements.  That means they can be placed and manipulated just like other DOM elements.
+Delite widgets are DOM Custom Elements.  That means they can be placed and manipulated just like other DOM elements.
 Any DOM manipulation library should work well with instances of the widgets, but there is a helper function for
 placing the widget in the DOM named `.placeAt()`.  This function takes one or two arguments.  The first argument is
 node being referenced or the string ID of the node and the second argument is
@@ -65,69 +65,24 @@ mywidget.placeAt("someNode", "before");
 
 ## Events
 
-Assigning listeners to widget events is accomplished via the `.on()` function.  This function takes two arguments:
+Assigning listeners to widget events is accomplished via the `.on()` method.  This method takes two parameters:
 
 * `type` - The type of event being listened for.  (e.g. `"click"`)
-
 * `listener` - The listener function to be called when the event is detected.
-
-Listeners will be scoped so that `this` refers to the widget instance when called.
-If you need to know specifically the target of the event, the listener should inspect the event object passed as an
-argument to the listener.
-
-TODO: event auto-attach not implemented [yet], this doc text from pidgin::::::
-
-Events can be auto-attached during the insertion lifecycle.  There is a property of `.events`, which supplies a hash of
-events to listen for and their listeners.  The each property key identifies the event type (and optionally the
-selector).  The value of the property is the listener or the name of the listener in the class.  For example, if you
-wanted to log click events to the console, you would do something like:
-
-```js
-{
-	events: {
-		"click": function (e) {
-			console.log(e);
-		}
-	}
-}
-```
-
-If your widget had a sub-element of a button, which you wanted to listen to on a method named `_onClick` you would want
-to do something like:
-
-```js
-{
-	events: {
-		"button:click": "_onClick"
-	},
-	_onClick: function (e) {
-		console.log(e);
-	}
-}
-```
 
 Synthetic events can be emitted on the widget or its sub-nodes via the `.emit()` function.  The function takes two
 arguments:
 
 * `type` - The type of the event being emitted. (e.g. `"click"`)
-
-* `event` - The synthetic event object.
+* `event` - Properties to set on the synthetic event object.
 
 ## Custom setters
 
-Note that currently custom setters need to call this._set() to announce
-that the value has changed (for any callbacks registered via watch()):
+Note that custom setters need to call this._set() to record the new value:
 
 ```js
 _setLabelAttr: function(val){
-	this._set("label", val);	// to notify listeners
-	this.label.textContent = val;	// update the DOM
+	this._set("label", val);	// to notify listeners and record the new value
+	this.labelNode.textContent = val;	// update the DOM
 }
 ```
-
-Also, note that `delite/Widget` also allows the shorthand syntax for declaring setters from Dijit V1 like:
-
-```js
-_setTabIndexAttr: "focusNode"
-```
-
