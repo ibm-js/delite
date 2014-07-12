@@ -20,21 +20,21 @@ define(["intern!object",
 			return this.remote.elementById("d1").click()		// start on first element, before widgets
 				.execute("return document.activeElement.id").then(function (value) {
 					// start focus on the node before the two widgets
-					assert.equal("d1", value);
+					assert.strictEqual(value, "d1");
 				})
 				.keys("\uE004")	// tab
 				.execute("return document.activeElement.parentNode.id").then(function (value) {
 					// focused on <span> inside of widget
-					assert.equal("d2", value);
+					assert.strictEqual(value, "d2");
 				})
 				.keys("\uE004") // tab
 				.execute("return document.activeElement.parentNode.id").then(function (value) {
 					// focused on <span> inside of widget
-					assert.equal("d3", value);
+					assert.strictEqual(value, "d3");
 				})
 				.keys("\uE004") // tab
 				.execute("return document.activeElement.id").then(function (value) {
-					assert.equal("d4", value);
+					assert.strictEqual(value, "d4");
 				});
 		},
 
@@ -46,21 +46,21 @@ define(["intern!object",
 			return this.remote.elementById("s1").click()		// start on first element, before widgets
 				.execute("return document.activeElement.id").then(function (value) {
 					// start focus on the node before the two widgets
-					assert.equal("s1", value);
+					assert.strictEqual(value, "s1");
 				})
 				.keys("\uE004")	// tab
 				.execute("return document.activeElement.parentNode.id").then(function (value) {
 					// focused on <span> inside of widget
-					assert.equal("s2", value);
+					assert.strictEqual(value, "s2");
 				})
 				.keys("\uE004")	// tab
 				.execute("return document.activeElement.parentNode.id").then(function (value) {
 					// focused on <span> inside of widget
-					assert.equal("s3", value);
+					assert.strictEqual(value, "s3");
 				})
 				.keys("\uE004")	// tab
 				.execute("return document.activeElement.id").then(function (value) {
-					assert.equal("s4", value);
+					assert.strictEqual(value, "s4");
 				});
 		},
 
@@ -74,16 +74,16 @@ define(["intern!object",
 				.keys("\uE004")	// tab
 				.execute("return document.activeElement.parentNode.id").then(function (value) {
 					// should have tabbed back to <span> inside first widget, which now has tabIndex=5
-					assert.equal("s2", value);
+					assert.strictEqual(value, "s2");
 				})
 				.execute("return document.activeElement.innerHTML").then(function (value) {
-					// making sure that watch() worked
-					assert.equal("widget, tabindex=1, updated to 5", value);
+					// making sure that observe() worked
+					assert.strictEqual(value, "widget, tabindex=1, updated to 5");
 				})
 				.keys("\uE004")	// tab
 				.execute("return document.activeElement.parentNode.id").then(function (value) {
 					// should have tabbed back to <span> inside second widget, which now has tabIndex=6
-					assert.equal("s3", value);
+					assert.strictEqual(value, "s3");
 				});
 		}
 	});

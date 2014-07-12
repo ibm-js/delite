@@ -7,54 +7,70 @@ define([
 	"requirejs-domready/domReady!"
 ], function (registerSuite, assert, domClass, register, Widget) {
 	var container;
+
+
+	// tabIndex is problematic, see https://github.com/ibm-js/delite/issues/34.
 	registerSuite({
-		name: "Widget misc",
+		name: "Widget tabIndex",
 		setup: function () {
 			container = document.createElement("div");
 			document.body.appendChild(container);
 		},
 
-		// tabIndex is problematic, see https://github.com/ibm-js/delite/issues/34.
-		"tabIndex": function () {
+		topLevel: function () {
 			// Test when tabIndex is declared top level, in the props passed to register().
-			// TODO: enable when https://github.com/uhop/dcl/issues/9 is fixed
-			/*
-			 var SpecialNames = register("test-special-names", [HTMLElement, Widget], {
-			 tabIndex: "0",
 
-			 postCreate: function () {
-			 this.watch("tabIndex", function(name, o, n){
-			 this.watchedTabIndex = n;
-			 });
-			 }
-			 });
-			 var widget = new SpecialNames({ });
-			 widget.tabIndex = "3";
-			 document.body.appendChild(widget);
-			 widget.startup();
-			 assert.equal("3", widget.watchedTabIndex, "watch fired on widget");
-			 */
+			// TODO: enable this test when https://github.com/uhop/dcl/issues/9 is fixed
+			if (1 === 1) { return; }
 
-			// And test when tabIndex is declared in a mixin.
-			var SpecialNamesMixin = register.dcl(Widget, {
+			var SpecialNames = register("test-tabindex-names", [HTMLElement, Widget], {
 				tabIndex: "0",
 
 				postCreate: function () {
-					this.watch("tabIndex", function (name, o, n) {
-						this.watchedTabIndex = n;
-					});
+					this.observe(function (props) {
+						if ("tabIndex" in props) {
+							this.watchedTabIndex = this.tabIndex;
+						}
+					}.bind(this));
 				}
 			});
-			var SpecialExtendedWidget = register("test-special-names-extended", [HTMLElement, SpecialNamesMixin], {
+			var widget = new SpecialNames({ });
+			widget.tabIndex = "3";
+			document.body.appendChild(widget);
+			widget.startup();
+			assert.equal(widget.watchedTabIndex, "3", "reported on widget");
+		},
+
+		mixin: function () {
+			// And test when tabIndex is declared in a mixin.
+			var SpecialNamesMixin = register.dcl(Widget, {
+				tabIndex: "0",
+				_setTabIndexAttr: function (val) {
+					// In a real widget, if you declare a tabIndex property then you better have a custom setter too.
+					// Otherwise, tabIndex updates won't have any effect.  For testing purposes we are just saving
+					// the new value without applying it to any this.focusNode Element.
+					this._set("tabIndex", val);
+				},
+				postCreate: function () {
+					this.observe(function (props) {
+						if ("tabIndex" in props) {
+							this.watchedTabIndex = this._get("tabIndex");
+						}
+					}.bind(this));
+				}
+			});
+			var SpecialExtendedWidget = register("test-tabindex-names-extended", [HTMLElement, SpecialNamesMixin], {
 				tabIndex: "0",
 				value: "0",
 				isrange: false,
 				isbool: false,
 
 				postCreate: function () {
-					this.watch("tabIndex", function (name, o, n) {
-						this.watchedTabIndex = n;
-					});
+					this.observe(function (props) {
+						if ("tabIndex" in props) {
+							this.watchedTabIndex = this._get("tabIndex");
+						}
+					}.bind(this));
 				}
 			});
 
@@ -62,36 +78,75 @@ define([
 			extended.tabIndex = "5";
 			document.body.appendChild(extended);
 			extended.startup();
-			assert.equal("5", extended.watchedTabIndex, "watch fired on extended");
 
+			var d = this.async(1000);
+
+			setTimeout(d.callback(function () {
+				assert.equal(extended.watchedTabIndex, "5", "reported on extended");
+			}), 10);
+
+			return d;
+		},
+
+		declarative: function () {
 			// And also test for declarative widgets, to make sure the tabIndex property is
 			// removed from the root node, to prevent an extra tab stop
-			container.innerHTML += "<test-special-names-extended id=specialNames value=5 isrange isbool tabIndex=8/>";
+			container.innerHTML +=
+				"<test-tabindex-names-extended id=specialNames value=5 isrange isbool tabIndex=8/>";
 			var declarative = document.getElementById("specialNames");
 			register.upgrade(declarative);
 			assert.isFalse(declarative.hasAttribute("tabindex"), "tabindex attr removed");
 			assert.isTrue(declarative.isrange, "isrange set");
 			assert.isTrue(declarative.isbool, "isbool set");
-			assert.strictEqual("5", declarative.value, "value");
 
-			// Finally, test when the widget prototype doesn't declare tabIndex at all.
+			var d = this.async(1000);
+
+			setTimeout(d.callback(function () {
+				assert.strictEqual(declarative.value, "5", "value");
+			}), 10);
+
+			return d;
+		},
+
+		notInPrototype: function () {
+			// And, test when the widget prototype doesn't declare tabIndex at all.
 			// Then the widget should just act like a simple <div>, passing tabIndex through to root node.
-			var SimpleWidget = register("simple-widget", [HTMLElement, Widget], { });
+			var SimpleWidget = register("tabindex-not-in-prototype", [HTMLElement, Widget], { });
 			var simple = new SimpleWidget({ tabIndex: 5 });
 			document.body.appendChild(simple);
 			simple.startup();
 
-			// make sure that tabIndex was correctly set
-			assert.strictEqual("5", simple.getAttribute("tabindex"), "programmatic set");
+			var d = this.async(1000);
 
+			setTimeout(d.callback(function () {
+				// make sure that tabIndex was correctly set
+				assert.strictEqual(simple.getAttribute("tabindex"), "5", "programmatic set");
+			}), 10);
+
+			return d;
+		},
+
+		declarativeTabIndexRemoved: function () {
 			// And also test for declarative widgets, to make sure the tabIndex property is
 			// removed from the root node, to prevent an extra tab stop
-			container.innerHTML += "<simple-widget id=simple tabIndex=8>";
+			container.innerHTML += "<tabindex-not-in-prototype id=simple tabIndex=8></tabindex-not-in-prototype>";
 			var simpleDeclarative = document.getElementById("simple");
 			register.upgrade(simpleDeclarative);
 
 			// make sure that tabIndex wasn't unset
-			assert.strictEqual("8", simpleDeclarative.getAttribute("tabindex"), "declarative set");
+			var d = this.async(1000);
+			setTimeout(d.callback(function () {
+				assert.strictEqual(simpleDeclarative.getAttribute("tabindex"), "8", "declarative set");
+			}), 10);
+			return d;
+		}
+	});
+
+	registerSuite({
+		name: "Widget misc",
+		setup: function () {
+			container = document.createElement("div");
+			document.body.appendChild(container);
 		},
 
 		widgetId: function () {
