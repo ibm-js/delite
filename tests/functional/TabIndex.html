@@ -32,9 +32,11 @@
 				},
 
 				startup: function () {
-					// We could do this in _setTabIndexAttr() but I want to test that watch() is working
-					this.watch("tabIndex", function (n, oval, nval) {
-						this.label = this.label + ", updated to " + nval;
+					// We could do this in _setTabIndexAttr() but I want to test that observe() is working
+					this.observe(function (props) {
+						if ("tabIndex" in props) {
+							this.label = this.label + ", updated to " + this._get("tabIndex");
+						}
 					});
 				},
 

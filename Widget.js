@@ -19,7 +19,7 @@ define([
 	 * Base class for all widgets, i.e. custom elements that appear visually.
 	 *
 	 * Provides stubs for widget lifecycle methods for subclasses to extend, like `buildRendering()`,
-	 * `postCreate()`, `startup()`, and `destroy()`, and also public API methods like `watch()`.
+	 * `postCreate()`, `startup()`, and `destroy()`, and also public API methods like `observe()`.
 	 * @mixin module:delite/Widget
 	 * @augments module:delite/CustomElement
 	 * @augments module:decor/Invalidating

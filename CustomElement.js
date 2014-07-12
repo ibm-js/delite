@@ -3,7 +3,7 @@ define([
 	"dcl/dcl",
 	"decor/Observable",
 	"decor/Destroyable",
-	"./Stateful"
+	"decor/Stateful"
 ], function (dcl, Observable, Destroyable, Stateful) {
 
 	/**
@@ -27,7 +27,7 @@ define([
 	 * when the value is set.  For an attribute XXX, define methods _setXXXAttr() and/or _getXXXAttr().
 	 *
 	 * @mixin module:delite/CustomElement
-	 * @augments module:delite/Stateful
+	 * @augments module:decor/Stateful
 	 * @augments module:decor/Destroyable
 	 */
 	return dcl([Stateful, Destroyable], /** @lends module:delite/CustomElement# */{
@@ -70,10 +70,6 @@ define([
 
 				// Get parameters that were specified declaratively on the widget DOMNode.
 				this._parsedAttributes = this._mapAttributes();
-
-				// FF has a native watch() method that overrides our Stateful.watch() method and breaks custom setters,
-				// so that any command like this.label = "hello" sets label to undefined instead.  Try to workaround.
-				this.watch = Stateful.prototype.watch;
 			},
 
 			after: function () {

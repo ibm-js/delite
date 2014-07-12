@@ -2,7 +2,7 @@ define([
 	"intern!object",
 	"intern/chai!assert",
 	"delite/register",
-	"delite/Stateful",
+	"decor/Stateful",
 	"requirejs-domready/domReady!"
 ], function (registerSuite, assert, register, Stateful) {
 

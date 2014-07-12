@@ -12,7 +12,6 @@ define([
 	"./Container",
 	"./a11y",
 	"./uacss",
-	"./Stateful",
 	"./Selection",
 	"./StoreMap",
 	"./Store",
