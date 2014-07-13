@@ -37,9 +37,10 @@ define([
 		"Custom elements" : {
 			"programmatic custom element" : function () {
 				return this.remote
-					.execute("return typeof(document.getElementById('simplewidget').buildRendering)").then(function (value) {
-						assert.strictEqual(value, "function", "simplewidget is a delite custom element");
-					});
+					.execute("return typeof(document.getElementById('simplewidget').buildRendering)")
+						.then(function (value) {
+							assert.strictEqual(value, "function", "simplewidget is a delite custom element");
+						});
 
 			},
 			"declarative custom element" : function () {
