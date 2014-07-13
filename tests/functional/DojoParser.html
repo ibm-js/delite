@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<!--
+		Test that delite and dojo/dijit parsers can coexist.
+		This is intentionally a functional test because unit tests don't have sandboxing.
+	-->
+    <style type="text/css">
+        #dijitcalendarprogrammatic table.dijitCalendarContainer, #dijitcalendardeclarative table.dijitCalendarContainer {
+            margin: 25px auto;
+            width: 200px;
+        }
+        h3 {color : black;}
+    </style>
+    <link rel="stylesheet" href="../../../dijit/themes/dijit.css"/>
+    <script src="../boilerplate.js"></script>
+	<script type="text/javascript">
+		readyDijit = false, readyDelite = false, dojoWidgetsLength = 0, dijitRegistry = null; // set readies to true when the test page is ready
+		require(["delite/Widget", "delite/samples/ExampleWidget", "delite/register", "dojo/domReady!"],
+                function (Widget, ExampleWidget, register) {
+			register.parse();
+            var dExample = document.getElementById("declarativecustomelement");
+            console.log("declarative dExample instance widget has buildRendering = " + Boolean(dExample.buildRendering !=null && dExample.buildRendering != undefined));
+
+            var SimpleWidget = register("simple-widget", [HTMLElement, Widget], {
+                // summary:
+                //		A trivial widget
+
+                buildRendering: function () {
+                    this.textContent = "i'm a simple custom element, created at " + new Date() + ", my widgetId is " + this.widgetId;
+                }
+            });
+            new SimpleWidget({id: "simplewidget"}).placeAt(document.getElementById("simplewidgetholder"));
+            var simplewidgetInstance = document.getElementById("simplewidget");
+            console.log("programmatic simplewidgetInstance has buildRendering = " + Boolean(simplewidgetInstance.buildRendering !=null && simplewidgetInstance.buildRendering != undefined));
+            var noncustomelement = document.getElementById("noncustomelement");
+            console.log("noncustomelement has buildRendering = " + Boolean(noncustomelement.buildRendering !=null && noncustomelement.buildRendering != undefined));
+            readyDelite = true;
+		});
+
+        require(["dijit/Calendar", "dojo/parser", "dijit/registry", "dojo/domReady!"], function(Calendar, parser, registry){
+            dijitRegistry = registry;
+            new Calendar({
+                value: new Date(),
+                id : "dijitprogrammaticid"
+            }, "dijitcalendarprogrammatic").startup();
+            // Set global variable to signal that the test page is ready
+            parser.parse(document.getElementById("dojowidgetsid")).then(function (items) {
+                dojoWidgets = registry.findWidgets(document.body);
+                dojoWidgetsLength = dojoWidgets.length;
+                console.log("dijit registry of widgets on this page", dojoWidgets);
+                console.log(registry.byId("dijitcalendardeclarative"));
+                console.log(registry.byId("dijitprogrammaticid"));
+                readyDijit = true;
+            });
+        });
+    </script>
+</head>
+<body>
+<h1>Delite and Dojo parser co-existence tests</h1>
+<div id="delitecustomelements">
+    <h2>Delite custom elements</h2>
+    <d-example id="declarativecustomelement"><h3>declarative widget</h3></d-example>
+    <h3>programmatic widget</h3>
+    <div id="simplewidgetholder"></div>
+    <non-custom-element id="noncustomelement"><b>I'm not a custom element</b></non-custom-element>
+</div>
+<div id="dojowidgetsid">
+    <h2>Dojo/Dijit elements</h2>
+    <h3>declarative widget</h3>
+    <div id="dijitcalendardeclarative" data-dojo-type="dijit/Calendar" value="2014-01-01"></div>
+    <h3>programmatic widget</h3>
+    <div id="dijitcalendarprogrammatic"></div>
+</div>
+
+</body>
+</html>

@@ -14,7 +14,8 @@
 	},
 	"devDependencies": {
 		"dstore" : ">=0.1.0-dev",
-		"platform": "Polymer/platform#~0.1.4"
+		"platform": "Polymer/platform#~0.1.4",
+		"dijit": ">=1.9.1"
 	},
 	"ignore": [
 		".jshintrc",
