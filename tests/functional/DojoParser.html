@@ -19,10 +19,8 @@
 		require(["delite/Widget", "delite/samples/ExampleWidget", "delite/register", "dojo/domReady!"],
                 function (Widget, ExampleWidget, register) {
 			register.parse();
-            /// not sure how to assert a custom element, look for elem.register?
-
             var dExample = document.getElementById("declarativecustomelement");
-            console.log("declarative dExample instance widget has register = " + Boolean(dExample.register !=null && dExample.register != undefined));
+            console.log("declarative dExample instance widget has buildRendering = " + Boolean(dExample.buildRendering !=null && dExample.buildRendering != undefined));
 
             var SimpleWidget = register("simple-widget", [HTMLElement, Widget], {
                 // summary:
@@ -34,9 +32,9 @@
             });
             new SimpleWidget({id: "simplewidget"}).placeAt(document.getElementById("simplewidgetholder"));
             var simplewidgetInstance = document.getElementById("simplewidget");
-            console.log("programmatic simplewidgetInstance has register = " + Boolean(simplewidgetInstance.register !=null && simplewidgetInstance.register != undefined));
+            console.log("programmatic simplewidgetInstance has buildRendering = " + Boolean(simplewidgetInstance.buildRendering !=null && simplewidgetInstance.buildRendering != undefined));
             var noncustomelement = document.getElementById("noncustomelement");
-            console.log("noncustomelement has register = " + Boolean(noncustomelement.register !=null && noncustomelement.register != undefined));
+            console.log("noncustomelement has buildRendering = " + Boolean(noncustomelement.buildRendering !=null && noncustomelement.buildRendering != undefined));
             readyDelite = true;
 		});
 

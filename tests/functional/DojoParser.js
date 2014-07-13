@@ -35,20 +35,18 @@ define([
 			}
 		},
 		"Custom elements" : {
-			// TODO: not sure this makes sense yet, test for register function to determine if it's a custom element?
 			"programmatic custom element" : function () {
 				return this.remote
-					.execute("return typeof(document.getElementById('simplewidget').register)").then(function (value) {
-						assert.strictEqual(value, "function", "simplewidget is a custom element");
+					.execute("return typeof(document.getElementById('simplewidget').buildRendering)").then(function (value) {
+						assert.strictEqual(value, "function", "simplewidget is a delite custom element");
 					});
 
 			},
 			"declarative custom element" : function () {
-				//document.getElementById("declarativecustomelement")
 				return this.remote
-					.execute("return typeof(document.getElementById('declarativecustomelement').register)")
+					.execute("return typeof(document.getElementById('declarativecustomelement').buildRendering)")
 						.then(function (value) {
-						assert.strictEqual(value, "function", "declarativecustomelement is a custom element");
+						assert.strictEqual(value, "function", "declarativecustomelement is a delite custom element");
 					});
 			}
 		}
