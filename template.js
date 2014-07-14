@@ -184,7 +184,7 @@ define(["./register"], function (register) {
 				}
 			}
 
-			// If this node is a custom element then refresh it to reflect any changes that I've made immediately
+			// If this node is a custom element, make it immediately display the property changes I've made
 			if (/-/.test(templateNode.tag)) {
 				observeText.push(
 					nodeName + ".deliver();"
@@ -207,8 +207,7 @@ define(["./register"], function (register) {
 		/**
 		 * Given an object tree as described in the module summary,
 		 * returns the text for a function to generate DOM corresponding to that template,
-		 * and setup listeners (using `Stateful#observe()`) to propagate changes in the widget
-		 * properties to the templates.
+		 * and then return a function to propagate changes in widget properties to the template.
 		 *
 		 * Code assumes that the root node already exists as "this".
 		 * 
@@ -223,7 +222,7 @@ define(["./register"], function (register) {
 			this.generateNodeCode("this", tree, buildText, observeText);
 
 			return buildText.join("\n") +
-				["\nthis.observe(function(props){"].concat(observeText).join("\n\t") + "\n});\n";
+				["\nreturn function(props){"].concat(observeText).join("\n\t") + "\n};\n";
 		},
 
 		/**

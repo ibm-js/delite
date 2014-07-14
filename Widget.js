@@ -92,8 +92,15 @@ define([
 		 */
 		createdCallback: function () {
 			this.preCreate();
-			this.buildRendering(this.ownerDocument, register);
+			this.buildRendering();
 			this.postCreate();
+		},
+
+		// Override Invalidating#refreshRendering() to execute the function returned by buildRendering
+		refreshRendering: function (props) {
+			if (this._refreshRenderingCallback) {
+				this._refreshRenderingCallback(props);
+			}
 		},
 
 		/**
@@ -161,14 +168,23 @@ define([
 		},
 
 		/**
+		 * Value returned by delite/handlebars! or compatible template engine.
+		 * Specifies how to build the widget DOM initially and also how to update the DOM when
+		 * widget properties change.
+		 * @member {Function}
+		 * @protected
+		 */
+		template: null,
+
+		/**
 		 * Construct the UI for this widget, filling in subnodes and/or text inside of this.
-		 * Most widgets will leverage delite/handlebars! to implement this method.
-		 * @param {Document} Reference to `this.ownerDocument`.
-		 * @param {Object} Reference to `delite/register`.
-		 * @returns {Function} A function to update the rendering when widget properties change (optional).
+		 * Most widgets will leverage delite/handlebars! to set `template`, rather than defining this method.
 		 * @protected
 		 */
 		buildRendering: function () {
+			if (this.template) {
+				this._refreshRenderingCallback = this.template(this.ownerDocument, register);
+			}
 		},
 
 		/**
