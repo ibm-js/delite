@@ -1,3 +1,8 @@
+---
+layout: default
+title: delite/Widget
+---
+
 # delite/Widget
 
 `delite/Widget` is a mixin used by all widgets.
