@@ -1,13 +1,20 @@
+---
+layout: default
+title: delite/handlebars
+---
+
 # delite/handlebars
 
 `delite/handlebars` supports reactive templates,
 so a template like below would automatically adjust the
 DOM as the widget's `iconClass` and `label` properties were changed:
 
-	<button>
-		<span class="d-reset {{iconClass}}"></span>
-		{{label}}
-	</button>
+```html
+<button>
+	<span class="d-reset {{iconClass}}"></span>
+	{{label}}
+</button>
+```
 
 
 Note that the binding is one-directional.  Changes to DOM node values, such as when a user types
@@ -18,21 +25,13 @@ The delite/handlebars! plugin returns a function to operate in the widget's cont
 for widgets to leverage the template engine, you put your template in a separate file,
 and then define the widget like:
 
-	define([..., "delite/handlebars!./templates/MyTemplate.html"], function(..., renderFunc){
-		...
-		buildRendering: renderFunc,
-		...
-	}
-
-Handlebars can also be used as a plain AMD module, via the `compile()` method:
-
-	define([..., "delite/handlebars"], function(..., handlebars){
-		...
-		buildRendering: handlebars.compile(
-			'<span class="d-reset {{iconClass}}">{{label}}</span>'
-		),
-		...
-	}
+```js
+define([..., "delite/handlebars!./templates/MyTemplate.html"], function(..., renderFunc){
+	...
+	buildRendering: renderFunc,
+	...
+}
+```
 
 ## Substitution variables
 
@@ -63,10 +62,12 @@ The limitations of using paths are:
 A template can contain widgets in addition to plain DOM nodes.  In this case, the template
 must list the required AMD modules via the `requires` attribute on the root node:
 
-	<template requires="deliteful/Button, deliteful/ProgressIndicator">
-		<d-button>{{buttonText}}</d-button>
-		<d-progress-indicator value={{piValue}}></d-progress-indicator>
-	</template>
+```html
+<template requires="deliteful/Button, deliteful/ProgressIndicator">
+	<d-button>{{buttonText}}</d-button>
+	<d-progress-indicator value="{{piValue}}"></d-progress-indicator>
+</template>
+```
 
 This technique can also be used to load other required modules, such as `delite/a11yclick`.
 
@@ -74,15 +75,19 @@ This technique can also be used to load other required modules, such as `delite/
 
 Although we don't support `{{#if}}`, you can show/hide nodes in a template like:
 
-	<template>
-		<div d-hidden="{{myHideFlag}}">...</div>
-		<div d-shown="{{myShowFlag}}">...</div>
-	</template>
+```html
+<template>
+	<div d-hidden="{{myHideFlag}}">...</div>
+	<div d-shown="{{myShowFlag}}">...</div>
+</template>
+```
 
 Note that this requires including the common CSS defined by the themes (coming from themes/common/global.less),
 so your widget must reference the `delite/theme!` plugin:
 
-	define([..., "delite/theme!"], function(...) { ...
+```js
+define([..., "delite/theme!"], function(...) { ...
+```
 
 ## Attach points and events
 
@@ -91,9 +96,11 @@ and setting up event handlers on those nodes.
 
 A template like:
 
-	<template>
-		<button attach-point=focusNode on-click={{clickHandler}}>click me</button>
-	</template>
+```html
+<template>
+	<button attach-point="{{focusNode}}" on-click="{{clickHandler}}">click me</button>
+</template>
+```
 
 will set `this.focusNode` to point to the `<button>`, and setup a listener for the "click" event to call
 `this.clickHandler`.

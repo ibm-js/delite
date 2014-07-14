@@ -1,43 +1,52 @@
+---
+layout: default
+title: delite/template
+---
+
 # delite/template
 
 `delite/template` is a utility that takes an AST representing a widget template, and compiles it into
-a function for creating a reactive template.   It's used by [delite/handlerbars!](handlebars.md) and designed
+a function for creating a reactive template.  It's used by [delite/handlerbars!](handlebars.md) and designed
 so it can be used with other template syntax parsers too.
 
 An AST would look like:
 
-	{
-		tag: "BUTTON",
-		attributes: {},
-		children: [
-			{
-				tag: "SPAN",
-				attributes: {
-					class: ["d-reset ", {property: "iconClass"}]
-				},
-				connect: {
-					click: "myClickHandler"		// name of method in widget to call on click event
-				},
-				attachPoints: [ "focusNode" ],
-				children: [ ... ]
+```js
+{
+	tag: "BUTTON",
+	attributes: {},
+	children: [
+		{
+			tag: "SPAN",
+			attributes: {
+				class: ["d-reset ", {property: "iconClass"}]
 			},
-			{property: "label"}
-		]
-	}
+			connect: {
+				click: "myClickHandler"		// name of method in widget to call on click event
+			},
+			attachPoints: [ "focusNode" ],
+			children: [ ... ]
+		},
+		{property: "label"}
+	]
+}
+```
 
 It gets compiled into a function like:
 
-	function buildRendering(root) {
-		var widget = this, doc = this.ownerDocument;
-		var rootc1 = doc.createElement("SPAN");
-		function rootc1_setattr_class(){ rootc1.setAttribute("class", "d-reset " + widget.iconClass); }
-		rootc1_setattr_class();
-		this.watch("iconClass", rootc1_setattr_class);
-		this.appendChild(rootc1);
-		var rootc1t2 = doc.createTextNode(this.label);
-		this.appendChild(rootc1t2);
-		this.watch("label", function(a,o,n){ rootc1t2.nodeValue = n; });
-	}
+```js
+function buildRendering(root) {
+	var widget = this, doc = this.ownerDocument;
+	var rootc1 = doc.createElement("SPAN");
+	function rootc1_setattr_class(){ rootc1.setAttribute("class", "d-reset " + widget.iconClass); }
+	rootc1_setattr_class();
+	this.watch("iconClass", rootc1_setattr_class);
+	this.appendChild(rootc1);
+	var rootc1t2 = doc.createTextNode(this.label);
+	this.appendChild(rootc1t2);
+	this.watch("label", function(a,o,n){ rootc1t2.nodeValue = n; });
+}
+```
 
 ## Notes on AST format
 

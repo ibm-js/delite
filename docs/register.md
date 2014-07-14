@@ -1,3 +1,8 @@
+---
+layout: default
+title: delite/register
+---
+
 # delite/register
 
 **register** is a utility module for creating widgets.  It allows for the registration of widgets as well as has some

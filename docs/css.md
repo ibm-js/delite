@@ -1,3 +1,8 @@
+---
+layout: default
+title: delite/css
+---
+
 # delite/css!
 
 The `delite/css!` plugin is a low level plugin for loading individual CSS files.
