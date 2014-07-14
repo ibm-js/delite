@@ -402,7 +402,7 @@ define([
 	register.before = dcl.before;
 
 	/**
-	 * egisConvenience shortcut to [dcl.around()](http://www.dcljs.org/docs/dcl_js/around/).
+	 * Convenience shortcut to [dcl.around()](http://www.dcljs.org/docs/dcl_js/around/).
 	 * @function module:delite/register.around
 	 */
 	register.around = dcl.around;
