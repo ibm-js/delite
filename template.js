@@ -107,18 +107,18 @@ define(["./register"], function (register) {
 					// text node bound to a widget property, ex: this.label
 					var textNodeName = childName + "t" + (idx + 1);
 					buildText.push(
-						"var " + textNodeName + " = doc.createTextNode(this." + child.property + " || '');",
+						"var " + textNodeName + " = document.createTextNode(this." + child.property + " || '');",
 						nodeName + ".appendChild(" + textNodeName + ");"
 					);
 
 					// watch for changes; if it's a nested property like item.foo then watch top level prop (item)
 					observeText.push(
 						"if(" + singleQuote(child.property.replace(/[^\w].*/, "")) + " in props)",
-						"\t" + textNodeName + ".nodeValue = (widget." + child.property + " || '');"
+						"\t" + textNodeName + ".nodeValue = (this." + child.property + " || '');"
 					);
 				} else {
 					// static text
-					buildText.push(nodeName + ".appendChild(doc.createTextNode(" + singleQuote(child) + "));");
+					buildText.push(nodeName + ".appendChild(document.createTextNode(" + singleQuote(child) + "));");
 				}
 			}, this);
 		},
@@ -134,6 +134,7 @@ define(["./register"], function (register) {
 		 * @private
 		 */
 		generateNodeCode: function (nodeName, templateNode, buildText, observeText) {
+			/* jshint maxcomplexity:11*/
 			// Helper string for setting up attach-point(s), ex: "this.foo = this.bar = ".
 			var ap = (templateNode.attachPoints || []).map(function (n) {
 				return  "this." + n + " = ";
@@ -143,7 +144,7 @@ define(["./register"], function (register) {
 			if (nodeName !== "this") {
 				buildText.push(
 					"var " + nodeName + " = " + ap + (templateNode.xmlns ?
-					"doc.createElementNS('" + templateNode.xmlns + "', '" + templateNode.tag + "');" :
+					"document.createElementNS('" + templateNode.xmlns + "', '" + templateNode.tag + "');" :
 					"register.createElement('" + templateNode.tag + "');")
 				);
 			} else if (ap) {
@@ -161,9 +162,8 @@ define(["./register"], function (register) {
 				var wp = [], js = parts.map(function (part) {
 					if (part.property) {
 						// If it's a nested property like item.foo then watch top level prop (item).
-						// Also note that "this" not available in func passed to observe(), so use "widget".
 						wp.push(part.property.replace(/[^\w].*/, ""));
-						return "(widget." + part.property + " || '')";
+						return "(this." + part.property + " || '')";
 					} else {
 						return singleQuote(part);
 					}
@@ -184,13 +184,20 @@ define(["./register"], function (register) {
 				}
 			}
 
+			// If this node is a custom element then refresh it to reflect any changes that I've made immediately
+			if (/-/.test(templateNode.tag)) {
+				observeText.push(
+					nodeName + ".deliver();"
+				);
+			}
+
 			// Setup connections
 			for (var type in templateNode.connects) {
 				var handler = templateNode.connects[type];
 				var callback = /^[a-zA-Z0-9_]+$/.test(handler) ?
 					"this." + handler + ".bind(this)" :		// standard case, connecting to a method in the widget
 					"function(event){" + handler + "}";	// connect to anon func, ex: on-click="g++;". used by dapp.
-				buildText.push("on(" + nodeName + ", '" + type + "', " + callback + ");");
+				buildText.push("this.on('" + type + "', " + callback + ", " + nodeName  + ");");
 			}
 
 			// Create descendant Elements and text nodes
@@ -206,25 +213,17 @@ define(["./register"], function (register) {
 		 * Code assumes that the root node already exists as "this".
 		 * 
 		 * @param {Object} tree
-		 * @returns {string}
+		 * @returns {string} Javascript code for function.
 		 * @private
 		 */
 		codegen: function (tree) {
-			// Code to build the initial DOM
-			var buildText = [
-				"var widget = this, doc = this.ownerDocument, register = this.register;",
-				"function on(node, type, callback){ widget.on(type, callback, node); }"
-			];
-
-			// Code to observe changes in the widget and update the DOM
-			var observeText = [
-				"this.observe(function(props){"
-			];
+			var buildText = [],	// code to build the initial DOM
+				observeText = [];	// code to update the DOM when widget properties change
 
 			this.generateNodeCode("this", tree, buildText, observeText);
 
-			return buildText.concat(observeText).join("\n") +
-				"\n});\n";
+			return buildText.join("\n") +
+				["\nthis.observe(function(props){"].concat(observeText).join("\n\t") + "\n});\n";
 		},
 
 		/**
@@ -239,7 +238,7 @@ define(["./register"], function (register) {
 			var text = this.codegen(tree);
 
 			/* jshint evil:true */
-			return new Function(text);
+			return new Function("document", "register", text);
 		}
 	};
 });

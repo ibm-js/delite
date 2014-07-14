@@ -69,15 +69,6 @@ define([
 		_started: false,
 
 		/**
-		 * Convenience pointer to register class.   Used by buildRendering() functions produced from
-		 * delite/handlebars! / delite/template.
-		 * @member {module:delite/register}
-		 * @protected
-		 */
-		register: register,
-
-
-		/**
 		 * Unique id for this widget, separate from id attribute (which may or may not be set).
 		 * Useful when widget creates subnodes that need unique id's.
 		 * @member {number}
@@ -101,7 +92,7 @@ define([
 		 */
 		createdCallback: function () {
 			this.preCreate();
-			this.buildRendering();
+			this.buildRendering(this.ownerDocument, register);
 			this.postCreate();
 		},
 
@@ -172,6 +163,9 @@ define([
 		/**
 		 * Construct the UI for this widget, filling in subnodes and/or text inside of this.
 		 * Most widgets will leverage delite/handlebars! to implement this method.
+		 * @param {Document} Reference to `this.ownerDocument`.
+		 * @param {Object} Reference to `delite/register`.
+		 * @returns {Function} A function to update the rendering when widget properties change (optional).
 		 * @protected
 		 */
 		buildRendering: function () {
@@ -342,7 +336,7 @@ define([
 		 * Called when the widget becomes "active" because
 		 * it or a widget inside of it either has focus, or has recently
 		 * been clicked.
-		 * @param {event} evt - A focus event.
+		 * @param {Event} evt - A focus event.
 		 */
 		onFocus: function () {
 			// TODO: we should be firing an event, not calling a callback method?
