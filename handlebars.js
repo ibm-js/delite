@@ -1,9 +1,13 @@
 /**
- * Plugin that loads a Handlebars template from a specified MID, and returns a function to
- * generate DOM corresponding to that template, and set up handlers
- * to modify the generated DOM as widget properties change.  The returned function is meant
- * to run in the context of the widget, so that properties are available through `this` and
- * so is an `observe()` method to monitor changes to those properties.
+ * Plugin that loads a handlebars template from a specified MID and returns a function to
+ * generate DOM corresponding to that template.
+ *
+ * When that function is run, it returns another function,
+ * meant to be run when the widget properties change.  The returned function will update the
+ * DOM corresponding to the widget property changes.
+ *
+ * Both functions are meant
+ * to be run in the context of the widget, so that properties are available through `this`.
  *
  * Could also theoretically be used by a build-tool to precompile templates, assuming you loaded
  * [jsdom](https://github.com/tmpvar/jsdom) to provide methods like `document.createElement()`.

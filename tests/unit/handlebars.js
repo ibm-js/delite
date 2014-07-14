@@ -416,6 +416,40 @@ define([
 			return d;
 		},
 
+		// Make sure that .deliver() updates the widget synchronously, including updating widgets in the template,
+		// and make sure that computeProperties() is called before refreshRendering().
+		deliver: function () {
+			register("handlebars-text", [HTMLElement, Widget], {
+				text: "",
+				buildRendering: handlebars.compile("<template>{{text}}</template>")
+			});
+
+			var ComplexWidget = register("handlebars-equation", [HTMLElement, Widget], {
+				a: 0,
+				b: 0,
+				sum: 0,
+				computeProperties: function () {
+					this.sum = this.a + this.b;
+				},
+				buildRendering: handlebars.compile(
+						"<template>" +
+							"<handlebars-text text='{{a}}'></handlebars-text> + " +
+							"<handlebars-text text='{{b}}'></handlebars-text> = " +
+							"<handlebars-text text='{{sum}}'></handlebars-text>" +
+						"</template>"
+				)
+			});
+
+			var myComplexWidget = new ComplexWidget();
+			myComplexWidget.placeAt(container);
+			myComplexWidget.startup();
+
+			myComplexWidget.a = 1;
+			myComplexWidget.b = 1;
+			myComplexWidget.deliver();
+			assert.strictEqual(myComplexWidget.textContent, "1 + 1 = 2");
+		},
+
 		teardown: function () {
 			container.parentNode.removeChild(container);
 		}

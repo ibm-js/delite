@@ -92,8 +92,15 @@ define([
 		 */
 		createdCallback: function () {
 			this.preCreate();
-			this.buildRendering(this.ownerDocument, register);
+			this._refreshRenderingCallback = this.buildRendering(this.ownerDocument, register);
 			this.postCreate();
+		},
+
+		// Override Invalidating#refreshRendering() to execute the function returned by buildRendering
+		refreshRendering: function (props) {
+			if (this._refreshRenderingCallback) {
+				this._refreshRenderingCallback(props);
+			}
 		},
 
 		/**
