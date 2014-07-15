@@ -13,6 +13,7 @@ define(["intern!object",
 		},
 
 		"default tab indices": function () {
+			this.timeout = 120000;
 			if (/safari|iphone/.test(this.remote.environmentType.browserName)) {
 				// SafariDriver doesn't support tabbing, see https://code.google.com/p/selenium/issues/detail?id=5403
 				return;
@@ -39,6 +40,7 @@ define(["intern!object",
 		},
 
 		"specified tab indices": function () {
+			this.timeout = 120000;
 			if (/safari|iphone/.test(this.remote.environmentType.browserName)) {
 				// SafariDriver doesn't support tabbing, see https://code.google.com/p/selenium/issues/detail?id=5403
 				return;
@@ -65,6 +67,7 @@ define(["intern!object",
 		},
 
 		"changed tab indices": function () {
+			this.timeout = 120000;
 			if (/safari|iphone/.test(this.remote.environmentType.browserName)) {
 				// SafariDriver doesn't support tabbing, see https://code.google.com/p/selenium/issues/detail?id=5403
 				return;

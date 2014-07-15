@@ -21,6 +21,7 @@ define(["intern!object",
 		},
 
 		"open popup on the edge of another widget": function () {
+			this.timeout = 120000;
 			return this.remote
 				.elementById("choiceDropDownButton")
 					.click()
@@ -41,6 +42,7 @@ define(["intern!object",
 		},
 
 		"close popup on the edge of another widget": function () {
+			this.timeout = 120000;
 			return this.remote
 				.elementById("stub-for-blurring")
 					.click()
@@ -55,6 +57,7 @@ define(["intern!object",
 
 		nested: {
 			"open around": function () {
+				this.timeout = 120000;
 				return this.remote
 					.elementById("showNestedMenuButton")
 						.click()
@@ -68,6 +71,7 @@ define(["intern!object",
 			},
 
 			open: function () {
+				this.timeout = 120000;
 				return this.remote
 					.execute("nestedOpener._openPopup(nestedChoice1)")
 					.wait(500)
@@ -79,6 +83,7 @@ define(["intern!object",
 			},
 
 			close: function () {
+				this.timeout = 120000;
 				return this.remote
 					.elementById("stub-for-blurring")
 						.click()
@@ -98,6 +103,7 @@ define(["intern!object",
 		},
 
 		"no hidden tab stops": function () {
+			this.timeout = 120000;
 			return this.remote
 				.execute("return tabOrder()[0].id").then(function (value) {
 					assert.strictEqual(value, "inputAtStart");
@@ -108,6 +114,7 @@ define(["intern!object",
 		},
 
 		"x/y placement": function () {
+			this.timeout = 120000;
 			return this.remote
 				.elementById("openAt1015Button")
 					.click()
@@ -123,6 +130,7 @@ define(["intern!object",
 
 		"orient callback": {
 			setup: function () {
+				this.timeout = 120000;
 				return this.remote
 					.elementById("tooltipDropDownButton")
 						.click()
@@ -133,6 +141,7 @@ define(["intern!object",
 			},
 
 			around: function () {
+				this.timeout = 120000;
 				return this.remote
 					.execute("return tooltipGlobal.orientCalls.length").then(function (value) {
 						assert.notStrictEqual(value, 0, "tooltipGlobal.orientCalls.length");
@@ -149,6 +158,7 @@ define(["intern!object",
 			},
 
 			at: function () {
+				this.timeout = 120000;
 				return this.remote
 					.execute("tooltipGlobal.orientCalls = []; delete tooltipGlobal.onOpenArg;")
 					.elementById("openTooltipAt1015Button")
@@ -176,6 +186,7 @@ define(["intern!object",
 
 		scrollbar: {
 			at: function () {
+				this.timeout = 120000;
 				return this.remote
 					.elementById("openLotsOfChoicesPopupButton")
 						.click()
@@ -194,6 +205,7 @@ define(["intern!object",
 			},
 
 			around: function () {
+				this.timeout = 120000;
 				return this.remote
 					.elementById("tallChoiceDropDownButton")
 						.click()
