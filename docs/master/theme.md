@@ -1,3 +1,8 @@
+---
+layout: default
+title: delite/theme!
+---
+
 # delite/theme!
 
 Delite/theme! is a high level plugin for loading CSS files based on the theme of the page.
@@ -19,8 +24,9 @@ theme={theme widget} to force a specific theme through the browser
 URL input.
 
 The available theme ids are:
- - bootstrap
- - holodark (theme introduced in Android 3.0)
- - ios
+
+- bootstrap
+- holodark (theme introduced in Android 3.0)
+- ios
 
 The theme names are case-sensitive.

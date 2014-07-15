@@ -22,20 +22,26 @@ Before proceeding, checkout [setup page](setup.html) on how to setup a project u
 ## Using Selection
 
 On a widget extending `delite/Selection` one can choose several selection modes through the `selectionMode` property:
-  * `"multiple"` which means the application user can select interactively several items at the same time
+
+  * `"multiple"` which means the application user can select interactively several items at the time
   * `"single"` which means the application user can only select interactively a single item at the time, this is the default.
+  * `"radio"` which means the application user can only select interactively a single item at the time. Once an item has 
+  been selected, interactively selecting another item deselects the previously selected item, and the user 
+  cannot deselect the selected item. 
   * `"none"` which means the application user can not interactively select an item
+
 Note that this mode does not impact selection by the `selectedItem(s)` APIs which are always available and always allow 
 several items to be selected. If you want to restrict selection by those APIs you have to make sure code calling the 
 selection method is doing that accordingly to the `selectionMode` or to specialize `delite/Selection` for that purpose.
 
 Once a selection mode has been set there are three ways to modify the selection on the instance:
  
-  * setting the `selectedItem` property to the an item to select it and only it
+  * setting the `selectedItem` property to an item to select it and only it
   * setting the `selectedItems` to an array of items to select all those items and on only them
   * use the `setSelected()` function to toggle on or off the selection state of a particular item
 
 You can know the selection state by querying either:
+
   * the `selectedItem` property to get the last selected item
   * the `selectedItems` property to get all the selected items
 
@@ -47,7 +53,7 @@ In order for a widget to leverage `delite/Selection` it must extend it and imple
 
 ```js
 require(["delite/register", "delite/Selection", "delite/StoreMap"/*, ...*/], 
-  function (register, Widget, Selection/*, ...*/) {
+  function (register, Widget, Selection, StoreMap/*, ...*/) {
   return register("my-widget", [HTMElement, Selection, StoreMap], {
     labelAttr: "label",
     preCreate: function () {
@@ -69,15 +75,15 @@ require(["delite/register", "delite/Selection", "delite/StoreMap"/*, ...*/],
     getIdentity: function (renderItem) {
       return renderItem.id;
     },
-    updateRenders: function (renderItems) {
+    updateRenderers: function (renderItems) {
       for (var i = 0; i < renderItems.length; i++) {
-        var child = this._childHash[items[i].id];
-    	var selected = this.isSelected(items[i]);
-      	if (selected) {
-      	  child.setAttribute("class", "selected");
-      	} else {
-      	  child.setAttribute("class", "");
-      	}
+        var child = this._childHash[renderItems[i].id];
+        var selected = this.isSelected(renderItems[i]);
+        if (selected) {
+          child.setAttribute("class", "selected");
+        } else {
+          child.setAttribute("class", "");
+        }
       }    
     }
   });

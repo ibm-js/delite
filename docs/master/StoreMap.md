@@ -48,6 +48,7 @@ The mapping operation allows to easily go from the store item to the render item
 
 In order to configure the mapping of a `name` property to be present on each render item, the class using this
 mixin must declare: 
+
   * either a `nameAttr` property in which case the mapping is looking into the store item property specified by the value of `nameAttr`
   * or a `nameFunc` property function in which case the mapping is delegated to the `nameFunc` function.
 
@@ -153,6 +154,7 @@ Notes:
 As the documentation states mapping property are meant to be defined on the widget class using the mixin. However one can 
 also directly add the mapping properties directly to an instance without defining them on the class but in this case 
 there are two limitations:
+
   * the property must be added before the widget is started
   * if the property is added in the markup then only fully lower case properties are supported (e.g. foobar not fooBar)
 

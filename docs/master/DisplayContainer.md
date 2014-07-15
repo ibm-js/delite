@@ -24,6 +24,7 @@ the `show()` function. Conversely one can make sure a particular child is hidden
 default the display container will just show or hide the child. However subclasses can implement particular transition
 effects in order to transition from one visibility state to another. For this reason both functions managing the visibility
 return a `Promise` that will be resolved when the transition is finished. Also both accept the same parameters:
+  
   * `dest` : Widget/HTMLElement or id that points to the child the function must show or hide
   * `params` : Optional params to customize the transition, interpreted by subclasses.
   
@@ -117,5 +118,6 @@ require(["delite/register", "delite/DisplayContainer", "dojo/request"/*, ...*/],
 ```
 
 In order to notify `delite/DisplayContainer` that the controller is handling child loading, the controller must:
+
   * call `preventDefault()` on the `delite-display-load` event.
   * resolve the event's `loadDeferred` deferred when it has finished loading the child

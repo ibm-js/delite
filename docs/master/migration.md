@@ -1,3 +1,8 @@
+---
+layout: default
+title: delite/migration
+---
+
 # Migrating from dijit and dojox/mobile to delite
 
 ## Notes for applications

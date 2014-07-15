@@ -14,10 +14,10 @@ This is particularly useful for a widget that needs to create items (or render i
 way of doing things.
 
 The store is queried each time one of the following properties is set on the instance:
+
   * store: references a `dstore/api/Store` implementation
   * query: a query object to be passed to the store `filter()` function
-  * preProcessStore: a `Function` that allows one to process the store to sort or slice it once the filter query has been run but before the optional observation tracking is started.
-  * postProcessStore: a `Function` that allows one to process the store to sort or slice it once the filter query has been run and after the optional observation tracking has been done.
+  * processQueryResult: a `Function` that allows one to process the result of the store query to sort or slice it once the filter query has been run but before the optional observation tracking is started.
 
    
 When the store is queried, render items are created using the `itemToRenderItem()` function which by default just returns the
@@ -57,6 +57,7 @@ Once created the render items array is passed into the `initItems()` function an
 
 In addition to this, if the store is an obsvervable store (`dstore/Observable`) the changes to the data in the store will
 be tracked and the following functions will be called on each type of modification:
+
   * `itemRemoved` if an item has been removed
   * `itemAdded` if an item has been added
   * `itemUpdated` if an item has been updated (its properties have changed)

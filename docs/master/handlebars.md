@@ -1,15 +1,20 @@
+---
+layout: default
+title: delite/handlebars
+---
+
 # delite/handlebars
 
 `delite/handlebars` supports reactive templates,
 so a template like below would automatically adjust the
 DOM as the widget's `iconClass` and `label` properties were changed:
 
-	<button>
-		<span class="d-reset {{iconClass}}"></span>
-		{{#if showLabel}}
-			{{label}}
-		{{/if}}
-	</button>
+```html
+<button>
+	<span class="d-reset {{iconClass}}"></span>
+	{{label}}
+</button>
+```
 
 
 Note that the binding is one-directional.  Changes to DOM node values, such as when a user types
@@ -20,69 +25,93 @@ The delite/handlebars! plugin returns a function to operate in the widget's cont
 for widgets to leverage the template engine, you put your template in a separate file,
 and then define the widget like:
 
-	define([..., "delite/handlebars!./templates/MyTemplate.html"], function(..., renderFunc){
-		...
-		buildRendering: renderFunc,
-		...
-	}
+```js
+define([..., "delite/handlebars!./templates/MyTemplate.html"], function(..., renderFunc){
+	...
+	buildRendering: renderFunc,
+	...
+}
+```
 
-Handlebars can also be used as a plain AMD module, via the `compile()` method:
+## Substitution variables
 
-	define([..., "delite/handlebars"], function(..., handlebars){
-		...
-		buildRendering: handlebars.compile(
-			'<span class="d-reset {{iconClass}}">{{label}}</span>'
-		),
-		...
-	}
+Substitution variables are supported in attributes (ex: `class="d-reset {{iconClass}}"`)
+and as Element children (ex: `<span>Hello {{name}}</span>`).
 
-## Supported Handlebars constructs
+Special characters are escaped.  For example, if `name` is `<b>Bob</b>`,
+the above template will render as `Hello <b>Bob</b>` not as "Hello **Bob**".
+In other words, there's no support for `{{{name}}}`, only support for `{{name}}`.
 
-Supported constructs:
+Paths like `{{foo.bar}}` can be used in templates, but are not recommended.
+The limitations of using paths are:
 
-1. `{{text}}` - substitution variables in DOMNode attributes (ex: `class="d-reset {{iconClass}}"`)
-   and as a DOMNode child (ex: `<span>Hello {{name}}</span>`.
-2. `{{#if condition}} ... {{/if}}` - However, no plans to support `{{else}}`, and no plans for the IF blocks to be
-   reactive.
+1. The widget will only re-render when `foo` itself is updated, not when just `foo.bar` is updated.
+   You can currently trick the widget into thinking that `foo` was updated by doing `this.foo = this.foo`;
+   in the future the API to do this will be changed to `this.notifyCurrentValue("foo")`.
+2. When a top level property (`foo`) is updated, any part of the template
+   referencing `foo` (for example, `{{foo.bar}}`) will cause a DOM update, even if the value of `foo.bar`
+   itself hasn't changed. This may cause unnecessary browser redraw/recalculation, for example due to
+   unnecessarily resetting a node's class.
+3. If the last property in a path is undefined or null, an empty string is substituted.  For example, if
+   `foo.bar.zaz` is undefined, then `class="{{foo.bar.zaz}}"` becomes `class=""`.  However, this doesn't
+   work if a parent property is null/undefined, i.e. if `foo.bar` is undefined.
 
-May support in the future:
-
-1. `{{#each array}} ... {{/each}}` - However, the `{{#each}}` must be the only child of its parent node, for example
-   `<ul> {{#each array}} <li>name {{/each}} </ul>`.   Also, no plans to support `{{else}}`.  Reactive support for
-   `{{#each}}` is complex as the array data could be changed like `this.array = newArray` or `this.array.push(...)`
-   or `this.array[1].name = "Bob"`.
-
-Unsupported constructs:
-
-1. `{{{HTML}}}` - We only support insertion of plain text like `{{text}}`.
-2. Paths like `{{foo.bar}}`
-3. Helpers like `{{fullName author}}`
-
-Partly these are unsupported because they are difficult for reactive templates,
-and partly to keep the code size of the Handlebars and template engine minimal.
 
 ## Widgets in templates
 
-A template can contain widgets in addition to plain DOM nodes.  In this case, the main widget
-class is responsible for loading the supporting widgets before compiling the template.
-Therefore, rather than using the plugin syntax, it must use the `compile()` method, for example:
+A template can contain widgets in addition to plain DOM nodes.  In this case, the template
+must list the required AMD modules via the `requires` attribute on the root node:
 
-	define([..., "delite/handlebars", "acme/SupportingWidget"], function(..., handlebars){
-		...
-		buildRendering: handlebars.compile(
-			'<supporting-widget class="d-reset {{iconClass}}">{{label}}</supporting-widget>'
-		),
-		...
-	}
+```html
+<template requires="deliteful/Button, deliteful/ProgressIndicator">
+	<d-button>{{buttonText}}</d-button>
+	<d-progress-indicator value="{{piValue}}"></d-progress-indicator>
+</template>
+```
 
-Note that the template text can still be put into a file, and the file loaded with the text! plugin:
+This technique can also be used to load other required modules, such as `delite/a11yclick`.
 
-	define([..., "delite/handlebars", "text!./templates/myTemplate.html", "acme/SupportingWidget"],
-			function(..., handlebars, text){
-		...
-		buildRendering: handlebars.compile(text),
-		...
-	}
+## Hiding and showing nodes in a template
+
+Although we don't support `{{#if}}`, you can show/hide nodes in a template like:
+
+```html
+<template>
+	<div d-hidden="{{myHideFlag}}">...</div>
+	<div d-shown="{{myShowFlag}}">...</div>
+</template>
+```
+
+Note that this requires including the common CSS defined by the themes (coming from themes/common/global.less),
+so your widget must reference the `delite/theme!` plugin:
+
+```js
+define([..., "delite/theme!"], function(...) { ...
+```
+
+## Attach points and events
+
+Special attribute names allow setting up references to nodes in the template,
+and setting up event handlers on those nodes.
+
+A template like:
+
+```html
+<template>
+	<button attach-point="{{focusNode}}" on-click="{{clickHandler}}">click me</button>
+</template>
+```
+
+will set `this.focusNode` to point to the `<button>`, and setup a listener for the "click" event to call
+`this.clickHandler`.
+
+## Unsupported constructs
+
+1. Helpers like `{{fullName author}}`. But plan to support helpers in the future.
+2. `{{#if}}` and `{{#each}}`
+
+Partly these are unsupported because they are difficult for reactive templates,
+and partly to keep the code size of the Handlebars and template engine minimal.
 
 ## Implementation details
 
