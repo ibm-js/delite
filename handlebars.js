@@ -24,9 +24,9 @@
  * Usage is typically like:
  * 
  * ```js
- * define([..., "delite/handlebars!./templates/MyTemplate.html"], function(..., renderFunc){
+ * define([..., "delite/handlebars!./templates/MyTemplate.html"], function(..., template){
  *     ...
- *     buildRendering: renderFunc,
+ *     template: template,
  *     ...
  * });
  * ```

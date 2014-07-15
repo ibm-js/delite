@@ -25,7 +25,7 @@ define([
 			var TestButton = register("handlebars-button", [HTMLButtonElement, Widget], {
 				iconClass: "originalClass",
 				label: "original label",
-				buildRendering: buttonHBTmpl
+				template: buttonHBTmpl
 			});
 			myButton = new TestButton();
 			assert.strictEqual(myButton.tagName.toLowerCase(), "button", "root node exists");
@@ -57,7 +57,7 @@ define([
 			var TestHtml = register("handlebars-attach-point", [HTMLElement, Widget], {
 				// We support attach-point for most people, and data-attach-point for people that want to use
 				// an HTML5 validator.
-				buildRendering: handlebars.compile(
+				template: handlebars.compile(
 						"<template attach-point='root,root2'>" +
 						"<button data-attach-point='myButton, myButton2'>hi</button>" +
 						"</template>"
@@ -77,7 +77,7 @@ define([
 				inputClass: "originalClass",	// attribute called "class" but property called "className"
 				inputValue: "original value",	// must be set as property
 				role: "originalRole",			// must be set as attribute
-				buildRendering: handlebars.compile(
+				template: handlebars.compile(
 						"<template><input class='{{inputClass}}' value='{{inputValue}}' " +
 						"role='{{role}}'/></template>"
 				)
@@ -112,7 +112,7 @@ define([
 				foo: 0,
 				size: 0,
 				multiple: false,
-				buildRendering: handlebars.compile(
+				template: handlebars.compile(
 						"<template><select data-attach-point='select' foo='{{foo}}' " +
 						"size='{{size}}' multiple='{{multiple}}'></select></template>"
 				)
@@ -140,7 +140,7 @@ define([
 			// Test that special characters are escaped.  This is actually testing template.js.
 			var TestList = register("handlebars-ul", [HTMLUListElement, Widget], {
 				label: "bill'\\",
-				buildRendering: handlebars.compile(
+				template: handlebars.compile(
 					"<ul><li foo=\"a.b('c,d')\" bar='\\\"hello\"'>\"\\{{label}}\n\twas \n\there'</li></ul>")
 			});
 			var myList = new TestList();
@@ -154,7 +154,7 @@ define([
 		"attach-event-widget-callback": function () {
 			// Test for syntax connecting to a method in the widget: on-click='{{clickHandler}}'
 			var TestListener = register("handlebars-attach-events", [HTMLElement, Widget], {
-				buildRendering: handlebars.compile(
+				template: handlebars.compile(
 					"<template><span on-click='{{clickHandler}}'>click me</span></template>"),
 				clicks: 0,
 				clickHandler: function () {
@@ -172,7 +172,7 @@ define([
 			/* global g:true */
 			g = 1;
 			var TestClick = register("handlebars-events", [HTMLElement, Widget], {
-				buildRendering: handlebars.compile(
+				template: handlebars.compile(
 					"<template><span on-click='g = 2;'>click me</span></template>")
 			});
 			var myClick = new TestClick();
@@ -184,7 +184,7 @@ define([
 		"widgets in templates": function () {
 			register("handlebars-heading", [HTMLElement, Widget], {
 				text: "",
-				buildRendering: handlebars.compile("<handlebars-heading>{{text}}</handlebars-heading>")
+				template: handlebars.compile("<handlebars-heading>{{text}}</handlebars-heading>")
 			});
 
 			// This widget uses sub-widgets handlebars-button (defined in first test) and also handlebars-heading.
@@ -192,7 +192,7 @@ define([
 				heading: "original heading",
 				content: "original content",
 				buttonLabel: "original button label",
-				buildRendering: handlebars.compile(
+				template: handlebars.compile(
 					"<handlebars-widgets-in-template>" +
 						"<handlebars-heading text='{{heading}}'></handlebars-heading>" +
 						"<span>{{content}}</span>" +
@@ -235,7 +235,7 @@ define([
 			// This makes sure that the requires attribute (in the top level <template> node)
 			// will pull in the specified modules.
 			var CompoundWidget = register("test-compound-widget", [HTMLElement, Widget], {
-				buildRendering: compoundTmpl
+				template: compoundTmpl
 			});
 
 			var myCompoundWidget = new CompoundWidget(),
@@ -249,7 +249,7 @@ define([
 			// Testing that parsing still works if ending tags are missing
 
 			var TestHtml = register("handlebars-html", [HTMLUListElement, Widget], {
-				buildRendering: handlebars.compile("<ul><li>1</li><li><input></ul>")
+				template: handlebars.compile("<ul><li>1</li><li><input></ul>")
 			});
 
 			var node = new TestHtml();
@@ -274,7 +274,7 @@ define([
 			//		4. attribute names are case sensitive
 
 			var TestSvg = register("handlebars-svg", [HTMLElement, Widget], {
-				buildRendering: svgTmpl
+				template: svgTmpl
 			});
 
 			var node = new TestSvg();
@@ -293,7 +293,7 @@ define([
 
 		whitespace: function () {
 			var WhiteSpace = register("handlebars-whitespace-one", [HTMLElement, Widget], {
-				buildRendering: handlebars.compile(
+				template: handlebars.compile(
 					"<template>\n<span>hello</span> <span>world</span>\n</template>"
 				)
 			});
@@ -301,7 +301,7 @@ define([
 			assert.strictEqual(ws.childNodes.length, 3, "middle whitespace preserved, start/end whitespace deleted");
 
 			var WhiteSpaceNbsp = register("handlebars-whitespace-two", [HTMLElement, Widget], {
-				buildRendering: handlebars.compile(
+				template: handlebars.compile(
 					"<template>&nbsp;<span>hello</span> <span>world</span>&nbsp;</template>"
 				)
 			});
@@ -309,7 +309,7 @@ define([
 			assert.strictEqual(wsn.childNodes.length, 5, "all &nbsp preserved");
 
 			var WhiteSpaceComments = register("handlebars-whitespace-three", [HTMLElement, Widget], {
-				buildRendering: handlebars.compile(
+				template: handlebars.compile(
 					"<template>\n<!--stray comment-->\n<span>hello</span> <span>world</span>\n</template>"
 				)
 			});
@@ -317,7 +317,7 @@ define([
 			assert.strictEqual(wsc.childNodes.length, 3, "comments don't break trimming");
 
 			var WhiteSpacePre = register("handlebars-whitespace-pre", [HTMLElement, Widget], {
-				buildRendering: handlebars.compile(
+				template: handlebars.compile(
 					"<template><pre>\thello\n\tworld </pre></template>"
 				)
 			});
@@ -327,7 +327,7 @@ define([
 
 		"self closing tags": function () {
 			var SelfClosing = register("handlebars-self-closing", [HTMLElement, Widget], {
-				buildRendering: handlebars.compile(
+				template: handlebars.compile(
 					"<template>Hello <br/><input>world</template>"
 				)
 			});
@@ -345,7 +345,7 @@ define([
 					first: "Bob"
 				},
 
-				buildRendering: handlebars.compile(
+				template: handlebars.compile(
 					"<span class={{item.className}}>Hello {{item.first}} {{item.last}}!</span>")
 			});
 
@@ -379,7 +379,7 @@ define([
 		"d-hidden": function () {
 			var TestNested = register("handlebars-hide", [HTMLElement, Widget], {
 				hideSpan: true,
-				buildRendering: handlebars.compile("<span d-hidden={{hideSpan}}>hello world</span>")
+				template: handlebars.compile("<span d-hidden={{hideSpan}}>hello world</span>")
 			});
 
 			var node = new TestNested();
@@ -399,7 +399,7 @@ define([
 		"d-shown": function () {
 			var TestNested = register("handlebars-show", [HTMLElement, Widget], {
 				showSpan: true,
-				buildRendering: handlebars.compile("<span d-shown={{showSpan}}>hello world</span>")
+				template: handlebars.compile("<span d-shown={{showSpan}}>hello world</span>")
 			});
 
 			var node = new TestNested();
@@ -421,7 +421,7 @@ define([
 		deliver: function () {
 			register("handlebars-text", [HTMLElement, Widget], {
 				text: "",
-				buildRendering: handlebars.compile("<template>{{text}}</template>")
+				template: handlebars.compile("<template>{{text}}</template>")
 			});
 
 			var ComplexWidget = register("handlebars-equation", [HTMLElement, Widget], {
@@ -431,7 +431,7 @@ define([
 				computeProperties: function () {
 					this.sum = this.a + this.b;
 				},
-				buildRendering: handlebars.compile(
+				template: handlebars.compile(
 						"<template>" +
 							"<handlebars-text text='{{a}}'></handlebars-text> + " +
 							"<handlebars-text text='{{b}}'></handlebars-text> = " +
