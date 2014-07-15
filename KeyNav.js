@@ -242,10 +242,10 @@ define([
 			}
 
 			// When the container gets focus by being tabbed into, or a descendant gets focus by being clicked,
-			// set the container's tabIndex to -1 (don't remove as that breaks Safari 4) so that tab or shift-tab
+			// remove the container's tabIndex so that tab or shift-tab
 			// will go to the fields after/before the container, rather than the container itself
 			this._savedTabIndex = this.tabIndex;
-			this.setAttribute("tabindex", "-1");
+			this.removeAttribute("tabindex");
 
 			this.focus();
 		},
@@ -282,7 +282,7 @@ define([
 				// If container still has tabIndex setting then remove it; instead we'll set tabIndex on child
 				if (!("_savedTabIndex" in this)) {
 					this._savedTabIndex = this.tabIndex;
-					this.setAttribute("tabindex", "-1");
+					this.removeAttribute("tabindex");
 				}
 
 				// mark that the new node is the currently selected one
