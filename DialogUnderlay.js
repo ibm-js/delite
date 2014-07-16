@@ -4,7 +4,7 @@ define([
 	"./Widget",
 	"./BackgroundIframe",
 	"./Viewport",
-	"./theme!./DialogUnderlay/themes/{{theme}}/DialogUnderlay_css"
+	"./theme!./DialogUnderlay/themes/{{theme}}/DialogUnderlay.css"
 ], function (register, Widget, BackgroundIframe, Viewport) {
 
 	// TODO: having show() methods on the instance and also on the module is confusing,
