@@ -63,14 +63,9 @@ for (i = 0; (script = scripts[i]); i++) {
 /* global require:true */
 require = {
 	baseUrl: testDir + "../../",
-	// TODO: when all tests converted from DOH to intern, remove this packages map
 	packages: [
-		{name: "dcl", location: "dcl"},
-		{name: "delite", location: "delite"},
-		{name: "doh", location: "util/doh"},
-		{name: "dojo", location: "dojo"},
-		{name: "requirejs-domready", location: "requirejs-domready"},
-		{name: "requirejs-dplugins", location: "requirejs-dplugins"}
+		// TODO: when all tests converted from doh to intern, remove entry for doh
+		{name: "doh", location: "util/doh"}
 	],
 	locale: locale || "en-us",
 	config: {
