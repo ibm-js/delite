@@ -1,0 +1,15 @@
+.d-scrollable {
+  display: block;
+  /* enable momentum: */
+  -webkit-overflow-scrolling: touch;
+  /* enable hardware acceleration: */
+  -webkit-transform: translate3d(0, 0, 0);
+}
+.d-scrollable-h {
+  /* enable horizontal scrolling: */
+  overflow-x: auto;
+}
+.d-scrollable-v {
+  /* enable vertical scrolling: */
+  overflow-y: auto;
+}
