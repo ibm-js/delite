@@ -5,7 +5,7 @@ title: delite/StoreMap
 
 # delite/StoreMap
 
-`delite/StoreMap` is a mixin that can be mixed into a class inheriting from [`delite/Widget`](Widget.html) or `dojo/Evented`  
+`delite/StoreMap` is a mixin that can be mixed into a class inheriting from [`delite/Widget`](Widget.html) or `decor/Evented`
 in order to query a store object from the [dstore](https://github.com/SitePen/dstore/blob/master/README.html) project, 
 create render items for this widget based on the store items and perform some automatic mapping between the properties 
 on the store items and the properties on the render items.

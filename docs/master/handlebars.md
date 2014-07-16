@@ -26,9 +26,9 @@ for widgets to leverage the template engine, you put your template in a separate
 and then define the widget like:
 
 ```js
-define([..., "delite/handlebars!./templates/MyTemplate.html"], function(..., renderFunc){
+define([..., "delite/handlebars!./templates/MyTemplate.html"], function(..., template){
 	...
-	buildRendering: renderFunc,
+	template: template,
 	...
 }
 ```
