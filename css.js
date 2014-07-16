@@ -1,98 +1,229 @@
 /**
  * CSS loading plugin for widgets.
  *
- * This plugin will load the specified CSS files, or alternately AMD modules containing CSS,
- * and insert their content into the document in the specified order.
+ * This plugin will load and wait for a css file. This can be handy to load the css
+ * specific to a widget.
  *
- * The CSS files or modules are specified as a comma separated list, for example
- * `delite/css!../foo.css,../bar.css` or for modules, `delite/css!../foo,../bar`.
+ * This plugin uses the link load event and a work-around on old webkit browsers.
+ * The work-around watches a stylesheet until its rules are
+ * available (not null or undefined).
  *
- * Similar to `text!`, this plugin won't resolve until it has completed loading the specified CSS.
+ * This plugin will return the path of the inserted css file relative to requirejs baseUrl.
  *
- * This loader has the following limitations:
+ * @example:
+ *      To load the css file `myproj/comp.css`:
+ *      ```
+ *      require(["delite/css!myproj/comp.css"], function (){
+ *          // Code placed here will wait for myproj/comp.css before running.
+ *      });
+ *      ```
  *
- * - The plugin will not wait for `@import` statements to complete before resolving.
- * Imported CSS files should not have `@import` statements, but rather
- * all CSS files needed should be listed in the widget's `define([...], ...)` dependency list.
- *
- * - Loading plain CSS files won't work cross domain, unless you set Access-Control-Allow-Origin
- * in the HTTP response header.  Instead you should load AMD modules containing CSS.
- *
- * For a more full featured loader one can use:
- *
- * - [Xstyle's CSS loader](https:* github.com/kriszyp/xstyle/blob/master/core/load-css.js)
- * - [CURL's](https:* github.com/cujojs/curl/blob/master/src/curl/plugin/css.js)
- * - [requirejs-css-plugin](https:* github.com/tyt2y3/requirejs-css-plugin)
- * - [requirecss](https:* github.com/guybedford/require-css)
+ *      Or as a widget dependency:
+ *      ```
+ *      define(["delite/css!myproj/comp.css"], function (){
+ *          // My widget factory
+ *      });
+ *      ```
  *
  * @module delite/css
- **/
-define([], function () {
+ */
+
+define([
+	"requirejs-dplugins/has",
+	"dojo/Deferred",
+	"module"
+], function (has, Deferred, module) {
 	"use strict";
 
-	var doc = document,
-		head = doc.head || doc.getElementsByTagName("head")[0],
-		lastInsertedStylesheet,
-		sheets = {};		// map of which stylesheets have already been inserted
+	has.add("event-link-onload-api", function (global) {
+		var wk = global.navigator.userAgent.match(/AppleWebKit\/([\d.]+)/);
+		return !wk || parseInt(wk[1], 10) > 535;
+	});
+	var cache = {},
+		lastInsertedLink;
 
 	/**
-	 * Inserts the specified CSS into the document, after any CSS previously inserted
-	 * by this function, but before any user-defined CSS.  This lets the app's stylesheets
-	 * override the widget's default styling.
-	 * @param {string} css
-	 * @returns {HTMLStyleElement}
+	 * Return a promise that resolves when the specified link has finished loading.
+	 * @param {HTMLLinkElement} link - The link element to be notified for.
+	 * @returns {module:dojo/promise/Promise} - A promise.
 	 */
-	function insertCss(css) {
-		// Creates a new stylesheet on each call.  Could alternately just add CSS to the old stylesheet.
-		// Maybe the current implementation is faster.
-		var styleSheet = doc.createElement("style");
-		styleSheet.setAttribute("type", "text/css");
-		styleSheet.appendChild(doc.createTextNode(css));
-		head.insertBefore(styleSheet, lastInsertedStylesheet ? lastInsertedStylesheet.nextSibling : head.firstChild);
-		lastInsertedStylesheet = styleSheet;
-		return styleSheet;
-	}
-
-	return {
-		/**
-		 * Load and install the specified CSS files, in specified order, and then call onload().
-		 * @param {string} mids - Absolute path to the resource.
-		 * @param {Function} require - AMD's require() method.
-		 * @param {Function} onload - Callback function which will be called, when the loading finishes
-		 *     and the stylesheet has been inserted.
-		 * @private
-		 */
-		load: function (mids, require, onload) {
-			// Use dojo/text! to load the CSS data rather than <link> tags because:
-			//		1. In a build, the CSS data will already be inlined into the JS file.  Using <link> tags would
-			//		   cause needless network requests.
-			//		2. Avoid browser branching/hacks.  Many browsers have issues detecting
-			//		   when CSS has finished loading and require tricks to detect it.
-
-			mids = mids.split(/, */);
-
-			var dependencies = mids.map(function (path) {
-				return (/\.css$/).test(path) ? "requirejs-text/text!" + path : path;
-			});
-
-			require(dependencies, function () {
-				// We loaded all the requested CSS files, but some may have already been inserted into the document,
-				// possibly in between when the require() call started and now.  Insert the others CSS files now.
-				var cssTexts = arguments;
-				mids.forEach(function (mid, idx) {
-					if (!(mid in sheets)) {
-						// Adjust relative image paths to be relative to document location rather than to the CSS file.
-						// Necessary since we are inserting the CSS as <style> nodes rather than as <link> nodes.
-						var css = cssTexts[idx],
-							pathToCssFile = require.toUrl(mid).replace(/[^/]+$/, ""),
-							adjustedCss = css.replace(/(url\(")([^/])/g, "$1" + pathToCssFile + "$2");
-
-						// Insert CSS into document
-						sheets[mid] = insertCss(adjustedCss);
+	var listenOnLoad = function (link) {
+		var def = new Deferred(),
+			loadHandler = has("event-link-onload-api") ?
+				function () {
+					// We're using "readystatechange" because IE happily support both
+					link.onreadystatechange = link.onload = function () {
+						if (!link.readyState || link.readyState === "complete") {
+							link.onreadystatechange = link.onload = null;
+							def.resolve();
+						}
+					};
+				} :
+				function () {
+					// watches a stylesheet for loading signs.
+					var sheet = link.sheet || link.styleSheet,
+						styleSheets = document.styleSheets;
+					if (sheet && Array.prototype.lastIndexOf.call(styleSheets, sheet) !== -1) {
+						def.resolve();
+					} else {
+						setTimeout(loadHandler, 25);
 					}
-				});
-				onload(mids);
+				};
+
+		loadHandler();
+		return def.promise;
+	};
+
+	var loadCss = {
+		id: module.id,
+
+		/*jshint maxcomplexity: 11*/
+		/**
+		 * Loads a css file.
+		 * @param {string} path - The css file to load.
+		 * @param {Function} require - A local require function to use to load other modules.
+		 * @param {Function} callback - A function to call when the specified stylesheets have been loaded.
+		 * @method
+		 */
+		load: function (path, require, callback) {
+			if (has("builder")) {
+				buildFunctions.addOnce(loadList, path);
+				callback();
+				return;
+			}
+
+			// Replace single css bundles by corresponding layer.
+			var config = module.config();
+			if (config.layersMap) {
+				path = config.layersMap[path] || path;
+			}
+
+			var head = document.head || document.getElementsByTagName("head")[0],
+				url = require.toUrl(path),
+				link;
+
+			// if the url has not already been injected/loaded, create a new promise.
+			if (!cache[url]) {
+				// hook up load detector(s)
+				link = document.createElement("link");
+				link.rel = "stylesheet";
+				link.type = "text/css";
+				link.href = url;
+				head.insertBefore(link, lastInsertedLink ? lastInsertedLink.nextSibling : head.firstChild);
+				lastInsertedLink = link;
+				cache[url] = listenOnLoad(link);
+			}
+
+			cache[url].then(function () {
+				// The stylesheet has been loaded, so call the callback
+				callback(path);
 			});
 		}
 	};
+
+	if (has("builder")) {
+		// build variables
+		var loadList = [],
+			writePluginFiles;
+
+		var buildFunctions = {
+			/**
+			 * Write the layersMap configuration to the corresponding modules layer.
+			 * The configuration will look like this:
+			 * ```js
+			 * require.config({
+			 *     config: {
+			 *         "delite/css": {
+			 *             layersMap: {
+			 *                 "module1.css": "path/to/layer.css",
+			 *                 "module2.css": "path/to/layer.css"
+			 *             }
+			 *         }
+			 *     }
+			 * });
+			 * ```
+			 *
+			 * @param {Function} write - This function takes a string as argument
+			 * and writes it to the modules layer.
+			 * @param {string} mid - Current module id.
+			 * @param {string} dest - Current css layer path.
+			 * @param {Array} loadList - List of css files contained in current css layer.
+			 */
+			writeConfig: function (write, mid, dest, loadList) {
+				var cssConf = {
+					config: {}
+				};
+				cssConf.config[mid] = {
+					layersMap: {}
+				};
+				loadList.forEach(function (path) {
+					cssConf.config[mid].layersMap[path] = dest;
+				});
+
+				write("require.config(" + JSON.stringify(cssConf) + ");");
+			},
+
+			/**
+			 * Concat and optimize all css files required by a modules layer and write the result.
+			 * The node module `clean-css` is responsible for optimizing the css and correcting
+			 * images paths.
+			 *
+			 * @param {Function} writePluginFiles - The write function provided by the builder to `writeFile`.
+			 * and writes it to the modules layer.
+			 * @param {string} dest - Current css layer path.
+			 * @param {Array} loadList - List of css files contained in current css layer.
+			 */
+			writeLayer: function (writePluginFiles, dest, loadList) {
+				// This is a node-require so it is synchronous.
+				var path = require.toUrl(module.id).replace(/[^\/]*$/, "node_modules/clean-css");
+				var CleanCSS = require.nodeRequire(require.getNodePath(path));
+
+				var result = "";
+				loadList.forEach(function (src) {
+					result += new CleanCSS({
+						relativeTo: "./",
+						target: dest
+					}).minify("@import url(" + src + ");");
+				});
+				writePluginFiles(dest, result);
+			},
+
+			/**
+			 * Add the string to `ary` if it's not already in it.
+			 * @param {Array} ary - Destination array.
+			 * @param {string} element - Element to add.
+			 */
+			addOnce: function (ary, element) {
+				if (ary.indexOf(element) === -1) {
+					ary.push(element);
+				}
+			}
+		};
+
+		loadCss.writeFile = function (pluginName, resource, require, write) {
+			writePluginFiles = write;
+		};
+
+		loadCss.onLayerEnd = function (write, data) {
+			function getLayerPath() {
+				return data.path.replace(/^(?:\.\/)?(([^\/]*\/)*)[^\/]*$/, "$1css/layer.css");
+			}
+
+			if (data.name && data.path) {
+				var dest = getLayerPath();
+
+				// Write layer file
+				buildFunctions.writeLayer(writePluginFiles, dest, loadList);
+				// Write css config on the layer
+				buildFunctions.writeConfig(write, module.id, dest, loadList);
+				// Reset loadList
+				loadList = [];
+			}
+		};
+
+		// Expose build functions to be used by delite/theme
+		loadCss.buildFunctions = buildFunctions;
+	}
+
+	return loadCss;
 });
