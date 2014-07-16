@@ -1,9 +1,6 @@
 ---
-layout: default
-title: delite/index
+layout: doc
 ---
-
-# Delite
 
 Delite aims to provide a widget infrastructure that fits future standards but is possible
 to use on all modern browsers without performance concerns.
