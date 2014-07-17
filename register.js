@@ -1,7 +1,7 @@
 /** @module delite/register */
 define([
 	"dcl/dcl",
-	"requirejs-dplugins/has"
+	"./features"
 ], function (dcl, has) {
 	"use strict";
 
@@ -24,25 +24,6 @@ define([
 			}
 		}
 	};
-
-	// Does platform have native support for document.registerElement() or a polyfill to simulate it?
-	has.add("document-register-element", doc && !!doc.registerElement);
-
-	// Can we use __proto__ to reset the prototype of DOMNodes?
-	// It's not available on IE<11, and even on IE11 it makes the node's attributes
-	// (ex: node.attributes, node.textContent) disappear, so disabling it on IE11 too.
-	has.add("dom-proto-set", function () {
-		var node = document.createElement("div");
-		/* jshint camelcase: false */
-		/* jshint proto: true */
-		if (!node.__proto__) {
-			return false;
-		}
-		node.__proto__ = {};
-		/* jshint camelcase: true */
-		/* jshint proto: false */
-		return !!node.attributes;
-	});
 
 	/**
 	 * List of selectors that the parser needs to search for as possible upgrade targets.  Mainly contains
