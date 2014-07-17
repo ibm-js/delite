@@ -2,20 +2,10 @@
 define([
 	"dcl/dcl",
 	"delite/keys", // keys.END keys.HOME, keys.LEFT_ARROW etc.
-	"requirejs-dplugins/has",
+	"./features",
 	"./Widget",
 	"./focus"	// causes _onBlur() to be called when focus removed from KeyNav and logical descendants
 ], function (dcl, keys, has, Widget) {
-
-	// Returns the name of the method to test if an element matches a CSS selector.
-	has.add("dom-matches", function () {
-		var node = document.body;
-		if (node.matches) { return "matches"; }
-		if (node.webkitMatchesSelector) { return "webkitMatchesSelector"; }
-		if (node.mozMatchesSelector) { return "mozMatchesSelector"; }
-		if (node.msMatchesSelector) { return "msMatchesSelector"; }
-	});
-
 	/**
 	 * Return true if node is an `<input>` or similar that responds to keyboard input.
 	 * @param {Element} node

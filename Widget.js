@@ -3,15 +3,12 @@ define([
 	"dcl/dcl",
 	"dojo/dom", // dom.byId
 	"dojo/dom-class", // domClass.add domClass.replace
-	"requirejs-dplugins/has",
+	"./features",
 	"decor/Invalidating",
 	"./CustomElement",
 	"./register",
-	"requirejs-dplugins/has!bidi?./Bidi"
+	"./features!bidi?./Bidi"
 ], function (dcl, dom, domClass, has, Invalidating, CustomElement, register, Bidi) {
-	// Flag to enable support for textdir attribute
-	has.add("bidi", false);
-
 	// Used to generate unique id for each widget
 	var cnt = 0;
 
