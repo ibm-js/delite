@@ -27,7 +27,7 @@ define([
 			var d = this.async(1500);
 			var refreshRenderingCallCount = 0;
 			var store = new C();
-			store.refreshRendering = function (newValues) {
+			store.refreshRendering = function () {
 				refreshRenderingCallCount++;
 			};
 			var myData = [
