@@ -2,14 +2,13 @@
 define(["dcl/dcl", "dojo/when", "decor/Invalidating"], function (dcl, when, Invalidating) {
 
 	/**
-	 * Mixin for widgets for store management that creates widget render items from store items after
-	 * querying the store. The receiving class must extend decor/Stateful and decor/Evented or
-	 * delite/Widget.
+	 * Mixin for store management that creates widget render items from store items after
+	 * querying the store. The receiving class must extend decor/Evented or delite/Widget.
 	 *
-	 * Classes extending this mixin automatically create render items that are consumable by the widget
-	 * from store items after querying the store. This happens each time the widget store, query or
-	 * queryOptions properties are set. If that store is Observable it will be observed and render items
-	 * will be automatically updated, added or deleted from the items property based on store notifications.
+	 * Classes extending this mixin automatically create render items that are consumable
+	 * from store items after querying the store. This happens each time the `store`, `query` or
+	 * `queryOptions` properties are set. If that store is Observable it will be observed and render items
+	 * will be automatically updated, added or deleted based on store notifications.
 	 *
 	 * @mixin module:delite/Store
 	 */
