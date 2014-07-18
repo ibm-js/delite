@@ -1,9 +1,9 @@
 {
 	"name": "delite",
-	"version": "0.1.7-dev",
+	"version": "0.1.8-dev",
 	"dependencies": {
 		"dcl": "1.1.x",
-		"decor": "#master",
+		"decor": "0.1.0-dev",
 		"dojo": ">=1.9.1",
 		"dpointer": ">=0.1.0-dev",
 		"requirejs": "2.1.x",
