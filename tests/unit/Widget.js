@@ -38,7 +38,7 @@ define([
 			widget.tabIndex = "3";
 			document.body.appendChild(widget);
 			widget.startup();
-			assert.equal(widget.watchedTabIndex, "3", "reported on widget");
+			assert.strictEqual(widget.watchedTabIndex, "3", "reported on widget");
 		},
 
 		mixin: function () {
@@ -82,6 +82,7 @@ define([
 			var d = this.async(1000);
 
 			setTimeout(d.callback(function () {
+				// use assert.equal() because result is 5 or "5" depending on browser
 				assert.equal(extended.watchedTabIndex, "5", "reported on extended");
 			}), 10);
 

@@ -36,19 +36,19 @@ define([
 			];
 			store.on("query-success", d.callback(function () {
 				assert(store.renderItems instanceof Array);
-				assert.equal(store.renderItems.length, 2);
+				assert.strictEqual(store.renderItems.length, 2);
 				assert.deepEqual(store.renderItems[0], myData[0]);
 				assert.deepEqual(store.renderItems[1], myData[1]);
 				myStore.put({ id: "foo", name: "Foo2" });
 				// this works because put is synchronous & same for add etc...
-				assert.equal(store.renderItems.length, 2);
+				assert.strictEqual(store.renderItems.length, 2);
 				assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo2" });
 				assert.deepEqual(store.renderItems[1], { id: "bar", name: "Bar" });
 				store.deliver();
 				assert.strictEqual(refreshRenderingCallCount, 1, "after store.put");
 				
 				myStore.add({ id: "fb", name: "FB" });
-				assert.equal(store.renderItems.length, 3);
+				assert.strictEqual(store.renderItems.length, 3);
 				assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo2" });
 				assert.deepEqual(store.renderItems[1], { id: "bar", name: "Bar" });
 				assert.deepEqual(store.renderItems[2], { id: "fb", name: "FB" });
@@ -56,7 +56,7 @@ define([
 				assert.strictEqual(refreshRenderingCallCount, 2, "after store.add");
 				
 				myStore.remove("bar");
-				assert.equal(store.renderItems.length, 2);
+				assert.strictEqual(store.renderItems.length, 2);
 				assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo2" });
 				assert.deepEqual(store.renderItems[1], { id: "fb", name: "FB" });
 				store.deliver();
@@ -75,7 +75,7 @@ define([
 			});
 			setTimeout(function () {
 				store.on("query-success", d.callback(function () {
-					assert.equal(store.renderItems.length, 0);
+					assert.strictEqual(store.renderItems.length, 0);
 				}));
 
 				// Test the change store to null triggers a so-called query
@@ -93,22 +93,22 @@ define([
 			];
 			store.on("query-success", d.callback(function () {
 				assert(store.renderItems instanceof Array);
-				assert.equal(store.renderItems.length, 2);
+				assert.strictEqual(store.renderItems.length, 2);
 				assert.deepEqual(store.renderItems[0], myData[0]);
 				assert.deepEqual(store.renderItems[1], myData[1]);
 				// we destroy the store, we should not get any notification after that
 				store.destroy();
 				myStore.put({ id: "foo", name: "Foo2" });
 				// this works because put is synchronous & same for add etc...
-				assert.equal(store.renderItems.length, 2);
+				assert.strictEqual(store.renderItems.length, 2);
 				assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo" });
 				assert.deepEqual(store.renderItems[1], { id: "bar", name: "Bar" });
 				myStore.add({ id: "fb", name: "FB" });
-				assert.equal(store.renderItems.length, 2);
+				assert.strictEqual(store.renderItems.length, 2);
 				assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo" });
 				assert.deepEqual(store.renderItems[1], { id: "bar", name: "Bar" });
 				myStore.remove("bar");
-				assert.equal(store.renderItems.length, 2);
+				assert.strictEqual(store.renderItems.length, 2);
 				assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo" });
 				assert.deepEqual(store.renderItems[1], { id: "bar", name: "Bar" });
 			}));
@@ -128,17 +128,17 @@ define([
 			];
 			store.on("query-success", d.callback(function () {
 				assert(store.renderItems instanceof Array);
-				assert.equal(store.renderItems.length, 1);
+				assert.strictEqual(store.renderItems.length, 1);
 				assert.deepEqual(store.renderItems[0], myData[0]);
 				myStore.put({ id: "foo", name: "Foo2" });
 				// this works because put is synchronous & same for add etc...
-				assert.equal(store.renderItems.length, 1);
+				assert.strictEqual(store.renderItems.length, 1);
 				assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo2" });
 				myStore.add({ id: "fb", name: "FB" });
-				assert.equal(store.renderItems.length, 1);
+				assert.strictEqual(store.renderItems.length, 1);
 				assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo2" });
 				myStore.remove("bar");
-				assert.equal(store.renderItems.length, 1);
+				assert.strictEqual(store.renderItems.length, 1);
 				assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo2" });
 			}));
 			store.startup();
@@ -160,16 +160,16 @@ define([
 			store.on("query-success", d.callback(function () {
 				assert(store.renderItems instanceof Array);
 				// TODO: actual tests are commented out pending SitePen/dstore#5
-				//assert.equal(store.renderItems.length, 1);
+				//assert.strictEqual(store.renderItems.length, 1);
 				myStore.put({ id: "foo", name: "Foo2" });
 				// this works because put is synchronous & same for add etc...
-				//assert.equal(store.renderItems.length, 1);
+				//assert.strictEqual(store.renderItems.length, 1);
 				//assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo2" });
 				myStore.add({ id: "fb", name: "FB" });
-				//assert.equal(store.renderItems.length, 1);
+				//assert.strictEqual(store.renderItems.length, 1);
 				//assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo2" });
 				myStore.remove("bar");
-				//assert.equal(store.renderItems.length, 1);
+				//assert.strictEqual(store.renderItems.length, 1);
 				//assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo2" });
 			}));
 			store.startup();
@@ -190,7 +190,7 @@ define([
 			];
 			store.on("query-success", d.callback(function () {
 				assert(store.renderItems instanceof Array);
-				assert.equal(store.renderItems.length, 2);
+				assert.strictEqual(store.renderItems.length, 2);
 				assert.deepEqual(store.renderItems[0], myData[0]);
 				assert.deepEqual(store.renderItems[1], myData[1]);
 				var item = myStore.get("foo");
@@ -225,14 +225,14 @@ define([
 					initialFetch.apply(this, arguments);
 				};
 			store.on("query-success", d.callback(function () {
-				assert.equal(liveCollection.data.length, 2);
+				assert.strictEqual(liveCollection.data.length, 2);
 				assert.deepEqual(liveCollection.data[0], myData[0]);
 				assert.deepEqual(liveCollection.data[1], myData[1]);
 				myStore.remove("foo");
-				assert.equal(liveCollection.data.length, 1);
+				assert.strictEqual(liveCollection.data.length, 1);
 				assert.deepEqual(liveCollection.data[0], myData[1]);
 				myStore.add(myData[0]);
-				assert.equal(liveCollection.data.length, 2);
+				assert.strictEqual(liveCollection.data.length, 2);
 				assert.deepEqual(liveCollection.data[0], myData[1]);
 				assert.deepEqual(liveCollection.data[1], myData[0]);
 			}));
