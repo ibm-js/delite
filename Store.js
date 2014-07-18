@@ -1,19 +1,18 @@
 /** @module delite/Store */
-define(["dcl/dcl", "dojo/when"], function (dcl, when) {
+define(["dcl/dcl", "dojo/when", "decor/Invalidating"], function (dcl, when, Invalidating) {
 
 	/**
-	 * Mixin for widgets for store management that creates widget render items from store items after
-	 * querying the store. The receiving class must extend decor/Stateful and decor/Evented or
-	 * delite/Widget.
+	 * Mixin for store management that creates widget render items from store items after
+	 * querying the store. The receiving class must extend decor/Evented or delite/Widget.
 	 *
-	 * Classes extending this mixin automatically create render items that are consumable by the widget
-	 * from store items after querying the store. This happens each time the widget store, query or
-	 * queryOptions properties are set. If that store is Observable it will be observed and render items
-	 * will be automatically updated, added or deleted from the items property based on store notifications.
+	 * Classes extending this mixin automatically create render items that are consumable
+	 * from store items after querying the store. This happens each time the `store`, `query` or
+	 * `queryOptions` properties are set. If that store is Observable it will be observed and render items
+	 * will be automatically updated, added or deleted based on store notifications.
 	 *
 	 * @mixin module:delite/Store
 	 */
-	return dcl(null, /** @lends module:delite/Store# */{
+	return dcl(Invalidating, /** @lends module:delite/Store# */{
 		/**
 		 * The store that contains the items to display.
 		 * @member {dstore/Store}
@@ -212,7 +211,9 @@ define(["dcl/dcl", "dojo/when"], function (dcl, when) {
 		_itemRemoved: function (event) {
 			if (event.previousIndex !== undefined) {
 				this.itemRemoved(event.previousIndex, this.renderItems);
-				this.renderItems = this.renderItems;
+				// the change of the value of the renderItems property (splice of the array)
+				// does not automatically trigger a notification. Hence:
+				this.notifyCurrentValue("renderItems");
 			}
 			// if no previousIndex the items is removed outside of the range we monitor so we don't care
 		},
@@ -237,8 +238,9 @@ define(["dcl/dcl", "dojo/when"], function (dcl, when) {
 				// we want to keep the same item object and mixin new values into old object
 				this.itemUpdated(event.index, this.itemToRenderItem(event.target), this.renderItems);
 			}
-			// set back the modified items property
-			this.renderItems = this.renderItems;
+			// the change of the value of the renderItems property (splice of the array)
+			// does not automatically trigger a notification. Hence:
+			this.notifyCurrentValue("renderItems");
 		},
 
 		/**
@@ -250,8 +252,9 @@ define(["dcl/dcl", "dojo/when"], function (dcl, when) {
 		_itemAdded: function (event) {
 			if (event.index !== undefined) {
 				this.itemAdded(event.index, this.itemToRenderItem(event.target), this.renderItems);
-				// set back the modified items property
-				this.renderItems = this.renderItems;
+				// the change of the value of the renderItems property (splice of the array)
+				// does not automatically trigger a notification. Hence:
+				this.notifyCurrentValue("renderItems");
 			}
 			// if no index the item is added outside of the range we monitor so we don't care
 		}

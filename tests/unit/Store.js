@@ -25,7 +25,11 @@ define([
 */
 		"Updates": function () {
 			var d = this.async(1500);
+			var refreshRenderingCallCount = 0;
 			var store = new C();
+			store.refreshRendering = function (newValues) {
+				refreshRenderingCallCount++;
+			};
 			var myData = [
 				{ id: "foo", name: "Foo" },
 				{ id: "bar", name: "Bar" }
@@ -40,15 +44,23 @@ define([
 				assert.equal(store.renderItems.length, 2);
 				assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo2" });
 				assert.deepEqual(store.renderItems[1], { id: "bar", name: "Bar" });
+				store.deliver();
+				assert.strictEqual(refreshRenderingCallCount, 1, "after store.put");
+				
 				myStore.add({ id: "fb", name: "FB" });
 				assert.equal(store.renderItems.length, 3);
 				assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo2" });
 				assert.deepEqual(store.renderItems[1], { id: "bar", name: "Bar" });
 				assert.deepEqual(store.renderItems[2], { id: "fb", name: "FB" });
+				store.deliver();
+				assert.strictEqual(refreshRenderingCallCount, 2, "after store.add");
+				
 				myStore.remove("bar");
 				assert.equal(store.renderItems.length, 2);
 				assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo2" });
 				assert.deepEqual(store.renderItems[1], { id: "fb", name: "FB" });
+				store.deliver();
+				assert.strictEqual(refreshRenderingCallCount, 3, "after store.remove");
 			}));
 			store.startup();
 			// use empty model to easy comparison
