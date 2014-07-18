@@ -58,7 +58,7 @@ define([
 			o.selectedItem = "1";
 			assert.deepEqual("1", o.selectedItem);
 			o.selectionMode = "none";
-			assert.equal(o.selectedItem, null);
+			assert.strictEqual(o.selectedItem, null);
 			assert.deepEqual(o.selectedItems, []);
 		},
 		"radiotonone": function () {
@@ -67,7 +67,7 @@ define([
 			o.selectedItem = "1";
 			assert.deepEqual("1", o.selectedItem);
 			o.selectionMode = "none";
-			assert.equal(o.selectedItem, null);
+			assert.strictEqual(o.selectedItem, null);
 			assert.deepEqual(o.selectedItems, []);
 		},
 		"testEvent": function () {

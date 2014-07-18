@@ -48,9 +48,9 @@ define([
 			w.startup();
 			w.deliver();
 
-			assert.equal(w.scrollableNode, w,
+			assert.strictEqual(w.scrollableNode, w,
 				"The scrollableNode should be the widget itself!");
-			assert.equal(w.scrollableNodeInRefreshRendering, w.scrollableNode,
+			assert.strictEqual(w.scrollableNodeInRefreshRendering, w.scrollableNode,
 				"The scrollableNode should been already set to 'this' when refreshRendering() was called!");
 			// The CSS class d-scrollable is expected to be added by the mixin delite/Scrollable
 			assert.isTrue(domClass.contains(w.scrollableNode, "d-scrollable"),
@@ -77,7 +77,7 @@ define([
 			var w = (new ScrollableWithCustomScrollableNode()).placeAt(container);
 			w.startup();
 			w.deliver();
-			assert.equal(w.scrollableNode, w.createdScrollableNode,
+			assert.strictEqual(w.scrollableNode, w.createdScrollableNode,
 				"The scrollableNode property has changed since it was set in buildRendering!");
 			// Test that the CSS class d-scrollable has been added by the mixin delite/Scrollable
 			// on the custom scrollableNode.

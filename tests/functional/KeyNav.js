@@ -154,20 +154,20 @@ define(["intern!object",
 				.keys("\uE004") // tab
 				.execute("return document.activeElement.textContent")
 				.then(function (value) {
-					assert.equal(value, "Alabama", "clicked Alabama");
+					assert.strictEqual(value, "Alabama", "clicked Alabama");
 				})
 				.execute("return clicks.textContent")
 				.then(function (value) {
-					assert.equal(value, "0", "no click events yet");
+					assert.strictEqual(value, "0", "no click events yet");
 				})
 				.keys("new m")
 				.execute("return document.activeElement.textContent")
 				.then(function (value) {
-					assert.equal(value, "New Mexico", "new m");
+					assert.strictEqual(value, "New Mexico", "new m");
 				})
 				.execute("return clicks.textContent")
 				.then(function (value) {
-					assert.equal(value, "0", "no click events after 'new m' search");
+					assert.strictEqual(value, "0", "no click events after 'new m' search");
 				})
 				.wait(1000)
 				// Now that 1000ms have elapsed, the search should be canceled, and each space typed
@@ -175,13 +175,13 @@ define(["intern!object",
 				.keys("   ")
 				.execute("return clicks.textContent")
 				.then(function (value) {
-					assert.equal(value, "3", "space key outside of search causes click events");
+					assert.strictEqual(value, "3", "space key outside of search causes click events");
 				})
 				// And make sure that we can search to somewhere else
 				.keys("n")
 				.execute("return document.activeElement.textContent")
 				.then(function (value) {
-					assert.equal(value, "New York", "n");
+					assert.strictEqual(value, "New York", "n");
 				});
 		},
 
