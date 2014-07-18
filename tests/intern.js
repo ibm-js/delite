@@ -23,7 +23,7 @@ define({
 		{ browserName: "safari", version: "7", platform: "OS X 10.9", name : "delite" },
 
 		// Mobile
-		{ browserName: "iphone", platform: "OS X 10.9", version: "7", name : "delite"}
+		{ browserName: "iphone", platform: "OS X 10.9", version: "7.1", name : "delite"}
 		// , { browserName: "android", platform: "Android" }		not currently working
 	],
 
