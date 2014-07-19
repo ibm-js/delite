@@ -25,12 +25,12 @@ define(function () {
 }\
 .d-hidden,\
 [d-hidden=true],\
-[d-shown]:not([d-shown=true]) {\
+[d-shown=false] {\
   display: none;\
 }\
 .d-invisible,\
 [d-invisible=true],\
-[d-visible]:not([d-visible=true]) {\
+[d-visible=false] {\
   visibility: hidden;\
 }\
 html,\

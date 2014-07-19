@@ -326,10 +326,32 @@ define([
 			assert.strictEqual(sc.childNodes.length, 4, "# of child nodes");
 		},
 
+		"undefined replacement vars": function () {
+			// Tests that undefined replacement vars in className and innerHTML
+			// convert to "" rather than "undefined".
+
+			var TestUndefined = register("handlebars-undefined", [HTMLElement, Widget], {
+				first: "Bob",
+
+				template: handlebars.compile(
+					"<span class={{className}}>Hello {{first}} {{last}}!</span>")
+			});
+
+			var node = new TestUndefined();
+			assert.strictEqual(node.className, "", "class #1");
+			assert.strictEqual(node.textContent.trim(), "Hello Bob !", "textContent #1");
+
+			node.first = "Tom";
+			node.deliver();
+			assert.strictEqual(node.className, "", "class #2");
+			assert.strictEqual(node.textContent.trim(), "Hello Tom !", "textContent #2");
+		},
+
 		nestedProperties: function () {
 			// Testing that nested properties work, with the caveat that updates are only detected if
 			// the top level property is changed.
-			// Also tests that undefined values convert to "" rather than "undefined".
+			// Also tests that undefined replacement vars in className and innerHTML
+			// convert to "" rather than "undefined".
 
 			var TestNested = register("handlebars-nested", [HTMLElement, Widget], {
 				item: {
@@ -365,6 +387,42 @@ define([
 			}), 10);
 
 			return d;
+		},
+
+		aria: function () {
+			// To match the aria spec:
+			// - boolean values like aria-selected must be represented as the strings "true" or "false".
+			// - aria-valuenow attribute should be removed is the value is undefined, but exist if value is ""
+
+			var TestAria = register("handlebars-aria", [HTMLElement, Widget], {
+				selected: true,
+				value: "",
+				template: handlebars.compile(
+					"<span aria-selected={{selected}} aria-valuenow={{value}}>hello world</span>")
+			});
+
+			// Initial values
+			var node = new TestAria();
+			node.placeAt(container);
+			node.deliver();
+			assert(node.hasAttribute("aria-valuenow"), "aria-valuenow exists");
+			assert.strictEqual(node.getAttribute("aria-valuenow"), "", "aria-valuenow initial value");
+			assert.strictEqual(node.getAttribute("aria-selected"), "true", "aria-selected initial value");
+
+			// Change
+			node.selected = false;
+			node.value = undefined;
+			node.deliver();
+			assert.isFalse(node.hasAttribute("aria-valuenow"), "aria-valuenow removed");
+			assert.strictEqual(node.getAttribute("aria-selected"), "false", "aria-selected updated value #1");
+
+			// Change back
+			node.selected = true;
+			node.value = "";
+			node.deliver();
+			assert(node.hasAttribute("aria-valuenow"), "aria-valuenow recreated");
+			assert.strictEqual(node.getAttribute("aria-valuenow"), "", "aria-valuenow new value");
+			assert.strictEqual(node.getAttribute("aria-selected"), "true", "aria-selected updated value #2");
 		},
 
 		"d-hidden": function () {

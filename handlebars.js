@@ -38,29 +38,40 @@ define(["./template"], function (template) {
 	// Text plugin to load the templates and do the build.
 	var textPlugin = "requirejs-text/text";
 
-
 	/**
-	 * Given a string like "hello {{foo}} world", split it into static text and property references,
-	 * and return array representing the parts, ex: `["hello ", {property: "foo"}, " world"]`.
+	 * Given a string like "hello {{foo}} world", generate JS code to output that string,
+	 * ex: "hello" + this.foo + "world", and also get list of properties that we need to watch for changes.
 	 * @param {string} text
-	 * @returns {Array}
+	 * @param {boolean} convertUndefinedToBlank - Useful so that class="foo {{item.bar}}" will convert to class="foo"
+	 * rather than class="foo undefined", but for something like aria-valuenow="{{value}}", when value is undefined
+	 * we need to leave it that way, to trigger removal of that attribute completely instead of setting
+	 * aria-valuenow="".
+	 * @returns {Object} Object like {expr: "'hello' + this.foo + 'world'", dependsOn: ["foo"]}
 	 */
-	function tokenize(text) {
-		var inVar, parts = [];
+	function toJs(text, convertUndefinedToBlank) {
+		var inVar, parts = [], wp = [];
 
-		if (text) {
-			text.split(/({{|}})/).forEach(function (str) {
-				if (str === "{{") {
-					inVar = true;
-				} else if (str === "}}") {
-					inVar = false;
-				} else if (str) {
-					parts.push(inVar ? { property: str.trim() } : str);
-				}
-			});
-		}
+		(text || "").split(/({{|}})/).forEach(function (str) {
+			if (str === "{{") {
+				inVar = true;
+			} else if (str === "}}") {
+				inVar = false;
+			} else if (inVar) {
+				// it's a property
+				var prop = str.trim();
+				wp.push(prop.replace(/[^\w].*/, ""));// If nested prop like item.foo, watch top level prop (item).
+				parts.push(convertUndefinedToBlank ? "(this." + prop + " || '')" : "this." + prop);
+			} else if (str) {
+				// string literal, single quote it and escape special characters
+				parts.push("'" +
+					str.replace(/(['\\])/g, "\\$1").replace(/\n/g, "\\n").replace(/\t/g, "\\t") + "'");
+			}
+		});
 
-		return parts;
+		return {
+			expr: parts.join(" + "),
+			dependsOn: wp
+		};
 	}
 
 	var handlebars = /** @lends module:delite/handlebars */ {
@@ -97,8 +108,8 @@ define(["./template"], function (template) {
 							// on-click="{{handlerMethod}}" sets connects.click = "handlerMethod"
 							connects[item.name.substring(3)] = item.value.replace(/\s*({{|}})\s*/g, "");
 						} else {
-							// x="hello {{foo}} world" sets attributes.x = ["hello ", {property: "foo"}, " world"]
-							attributes[item.name] = tokenize(item.value);
+							// x="hello {{foo}} world" --> "hello " + this.foo + " world"
+							attributes[item.name] = toJs(item.value, item.name === "class");
 						}
 					}
 				}
@@ -124,42 +135,36 @@ define(["./template"], function (template) {
 		parseChildren: function (templateNode, xmlns) {
 			var children = [];
 
+			// Index of most recent non-whitespace node added to children array
+			var lastRealNode;
+
+			// Scan all the children, populating children[] array.
+			// Trims starting and ending whitespace nodes, but not whitespace in the middle, so that
+			// the following example only ends up with one whitespace node between hello and world:
+			//
+			// <div>\n\t<span>hello</span> <span>world</span>\n</div>
 			for (var child = templateNode.firstChild; child; child = child.nextSibling) {
 				var childType = child.nodeType;
 				if (childType === 1) {
 					// Standard DOM node, recurse
+					lastRealNode = children.length;
 					children.push(handlebars.parse(child, xmlns));
 				} else if (childType === 3) {
 					// Text node likely containing variables like {{foo}}.
-					children = children.concat(tokenize(child.nodeValue));
+					if (/^[ \t\n]*$/.test(child.nodeValue)) {
+						// Whitespace node.  Note: avoided using trim() since that removes &nbsp; nodes.
+						if (lastRealNode === undefined) {
+							// Skip leading whitespace nodes
+							continue;
+						}
+					} else {
+						lastRealNode = children.length;
+					}
+					children.push(toJs(child.nodeValue, true));
 				}
 			}
 
-			// Optimization to avoid generating unnecessary createTextNode() calls:
-			// Trim starting and ending whitespace nodes, but not whitespace in the middle, so that
-			// the following example only ends up with one whitespace node between hello and world:
-			//
-			// <div>\n\t<span>hello</span>< span>world</span>\n</div>
-			//
-			// Also, avoid using trim() since that removes &nbsp; nodes.
-			if (children.length && templateNode.tagName !== "PRE") {
-				var start = 0, end = children.length - 1;
-				while (/^[ \t\n]*$/.test(children[start]) && start < end) {
-					start++;
-				}
-				if (typeof children[start] === "string") {
-					children[start] = children[start].replace(/^[ \t\n]+/, "");
-				}
-				while (/^[ \t\n]*$/.test(children[end]) && end > start) {
-					end--;
-				}
-				if (typeof children[end] === "string") {
-					children[end] = children[end].replace(/[ \t\n]+$/, "");
-				}
-				children = children.slice(start, end + 1);
-			}
-
-			return children;
+			return children.slice(0, lastRealNode + 1); // slice() removes trailing whitespace nodes
 		},
 
 
@@ -232,8 +237,7 @@ define(["./template"], function (template) {
 		 * This is the function run when you use this module as a plugin.
 		 * @param {string} mid - Absolute path to the resource.
 		 * @param {Function} require - AMD's require() method.
-		 * @param {Function} onload - Callback function which will be called, when the loading finishes
-		 *     and the stylesheet has been inserted.
+		 * @param {Function} onload - Callback function which will be called with the compiled template.
 		 * @private
 		 */
 		load: function (mid, require, onload) {
