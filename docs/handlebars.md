@@ -46,15 +46,49 @@ Paths like `{{foo.bar}}` can be used in templates, but are not recommended.
 The limitations of using paths are:
 
 1. The widget will only re-render when `foo` itself is updated, not when just `foo.bar` is updated.
-   You can currently trick the widget into thinking that `foo` was updated by doing `this.foo = this.foo`;
-   in the future the API to do this will be changed to `this.notifyCurrentValue("foo")`.
+   If a property inside of `foo` is modified, the application needs to call `this.notifyCurrentValue("foo")`.
 2. When a top level property (`foo`) is updated, any part of the template
    referencing `foo` (for example, `{{foo.bar}}`) will cause a DOM update, even if the value of `foo.bar`
-   itself hasn't changed. This may cause unnecessary browser redraw/recalculation, for example due to
+   itself hasn't changed.  This may cause unnecessary browser redraw/recalculation, for example due to
    unnecessarily resetting a node's class.
 3. If the last property in a path is undefined or null, an empty string is substituted.  For example, if
    `foo.bar.zaz` is undefined, then `class="{{foo.bar.zaz}}"` becomes `class=""`.  However, this doesn't
    work if a parent property is null/undefined, i.e. if `foo.bar` is undefined.
+
+
+## Binding details
+
+Handlebars aims to transparently do the right thing to make binding work automatically.
+For example, if a template contains `<input type=checkbox checked={{checked}}>`,
+handlebars (or actually [template](./template.md)) knows to set the `checked` property
+rather than setting the `checked` attribute, since the latter action doesn't actually change the checked state.
+
+More generally, handlebars directly sets the shadow property rather than the attribute whenever
+a shadow property exists.
+
+In cases where there is no shadow property, handlebars converts the widget property
+to a string value.  For example, in a template with `<div aria-selected={{selected}}>`, the
+`aria-selected` property will be set to the string "true" or "false".  This assumes (i.e. requires)
+that the `selected` property in the widget is a strict boolean value,
+rather than a falsy value like "" or a true-ish value like "hi".
+
+About undefined substitution variables, for example:
+
+```
+<span class={{myClass}} aria-valuenow={{myValue}}>{{myText}}</span>
+```
+
+For the `class` attribute and innerHTML, undefined variables are treated like empty strings.
+However, for other attributes, `undefined` is a special flag meaning to remove the attribute.
+This is necessary especially for ARIA support, where (for example) `aria-valuenow=""` has a different
+meaning that having no `aria-valuenow` attribute at all.
+See the [ARIA spec](http://www.w3.org/TR/wai-aria/states_and_properties#aria-valuenow) for more details.
+
+So, if all the bind variables in the above example are undefined, it will essentially be rendered as:
+
+```html
+<span class=""></span>
+```
 
 
 ## Widgets in templates

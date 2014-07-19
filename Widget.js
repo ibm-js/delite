@@ -185,6 +185,26 @@ define([
 		},
 
 		/**
+		 * Helper method to set/remove an attribute based on the given value:
+		 *
+		 * - If value is undefined, the attribute is removed.  Useful for attributes like aria-valuenow.
+		 * - If value is boolean, the attribute is set to "true" or "false".  Useful for attributes like aria-selected.
+		 * - If value is a number, it's converted to a string.
+		 *
+		 * @param {Element} node - The node to set the property on.
+		 * @param {string} name - Name of the property.
+		 * @param {*} value - Value of the property.
+		 * @protected
+		 */
+		setOrRemoveAttribute: function (node, name, value) {
+			if (value === undefined) {
+				node.removeAttribute(name);
+			} else {
+				node.setAttribute(name, "" + value);
+			}
+		},
+
+		/**
 		 * Processing after the DOM fragment is created.
 		 *
 		 * Called after the DOM fragment has been created, but not necessarily
