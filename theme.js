@@ -1,12 +1,11 @@
 /**
- * Plugin to load the specified CSS file(s), substituting {{theme}} with the theme for the current page.
- * 
- * For example, on an iPhone `theme!./css/{{theme}}/common,./Button/{{theme}}/Button`
- * will load (in the following order):
- * 
- * - ./css/ios/common
- * - ./Button/ios/Button
- * 
+ * Plugin to load the specified CSS file, substituting {{theme}} with the theme for the current page.
+ * This plugin will also load the global css file for the theme, `delite/themes/{{theme}}/global.css`,
+ * even if no resource is provided (like in `delite/theme!`).
+ *
+ * For example, on an iPhone `theme!./css/{{theme}}/common.css`
+ * will load `./css/ios/common.css`
+ *
  * You can also pass an additional URL parameter string
  * `theme={theme widget}` to force a specific theme through the browser
  * URL input. The available theme ids are bootstrap, holodark (theme introduced in Android 3.0)
@@ -26,8 +25,8 @@ define([
 	"require",
 	"requirejs-dplugins/has",
 	"module",
-	"./css"		// listed here for builder, so delite/css is included into the layer
-], function (req, has, module) {
+	"./css"
+], function (req, has, module, css) {
 
 	"use strict";
 
@@ -86,37 +85,77 @@ define([
 		},
 
 		/**
-		 * Convert relative paths to absolute ones.   By default only the first path (in the comma
-		 * separated list) is converted.
-		 * @private
-		 */
-		normalize: function (logicalPaths, normalize) {
-			return logicalPaths.split(/, */).map(normalize).join(",");
-		},
-
-		/**
 		 * Load and install the specified CSS files for the given logicalPaths, then call onload().
-		 * @param {string} logicalPaths - Comma separated list of simplified paths.
-		 * They will be expanded to convert {{theme}} to the current theme.
+		 * @param {string} path - Simplified paths. It will be expanded to convert {{theme}} to the current theme.
 		 * @param {Function} require - AMD's require() method.
 		 * @param {Function} onload - Callback function which will be called when the loading finishes
 		 * and the stylesheet has been inserted.
 		 * @private
 		 */
-		load: function (logicalPaths, require, onload) {
+		load: function (path, require, onload) {
 			// Add CSS file which contains definitions global to the theme.
-			logicalPaths = "./themes/{{theme}}/global_css" + (logicalPaths ? "," + logicalPaths : "");
+			var globalCss = "./themes/{{theme}}/global.css";
+			var resources = path ? [globalCss, path] : [globalCss];
 
-			// Convert list of logical paths into list of actual paths
-			// ex: Button/css/{{theme}}/Button --> Button/css/ios/Button
-			var actualPaths = logicalPaths.replace(/{{theme}}/g, load.getTheme());
+			if (has("builder")) {
+				resources.forEach(function (path) {
+					css.buildFunctions.addOnce(loadList, path);
+				});
+				onload();
+				return;
+			}
 
-			// Make single call to css! plugin to load resources in order specified
-			req([ "./css!" + actualPaths ], function () {
+			// Replace single css bundles by corresponding layer.
+			if (config.layersMap) {
+				resources = resources.map(function (path) {
+					return config.layersMap[path] || path;
+				});
+			}
+
+			// Convert list of logical resources into list of dependencies.
+			// ex: Button/css/{{theme}}/Button.css --> delite/css!Button/css/ios/Button.css
+			var deps = resources.map(function (path) {
+				return css.id + "!" + path.replace(/{{theme}}/, load.getTheme());
+			});
+
+			// Call css! plugin to insert the stylesheets.
+			req(deps, function () {
 				onload(arguments);
 			});
 		}
 	};
 
+	if (has("builder")) {
+		var loadList = [];
+		var writePluginFiles;
+
+		load.writeFile = function (pluginName, resource, require, write) {
+			writePluginFiles = write;
+		};
+
+		load.onLayerEnd = function (write, data) {
+			function getLayerPath(theme) {
+				var pathRE = /^(?:\.\/)?(([^\/]*\/)*)[^\/]*$/;
+				return data.path.replace(pathRE, "$1themes/layer_" + (theme || "{{theme}}") + ".css");
+			}
+
+			if (data.name && data.path) {
+				load.themeMap.forEach(function (theme) {
+					var themeDir = theme[1];
+					var dest = getLayerPath(themeDir);
+					var themedLoadList = loadList.map(function (path) {
+						return require.toUrl(path.replace(/{{theme}}/g, themeDir));
+					});
+					css.buildFunctions.writeLayer(writePluginFiles, dest, themedLoadList);
+				});
+
+				// Write generic css config with {{theme}} on the layer.
+				css.buildFunctions.writeConfig(write, module.id, getLayerPath(), loadList);
+
+				// Reset loadList
+				loadList = [];
+			}
+		};
+	}
 	return load;
 });
