@@ -82,17 +82,6 @@ define(["./register"], function (register) {
 	}
 
 	return /** @lends module:delite/template. */ {
-		// Note: this is generating actual JS code since:
-		// 		- that's 3x faster than looping over the object tree every time...
-		//		- so the build system can eliminate this file (and just use the generated code
-		//
-		// But perhaps that is misguided.  The performance difference is probably insignificant
-		// compared to the cost of creating DOM elements and/or the cost of actually rendering them, and the size
-		// of the generated code compared to the size of the object tree may offset gains from including this file.
-
-		// Note: JSONML (http://www.ibm.com/developerworks/library/x-jsonml/#c7) represents elements as a single array
-		// like [tag, attributesHash, child1, child2, child3].  Should we do the same?   But attach points are tricky.
-
 		/**
 		 * Generate JS code to create and add children to a node named nodeName.
 		 * @param {string} nodeName

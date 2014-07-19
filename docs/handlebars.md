@@ -21,8 +21,7 @@ Note that the binding is one-directional.  Changes to DOM node values, such as w
 into an `<input>`, are not automatically reflected back to the widget.
 A library like [Liaison](https://github.com/ibm-js/liaison) supports two way binding.
 
-The delite/handlebars! plugin returns a function to operate in the widget's context, so
-for widgets to leverage the template engine, you put your template in a separate file,
+The delite/handlebars! plugin lets you put your template in a separate file,
 and then define the widget like:
 
 ```js
@@ -33,20 +32,32 @@ define([..., "delite/handlebars!./templates/MyTemplate.html"], function(..., tem
 }
 ```
 
-## Substitution variables
+Internally, delite/handlebars! compiles the template into an AST format and then uses `delite/template` to generate
+the final template object that it returns.
 
-Substitution variables are supported in attributes (ex: `class="d-reset {{iconClass}}"`)
+## Bindings
+
+Widgets can contains expressions surrounded by the `{{` and `}}` symbols.
+Expressions can be either:
+
+* widget properties (ex: `{{foo}}`)
+* paths to widget properties (ex: `{{item.foo}}`)
+* arbitrary javascript code (except for the `{{` and `}}` tokens themselves)
+  referencing widget properties and methods via `this.`, ex: `{{this.selectionMode === "multiple"}}`
+
+Bindings are supported in attributes (ex: `class="d-reset {{iconClass}}"`)
 and as Element children (ex: `<span>Hello {{name}}</span>`).
 
-Special characters are escaped.  For example, if `name` is `<b>Bob</b>`,
-the above template will render as `Hello <b>Bob</b>` not as "Hello **Bob**".
-In other words, there's no support for `{{{name}}}`, only support for `{{name}}`.
+Bindings should evaluate to plain text (or a boolean or number), but
+not HTML.  Special characters are escaped.  For example, if `name` is `<b>Bob</b>`,
+the above template will merely render as `Hello <b>Bob</b>` not as "Hello **Bob**".
 
-Paths like `{{foo.bar}}` can be used in templates, but are not recommended.
-The limitations of using paths are:
+### Binding paths
 
-1. The widget will only re-render when `foo` itself is updated, not when just `foo.bar` is updated.
-   If a property inside of `foo` is modified, the application needs to call `this.notifyCurrentValue("foo")`.
+Paths like `{{foo.bar}}` can be used in templates, but have limitations:
+
+1. If a property inside of `foo` is modified, the application needs to call `this.notifyCurrentValue("foo")`
+   manually to make the widget re-render.
 2. When a top level property (`foo`) is updated, any part of the template
    referencing `foo` (for example, `{{foo.bar}}`) will cause a DOM update, even if the value of `foo.bar`
    itself hasn't changed.  This may cause unnecessary browser redraw/recalculation, for example due to
@@ -55,8 +66,28 @@ The limitations of using paths are:
    `foo.bar.zaz` is undefined, then `class="{{foo.bar.zaz}}"` becomes `class=""`.  However, this doesn't
    work if a parent property is null/undefined, i.e. if `foo.bar` is undefined.
 
+### Binding expressions
 
-## Binding details
+Expressions are meant for simple calculations inside of templates.
+For more complex calculations, we recommend using `computeProperties()` to define new widget properties instead.
+Expressions must be valid javascript, using the `this` variable, and quoting strings.
+The expression must evaluate to a string, number, or boolean value.  Some examples are:
+
+* ``multiple="{{this.selectionMode === 'multiple'}}"`` - sets `multiple` to true or false depending on `selectionMode`
+* ``class="d-slider {{this.orientation === 'vertical' ? 'd-slider-vertical' : 'd-slider-horizontal'}}` - sets class
+  `d-slider-vertical` or `d-slider-horizontal` depending on value of `this.orientation`
+
+Finally, here's an example of a template using simple widget property bindings,
+path bindings, and an expression:
+
+```
+<template>
+{{a}} + {{item.b}} = {{this.a + this.item.b}}
+</template>
+```
+
+
+### Binding details
 
 Handlebars aims to transparently do the right thing to make binding work automatically.
 For example, if a template contains `<input type=checkbox checked={{checked}}>`,
@@ -66,13 +97,14 @@ rather than setting the `checked` attribute, since the latter action doesn't act
 More generally, handlebars directly sets the shadow property rather than the attribute whenever
 a shadow property exists.
 
-In cases where there is no shadow property, handlebars converts the widget property
-to a string value.  For example, in a template with `<div aria-selected={{selected}}>`, the
+In cases where there is no shadow property, handlebars converts the value to a string.
+For example, in a template with `<div aria-selected={{selected}}>`, the
 `aria-selected` property will be set to the string "true" or "false".  This assumes (i.e. requires)
 that the `selected` property in the widget is a strict boolean value,
 rather than a falsy value like "" or a true-ish value like "hi".
 
-About undefined substitution variables, for example:
+About undefined substitution variables, imagine that all the bind variables in the following example
+are undefined:
 
 ```
 <span class={{myClass}} aria-valuenow={{myValue}}>{{myText}}</span>
@@ -146,25 +178,3 @@ will set `this.focusNode` to point to the `<button>`, and setup a listener for t
 
 Partly these are unsupported because they are difficult for reactive templates,
 and partly to keep the code size of the Handlebars and template engine minimal.
-
-## Implementation details
-
-delite/handlebars! compiles the template into an AST format and then uses `delite/template` to generate
-a function from it.
-
-
-## Notes on template format
-
-There were a number of possible syntaxes proposed for the templates, including:
-
-* [MDV](http://www.polymer-project.org/platform/template.html) -
-  Pure HTML version of templates, possibly will become a new standard, supported natively by browsers
-* [Mustache](http://mustache.github.io/mustache.5.html) / [Handlebars](http://handlebarsjs.com/) -
-  What our users are used to.  Note that the Mustache and Handlebars syntaxes are the same except
-  for complicated things like branching/looping.
-* [JADE](http://jade-lang.com/)-like syntax based on Kris' put-selector code
-
-The JADE like syntax is probably the easiest to write, and the MDV syntax fits the best within the HTML
-paradigm, but initially I just programmed a subset of the Handlebars syntax because it's what our users
-are used to.   However, given the separation between delite/handlebars and delite/template, any number of template
-engines could be easily written.

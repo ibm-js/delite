@@ -499,6 +499,46 @@ define([
 			assert.strictEqual(myComplexWidget.textContent, "1 + 1 = 2");
 		},
 
+		expressions: function () {
+			// Test {{ }} with arbitrary javascript
+
+			var TextExpr = register("handlebars-expr", [HTMLElement, Widget], {
+				mode: "show",
+				bar: 1,
+				item: {
+					foo: 1
+				},
+				template: handlebars.compile(
+					"<template d-shown=\"{{this.mode === 'show'}}\">" +
+						"{{bar}} + {{item.foo}} = {{this.bar + this.item.foo}}" +
+					"</template>"
+				)
+			});
+
+			// Initial values
+			var node = new TextExpr();
+			node.placeAt(container);
+			node.deliver();
+			assert.strictEqual(node.textContent.trim(), "1 + 1 = 2");
+			assert.strictEqual(node.getAttribute("d-shown"), "true", "d-shown");
+
+			// Change bar
+			node.bar = 2;
+			node.deliver();
+			assert.strictEqual(node.textContent.trim(), "2 + 1 = 3");
+
+			// Change item.foo
+			node.item.foo = 2;
+			node.notifyCurrentValue("item");
+			node.deliver();
+			assert.strictEqual(node.textContent.trim(), "2 + 2 = 4");
+
+			// Change hidden
+			node.mode = "hide";
+			node.deliver();
+			assert.strictEqual(node.getAttribute("d-shown"), "false", "d-shown");
+		},
+
 		teardown: function () {
 			container.parentNode.removeChild(container);
 		}
