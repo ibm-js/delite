@@ -57,10 +57,19 @@ define(["./template"], function (template) {
 			} else if (str === "}}") {
 				inVar = false;
 			} else if (inVar) {
-				// it's a property
+				// it's a property or a JS expression
 				var prop = str.trim();
-				wp.push(prop.replace(/[^\w].*/, ""));// If nested prop like item.foo, watch top level prop (item).
-				parts.push(convertUndefinedToBlank ? "(this." + prop + " || '')" : "this." + prop);
+				if (/this\./.test(prop)) {
+					// JS expression (ex: this.selectionMode === "multiple")
+					parts.push("(" + str + ")");
+					wp.push(str.match(/this\.(\w+)/g).map(function (thisVar) {
+						return thisVar.substring(5);	// "this.foo" --> "foo"
+					}));
+				} else {
+					// Property (ex: selectionMode) or path (ex: item.foo)
+					wp.push(prop.replace(/[^\w].*/, ""));// If nested prop like item.foo, watch top level prop (item).
+					parts.push(convertUndefinedToBlank ? "(this." + prop + " || '')" : "this." + prop);
+				}
 			} else if (str) {
 				// string literal, single quote it and escape special characters
 				parts.push("'" +
