@@ -35,20 +35,11 @@ define([
 		},
 
 		update: function () {
-			var d = this.async(1000);
-
 			myButton.label = "new label";
-			setTimeout(d.rejectOnError(function () {
-				assert.strictEqual(myButton.textContent.trim(), "new label", "label updated");
-
-				myButton.iconClass = "newClass";
-
-				setTimeout(d.callback(function () {
-					assert.strictEqual(myButton.firstChild.className, "d-reset newClass", "icon class set");
-				}), 10);
-			}), 10);
-
-			return d;
+			myButton.iconClass = "newClass";
+			myButton.deliver();
+			assert.strictEqual(myButton.textContent.trim(), "new label", "label updated");
+			assert.strictEqual(myButton.firstChild.className, "d-reset newClass", "icon class set");
 		},
 
 		"attach-point": function () {
