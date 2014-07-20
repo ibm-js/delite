@@ -56,8 +56,9 @@ define([
 		 * @default [[/Holodark|Android/, "holodark"], [/iPhone/iPad/, "ios"], [/.*\/, "bootstrap"]]
 		 */
 		themeMap: config.themeMap || [
-			[/Holodark|Android/, "holodark"],
-			[/iPhone|iPad/, "ios"],
+			// Temporarily comment out until more widgets support them
+			// [/Holodark|Android/, "holodark"],
+			// [/iPhone|iPad/, "ios"],
 			[/.*/, "bootstrap"]			// chrome, firefox, IE
 		],
 
