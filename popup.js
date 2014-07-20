@@ -5,14 +5,13 @@
 define([
 	"dcl/advise",
 	"dcl/dcl",
-	"dojo/dom-geometry", // domGeometry.position
 	"requirejs-dplugins/has", // has("config-bgIframe")
 	"delite/keys",
 	"./place",
 	"./BackgroundIframe",
 	"./Viewport",
 	"./theme!" // d-popup class
-], function (advise, dcl, domGeometry, has, keys, place, BackgroundIframe, Viewport) {
+], function (advise, dcl, has, keys, place, BackgroundIframe, Viewport) {
 
 	function isDocLtr(doc) {
 		return !(/^rtl$/i).test(doc.body.dir || doc.documentElement.dir);
@@ -86,7 +85,7 @@ define([
 		_repositionAll: function () {
 			if (this._firstAroundNode) {	// guard for when clearTimeout() on IE doesn't work
 				var oldPos = this._firstAroundPosition,
-					newPos = domGeometry.position(this._firstAroundNode, true),
+					newPos = place.position(this._firstAroundNode),
 					dx = newPos.x - oldPos.x,
 					dy = newPos.y - oldPos.y;
 
@@ -260,18 +259,18 @@ define([
 			// Limit height to space available in viewport either above or below aroundNode (whichever side has more
 			// room), adding scrollbar if necessary. Can't add scrollbar to widget because it may be a <table> (ex:
 			// deliteful/Menu), so add to wrapper, and then move popup's border to wrapper so scroll bar inside border.
-			var maxHeight, popupSize = domGeometry.position(widget);
+			var maxHeight;
 			if ("maxHeight" in args && args.maxHeight !== -1) {
 				maxHeight = args.maxHeight || Infinity;
 			} else {
 				var viewport = Viewport.getEffectiveBox(widget.ownerDocument),
-					aroundPos = around ? domGeometry.position(around, false) : {
-						y: args.y - (args.padding || 0),
-						h: (args.padding || 0) * 2
+					aroundPos = around ? around.getBoundingClientRect() : {
+						top: args.y - (args.padding || 0),
+						height: (args.padding || 0) * 2
 					};
-				maxHeight = Math.floor(Math.max(aroundPos.y, viewport.h - (aroundPos.y + aroundPos.h)));
+				maxHeight = Math.floor(Math.max(aroundPos.top, viewport.h - (aroundPos.top + aroundPos.height)));
 			}
-			if (popupSize.h > maxHeight) {
+			if (widget.offsetHeight > maxHeight) {
 				// Get style of popup's border.  Unfortunately getComputedStyle(node).border doesn't work on FF or IE,
 				// and getComputedStyle(node).borderColor etc. doesn't work on FF, so need to use fully qualified names.
 				var cs = getComputedStyle(widget),
@@ -295,7 +294,7 @@ define([
 			if (stack.length === 0 && around) {
 				// First element on stack. Save position of aroundNode and setup listener for changes to that position.
 				this._firstAroundNode = around;
-				this._firstAroundPosition = domGeometry.position(around, true);
+				this._firstAroundPosition = place.position(around);
 				this._aroundMoveListener = setTimeout(this._repositionAll.bind(this), 50);
 			}
 

@@ -256,8 +256,9 @@ require([
 							"</div>"
 			);
 
-			var ret = place.around(popup, "theRectangle", ["before", "after"], true);
-			toTheLeftOrRight(document.getElementById("theRectangle"));
+			var theRectangle = document.getElementById("theRectangle")
+			var ret = place.around(popup, theRectangle, ["before", "after"], true);
+			toTheLeftOrRight(theRectangle);
 		}
 	]);
 

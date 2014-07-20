@@ -33,6 +33,12 @@ define(function () {
 [d-visible=false] {\
   visibility: hidden;\
 }\
+.d-popup {\
+  position: absolute;\
+  -webkit-box-sizing: border-box;\
+  -moz-box-sizing: border-box;\
+  box-sizing: border-box;\
+}\
 html,\
 body {\
   width: 100%;\
