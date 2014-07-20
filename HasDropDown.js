@@ -3,14 +3,14 @@ define([
 	"dcl/dcl",
 	"dojo/Deferred",
 	"dojo/dom-class", // domClass.add domClass.contains domClass.remove
-	"dojo/dom-geometry", // domGeometry.marginBox domGeometry.position
 	"requirejs-dplugins/has", // has("touch")
 	"delite/keys", // keys.DOWN_ARROW keys.ENTER keys.ESCAPE
 	"./focus",
+	"./place",
 	"./popup",
 	"./Widget",
 	"dpointer/events"
-], function (dcl, Deferred, domClass, domGeometry, has, keys, focus, popup, Widget) {
+], function (dcl, Deferred, domClass, has, keys, focus, place, popup, Widget) {
 
 	// TODO: this needs an overhaul for 2.0, including
 	//	- use deferreds instead of callbacks
@@ -183,7 +183,7 @@ define([
 				// because it's so large.  In that case mouse-up shouldn't select a value from the menu.
 				// Find out if our target is somewhere in our dropdown widget,
 				// but not over our _buttonNode (the clickable node)
-				var c = domGeometry.position(this._buttonNode, true);
+				var c = place.position(this._buttonNode);
 				if (!(e.pageX >= c.x && e.pageX <= c.x + c.w) || !(e.pageY >= c.y && e.pageY <= c.y + c.h)) {
 					var t = e.target;
 					while (t && !overMenu) {
@@ -441,14 +441,7 @@ define([
 			// matches width of aroundNode
 			if (this.forceWidth || (this.autoWidth && aroundNode.offsetWidth > dropDown._popupWrapper.offsetWidth)) {
 				var widthAdjust = aroundNode.offsetWidth - dropDown._popupWrapper.offsetWidth;
-				var resizeArgs = {
-					w: dropDown.offsetWidth + widthAdjust
-				};
-				if (typeof dropDown.resize === "function") {
-					dropDown.resize(resizeArgs);
-				} else {
-					domGeometry.setMarginBox(dropDown, resizeArgs);
-				}
+				dropDown._popupWrapper.style.width = aroundNode.offsetWidth + "px";
 
 				// If dropdown is right-aligned then compensate for width change by changing horizontal position
 				if (retVal.corner[1] === "R") {

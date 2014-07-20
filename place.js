@@ -3,9 +3,8 @@
  * @module delite/place
  */
 define([
-	"dojo/dom-geometry", // domGeometry.position
 	"./Viewport" // getEffectiveBox
-], function (domGeometry, Viewport) {
+], function (Viewport) {
 
 	/**
 	 * @typedef {Object} module:delite/place.Position
@@ -135,7 +134,7 @@ define([
 				style.visibility = "hidden";
 				style.display = "";
 			}
-			var bb = domGeometry.position(node);
+			var bb = node.getBoundingClientRect();
 			style.display = oldDisplay;
 			style.visibility = oldVis;
 
@@ -144,23 +143,23 @@ define([
 			var
 				startXpos = {
 					"L": pos.x,
-					"R": pos.x - bb.w,
+					"R": pos.x - bb.width,
 					// M orientation is more flexible
-					"M": Math.max(view.l, Math.min(view.l + view.w, pos.x + (bb.w >> 1)) - bb.w)
+					"M": Math.max(view.l, Math.min(view.l + view.w, pos.x + (bb.width >> 1)) - bb.width)
 				}[corner.charAt(1)],
 				startYpos = {
 					"T": pos.y,
-					"B": pos.y - bb.h,
-					"M": Math.max(view.t, Math.min(view.t + view.h, pos.y + (bb.h >> 1)) - bb.h)
+					"B": pos.y - bb.height,
+					"M": Math.max(view.t, Math.min(view.t + view.h, pos.y + (bb.height >> 1)) - bb.height)
 				}[corner.charAt(0)],
 				startX = Math.max(view.l, startXpos),
 				startY = Math.max(view.t, startYpos),
-				endX = Math.min(view.l + view.w, startXpos + bb.w),
-				endY = Math.min(view.t + view.h, startYpos + bb.h),
+				endX = Math.min(view.l + view.w, startXpos + bb.width),
+				endY = Math.min(view.t + view.h, startYpos + bb.height),
 				width = endX - startX,
 				height = endY - startY;
 
-			overflow += (bb.w - width) + (bb.h - height);
+			overflow += (bb.width - width) + (bb.height - height);
 
 			if (best == null || overflow < best.overflow) {
 				best = {
@@ -304,18 +303,23 @@ define([
 			// If around is a DOMNode (or DOMNode id), convert to coordinates.
 			var aroundNodePos;
 			if (typeof anchor === "string" || "offsetWidth" in anchor || "ownerSVGElement" in anchor) {
-				aroundNodePos = domGeometry.position(anchor, true);
+				aroundNodePos = place.position(anchor);
 
 				// For above and below dropdowns, subtract width of border so that popup and aroundNode borders
 				// overlap, preventing a double-border effect.  Unfortunately, difficult to measure the border
 				// width of either anchor or popup because in both cases the border may be on an inner node.
 				if (/^(above|below)/.test(positions[0])) {
-					var anchorBorder = domGeometry.getBorderExtents(anchor),
-						anchorChildBorder = anchor.firstChild ? domGeometry.getBorderExtents(anchor.firstChild) :
-							{t: 0, l: 0, b: 0, r: 0},
-						nodeBorder = domGeometry.getBorderExtents(node),
-						nodeChildBorder = node.firstChild ? domGeometry.getBorderExtents(node.firstChild) :
-							{t: 0, l: 0, b: 0, r: 0};
+					var border = function (node) {
+						var cs = getComputedStyle(node);
+						return {
+							t: parseFloat(cs.borderTopWidth),	// remove "px"
+							b: parseFloat(cs.borderBottomWidth)	// remove "px"
+						};
+					};
+					var anchorBorder = border(anchor),
+						anchorChildBorder = anchor.firstElementChild ? border(anchor.firstElementChild) : {t: 0, b: 0},
+						nodeBorder = border(node),
+						nodeChildBorder = node.firstElementChild ? border(node.firstElementChild) : {t: 0, b: 0};
 					aroundNodePos.y += Math.min(anchorBorder.t + anchorChildBorder.t,
 						nodeBorder.t + nodeChildBorder.t);
 					aroundNodePos.h -= Math.min(anchorBorder.t + anchorChildBorder.t,
@@ -334,7 +338,7 @@ define([
 				var parent = anchor.parentNode;
 				// ignoring the body will help performance
 				while (parent && parent.nodeType === 1 && parent.nodeName !== "BODY") {
-					var parentPos = domGeometry.position(parent, true),
+					var parentPos = place.position(parent),
 						pcs = getComputedStyle(parent);
 					if (/^(relative|absolute)$/.test(pcs.position)) {
 						sawPosAbsolute = false;
@@ -427,6 +431,22 @@ define([
 			position.aroundNodePos = aroundNodePos;
 
 			return position;
+		},
+
+		/**
+		 * Return node position relative to document (rather than to viewport)
+		 * @param node
+		 */
+		position: function (node) {
+			var bcr = node.getBoundingClientRect(),
+				doc = node.ownerDocument,
+				win = doc.defaultView;
+			return {
+				x: bcr.left + (win.pageXOffset || doc.documentElement.scrollLeft),
+				y: bcr.top + (win.pageYOffset || doc.documentElement.scrollTop),
+				h: bcr.height,
+				w: bcr.width
+			};
 		}
 	};
 
