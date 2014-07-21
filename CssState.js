@@ -38,9 +38,7 @@ define([
 			});
 		},
 
-		refreshRendering: dcl.after(function (args) {
-			var oldVals = args[0];
-
+		refreshRendering: function (oldVals) {
 			// Monitoring changes to disabled, readonly, etc. state, and update CSS class of root node
 			this.booleanCssProps.forEach(function (name) {
 				if (name in oldVals) {
@@ -57,6 +55,6 @@ define([
 				domClass.remove(this, "d-" + oldVals.state.toLowerCase());
 				domClass.add(this, "d-" + this.state.toLowerCase());
 			}
-		})
+		}
 	});
 });

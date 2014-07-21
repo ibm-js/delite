@@ -87,18 +87,15 @@ define([
 			dom.setSelectable(this.scrollableNode, false);
 		}),
 
-		refreshRendering: dcl.superCall(function (sup) {
-			return function (props) {
-				sup.call(this, props);
-				if (props && props.scrollDirection) {
-					domClass.toggle(this.scrollableNode, "d-scrollable", this.scrollDirection !== "none");
-					domClass.toggle(this.scrollableNode, "d-scrollable-h",
-						/^(both|horizontal)$/.test(this.scrollDirection));
-					domClass.toggle(this.scrollableNode, "d-scrollable-v",
-						/^(both|vertical)$/.test(this.scrollDirection));
-				}
-			};
-		}),
+		refreshRendering: function (props) {
+			if (props.scrollDirection) {
+				domClass.toggle(this.scrollableNode, "d-scrollable", this.scrollDirection !== "none");
+				domClass.toggle(this.scrollableNode, "d-scrollable-h",
+					/^(both|horizontal)$/.test(this.scrollDirection));
+				domClass.toggle(this.scrollableNode, "d-scrollable-v",
+					/^(both|vertical)$/.test(this.scrollDirection));
+			}
+		},
 
 		destroy: function () {
 			this._stopAnimation();

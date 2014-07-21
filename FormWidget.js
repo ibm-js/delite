@@ -55,10 +55,9 @@ define([
 		 */
 		disabled: false,
 
-		refreshRendering: dcl.after(function (args) {
+		refreshRendering: function (oldValues) {
 			// Handle disabled and tabIndex, across the tabStops and root node.
 			// No special processing is needed for tabStops other than just to refresh disable and tabIndex.
-			var oldValues = args[0];
 			var self = this;
 			var tabStops = this.tabStops.split(/[ ,]/);
 			if ("tabStops" in oldValues || "disabled" in oldValues) {
@@ -97,7 +96,7 @@ define([
 				);
 			}
 			return oldValues; // for after advice
-		}),
+		},
 
 		/**
 		 * Put focus on this widget.
