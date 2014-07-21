@@ -26,8 +26,7 @@ define([
 		 */
 		readOnly: false,
 
-		refreshRendering: dcl.after(function (args) {
-			var oldValues = args[0];
+		refreshRendering: function (oldValues) {
 			if ("readOnly" in oldValues) {
 				var isReadOnly = this.readOnly;
 				if (this.valueNode && this.valueNode !== this) {
@@ -37,7 +36,7 @@ define([
 					this.removeAttribute("readonly");
 				}
 			}
-		}),
+		},
 
 		/**
 		 * Compare two values (of this widget).
