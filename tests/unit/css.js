@@ -44,8 +44,8 @@ define([
 
 			// Load two modules that both use delite/css! to load test1.css
 			require([
-				"./resources/TestLoadCssWidget1",
-				"./resources/TestLoadCssWidget2"
+				"./resources/TestCssWidget1",
+				"./resources/TestCssWidget2"
 			], d.callback(function () {
 				// test1.css should be automatically loaded (but just once, not twice) by the time
 				// this require() call completes.
@@ -69,7 +69,7 @@ define([
 			// Load another modules that uses delite/css! to load the same test1.css,
 			// just to triple check that the CSS doesn't get reloaded
 			require([
-				"./resources/TestLoadCssWidget3"
+				"./resources/TestCssWidget3"
 			], d.callback(function () {
 				assert.strictEqual(getStyles().match(/test1/g).length, 1, "test1.css inserted once");
 			}));
@@ -82,7 +82,7 @@ define([
 
 			// Load module with double dependency on test2.css
 			require([
-				"./resources/TestLoadCssWidget4"
+				"./resources/TestCssWidget4"
 			], d.callback(function () {
 				// test2.css should be automatically loaded (but just once, not twice) by the time
 				// this require() call completes.

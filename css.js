@@ -1,27 +1,29 @@
 /**
  * CSS loading plugin for widgets.
  *
- * This plugin will load and wait for css file.  This could be handy when
- * loading css file as part of a layer or as a way to apply a run-time theme.
- * This plugin uses the link load event and a work-around on old webkit browser.
- * The universal work-around watches a stylesheet until its rules are
- * available (not null or undefined). This plugin will return the path of the
- * inserted css file relative to baseUrl.
+ * This plugin will load and wait for a css file. This can be handy to load the css
+ * specific to a widget.
  *
- * Global configuration options:
+ * This plugin uses the link load event and a work-around on old webkit browsers.
+ * The work-around watches a stylesheet until its rules are
+ * available (not null or undefined).
  *
- * You may specify an alternate file extension:
- *
- *      require("css!myproj/component.less") // --> myproj/component.less
- *      require("css!myproj/component.scss") // --> myproj/component.scss
- *
- * When using alternative file extensions, be sure to serve the files from
- * the server with the correct mime type (text/css) or some browsers won't
- * parse them, causing an error in the plugin.
+ * This plugin will return the path of the inserted css file relative to requirejs baseUrl.
  *
  * @example:
- *      // load and wait for myproj/comp.css
- *      require(["delite/css!myproj/comp.css"]);
+ *      To load the css file `myproj/comp.css`:
+ *      ```
+ *      require(["delite/css!myproj/comp.css"], function (){
+ *          // Code placed here will wait for myproj/comp.css before running.
+ *      });
+ *      ```
+ *
+ *      Or as a widget dependency:
+ *      ```
+ *      define(["delite/css!myproj/comp.css"], function (){
+ *          // My widget factory
+ *      });
+ *      ```
  *
  * @module delite/css
  */
@@ -77,8 +79,8 @@ define([
 
 		/*jshint maxcomplexity: 11*/
 		/**
-		 * Loads a set of css resources.
-		 * @param {string} path - A css file to load.
+		 * Loads a css file.
+		 * @param {string} path - The css file to load.
 		 * @param {Function} require - A local require function to use to load other modules.
 		 * @param {Function} callback - A function to call when the specified stylesheets have been loaded.
 		 * @method

@@ -18,6 +18,7 @@ define([
 
 	registerSuite({
 		name: "theme",
+
 		"load global_css": function () {
 			var d = new this.async(1000);
 			// Load one module that use delite/theme! to load global_css
@@ -27,6 +28,33 @@ define([
 				// global_css should be automatically loaded. It defines class d-reset (themes/common/global.less)
 				assert.strictEqual(getStyles().match(/d-reset/g).length, 1, "global is loaded");
 			}));
+			return d;
+		},
+
+		loadLayer: function () {
+			var d = this.async(10000);
+			var layer = "delite/tests/unit/themes/{{theme}}/layer.css";
+
+			(function setGlobalConfig() {
+				this.require.config({
+					config: {
+						"delite/theme": {
+							layersMap: {
+								"delite/tests/unit/themes/{{theme}}/Button.css": layer,
+								"delite/themes/{{theme}}/global.css": layer,
+							}
+						}
+					}
+				});
+			})();
+
+			require([
+				"delite/theme!./themes/{{theme}}/Button.css"
+			], d.callback(function () {
+				// layer.css should be loaded instead of Button.css
+				assert.strictEqual(getStyles().match(/deliteBootstrapLayer/g).length, 1, "layer.css inserted once");
+			}));
+
 			return d;
 		}
 	});

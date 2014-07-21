@@ -3,8 +3,8 @@
  * This plugin will also load the global css file for the theme, `delite/themes/{{theme}}/global.css`,
  * even if no resource is provided (like in `delite/theme!`).
  *
- * For example, on an iPhone `theme!./css/{{theme}}/common.css`
- * will load `./css/ios/common.css`
+ * For example, on an iPhone `theme!./css/{{theme}}/Button.css`
+ * will load `./css/ios/Button.css` and `delite/themes/ios/global.css`.
  *
  * You can also pass an additional URL parameter string
  * `theme={theme widget}` to force a specific theme through the browser
@@ -86,14 +86,17 @@ define([
 		},
 
 		/**
-		 * Load and install the specified CSS files for the given logicalPaths, then call onload().
-		 * @param {string} path - Simplified paths. It will be expanded to convert {{theme}} to the current theme.
+		 * Load and install the specified CSS file for the given path, then call onload().
+		 * @param {string} path - Simplified path. It will be expanded to convert {{theme}} to the current theme.
 		 * @param {Function} require - AMD's require() method.
 		 * @param {Function} onload - Callback function which will be called when the loading finishes
 		 * and the stylesheet has been inserted.
 		 * @private
 		 */
 		load: function (path, require, onload) {
+			// Update config to be sure to get latest value.
+			config = module.config();
+
 			// Add CSS file which contains definitions global to the theme.
 			var globalCss = "./themes/{{theme}}/global.css";
 			var resources = path ? [globalCss, path] : [globalCss];

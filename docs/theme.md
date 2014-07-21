@@ -5,7 +5,7 @@ title: delite/theme!
 
 # delite/theme!
 
-Delite/theme! is a high level plugin for loading CSS files based on the theme of the page.
+Delite/theme! is a high level plugin for loading a CSS file based on the theme of the page.
 
 The plugin is similar to the CSS loader, but will substitute {{theme}} with the page's theme.
 
@@ -17,7 +17,7 @@ The requirements are that:
 - it contains subdirectories holodark, ios, and bootstrap
 - each of those subdirectories contains file1.css and file2.css
 
-The theme is detected automatically based on the platform and browser, and the correct files are loaded.
+The theme is detected automatically based on the platform and browser, and the correct file is loaded as well as the global css file for the theme.
 
 You can alternately pass an additional URL parameter string
 theme={theme widget} to force a specific theme through the browser

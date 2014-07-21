@@ -56,37 +56,6 @@ module.exports = function (grunt) {
 			}
 		},
 
-		// convert CSS files to JS files
-		cssToJs : {
-			// conversions removing the CSS files
-			replace: {
-				src: [
-					// infrastructure
-					"themes/*/*.css",
-					"!themes/common/*.css",
-					"themes/common/transitions/*.css",
-
-					// widgets
-					"*/themes/*/*.css",
-					"samples/ExampleWidget/themes/*/*.css"
-				],
-				options: {
-					remove: true
-				}
-			},
-
-			// conversions keeping the CSS files
-			keep: {
-				src: [
-					// some apps may want to load defaultapp.css as a JS file rather than a CSS file.
-					"themes/defaultapp.css",
-
-					// files originally authored as CSS
-					"tests/unit/css/*.css"
-				]
-			}
-		},
-
 		intern: {
 			local: {
 				options: {
@@ -140,10 +109,9 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks("grunt-contrib-less");
 	grunt.loadNpmTasks("grunt-contrib-uglify");
 	grunt.loadNpmTasks("jsdoc-amddcl");
-	grunt.loadTasks("themes/tasks");// Custom cssToJs task to convert CSS to JS
 
 	// Aliases
-	grunt.registerTask("css", ["less", "cssToJs"]);
+	grunt.registerTask("css", ["less"]);
 	grunt.registerTask("jsdoc", "jsdoc-amddcl");
 
 	// Testing.
