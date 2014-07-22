@@ -1,0 +1,6 @@
+/* For testing of delite/css! plugin */
+.test4 {
+	color: red;
+	border: 1px solid black;
+	background-image: url("../images/plus.gif");	/* for testing path correction */
+}
