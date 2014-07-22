@@ -2,7 +2,7 @@ define([
 	"require",
 	"intern!object",
 	"intern/chai!assert"
-], function (require, registerSuite, assert) {
+], function (localRequire, registerSuite, assert) {
 
 	// Note that as this test is running, other unrelated styles are likely being loaded
 	// from other test suites that load widgets that use theme!.  Make test resilient to this.
@@ -43,7 +43,7 @@ define([
 			var d = this.async(10000);
 
 			// Load two modules that both use delite/css! to load test1.css
-			require([
+			localRequire([
 				"./resources/TestCssWidget1",
 				"./resources/TestCssWidget2"
 			], d.callback(function () {
@@ -68,7 +68,7 @@ define([
 
 			// Load another modules that uses delite/css! to load the same test1.css,
 			// just to triple check that the CSS doesn't get reloaded
-			require([
+			localRequire([
 				"./resources/TestCssWidget3"
 			], d.callback(function () {
 				assert.strictEqual(getStyles().match(/test1/g).length, 1, "test1.css inserted once");
@@ -81,7 +81,7 @@ define([
 			var d = this.async(10000);
 
 			// Load module with double dependency on test2.css
-			require([
+			localRequire([
 				"./resources/TestCssWidget4"
 			], d.callback(function () {
 				// test2.css should be automatically loaded (but just once, not twice) by the time
@@ -95,19 +95,17 @@ define([
 		loadLayer: function () {
 			var d = this.async(10000);
 
-			(function setGlobalConfig() {
-				this.require.config({
-					config: {
-						"delite/css": {
-							layersMap: {
-								"delite/tests/unit/css/module5.css": "delite/tests/unit/css/layer.css"
-							}
+			require.config({
+				config: {
+					"delite/css": {
+						layersMap: {
+							"delite/tests/unit/css/module5.css": "delite/tests/unit/css/layer.css"
 						}
 					}
-				});
-			})();
+				}
+			});
 
-			require([
+			localRequire([
 				"delite/css!./css/module5.css"
 			], d.callback(function () {
 				// layer.css should be loaded instead of module5.css

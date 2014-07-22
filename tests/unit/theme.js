@@ -2,7 +2,7 @@ define([
 	"require",
 	"intern!object",
 	"intern/chai!assert"
-], function (require, registerSuite, assert) {
+], function (localRequire, registerSuite, assert) {
 
 	function getStyles() {
 		// summary:
@@ -22,7 +22,7 @@ define([
 		"load global_css": function () {
 			var d = new this.async(1000);
 			// Load one module that use delite/theme! to load global_css
-			require([
+			localRequire([
 				"./resources/TestThemeWidget1"
 			], d.callback(function () {
 				// global_css should be automatically loaded. It defines class d-reset (themes/common/global.less)
@@ -35,20 +35,18 @@ define([
 			var d = this.async(10000);
 			var layer = "delite/tests/unit/themes/{{theme}}/layer.css";
 
-			(function setGlobalConfig() {
-				this.require.config({
-					config: {
-						"delite/theme": {
-							layersMap: {
-								"delite/tests/unit/themes/{{theme}}/Button.css": layer,
-								"delite/themes/{{theme}}/global.css": layer,
-							}
+			require.config({
+				config: {
+					"delite/theme": {
+						layersMap: {
+							"delite/tests/unit/themes/{{theme}}/Button.css": layer,
+							"delite/themes/{{theme}}/global.css": layer,
 						}
 					}
-				});
-			})();
+				}
+			});
 
-			require([
+			localRequire([
 				"delite/theme!./themes/{{theme}}/Button.css"
 			], d.callback(function () {
 				// layer.css should be loaded instead of Button.css

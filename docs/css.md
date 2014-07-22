@@ -8,9 +8,7 @@ title: delite/css
 This plugin will load and wait for a css file. This can be handy to load the css
 specific to a widget.
 
-This plugin uses the link load event and a work-around on old webkit browsers.
-The work-around watches a stylesheet until its rules are
-available (not null or undefined).
+CSS loaded with this plugin can be overwritten by user-defined style sheet, using `<link>` or `<style>` tag.
 
 This plugin will return the path of the inserted css file relative to requirejs baseUrl.
 
@@ -31,6 +29,3 @@ define(["delite/css!myproj/comp.css"], function (){
 });
 ```
 
-## Implementation details
-
-This plugin loads CSS files via <link> tags.
