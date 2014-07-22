@@ -20,9 +20,9 @@
  *   {{label}}
  * </button>
  * ```
- * 
+ *
  * Usage is typically like:
- * 
+ *
  * ```js
  * define([..., "delite/handlebars!./templates/MyTemplate.html"], function(..., template){
  *     ...
@@ -30,10 +30,10 @@
  *     ...
  * });
  * ```
- * 
+ *
  * @module delite/handlebars
  */
-define(["./template"], function (template) {
+define(["requirejs-text/text", "./template"], function (text, template) {
 
 	// Text plugin to load the templates and do the build.
 	var textPlugin = "requirejs-text/text";
@@ -247,10 +247,18 @@ define(["./template"], function (template) {
 		 * @param {string} mid - Absolute path to the resource.
 		 * @param {Function} require - AMD's require() method.
 		 * @param {Function} onload - Callback function which will be called with the compiled template.
+		 * @param {Object} loaderConfig - Configuration object from the loader with `isBuild === true`
+		 * when doing a build.
 		 * @private
 		 */
-		load: function (mid, require, onload) {
+		load: function (mid, require, onload, loaderConfig) {
 			require([textPlugin + "!" + mid], function (templateText) {
+				// The build only need the call to requirejs-text/text to work.
+				if (loaderConfig.isBuild) {
+					onload();
+					return;
+				}
+
 				var templateDom = handlebars.toDom(templateText),
 					requires = templateDom.getAttribute("requires") ||
 						templateDom.getAttribute("data-requires") || "";
@@ -264,7 +272,22 @@ define(["./template"], function (template) {
 			});
 		},
 
-		pluginBuilder: textPlugin
+		/**
+		 * Build function to delegate template inlining to requirejs-text/text.
+		 * @param {string} pluginName - This module id.
+		 * @param {string} moduleName - Absolute path to the resource.
+		 * @param {Function} write - A function to be called with a string of output to
+		 * write to the optimized file. This function also contains a property function,
+		 * write.asModule(moduleName, text).
+		 * @param {Object} loaderConfig - Configuration object from the loader. `requirejs-text/text`
+		 * needs `loaderConfig.inlineText === true` to work.
+		 * @private
+		 */
+		write: function (pluginName, moduleName, write, loaderConfig) {
+			// summary:
+			//		Used by builds
+			text.write(textPlugin, moduleName, write, loaderConfig);
+		}
 	};
 
 	return handlebars;
