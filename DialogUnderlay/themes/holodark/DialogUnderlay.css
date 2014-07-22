@@ -1,0 +1,9 @@
+.d-dialog-underlay {
+  display: block;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 998;
+  background: #000000;
+  opacity: 0.5;
+}
