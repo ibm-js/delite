@@ -33,7 +33,7 @@
  *
  * @module delite/handlebars
  */
-define(["requirejs-text/text", "./template"], function (text, template) {
+define(["./template"], function (template) {
 
 	// Text plugin to load the templates and do the build.
 	var textPlugin = "requirejs-text/text";
@@ -284,8 +284,10 @@ define(["requirejs-text/text", "./template"], function (text, template) {
 		 * @private
 		 */
 		write: function (pluginName, moduleName, write, loaderConfig) {
-			// summary:
-			//		Used by builds
+			// Requirejs-text is not listed in the dependency list so it is not
+			// included in the layer. At build time requirejs works synchronously so
+			// there is no callback.
+			var text = require(textPlugin);
 			text.write(textPlugin, moduleName, write, loaderConfig);
 		}
 	};
