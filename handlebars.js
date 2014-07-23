@@ -49,7 +49,7 @@ define(["./template"], function (template) {
 	 * @returns {Object} Object like {expr: "'hello' + this.foo + 'world'", dependsOn: ["foo"]}
 	 */
 	function toJs(text, convertUndefinedToBlank) {
-		var inVar, parts = [], wp = [];
+		var inVar, parts = [], wp = {};
 
 		(text || "").split(/({{|}})/).forEach(function (str) {
 			if (str === "{{") {
@@ -62,12 +62,12 @@ define(["./template"], function (template) {
 				if (/this\./.test(prop)) {
 					// JS expression (ex: this.selectionMode === "multiple")
 					parts.push("(" + str + ")");
-					wp.push(str.match(/this\.(\w+)/g).map(function (thisVar) {
+					wp[str.match(/this\.(\w+)/g).map(function (thisVar) {
 						return thisVar.substring(5);	// "this.foo" --> "foo"
-					}));
+					})] = true;
 				} else {
 					// Property (ex: selectionMode) or path (ex: item.foo)
-					wp.push(prop.replace(/[^\w].*/, ""));// If nested prop like item.foo, watch top level prop (item).
+					wp[prop.replace(/[^\w].*/, "")] = true; // If nested prop (item.foo), watch top level prop (item).
 					parts.push(convertUndefinedToBlank ? "(this." + prop + " || '')" : "this." + prop);
 				}
 			} else if (str) {
@@ -79,7 +79,7 @@ define(["./template"], function (template) {
 
 		return {
 			expr: parts.join(" + "),
-			dependsOn: wp
+			dependsOn: Object.keys(wp)
 		};
 	}
 
