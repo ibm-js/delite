@@ -1,10 +1,10 @@
 /**
  * Plugin to load the specified CSS file, substituting {{theme}} with the theme for the current page.
- * This plugin will also load the global css file for the theme, `delite/themes/{{theme}}/global.css`,
+ * This plugin will also load the common css file for the theme, `delite/themes/{{theme}}/common.css`,
  * even if no resource is provided (like in `delite/theme!`).
  *
  * For example, on an iPhone `theme!./css/{{theme}}/Button.css`
- * will load `./css/ios/Button.css` and `delite/themes/ios/global.css`.
+ * will load `./css/ios/Button.css` and `delite/themes/ios/common.css`.
  *
  * You can also pass an additional URL parameter string
  * `theme={theme widget}` to force a specific theme through the browser
@@ -97,11 +97,11 @@ define([
 			// Update config to be sure to get latest value.
 			config = module.config();
 
-			// Add CSS file which contains definitions global to the theme.
+			// Add CSS file which contains definitions common to the theme.
 			// Use absolute MID (rather than relative MID) for benefit of builder, and since the MID specified
 			// in path has already been converted to an absolute MID.
-			var globalCss = module.id.replace(/\/.*/, "") + "/themes/{{theme}}/global.css";
-			var resources = path ? [globalCss, path] : [globalCss];
+			var commonCss = module.id.replace(/\/.*/, "") + "/themes/{{theme}}/common.css";
+			var resources = path ? [commonCss, path] : [commonCss];
 
 			if (has("builder")) {
 				resources.forEach(function (path) {
