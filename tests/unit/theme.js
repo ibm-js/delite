@@ -19,14 +19,14 @@ define([
 	registerSuite({
 		name: "theme",
 
-		"load global_css": function () {
+		"load common_css": function () {
 			var d = new this.async(1000);
-			// Load one module that use delite/theme! to load global_css
+			// Load one module that use delite/theme! to load common_css
 			localRequire([
 				"./resources/TestThemeWidget1"
 			], d.callback(function () {
-				// global_css should be automatically loaded. It defines class d-reset (themes/common/global.less)
-				assert.strictEqual(getStyles().match(/d-reset/g).length, 1, "global is loaded");
+				// common_css should be automatically loaded. It defines class d-reset (themes/common/classes.less)
+				assert.strictEqual(getStyles().match(/d-reset/g).length, 1, "common is loaded");
 			}));
 			return d;
 		},
@@ -40,7 +40,7 @@ define([
 					"delite/theme": {
 						layersMap: {
 							"delite/tests/unit/themes/{{theme}}/Button.css": layer,
-							"delite/themes/{{theme}}/global.css": layer,
+							"delite/themes/{{theme}}/common.css": layer
 						}
 					}
 				}
