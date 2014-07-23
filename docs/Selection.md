@@ -11,7 +11,8 @@ selection state of its internal items.
 This is typically used in conjunction with [`delite/StoreMap`](StoreMap.md) to manage the selection of the render items 
 created by the store mixin.
 
-Before proceeding, checkout [setup page](setup.md) on how to setup a project using delite. This will be required to leverage the samples from this page.
+Before proceeding, checkout [setup page](setup.md) on how to setup a project using delite.
+This will be required to leverage the samples from this page.
 
 ##### Table of Contents
 [Using Selection](#using)  
@@ -21,14 +22,14 @@ Before proceeding, checkout [setup page](setup.md) on how to setup a project usi
 <a name="using"></a>
 ## Using Selection
 
-On a widget extending `delite/Selection` one can choose several selection modes through the `selectionMode` property:
+A widget extending `delite/Selection` can choose several selection modes through the `selectionMode` property:
 
-  * `"multiple"` which means the application user can select interactively several items at the time
-  * `"single"` which means the application user can only select interactively a single item at the time, this is the default.
-  * `"radio"` which means the application user can only select interactively a single item at the time. Once an item has 
+* `"multiple"` which means the application user can select interactively several items at the time
+* `"single"` which means the application user can only select interactively a single item at the time, this is the default.
+* `"radio"` which means the application user can only select interactively a single item at the time. Once an item has
   been selected, interactively selecting another item deselects the previously selected item, and the user 
   cannot deselect the selected item. 
-  * `"none"` which means the application user can not interactively select an item
+* `"none"` which means the application user can not interactively select an item
 
 Note that this mode does not impact selection by the `selectedItem(s)` APIs which are always available and always allow 
 several items to be selected. If you want to restrict selection by those APIs you have to make sure code calling the 
@@ -36,14 +37,14 @@ selection method is doing that accordingly to the `selectionMode` or to speciali
 
 Once a selection mode has been set there are three ways to modify the selection on the instance:
  
-  * setting the `selectedItem` property to an item to select it and only it
-  * setting the `selectedItems` to an array of items to select all those items and on only them
-  * use the `setSelected()` function to toggle on or off the selection state of a particular item
+* setting the `selectedItem` property to an item to select it and only it
+* setting the `selectedItems` to an array of items to select all those items and on only them
+* use the `setSelected()` function to toggle on or off the selection state of a particular item
 
 You can know the selection state by querying either:
 
-  * the `selectedItem` property to get the last selected item
-  * the `selectedItems` property to get all the selected items
+* the `selectedItem` property to get the last selected item
+* the `selectedItems` property to get all the selected items
 
 <a name="extending"></a>
 ## Extending Selection
@@ -58,10 +59,9 @@ require(["delite/register", "delite/Selection", "delite/StoreMap"/*, ...*/],
     labelAttr: "label",
     preCreate: function () {
       this._childHash = {};
-      this.addInvalidatingProperties("renderItems");
     }
     refreshRendering: function (props) {
-      if (props.renderItems) {
+      if ("renderItems" in props) {
         // render item has changed, do something to reflect that in the rendering
         this.innerHTML = "";
         for (var i = 0; i < renderItems.length; i++) {
