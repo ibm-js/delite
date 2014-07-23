@@ -13,7 +13,7 @@ define(["requirejs-dplugins/has"], function (has) {
 	});
 
 	// Does platform have native support for document.registerElement() or a polyfill to simulate it?
-	has.add("document-register-element", document && !!document.registerElement);
+	has.add("document-register-element", typeof document !== "undefined" && !!document.registerElement);
 
 	// Can we use __proto__ to reset the prototype of DOMNodes?
 	// It's not available on IE<11, and even on IE11 it makes the node's attributes
