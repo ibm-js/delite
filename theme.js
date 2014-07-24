@@ -98,7 +98,9 @@ define([
 			config = module.config();
 
 			// Add CSS file which contains definitions global to the theme.
-			var globalCss = "./themes/{{theme}}/global.css";
+			// Use absolute MID (rather than relative MID) for benefit of builder, and since the MID specified
+			// in path has already been converted to an absolute MID.
+			var globalCss = module.id.replace(/\/.*/, "") + "/themes/{{theme}}/global.css";
 			var resources = path ? [globalCss, path] : [globalCss];
 
 			if (has("builder")) {
