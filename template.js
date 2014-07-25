@@ -151,7 +151,7 @@ define(["./register"], function (register) {
 				// Generate code to set this property or attribute
 				var propName = getProp(templateNode.tag, attr),
 					js = info.expr,		// code to compute property value
-					codeToSetProp = propName ? nodeName + "." + propName + "=" + js + ";" :
+					codeToSetProp = propName ? nodeName + "." + propName + "=" + js :
 						"this.setOrRemoveAttribute(" + nodeName + ", '" + attr + "', " + js + ")";
 
 				// set property/attribute initially
