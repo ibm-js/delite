@@ -1,8 +1,40 @@
 /** @module delite/FormValueWidget */
 define([
 	"dcl/dcl",
-	"./FormWidget"
+	"./FormWidget",
+	"./focus"
 ], function (dcl, FormWidget) {
+
+	/**
+	 * Returns a method to set a new value and fire an event (change or input) if the value changed since the last
+	 * call.  Widget should use `handleOnChange()` or `handleOnInput()`.
+	 * @param {string} eventType - The event type. Can be "change" or "input".
+	 * @param {string} prevValueProp - The name of the property to hold the previous value.
+	 * @param {string} deferHandleProp - The name of the property to hold the defer method that fire the event.
+	 * @returns {Function}
+	 * @private
+	 */
+	function genHandler(eventType, prevValueProp, deferHandleProp) {
+		// Set value and fire an input event if the value changed since the last call.
+		// @param {*} newValue - The new value.
+		return function (newValue) {
+			if ((typeof newValue !== typeof this[prevValueProp]) ||
+				(this.compare(newValue, this[prevValueProp]) !== 0)) {
+				this[prevValueProp] = this.value = newValue;
+				if (this[deferHandleProp]) {
+					this[deferHandleProp].remove();
+				}
+				// defer allows hidden value processing to run and
+				// also the onChange handler can safely adjust focus, etc
+				this[deferHandleProp] = this.defer(function () {
+					this[deferHandleProp] = null;
+					// make sure rendering is in sync when event handlers are called
+					this.deliver();
+					this.emit(eventType);
+				});
+			}
+		};
+	}
 
 	/**
 	 * Mixin for widgets corresponding to native HTML elements such as `<input>` or `<select>`
@@ -57,6 +89,23 @@ define([
 			}
 		},
 
+		_onFocus: dcl.superCall(function (sup) {
+			return function () {
+				// Called when user may be about to start input.
+				// Saves the widget's current value, which is the most recent of:
+				//
+				//	1. the original value set on widget construction
+				//	2. the value the user set when he previously used the widget
+				//	3. the value the application set programatically
+				//
+				// This is all to avoid firing unnecessary change/input events in the corner case where the
+				// user just selects and releases the Slider handle for example.
+				sup.call(this);
+				this._previousOnChangeValue = this.value;
+				this._previousOnInputValue = this.value;
+			};
+		}),
+
 		/**
 		 * Set value and fire a change event if the value changed since the last call.
 		 * @param {*} newValue - The new value.
@@ -69,46 +118,6 @@ define([
 		 * @param {*} newValue - The new value.
 		 * @protected
 		 */
-		handleOnInput: genHandler("input", "_previousOnInputValue", "_onInputHandle"),
-
-		startup: dcl.after(function () {
-			// initialize previous values (avoids firing unnecessary change/input event
-			// if user just select and release the Slider handle for example)
-			this._previousOnChangeValue = this.value;
-			this._previousOnInputValue = this.value;
-		})
+		handleOnInput: genHandler("input", "_previousOnInputValue", "_onInputHandle")
 	});
-
-	/**
-	 * Returns a method to set a new value and fire an event (change or input) if the value changed since the last
-	 * call. Widget should use `handleOnChange()` or `handleOnInput()`.
-	 * @param {string} eventType - The event type. Can be "change" or "input".
-	 * @param {string} prevValueProp - The name of the property to hold the previous value.
-	 * @param {string} deferHandleProp - The name of the property to hold the defer method that fire the event.
-	 * @returns {Function}
-	 * @private
-	 */
-	function genHandler(eventType, prevValueProp, deferHandleProp) {
-		// Set value and fire an input event if the value changed since the last call.
-		// @param {*} newValue - The new value.
-		return function (newValue) {
-			if ((typeof newValue !== typeof this[prevValueProp]) ||
-				(this.compare(newValue, this[prevValueProp]) !== 0)) {
-				this[prevValueProp] = this.value = newValue;
-				if (this[deferHandleProp]) {
-					this[deferHandleProp].remove();
-				}
-				// defer allows hidden value processing to run and
-				// also the onChange handler can safely adjust focus, etc
-				this[deferHandleProp] = this.defer(
-					function () {
-						this[deferHandleProp] = null;
-						// make sure rendering is in sync when event handlers are called
-						this.deliver();
-						this.emit(eventType);
-					}
-				);
-			}
-		};
-	}
 });
