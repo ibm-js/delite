@@ -23,6 +23,7 @@ Specifically, it's based on the following concepts:
 ## General documentation
 
 * [Introduction to delite and custom elements](customElements101.md)
+* [Delite internal architecture documentation](architecture.md)
 * [Migration notes for dijit based applications](migration.md)
 * [Notes on theme generation](themes.md)
 
