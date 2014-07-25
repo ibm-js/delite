@@ -15,11 +15,9 @@ way of doing things.
 
 The store is queried each time one of the following properties is set on the instance:
 
-  * store: references a `dstore/api/Store` implementation
-  * query: a query object to be passed to the store `filter()` function
-  * processQueryResult: a `Function` that allows one to process the result of the store query to sort or slice it once the filter query has been run but before the optional observation tracking is started.
+* store: references a `dstore/api/Store` implementation
+* query: a query object to be passed to the store `filter()` function
 
-   
 When the store is queried, render items are created using the `itemToRenderItem()` function which by default just returns the
 store item. Render items are typically used in widgets rendering several "data items" (arbitrary number of items
 connected to data) to specify how those "data items" have to be rendered. This means the render items are used as input
@@ -55,29 +53,26 @@ render items using this mapping.
 Once created the render items array is passed into the `initItems()` function and by default store in the
 `renderItems` property.
 
-In addition to this, if the store is an obsvervable store (`dstore/Observable`) the changes to the data in the store will
+In addition to this, if the store is an observable store (`dstore/Observable`) the changes to the data in the store will
 be tracked and the following functions will be called on each type of modification:
 
-  * `itemRemoved` if an item has been removed
-  * `itemAdded` if an item has been added
-  * `itemUpdated` if an item has been updated (its properties have changed)
-  * `itemMoved` if an item has been moved in an ordered store.
+* `itemRemoved` if an item has been removed
+* `itemAdded` if an item has been added
+* `itemUpdated` if an item has been updated (its properties have changed)
+* `itemMoved` if an item has been moved in an ordered store.
+
 By default those functions update the `renderItems` accordingly.
 
 Classes extending the mixin have two ways of leveraging the work of `delite/Store`. They can either listen to the changes
 to the `renderItems` property or redefine the various functions of the mixin to be notified of changes made to the render
 items.
 
-Listening to changes of `renderItems` is best done by adding the `renderItems` property as a property triggering 
-invalidation using [`delite/Invalidating`](Invalidating.html). This can be done as follows:
+Listening to changes of `renderItems` is best done via the `refreshRendering()` method:
 
 ```js
 define(["delite/register", "delite/Widget", "delite/Store"/*, ...*/], 
   function (register, Widget, Store/*, ...*/) {
   return register("employees-list", [HTMElement, Widget, Store], {
-    preCreate: function () {
-       this.addInvalidatingProperties("renderItems");
-    },
    	itemToRenderItem: function (item) {
    	   return {
    	     name: item.firstName + " " + item.lastName,
@@ -85,7 +80,7 @@ define(["delite/register", "delite/Widget", "delite/Store"/*, ...*/],
    	   }
 	},
     refreshRendering: function (props) {
-       if (props.renderItems) {
+       if ("renderItem" in props) {
          // render item has changed, do something to reflect that in the rendering by adding for example
          // a DOM element per item using the properties on the render item 
        }

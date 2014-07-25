@@ -20,6 +20,12 @@ Specifically, it's based on the following concepts:
 * It directly supports reactive templating via the handlebars! plugin,
   see the [handlebars](handlebars.html) documentation for details
 
+## General documentation
+
+* [Introduction to delite and custom elements](customElements101.html)
+* [Migration notes for dijit based applications](migration.html)
+* [Notes on theme generation](themes.html)
+
 ## Utility modules
 
 * [css!](css.html) - CSS file loading AMD plugin
@@ -60,7 +66,3 @@ Specifically, it's based on the following concepts:
   on the store items and the properties on the render items
 * [Widget](Widget.html) - base class for visual widgets
 
-## Other documentation
-
-* [migration notes for dijit based applications](migration.html)
-* [notes on theme generation](themes.html)
