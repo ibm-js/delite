@@ -29,6 +29,8 @@ Specifically, it's based on the following concepts:
 
 ## Utility modules
 
+* [a11y](a11y.md) - accessibility utility functions
+* [a11yclick](a11yclick.md) - allow keyboard "click" (via ENTER or SPACE) on custom DOM nodes
 * [css!](css.md) - CSS file loading AMD plugin
 * [focus](focus.md) - utility for tracking the stack of "active" widgets; used by [popup](popup.md)
 * [handlebars!](handlebars.md) - plugin to compile reactive templates for use in widgets
