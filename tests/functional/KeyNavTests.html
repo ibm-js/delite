@@ -12,14 +12,11 @@
 		require([
 			"delite/a11yclick",
 			"delite/register",
-			"dojo/dom",
 			"delite/Widget",
 			"delite/Container",
 			"delite/KeyNav",
-			"dojo/query",		// required when childSelector is a string
 			"requirejs-domready/domReady!"
-		], function (a11yclick, register, dom, Widget, Container, KeyNav) {
-
+		], function (a11yclick, register, Widget, Container, KeyNav) {
 			// Complex KeyNav subclass with string childSelector
 			register("my-grid", [HTMLElement, KeyNav], {
 				// Specifies which descendants can be navigated to
