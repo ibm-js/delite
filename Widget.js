@@ -95,8 +95,8 @@ define([
 
 		// Override Invalidating#refreshRendering() to execute the function returned by buildRendering
 		refreshRendering: function (props) {
-			if (this._refreshRenderingCallback) {
-				this._refreshRenderingCallback(props);
+			if (this._templateHandle) {
+				this._templateHandle.refresh(props);
 			}
 		},
 
@@ -180,7 +180,7 @@ define([
 		 */
 		buildRendering: function () {
 			if (this.template) {
-				this._refreshRenderingCallback = this.template(this.ownerDocument, register);
+				this._templateHandle = this.template(this.ownerDocument, register);
 			}
 		},
 

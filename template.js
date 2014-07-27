@@ -1,22 +1,9 @@
 /**
- * Plugin to compile an object tree representing a template into a function to generate that DOM,
+ * Plugin to compile an AST representing a template into a function to generate that DOM,
  * and setup listeners to update the DOM as the widget properties change.
  *
- * Object tree for a button would look like:
+ * See the reference documentation for details on the AST format.
  *
- * ```js
- * {
- * 	 tag: "button",
- * 	 attributes: {
- * 	    "class": ["d-reset ", {property: "baseClass"}]   // concatenate values in array to get attr value
- * 	 },
- * 	 children: [
- * 	    { tag: "span", attachPoints: ["iconNode"], ... },
- * 	    "some boilerplate text",
- * 	    { property: "label" } // text node bound to this.label
- * 	 ]
- * }
- * ```
  * @module delite/template
  */
 define(["./register"], function (register) {
@@ -47,8 +34,8 @@ define(["./register"], function (register) {
 	 *
 	 * Note that in order to support SVG, getProp("svg", "class") returns null instead of className.
 	 *
-	 * @param {string} tag
-	 * @param {string} attrName
+	 * @param {string} tag - Tag name.
+	 * @param {string} attrName - Attribute name.
 	 * @returns {string}
 	 * @private
 	 */
@@ -66,9 +53,9 @@ define(["./register"], function (register) {
 
 	/**
 	 * Generate code that executes `statement` if any of the properties in `dependencies` change.
-	 * @param dependencies
-	 * @param statement
-	 * @param observeText
+	 * @param {string[]} dependencies - List of variables referenced in `statement.
+	 * @param {string} statement - Content inside if() statement.
+	 * @param {string[]} observeText - Statement appended to this array.
 	 */
 	function generateWatchCode(dependencies, statement, observeText) {
 		if (dependencies.length) {
@@ -182,9 +169,10 @@ define(["./register"], function (register) {
 		},
 
 		/**
-		 * Given an object tree as described in the module summary,
+		 * Given an AST representation of the template,
 		 * returns the text for a function to generate DOM corresponding to that template,
-		 * and then return a function to propagate changes in widget properties to the template.
+		 * and then returns an object including a function to be called to update that DOM
+		 * when widget properties have changed.
 		 *
 		 * @param {string} rootNodeName - Name of variable for the root node of the tree, typically `this`.
 		 * @param {boolean} createRootNode - If true, create node; otherwise assume node exists in variable `nodeName`
@@ -199,13 +187,14 @@ define(["./register"], function (register) {
 			this.generateNodeCode(rootNodeName, createRootNode, tree, buildText, observeText);
 
 			return buildText.join("\n") +
-				["\nreturn function(props){"].concat(observeText).join("\n\t") + "\n}.bind(this);\n";
+				["\nreturn { refresh: function(props){"].concat(observeText).join("\n\t") + "\n}.bind(this) };\n";
 		},
 
 		/**
-		 * Given an object tree as described in the module summary,
+		 * Given an AST representation of the template,
 		 * returns a function to generate DOM corresponding to that template,
-		 * and that returns a function to be called to update that DOM when widget properties have changed.
+		 * and then returns an object including a function to be called to update that DOM
+		 * when widget properties have changed.
 		 *
 		 * @param {string} [rootNodeName] - Name of variable for the root node of the tree, defaults to `this`.
 		 * @param {boolean} [createRootNode] - If true, create root node; otherwise assume it already exists

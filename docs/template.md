@@ -19,7 +19,7 @@ An AST would look like:
 		{
 			tag: "SPAN",
 			attributes: {
-				class: ["d-reset ", {property: "iconClass"}]
+				class: {expr: "'d-reset' + this.baseClass", dependsOn: ["baseClass"]}
 			},
 			connect: {
 				click: "myClickHandler"		// name of method in widget to call on click event
@@ -27,7 +27,7 @@ An AST would look like:
 			attachPoints: [ "focusNode" ],
 			children: [ ... ]
 		},
-		{property: "label"}
+		{expr: "'some boilerplate text' + this.label", dependsOn: ["label"]}
 	]
 }
 ```
