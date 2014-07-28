@@ -1,13 +1,13 @@
 /**
- * Tracks the currently focused node, and which widgets are currently "active".
+ * Tracks which widgets are currently "active".
  *
  * A widget is considered active if it or a descendant widget has focus,
  * or if a non-focusable node of this widget or a descendant was recently clicked.
  *
- * Call `focus.on("active-widget-stack", callback)` to track the currently focused stack of widgets.
+ * Call `focus.on("active-widget-stack", callback)` to track the stack of currently focused widgets.
  *
  * Call `focus.on("widget-blur", func)` or `focus.on("widget-focus", ...)` to monitor when
- * when widgets become active/inactive
+ * when widgets become active/inactive.
  *
  * Finally, `focus.focus(node)` will focus a node, suppressing errors if the node doesn't exist.
  *
