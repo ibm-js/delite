@@ -99,13 +99,13 @@ define([
 				// like HTMLElement.title.  We are accessing them in the HTMLElement prototype rather than an object
 				// created from the document.createElement() factory.
 				_getProps: function () {
-					var list = [];
+					var hash = {};
 					for (var prop in this) {
 						if (!(prop in nativeButton)) {
-							list.push(prop);
+							hash[prop] = true;
 						}
 					}
-					return list;
+					return hash;
 				}
 			});
 			assert.ok(Mixin, "Mixin created");

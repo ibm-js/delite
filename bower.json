@@ -3,7 +3,7 @@
 	"version": "0.1.10-dev",
 	"dependencies": {
 		"dcl": "1.1.x",
-		"decor": "0.1.0-dev",
+		"decor": "0.2.0-beta",
 		"dojo": ">=1.9.1",
 		"dpointer": ">=0.1.0-dev",
 		"requirejs": "2.1.x",
