@@ -26,7 +26,7 @@ define([
 			var d = this.async(3000);
 
 			var log = [];
-			container.addEventListener("input", d.rejectOnError(function (e) {
+			container.addEventListener("input", d.rejectOnError(function () {
 				log.push(widget.value);
 			}));
 
@@ -36,7 +36,7 @@ define([
 			widget.handleOnInput("input value 2");
 			widget.handleOnInput("input value 3");
 
-			setTimeout(d.callback(function (e){
+			setTimeout(d.callback(function () {
 				// test debouncing; should only get one notification, about the latest value
 				assert.deepEqual(log, ["input value 3"]);
 			}), 100);
@@ -62,7 +62,7 @@ define([
 		// handle but returning it to its original position before pointerup.
 		noChange: function () {
 			var d = this.async(3000);
-			container.addEventListener("change", d.rejectOnError(function (e) {
+			container.addEventListener("change", d.rejectOnError(function () {
 				throw new Error("got change event");
 			}));
 
@@ -70,7 +70,7 @@ define([
 			widget._onFocus();
 			widget.handleOnChange("initial value");
 
-			setTimeout(d.callback(function (){
+			setTimeout(d.callback(function () {
 				// if this timeout fires without seeing any change event, we are good
 			}), 100);
 
