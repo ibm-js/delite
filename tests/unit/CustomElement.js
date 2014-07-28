@@ -200,6 +200,54 @@ define([
 		}
 	});
 
+	registerSuite({
+		name: "CustomElement#stateful",
+
+		setup: function () {
+			container = document.createElement("div");
+			document.body.appendChild(container);
+		},
+
+		// Test that Stateful notification of properties works.
+		// Testing specifically here (in addition to decor) because CustomElement redefines Stateful#_getProps()
+		stateful: function () {
+			var d = this.async(1000);
+
+			// Create a custom element with a custom "foo" event, plus the standard "click" event.
+			var MyCustomElement = register("my-widget-stateful", [HTMLElement, CustomElement], {
+				_private: 1,
+
+				foo: 2,
+				_setFooAttr: function (val) {
+					this._set("foo", val);
+				},
+
+				preCreate: function () {
+					this.instanceProp = 3;
+				},
+
+				anotherFunc: function () { }
+			});
+
+			var w = new MyCustomElement({});
+			w.observe(d.callback(function (oldValues) {
+				assert.deepEqual(oldValues, {
+					_private: 1,
+					foo: 2
+				});
+			}));
+
+			w._private = 11;
+			w.foo = 22;
+			w.instanceProp = 33;
+			w.className = "foo";	// shouldn't cause notification as per CustomElement#_getProp()
+		},
+
+		teardown: function () {
+			container.parentNode.removeChild(container);
+		}
+	});
+
 	/*jshint multistr: true */
 	var html = "<test-ce-foo id='one' name='bob' attr1=10 attr2=10></test-ce-foo> \
 		<test-ce-foo id='two' name='is' attr1=5 attr2=10></test-ce-foo> \

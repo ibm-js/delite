@@ -19,6 +19,8 @@ define([
 		}
 	}
 
+	var REGEXP_SHADOW_PROPS = /^_(.+)Attr$/;
+
 	/**
 	 * Base class for all custom elements.
 	 *
@@ -34,21 +36,21 @@ define([
 		_getProps: function () {
 			// Override _Stateful._getProps() to ignore properties from the HTML*Element superclasses, like "style".
 			// You would need to explicitly declare style: "" in your widget to get it here.
-			// Intentionally skips privates and methods, because it seems wasteful to have a custom
+			// Intentionally skips methods, because it seems wasteful to have a custom
 			// setter for every method; not sure that would work anyway.
 			//
 			// Also sets up this._propCaseMap, a mapping from lowercase property name to actual name,
 			// ex: iconclass --> iconClass, which does include the methods, but again doesn't
 			// include props like "style" that are merely inherited from HTMLElement.
 
-			var list = [], proto = this, ctor,
+			var hash = {}, proto = this, ctor,
 				pcm = this._propCaseMap = {};
 
 			do {
 				Object.keys(proto).forEach(function (prop) {
-					if (!/^_/.test(prop)) {
+					if (!REGEXP_SHADOW_PROPS.test(prop)) {
 						if (typeof proto[prop] !== "function") {
-							list.push(prop);
+							hash[prop] = true;
 						}
 						pcm[prop.toLowerCase()] = prop;
 					}
@@ -58,7 +60,7 @@ define([
 				ctor = proto && proto.constructor;
 			} while (proto && ctor !== this._baseElement);
 
-			return list;
+			return hash;
 		},
 
 		createdCallback: dcl.advise({
@@ -301,7 +303,14 @@ define([
 			})[0];
 		},
 
-		// Utility functions previously in registry.js
+		// Override Stateful#observe() because the way to get the list of properties to watch is different
+		// than for a plain Stateful.  Especially since IE doesn't support prototype swizzling.
+		observe: function (callback) {
+			var propsToObserve = this._ctor._propsToObserve;
+			var h = new Stateful.PropertyListObserver(this, propsToObserve);
+			h.open(callback, this);
+			return h;
+		},
 
 		/**
 		 * Search subtree under root returning custom elements found.

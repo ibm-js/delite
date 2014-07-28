@@ -321,7 +321,8 @@ define([
 		// Also, on IE this needs to happen before the getTagConstructor() call,
 		// since getTagConstructor() scans all the properties on the widget prototype.
 		if (proto._introspect) {
-			proto._introspect(proto._getProps());
+			ctor._propsToObserve = proto._getProps();
+			proto._introspect(ctor._propsToObserve);
 			ctor._introspected = true;
 		}
 
@@ -387,6 +388,12 @@ define([
 	 * @function module:delite/register.around
 	 */
 	register.around = dcl.around;
+
+	/**
+	 * Convenience shortcut to [dcl.superCall()](http://www.dcljs.org/docs/mini_js/supercall/).
+	 * @function module:delite/register.superCall
+	 */
+	register.superCall = dcl.superCall;
 
 	return register;
 });
