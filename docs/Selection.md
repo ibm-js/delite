@@ -5,14 +5,11 @@ title: delite/Selection
 
 # delite/Selection
 
-`delite/Selection` is a [`delite/Widget`](Widget.md) subclass which adds the ability for the widget to manage the 
+`delite/Selection` is a [`delite/Widget`](Widget.md) subclass which adds the ability for a widget to manage the
 selection state of its internal items.
 
 This is typically used in conjunction with [`delite/StoreMap`](StoreMap.md) to manage the selection of the render items 
 created by the store mixin.
-
-Before proceeding, checkout [setup page](setup.md) on how to setup a project using delite.
-This will be required to leverage the samples from this page.
 
 ##### Table of Contents
 [Using Selection](#using)  
