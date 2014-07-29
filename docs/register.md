@@ -11,8 +11,8 @@ title: delite/register
 
 You declare a new widget that is based off a DOM object that either is
 `HTMLElement` or implements `HTMLElement`, and also extends [`delite/CustomElement`](CustomElement.md) directly or indirectly.
-Typically you will use [`delite/Widget`](Widget.md) or a subclass of [`delite/Widget`](Widget.md) rather than extending
-[`delite/CustomElement`egis](CustomElement.md) directly.
+Typically you will extend [`delite/Widget`](Widget.md) or a subclass of [`delite/Widget`](Widget.md) rather than extending
+[`delite/CustomElement`](CustomElement.md) directly.
 
 To register the most basic of widgets, you would do the following:
 
@@ -21,13 +21,16 @@ require(["delite/register", "delite/Widget"], function (register, Widget) {
 	var MyWidget = register("my-widget", [HTMLElement, Widget], {
 		foo: "bar"
 	});
-
-	var mywidget1 = new MyWidget();
 });
 ```
 
-You can also instantiate widgets using the custom tag in your HTML as well, for example, to instantiate the above
-widget, you could have used the following:
+You can instantiate the widget programatically:
+
+```js
+var mywidget1 = new MyWidget();
+```
+
+or using the custom tag in your HTML:
 
 ```html
 <my-widget></my-widget>
@@ -39,7 +42,7 @@ and [document.registerElement](http://www.w3.org/TR/custom-elements/) from the n
 Note that the `register` module has a `createElement()` method, and new MyWidget() calls that method.
 
 
-`.register()` takes three arguments:
+`register()` takes three arguments:
 
 * `tag` - Is a string that provides the custom element tag name which can be used to instantiate the widget.  The string
   should be unique and should contain at least one dash (`-`).  If there is already a widget
@@ -86,12 +89,16 @@ require(["delite/register", "deliteful/Button"], function (register, Button) {
 	var MyButtonSubClass = register("my-button-subclass", Button, {
 		foo: "bar"
 	});
-
-	var mybutton1 = new MyButtonSubClass();
 });
 ```
 
-And instantiating via HTML is:
+And instantiate programatically:
+
+```js
+var mybutton1 = new MyButtonSubClass();
+```
+
+or declaratively via HTML using the `is` attribute:
 
 ```html
 <button is="my-button-subclass"></button>
