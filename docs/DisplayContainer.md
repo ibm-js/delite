@@ -8,9 +8,6 @@ title: delite/DisplayContainer
 `delite/DisplayContainer` is a [`delite/Container`](Container.md) subclass which adds the ability for the container to 
 manage the appearance of its children.
 
-Before proceeding, checkout [setup page](setup.md) on how to setup a project using delite.
-This will be required to leverage the samples from this page.
-
 ##### Table of Contents
 [Using DisplayContainer](#using)  
 [Extending DisplayContainer](#extending)  
