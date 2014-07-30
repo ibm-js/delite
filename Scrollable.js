@@ -25,18 +25,18 @@ define([
 	 * `scrollWidget` is the widget into which this mixin is mixed):
 	 *
 	 * ```js
-	 * scrollWidget.on("scroll", function () {
+	 * scrollWidget.on("scroll", function (event) {
 	 *   ...
-	 * }
+	 * });
 	 * ```
 	 *
 	 * For widgets that customize the `scrollableNode` property,
 	 * the events should be listened to on `widget.scrollableNode`:
 	 *
 	 * ```js
-	 * scrollWidget.scrollableNode.on("scroll", function () {
+	 * scrollWidget.on("scroll", function (event) {
 	 *   ...
-	 * }
+	 *   }, scrollWidget.scrollableNode);
 	 * ```
 	 *
 	 * @mixin module:delite/Scrollable
