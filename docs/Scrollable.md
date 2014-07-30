@@ -96,7 +96,7 @@ for programmatic scroll:
 * `scrollTo(to, duration)`: scrolls to the given position.
 
 The arguments `by` and `to` must be an object with x and/or y properties, for example
-`{x: 0, y: -5} or {y: -29}`, representing the desired amount of scroll, respectively
+`{x: 0, y: -5}` or `{y: -29}`, representing the desired amount of scroll, respectively
 scroll position. 
 
 The `duration ` argument of both methods is optional. It represents the duration of the scrolling 
