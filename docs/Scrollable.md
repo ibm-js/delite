@@ -15,11 +15,11 @@ By default, the scrolling capabilities are added to the widget's root node
 method.
 
 ##### Table of Contents
-[Extending Scrollable](#extending)
-[Using Scrollable](#using)
-[Element Styling](#styling)
-[User Interactions](#interactions)
-[Events](#events)
+[Extending Scrollable](#extending)  
+[Using Scrollable](#using)  
+[Element Styling](#styling)  
+[User Interactions](#interactions)  
+[Events](#events)  
 [Enterprise Use](#enterprise)
 
 <a name="extending"></a>
