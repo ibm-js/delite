@@ -49,6 +49,6 @@ Browser category:
 
 ## See Also
 
-* [`decor/sniff`](/decor/docs/sniff.md)
+* [`decor/sniff`](/decor/docs/master/sniff.html)
 
 
