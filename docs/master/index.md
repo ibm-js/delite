@@ -2,7 +2,7 @@
 layout: doc
 ---
 
-Delite aims to provide a widget infrastructure that fits future standards but is possible
+Delite provides a widget infrastructure that fits future standards but is possible
 to use on all modern browsers without performance concerns.
 
 Specifically, it's based on the following concepts:
@@ -13,7 +13,7 @@ Specifically, it's based on the following concepts:
   dealing with the widget instances.  This also means there is no widget registry, because the document is effectively the
   registry. You can use whatever DOM manipulation API you want to move the widget around.
 
-* It leverages ES5 accessor properties instead of using the discreet accessors.  This means there is no `widget.get()`
+* Leverage ES5 accessor properties instead of using the discreet accessors.  This means there is no `widget.get()`
   and `widget.set()`.  You can affect the widget directly.   See the `decor/Stateful` documentation
   for details.
 
@@ -23,11 +23,14 @@ Specifically, it's based on the following concepts:
 ## General documentation
 
 * [Introduction to delite and custom elements](customElements101.html)
+* [Delite internal architecture documentation](architecture.html)
 * [Migration notes for dijit based applications](migration.html)
 * [Notes on theme generation](themes.html)
 
 ## Utility modules
 
+* [a11y](a11y.html) - accessibility utility functions
+* [a11yclick](a11yclick.html) - allow keyboard "click" (via ENTER or SPACE) on custom DOM nodes
 * [css!](css.html) - CSS file loading AMD plugin
 * [focus](focus.html) - utility for tracking the stack of "active" widgets; used by [popup](popup.html)
 * [handlebars!](handlebars.html) - plugin to compile reactive templates for use in widgets

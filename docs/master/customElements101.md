@@ -27,7 +27,7 @@ from the new custom elements proposed standard.
 
 When defining a custom element you generally:
 
-* Define which HTML class you are extending.  Usually this is HTMLElement.
+* Define which HTML class you are extending.  Usually this is `HTMLElement`.
 * Define a template.
 * Define CSS for your custom element, preferably one CSS file for each supported theme.
 * Define the public properties of your custom elements.
@@ -86,7 +86,7 @@ Given a custom element definition like above, you would declare an instance like
 	objProp="myGlobalVariable"></my-widget>
 ```
 
-Note that it does automatic type conversion from the attribute value (which is always a string)
+Note that delite does automatic type conversion from the attribute value (which is always a string)
 to the property's type.
 
 ### Parsing
@@ -155,7 +155,7 @@ myWidgetInstance.boolProp = false;
 myWidgetInstance.objProp = myGlobalVariable;
 ```
 
-The first method with calling `new MyWidget({...})` is just syntactic sugar for the second form.
+The first syntax calling `new MyWidget({...})` is just syntactic sugar for the second syntax.
 
 Note that:
 

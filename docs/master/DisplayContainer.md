@@ -8,7 +8,8 @@ title: delite/DisplayContainer
 `delite/DisplayContainer` is a [`delite/Container`](Container.html) subclass which adds the ability for the container to 
 manage the appearance of its children.
 
-Before proceeding, checkout [setup page](setup.html) on how to setup a project using delite. This will be required to leverage the samples from this page.
+Before proceeding, checkout [setup page](setup.html) on how to setup a project using delite.
+This will be required to leverage the samples from this page.
 
 ##### Table of Contents
 [Using DisplayContainer](#using)  
@@ -25,12 +26,12 @@ default the display container will just show or hide the child. However subclass
 effects in order to transition from one visibility state to another. For this reason both functions managing the visibility
 return a `Promise` that will be resolved when the transition is finished. Also both accept the same parameters:
   
-  * `dest` : Widget/HTMLElement or id that points to the child the function must show or hide
-  * `params` : Optional params to customize the transition, interpreted by subclasses.
+* `dest` : Widget/HTMLElement or id that points to the child the function must show or hide
+* `params` : Optional params to customize the transition, interpreted by subclasses.
   
 ```js
 mycontainer.show("mychildid", {/* optional params depending on the subclass */}).then(function() {
-  // promise has been resolved, the child is now visibly
+  // promise has been resolved, the child is now visible
 });
 ``` 
 

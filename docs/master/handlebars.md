@@ -139,7 +139,7 @@ must list the required AMD modules via the `requires` attribute on the root node
 	<d-progress-indicator value="{{piValue}}"></d-progress-indicator>
 </template>
 ```
-{% rendaw %}
+{% endraw %}
 
 This technique can also be used to load other required modules, such as `delite/a11yclick`.
 
@@ -183,8 +183,9 @@ will set `this.focusNode` to point to the `<button>`, and setup a listener for t
 
 ## Unsupported constructs
 
-1. Helpers like {% raw %}`{{fullName author}}`{% endraw %}. But plan to support helpers in the future.
-2. {% raw %}`{{#if}}` and `{{#each}}`{% endraw %}
+1. Helpers like {% raw %}`{{fullName author}}`{% endraw %}, although you could call
+   {% raw %}`{{this.fullName(this.author)}}`{% endraw %}
+2. {% raw %}`{{#if}}` and `{{#each}}`{% endraw %}, although see section above about hiding and showing nodes.
 
 Partly these are unsupported because they are difficult for reactive templates,
 and partly to keep the code size of the Handlebars and template engine minimal.

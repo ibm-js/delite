@@ -11,8 +11,8 @@ title: delite/register
 
 You declare a new widget that is based off a DOM object that either is
 `HTMLElement` or implements `HTMLElement`, and also extends [`delite/CustomElement`](CustomElement.html) directly or indirectly.
-Typically you will use [`delite/Widget`](Widget.html) or a subclass of [`delite/Widget`](Widget.html) rather than extending
-[`delite/CustomElement`egis](CustomElement.html) directly.
+Typically you will extend [`delite/Widget`](Widget.html) or a subclass of [`delite/Widget`](Widget.html) rather than extending
+[`delite/CustomElement`](CustomElement.html) directly.
 
 To register the most basic of widgets, you would do the following:
 
@@ -21,13 +21,16 @@ require(["delite/register", "delite/Widget"], function (register, Widget) {
 	var MyWidget = register("my-widget", [HTMLElement, Widget], {
 		foo: "bar"
 	});
-
-	var mywidget1 = new MyWidget();
 });
 ```
 
-You can also instantiate widgets using the custom tag in your HTML as well, for example, to instantiate the above
-widget, you could have used the following:
+You can instantiate the widget programatically:
+
+```js
+var mywidget1 = new MyWidget();
+```
+
+or using the custom tag in your HTML:
 
 ```html
 <my-widget></my-widget>
@@ -39,7 +42,7 @@ and [document.registerElement](http://www.w3.org/TR/custom-elements/) from the n
 Note that the `register` module has a `createElement()` method, and new MyWidget() calls that method.
 
 
-`.register()` takes three arguments:
+`register()` takes three arguments:
 
 * `tag` - Is a string that provides the custom element tag name which can be used to instantiate the widget.  The string
   should be unique and should contain at least one dash (`-`).  If there is already a widget
@@ -86,12 +89,16 @@ require(["delite/register", "deliteful/Button"], function (register, Button) {
 	var MyButtonSubClass = register("my-button-subclass", Button, {
 		foo: "bar"
 	});
-
-	var mybutton1 = new MyButtonSubClass();
 });
 ```
 
-And instantiating via HTML is:
+And instantiate programatically:
+
+```js
+var mybutton1 = new MyButtonSubClass();
+```
+
+or declaratively via HTML using the `is` attribute:
 
 ```html
 <button is="my-button-subclass"></button>
@@ -146,44 +153,4 @@ Eventually browsers will support custom elements natively, and then this step wi
 
 `register()` tries to conform to the proposed custom elements standard.
 Internally, it will call `document.registerElement()` on platforms that support it.
-
-## Implementation details
-
-delite/register shims custom element support in a manner similar to Polymer.
-
-If the browser supports `document.registerElement()`, then delite/register just uses that.
-
-Otherwise:
-
-1. If the Element doesn't already exist it's created via document.createElement().
-   This will create an Element with the right tag name (ex: `<d-star-rating>`) but
-   without any of the behaviors associated with that widget.
-
-2. It calls the `upgrade()` method that converts the plain Element
-   into a "widget" by adding all the methods and properties of the widget.
-
-On most platforms upgrading is done by "prototype swizzling",
-i.e. swapping the Element's prototype with the widget's prototype:
-
-```js
-element.__proto__ = widget.prototype;
-```
-
-That's why the widget's prototype must extend `HTMLElement` or something
-similar like `HTMLButtonElement`.
-
-On IE, it's not possible to swizzle the prototype, so `upgrade()` calls
-`Object.defineProperties()` to manually adjust every property that the widget
-has added or overridden (compared to a plain Element):
-
-```js
-Object.defineProperties(element, widget.props)
-```
-
-Note that `widget.props`, along with some other metadata, is (pre)computed
-when the widget is registered, so it's not possible to dynamically add properties
-to the widget.
-
-
-
 

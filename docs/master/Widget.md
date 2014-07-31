@@ -14,24 +14,24 @@ and code to read widget parameters specified as DOMNode attributes.
 Declarative creation:
 
 1. Element upgraded to have all methods and properties of the widget class.
-2. preCreate() callback executed.
-3. buildRendering() callback executed.   Note though that the root node already exists.
-4. postCreate() callback.
+2. `preCreate()` callback executed.
+3. `buildRendering()` callback executed.   Note though that the root node already exists.
+4. `postCreate()` callback.
 5. Parameters specified as DOMNode attributes (ex: `<d-slider max=10>`) are mixed into the widget, thus calling
    custom setters.
-6. startup() callback.
+6. `startup()` callback.
 
 Programmatic creation is:
 
 1. Element created with widget tag name (ex: `<d-slider>`), and
    upgraded to have all methods and properties of the widget class.
-2. preCreate() callback executed.
-3. buildRendering() callback executed.   Note though that the root node already exists.
-4. postCreate() callback.
+2. `preCreate()` callback executed.
+3. `buildRendering()` callback executed.   Note though that the root node already exists.
+4. `postCreate()` callback.
 5. Parameters specified programatically
    (ex: `new MyWidget({title: "..."})`) are mixed into the widget, thus calling
    custom setters.
-6. startup() callback.
+6. `startup()` callback.
 
 `startup()` will be called automatically in the declarative case, but
 if the widget was created programatically, the app must manually call `startup()`
@@ -39,16 +39,17 @@ on the widget or its ancestor after inserting the widget into the document.
 
 As mentioned above, there are currently five lifecycle methods which can be extended on the widget:
 
-1. preCreate()
-2. buildRendering()
-3. postCreate()
-4. startup()
-5. destroy()
+1. `preCreate()`
+2. `buildRendering()`
+3. `postCreate()`
+4. `startup()`
+5. `destroy()`
 
 Note that all of these methods except `buildRendering()` are automatically chained,
 so you don't need to worry about setting up code to call the superclasses' methods.
 
-
+Also, note that widget authors don't typically extend `buildRendering()` directly, but rather
+specify the `template` property.   See the [`handlebars!`](handlebars.html) documentation for more details.
 ## Placement
 
 Delite widgets are DOM Custom Elements.  That means they can be placed and manipulated just like other DOM elements.
@@ -83,7 +84,7 @@ arguments:
 
 ## Custom setters
 
-Note that custom setters need to call this._set() to record the new value:
+Note that custom setters need to call `this._set()` to record the new value:
 
 ```js
 _setLabelAttr: function(val){

@@ -73,7 +73,7 @@ However, it's not recommended because:
 
 ### register()
 
-Widgets are declared via `register()` rather than `dojo.declare()`, and must extend HTMLElement or a subclass;
+Widgets are declared via `register()` rather than `dojo.declare()`, and must extend `HTMLElement` or a subclass;
    see the documentation for [register()](register.html) for details
 
 ### this
@@ -90,9 +90,10 @@ Widgets are declared via `register()` rather than `dojo.declare()`, and must ext
    It should just set attributes on the root node, and create sub nodes and/or text inside the root node.
 4. There's no `postMixInProperties()` method any more.   There is one called `preCreate()` that
    runs before rendering.
-5. The widget initialization parameters are not applied until after `buildRendering()` completes.
-
-TODO: more on lifecycle, especially custom setters
+5. The widget initialization parameters are not applied until after `buildRendering()` and `postCreate()` complete.
+6. Custom setters still exist, but often its preferable to recomput property values in `computeProperties()` and
+   to redraw the widget in `refreshRendering()`.  Both these methods are called asynchronously after a batch of
+   property changes.
 
 ### templates
 
@@ -100,7 +101,7 @@ TODO: more on lifecycle, especially custom setters
 
 ### i18n
 
-Resources are loaded through `i18n!` plugin rather than a loadResource() type method.
+Resources are loaded through `i18n!` plugin rather than a `loadResource()` type method.
 
 ### CSS
 A widget should use [delite/theme!](load.html) or [delite/css!](css.html) to load its own CSS.
