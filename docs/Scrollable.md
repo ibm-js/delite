@@ -99,7 +99,7 @@ The arguments `by` and `to` must be an object with x and/or y properties, for ex
 `{x: 0, y: -5}` or `{y: -29}`, representing the desired amount of scroll, respectively
 scroll position. 
 
-The `duration ` argument of both methods is optional. It represents the duration of the scrolling 
+The `duration` argument of both methods is optional. It represents the duration of the scrolling 
 animation in milliseconds. If 0 or unspecified, the scrolling is performed without animation.
 
 The method `getCurrentScroll()` returns the current amount of scroll, as an object 
