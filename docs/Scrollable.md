@@ -47,8 +47,9 @@ define(["delite/register", "delite/Scrollable", ...],
 ```
 
 Characteristics:
-* Fits for widgets with one single scrollable element.
-* Exposes the API of delite/Scrollable.
+
+- Fits for widgets with one single scrollable element.
+- Exposes the API of delite/Scrollable.
 
 Second use-case: creating a widget embedding widgets extending `delite/Scrollable`
 
@@ -72,8 +73,9 @@ define(["delite/register", "delite/Scrollable", ...],
 ```
 
 Characteristics:
-* Allows a widget to have more than one scrollable element.
-* Allows to hide the API of delite/Scrollable.
+
+- Allows a widget to have more than one scrollable element.
+- Allows to hide the API of delite/Scrollable.
 
 <a name="using"></a>
 ## Using Scrollable
