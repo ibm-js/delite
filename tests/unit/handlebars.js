@@ -224,6 +224,24 @@ define([
 				}), 10);
 
 				return d;
+			},
+
+			buttons: function () {
+				var ButtonWidget = register("handlebars-buttons-in-template", [HTMLElement, Widget], {
+					template: handlebars.compile(
+						"<template>" +
+							"<button is='handlebars-button' label='Default button'></button> " +
+							"<button is='handlebars-button' label='Blue button'></button> " +
+							"<button is='handlebars-button' label='Red button'></button> " +
+						"</template>"
+					)
+				});
+				var testWidget = new ButtonWidget();
+				testWidget.placeAt(container);
+				testWidget.deliver();
+
+				// Make sure all the buttons are siblings of each other, not parent-child.
+				assert.strictEqual(testWidget.children.length, 3, "direct children");
 			}
 		},
 

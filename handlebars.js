@@ -194,9 +194,14 @@ define(["./template"], function (template) {
 			//    - <select> - otherwise <select size={{size}}> gets converted to <select size=0> on webkit
 			// Regex will not match:
 			//    - <!-- comment -->
-			//    - native tags not mentioned above
 			templateText = templateText.replace(
-				/(<\/? *)([a-zA-Z0-9]+-[-a-zA-Z0-9]+|template|select|[a-zA-Z]+[^>]+is=)/g, "$1template-$2");
+				/(<\/? *)([-a-zA-Z0-9]+)/g, "$1template-$2");
+
+			// However, do not replace self-closing tags because although <input> is self-closing,
+			// <template-input> is not.
+			templateText = templateText.replace(
+				/template-(area|base|br|col|command|embed|hr|img|input|keygen|link|meta|param|source|track|wbr)/g,
+				"$1");
 
 			// Create DOM tree from template.
 			// If template contains SVG nodes then parse as XML, to preserve case of attributes like viewBox.
