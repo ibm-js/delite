@@ -60,6 +60,8 @@ Specifically, it's based on the following concepts:
 * [HasDropDown](HasDropDown.md) - base class for widgets that have a drop down, such as a ComboBox
 * [KeyNav](KeyNav.md) - base class for widgets with keyboard navigation using arrow keys and also searching by typing
   alphabetic keys; for example, tree and grid widgets
+* [Scrollable](Scrollable.md) - [Widget](Widget.md) subclass which adds scrolling capabilities
+  based on the [`overflow: auto`](http://www.w3.org/TR/CSS2/visufx.html#overflow) CSS property.
 * [Selection](Selection.md) - [Widget](Widget.md) subclass which adds the ability for the widget to manage the
   selection state of its internal items.
 * [Store](Store.md) - mixin to query a store object from the
