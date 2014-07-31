@@ -5,11 +5,11 @@
 		"dcl": "1.1.x",
 		"decor": "0.2.0-beta",
 		"dojo": ">=1.9.1",
-		"dpointer": ">=0.1.0-dev",
+		"dpointer": "0.1.x",
 		"requirejs": "2.1.x",
-		"requirejs-domready": ">=2.0.1",
-		"requirejs-dplugins": ">=0.2.2-dev",
-		"requirejs-text": ">=2.0.11"
+		"requirejs-domready": "2.0.x",
+		"requirejs-dplugins": "0.2.x",
+		"requirejs-text": "2.0.x"
 	},
 	"devDependencies": {
 		"dstore" : "0.1.0",
