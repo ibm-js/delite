@@ -63,68 +63,70 @@ define([
 			assert.strictEqual(node.myButton2.tagName.toLowerCase(), "button", "node.myButton2");
 		},
 
-		"special props": function () {
-			var SpecialPropsWidget = register("handlebars-special-props", [HTMLElement, Widget], {
-				inputClass: "originalClass",	// attribute called "class" but property called "className"
-				inputValue: "original value",	// must be set as property
-				role: "originalRole",			// must be set as attribute
-				template: handlebars.compile(
-						"<template><input class='{{inputClass}}' value='{{inputValue}}' " +
-						"role='{{role}}'/></template>"
-				)
-			});
-			var mySpecialPropsWidget = new SpecialPropsWidget();
-			var input = mySpecialPropsWidget.children[0];
+		"special props": {
+			one: function () {
+				var SpecialPropsWidget = register("handlebars-special-props", [HTMLElement, Widget], {
+					inputClass: "originalClass",	// attribute called "class" but property called "className"
+					inputValue: "original value",	// must be set as property
+					role: "originalRole",			// must be set as attribute
+					template: handlebars.compile(
+							"<template><input class='{{inputClass}}' value='{{inputValue}}' " +
+							"role='{{role}}'/></template>"
+					)
+				});
+				var mySpecialPropsWidget = new SpecialPropsWidget();
+				var input = mySpecialPropsWidget.children[0];
 
-			assert.strictEqual(input.value, "original value", "value set as property");
-			assert.strictEqual(input.className, "originalClass",
-				"class set even though property is called className, not class");
-			assert.strictEqual(input.getAttribute("role"), "originalRole", "role set as attribute");
+				assert.strictEqual(input.value, "original value", "value set as property");
+				assert.strictEqual(input.className, "originalClass",
+					"class set even though property is called className, not class");
+				assert.strictEqual(input.getAttribute("role"), "originalRole", "role set as attribute");
 
-			mySpecialPropsWidget.mix({
-				inputClass: "newClass",
-				inputValue: "new value",
-				role: "newRole"
-			});
+				mySpecialPropsWidget.mix({
+					inputClass: "newClass",
+					inputValue: "new value",
+					role: "newRole"
+				});
 
-			var d = this.async(1000);
+				var d = this.async(1000);
 
-			setTimeout(d.callback(function () {
-				assert.strictEqual(input.value, "new value", "value changed");
-				assert.strictEqual(input.className, "newClass", "class changed");
-				assert.strictEqual(input.getAttribute("role"), "newRole", "role changed");
-			}), 10);
+				setTimeout(d.callback(function () {
+					assert.strictEqual(input.value, "new value", "value changed");
+					assert.strictEqual(input.className, "newClass", "class changed");
+					assert.strictEqual(input.getAttribute("role"), "newRole", "role changed");
+				}), 10);
 
-			return d;
-		},
+				return d;
+			},
 
-		"special props 2": function () {
-			var MyWidget = register("handlebars-special-props-2", [HTMLElement, Widget], {
-				foo: 0,
-				size: 0,
-				multiple: false,
-				template: handlebars.compile(
-						"<template><select data-attach-point='select' foo='{{foo}}' " +
-						"size='{{size}}' multiple='{{multiple}}'></select></template>"
-				)
-			});
+			two: function () {
+				var MyWidget = register("handlebars-special-props-2", [HTMLElement, Widget], {
+					foo: 0,
+					size: 0,
+					multiple: false,
+					template: handlebars.compile(
+							"<template><select data-attach-point='select' foo='{{foo}}' " +
+							"size='{{size}}' multiple='{{multiple}}'></select></template>"
+					)
+				});
 
-			var myWidget = new MyWidget({ // custom values
-				foo: 2,
-				size: 2,
-				multiple: true
-			});
+				var myWidget = new MyWidget({ // custom values
+					foo: 2,
+					size: 2,
+					multiple: true
+				});
 
-			var d = this.async(1000);
+				var d = this.async(1000);
 
-			setTimeout(d.callback(function () {
-				var select = myWidget.select;
-				assert.strictEqual(select.getAttribute("foo"), "2", "foo");
-				assert.strictEqual(select.size, 2, "size");
-				assert.strictEqual(select.multiple, true, "multiple");
-			}), 10);
+				setTimeout(d.callback(function () {
+					var select = myWidget.select;
+					assert.strictEqual(select.getAttribute("foo"), "2", "foo");
+					assert.strictEqual(select.size, 2, "size");
+					assert.strictEqual(select.multiple, true, "multiple");
+				}), 10);
 
-			return d;
+				return d;
+			}
 		},
 
 		"special characters": function () {
@@ -142,86 +144,90 @@ define([
 			assert.strictEqual(myList.firstChild.textContent, "\"\\bill'\\\n\twas \n\there'", "node text");
 		},
 
-		"attach-event-widget-callback": function () {
-			// Test for syntax connecting to a method in the widget: on-click='{{clickHandler}}'
-			var TestListener = register("handlebars-attach-events", [HTMLElement, Widget], {
-				template: handlebars.compile(
-					"<template><span on-click='{{clickHandler}}'>click me</span></template>"),
-				clicks: 0,
-				clickHandler: function () {
-					this.clicks++;
-				}
-			});
-			var myListener = new TestListener();
-			myListener.placeAt(container);
-			on.emit(myListener.firstChild, "click", {});
-			assert.strictEqual(myListener.clicks, 1, "click callback fired");
+		"attach-event": {
+			"widget-callback": function () {
+				// Test for syntax connecting to a method in the widget: on-click='{{clickHandler}}'
+				var TestListener = register("handlebars-attach-events", [HTMLElement, Widget], {
+					template: handlebars.compile(
+						"<template><span on-click='{{clickHandler}}'>click me</span></template>"),
+					clicks: 0,
+					clickHandler: function () {
+						this.clicks++;
+					}
+				});
+				var myListener = new TestListener();
+				myListener.placeAt(container);
+				on.emit(myListener.firstChild, "click", {});
+				assert.strictEqual(myListener.clicks, 1, "click callback fired");
+			},
+
+			"anonymous-function": function () {
+				// Test for syntax with an inline function definition.  Apparently used by dapp.
+				/* global g:true */
+				g = 1;
+				var TestClick = register("handlebars-events", [HTMLElement, Widget], {
+					template: handlebars.compile(
+						"<template><span on-click='g = 2;'>click me</span></template>")
+				});
+				var myClick = new TestClick();
+				myClick.placeAt(container);
+				on.emit(myClick.firstChild, "click", {});
+				assert.strictEqual(g, 2, "click handler fired");
+			}
 		},
 
-		"attach-event-anonymous-function": function () {
-			// Test for syntax with an inline function definition.  Apparently used by dapp.
-			/* global g:true */
-			g = 1;
-			var TestClick = register("handlebars-events", [HTMLElement, Widget], {
-				template: handlebars.compile(
-					"<template><span on-click='g = 2;'>click me</span></template>")
-			});
-			var myClick = new TestClick();
-			myClick.placeAt(container);
-			on.emit(myClick.firstChild, "click", {});
-			assert.strictEqual(g, 2, "click handler fired");
-		},
-
-		"widgets in templates": function () {
-			register("handlebars-heading", [HTMLElement, Widget], {
-				text: "",
-				template: handlebars.compile("<handlebars-heading>{{text}}</handlebars-heading>")
-			});
-
-			// This widget uses sub-widgets handlebars-button (defined in first test) and also handlebars-heading.
-			var ComplexWidget = register("handlebars-widgets-in-template", [HTMLElement, Widget], {
-				heading: "original heading",
-				content: "original content",
-				buttonLabel: "original button label",
-				template: handlebars.compile(
-					"<handlebars-widgets-in-template>" +
-						"<handlebars-heading text='{{heading}}'></handlebars-heading>" +
-						"<span>{{content}}</span>" +
-						"<button is='handlebars-button' label='{{buttonLabel}}'></button>" +
-					"</handlebars-widgets-in-template>"
-				)
-			});
-
-			var myComplexWidget = new ComplexWidget(),
-				headingWidget = myComplexWidget.getElementsByTagName("handlebars-heading")[0],
-				buttonWidget = myComplexWidget.getElementsByTagName("button")[0];
-
-			assert.ok(headingWidget.buildRendering, "heading widget was instantiated");
-			assert.ok(buttonWidget.buildRendering, "button widget was instantiated");
-
-			var d = this.async(1000);
-
-			setTimeout(d.rejectOnError(function () {
-				assert.strictEqual(headingWidget.textContent, "original heading",
-					"heading widget got title from main widget");
-				assert.strictEqual(buttonWidget.textContent.trim(), "original button label",
-					"button widget got label from main widget");
-
-				myComplexWidget.mix({
-					heading: "new heading",
-					buttonLabel: "new button label"
+		"widgets in templates": {
+			basic: function () {
+				register("handlebars-heading", [HTMLElement, Widget], {
+					text: "",
+					template: handlebars.compile("<template>{{text}}</template>")
 				});
 
-				setTimeout(d.callback(function () {
-					assert.strictEqual(headingWidget.textContent, "new heading", "heading changed");
-					assert.strictEqual(buttonWidget.textContent.trim(), "new button label", "button changed");
-				}), 10);
-			}), 10);
+				// This widget uses sub-widgets handlebars-button (defined in first test) and also handlebars-heading.
+				var ComplexWidget = register("handlebars-widgets-in-template", [HTMLElement, Widget], {
+					heading: "original heading",
+					content: "original content",
+					buttonLabel: "original button label",
+					template: handlebars.compile(
+						"<template>" +
+							"<handlebars-heading text='{{heading}}'></handlebars-heading>" +
+							"<span>{{content}}</span>" +
+							"<button is='handlebars-button' label='{{buttonLabel}}'></button>" +
+						"</template>"
+					)
+				});
 
-			return d;
+				var myComplexWidget = new ComplexWidget(),
+					headingWidget = myComplexWidget.getElementsByTagName("handlebars-heading")[0],
+					buttonWidget = myComplexWidget.getElementsByTagName("button")[0];
+
+				assert.ok(headingWidget.buildRendering, "heading widget was instantiated");
+				assert.ok(buttonWidget.buildRendering, "button widget was instantiated");
+
+				var d = this.async(1000);
+
+				setTimeout(d.rejectOnError(function () {
+					assert.strictEqual(headingWidget.textContent, "original heading",
+						"heading widget got title from main widget");
+					assert.strictEqual(buttonWidget.textContent.trim(), "original button label",
+						"button widget got label from main widget");
+
+					myComplexWidget.mix({
+						heading: "new heading",
+						buttonLabel: "new button label"
+					});
+
+					setTimeout(d.callback(function () {
+						assert.strictEqual(headingWidget.textContent, "new heading", "heading changed");
+						assert.strictEqual(buttonWidget.textContent.trim(), "new button label", "button changed");
+					}), 10);
+				}), 10);
+
+				return d;
+			}
 		},
 
-		"requires": function () {
+		requires: function () {
 			// Another test of widgets in templates, but this time loading the template from a file.
 			// This makes sure that the requires attribute (in the top level <template> node)
 			// will pull in the specified modules.
@@ -425,44 +431,46 @@ define([
 			assert.strictEqual(node.getAttribute("aria-selected"), "true", "aria-selected updated value #2");
 		},
 
-		"d-hidden": function () {
-			var TestNested = register("handlebars-hide", [HTMLElement, Widget], {
-				hideSpan: true,
-				template: handlebars.compile("<span d-hidden={{hideSpan}}>hello world</span>")
-			});
+		"hide and show node": {
+			"d-hidden": function () {
+				var TestNested = register("handlebars-hide", [HTMLElement, Widget], {
+					hideSpan: true,
+					template: handlebars.compile("<span d-hidden={{hideSpan}}>hello world</span>")
+				});
 
-			var node = new TestNested();
-			node.placeAt(container);
-			assert.strictEqual(getComputedStyle(node).display, "none", "hidden");
-
-			var d = this.async(1000);
-
-			node.hideSpan = false;
-			setTimeout(d.callback(function () {
-				assert.strictEqual(getComputedStyle(node).display, "inline", "not hidden");
-			}), 10);
-
-			return d;
-		},
-
-		"d-shown": function () {
-			var TestNested = register("handlebars-show", [HTMLElement, Widget], {
-				showSpan: true,
-				template: handlebars.compile("<span d-shown={{showSpan}}>hello world</span>")
-			});
-
-			var node = new TestNested();
-			node.placeAt(container);
-			assert.strictEqual(getComputedStyle(node).display, "inline", "not hidden");
-
-			var d = this.async(1000);
-
-			node.showSpan = false;
-			setTimeout(d.callback(function () {
+				var node = new TestNested();
+				node.placeAt(container);
 				assert.strictEqual(getComputedStyle(node).display, "none", "hidden");
-			}), 10);
 
-			return d;
+				var d = this.async(1000);
+
+				node.hideSpan = false;
+				setTimeout(d.callback(function () {
+					assert.strictEqual(getComputedStyle(node).display, "inline", "not hidden");
+				}), 10);
+
+				return d;
+			},
+
+			"d-shown": function () {
+				var TestNested = register("handlebars-show", [HTMLElement, Widget], {
+					showSpan: true,
+					template: handlebars.compile("<span d-shown={{showSpan}}>hello world</span>")
+				});
+
+				var node = new TestNested();
+				node.placeAt(container);
+				assert.strictEqual(getComputedStyle(node).display, "inline", "not hidden");
+
+				var d = this.async(1000);
+
+				node.showSpan = false;
+				setTimeout(d.callback(function () {
+					assert.strictEqual(getComputedStyle(node).display, "none", "hidden");
+				}), 10);
+
+				return d;
+			}
 		},
 
 		// Make sure that .deliver() updates the widget synchronously, including updating widgets in the template,
