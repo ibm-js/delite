@@ -6,7 +6,7 @@ title: delite/Store
 # delite/Store
 
 `delite/Store` is a mixin that can be mixed into a class inheriting from [`delite/Widget`](Widget.html) or `decor/Evented`
-in order to query a store object from the [dstore](https://github.com/SitePen/dstore/blob/master/README.html) project and 
+in order to query a store object from the [dstore](https://github.com/SitePen/dstore/blob/master/README.md) project and 
 create render items for this widget based on the store items.
 
 This is particularly useful for a widget that needs to create items (or render items) based on store entries

@@ -65,7 +65,7 @@ Specifically, it's based on the following concepts:
 * [Selection](Selection.html) - [Widget](Widget.html) subclass which adds the ability for the widget to manage the
   selection state of its internal items.
 * [Store](Store.html) - mixin to query a store object from the
-  [dstore](https://github.com/SitePen/dstore/blob/master/README.html) project and
+  [dstore](https://github.com/SitePen/dstore/blob/master/README.md) project and
   create render items for this widget based on the store items.
 * [StoreMap](StoreMap.html) - extension of [Store](Store.html) that performs some automatic mapping between the properties
   on the store items and the properties on the render items
