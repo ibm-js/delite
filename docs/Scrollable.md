@@ -198,7 +198,7 @@ Screen reader accessibility relies on screen reader's ability to work with HTML 
 ### Globalization
 
 `delite/Scrollable` does not provide any internationalizable bundle. The only strings displayed 
-by the widget are coming from the user data through the store from which the options are retrieved.
+by the widget are coming from the elements added by user as scrollable content of this widget.
 
 Right to left orientation is supported by setting the `dir` attribute to `rtl`on the
 widget using `delite/Scrollable`.
