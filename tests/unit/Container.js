@@ -24,6 +24,7 @@ define([
 
 	registerSuite({
 		name: "Container",
+
 		setup: function () {
 			container = document.createElement("div");
 			document.body.appendChild(container);
@@ -32,34 +33,37 @@ define([
 			TestContainer = register("test-container", [HTMLElement, Widget, Container], {});
 			TestContained = register("test-contained", [HTMLElement, Widget], {});
 		},
-		"parse": function () {
+
+		parse: function () {
 			register.parse(container);
 		},
-		"basic tests getChildren": function () {
-			var c = document.getElementById("container");
-			var children = c.getChildren();
-			assert.deepEqual(5, children.length);
-			assert.deepEqual("zero", children[0].id);
-			assert.deepEqual("one", children[1].id);
-			assert.deepEqual("two", children[2].id);
-			assert.deepEqual("three", children[3].id);
-			assert.deepEqual("four", children[4].id);
-		},
-		"basic tests getIndexOfChild": function () {
-			var c = document.getElementById("container");
-			assert.deepEqual(0, c.getIndexOfChild(document.getElementById("zero")), "zero test");
-			assert.deepEqual(1, c.getIndexOfChild(document.getElementById("one")), "one test");
-			assert.deepEqual(2, c.getIndexOfChild(document.getElementById("two")), "two test");
-			assert.deepEqual(3, c.getIndexOfChild(document.getElementById("three")), "threetest");
-			assert.deepEqual(4, c.getIndexOfChild(document.getElementById("four")), "four test");
-			assert.deepEqual(-1, c.getIndexOfChild(document.getElementById("outside")), "outside test");
-			assert.deepEqual(-1, c.getIndexOfChild(document.getElementById("outsideCont")), "outsideCont test");
 
-		},
-		"basic tests removeChild": function () {
+		getChildren: function () {
 			var c = document.getElementById("container");
 			var children = c.getChildren();
-			assert.deepEqual(5, children.length);
+			assert.strictEqual(children.length, 5);
+			assert.strictEqual(children[0].id, "zero");
+			assert.strictEqual(children[1].id, "one");
+			assert.strictEqual(children[2].id, "two");
+			assert.strictEqual(children[3].id, "three");
+			assert.strictEqual(children[4].id, "four");
+		},
+
+		getIndexOfChild: function () {
+			var c = document.getElementById("container");
+			assert.strictEqual(c.getIndexOfChild(document.getElementById("zero")), 0, "zero test");
+			assert.strictEqual(c.getIndexOfChild(document.getElementById("one")), 1, "one test");
+			assert.strictEqual(c.getIndexOfChild(document.getElementById("two")), 2, "two test");
+			assert.strictEqual(c.getIndexOfChild(document.getElementById("three")), 3, "threetest");
+			assert.strictEqual(c.getIndexOfChild(document.getElementById("four")), 4, "four test");
+			assert.strictEqual(c.getIndexOfChild(document.getElementById("outside")), -1, "outside test");
+			assert.strictEqual(c.getIndexOfChild(document.getElementById("outsideCont")), -1, "outsideCont test");
+		},
+
+		removeChild: function () {
+			var c = document.getElementById("container");
+			var children = c.getChildren();
+			assert.strictEqual(children.length, 5);
 			zero = document.getElementById("zero");
 			c.removeChild(zero);
 			two = document.getElementById("two");
@@ -67,62 +71,64 @@ define([
 			four = document.getElementById("four");
 			c.removeChild(four);
 			children = c.getChildren();
-			assert.deepEqual(2, children.length);
-			assert.deepEqual("one", children[0].id);
-			assert.deepEqual("three", children[1].id);
+			assert.strictEqual(children.length, 2);
+			assert.strictEqual(children[0].id, "one");
+			assert.strictEqual(children[1].id, "three");
 		},
-		"basic tests addChild": function () {
+
+		addChild: function () {
 			var c = document.getElementById("container");
 			// Add child at beginning
 			c.addChild(zero, 0);
 			var children = c.getChildren();
-			assert.deepEqual(3, children.length);
-			assert.deepEqual("zero", children[0].id, "after addChild(zero), zero");
-			assert.deepEqual("one", children[1].id, "after addChild(zero), one");
-			assert.deepEqual("three", children[2].id, "after addChild(zero), three");
+			assert.strictEqual(children.length, 3);
+			assert.strictEqual(children[0].id, "zero", "after addChild(zero), zero");
+			assert.strictEqual(children[1].id, "one", "after addChild(zero), one");
+			assert.strictEqual(children[2].id, "three", "after addChild(zero), three");
 
 			// Add child in middle
 			c.addChild(two, 2);
 			children = c.getChildren();
-			assert.deepEqual(4, children.length);
-			assert.deepEqual("zero", children[0].id, "after addChild(two), zero");
-			assert.deepEqual("one", children[1].id, "after addChild(two), one");
-			assert.deepEqual("two", children[2].id, "after addChild(two), two");
-			assert.deepEqual("three", children[3].id, "after addChild(two), three");
+			assert.strictEqual(children.length, 4);
+			assert.strictEqual(children[0].id, "zero", "after addChild(two), zero");
+			assert.strictEqual(children[1].id, "one", "after addChild(two), one");
+			assert.strictEqual(children[2].id, "two", "after addChild(two), two");
+			assert.strictEqual(children[3].id, "three", "after addChild(two), three");
 
 			// Add a DOMNode at the end
 			c.addChild(four);
 			children = c.getChildren();
-			assert.deepEqual(5, children.length);
-			assert.deepEqual("zero", children[0].id, "after addChild(four), zero");
-			assert.deepEqual("one", children[1].id, "after addChild(four), one");
-			assert.deepEqual("two", children[2].id, "after addChild(four), two");
-			assert.deepEqual("three", children[3].id, "after addChild(four), three");
-			assert.deepEqual("four", children[4].id, "after addChild(four), four");
+			assert.strictEqual(children.length, 5);
+			assert.strictEqual(children[0].id, "zero", "after addChild(four), zero");
+			assert.strictEqual(children[1].id, "one", "after addChild(four), one");
+			assert.strictEqual(children[2].id, "two", "after addChild(four), two");
+			assert.strictEqual(children[3].id, "three", "after addChild(four), three");
+			assert.strictEqual(children[4].id, "four", "after addChild(four), four");
 
 			// Add child at end
 			c.addChild(new TestContained({id: "five"}));
 			children = c.getChildren();
-			assert.deepEqual(6, children.length);
-			assert.deepEqual("zero", children[0].id, "after addChild(five), zero");
-			assert.deepEqual("one", children[1].id, "after addChild(five), one");
-			assert.deepEqual("two", children[2].id, "after addChild(five), two");
-			assert.deepEqual("three", children[3].id, "after addChild(five), three");
-			assert.deepEqual("four", children[4].id, "after addChild(five), four");
-			assert.deepEqual("five", children[5].id, "after addChild(five), five");
+			assert.strictEqual(children.length, 6);
+			assert.strictEqual(children[0].id, "zero", "after addChild(five), zero");
+			assert.strictEqual(children[1].id, "one", "after addChild(five), one");
+			assert.strictEqual(children[2].id, "two", "after addChild(five), two");
+			assert.strictEqual(children[3].id, "three", "after addChild(five), three");
+			assert.strictEqual(children[4].id, "four", "after addChild(five), four");
+			assert.strictEqual(children[5].id, "five", "after addChild(five), five");
 
 			// Add child at end with explicit position specified
 			c.addChild(new TestContained({id: "six"}), 6);
 			children = c.getChildren();
-			assert.deepEqual(7, children.length);
-			assert.deepEqual("zero", children[0].id, "after addChild(six), zero");
-			assert.deepEqual("one", children[1].id, "after addChild(six), one");
-			assert.deepEqual("two", children[2].id, "after addChild(six), two");
-			assert.deepEqual("three", children[3].id, "after addChild(six), three");
-			assert.deepEqual("four", children[4].id, "after addChild(six), four");
-			assert.deepEqual("five", children[5].id, "after addChild(six), five");
-			assert.deepEqual("six", children[6].id, "after addChild(six), five");
+			assert.strictEqual(children.length, 7);
+			assert.strictEqual(children[0].id, "zero", "after addChild(six), zero");
+			assert.strictEqual(children[1].id, "one", "after addChild(six), one");
+			assert.strictEqual(children[2].id, "two", "after addChild(six), two");
+			assert.strictEqual(children[3].id, "three", "after addChild(six), three");
+			assert.strictEqual(children[4].id, "four", "after addChild(six), four");
+			assert.strictEqual(children[5].id, "five", "after addChild(six), five");
+			assert.strictEqual(children[6].id, "six", "after addChild(six), five");
 		},
+
 		teardown: function () {
 			container.parentNode.removeChild(container);
 		}

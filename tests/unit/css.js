@@ -114,6 +114,7 @@ define([
 
 			return d;
 		},
+
 		teardown: function () {
 			container.parentNode.removeChild(container);
 		}

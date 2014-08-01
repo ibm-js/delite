@@ -23,7 +23,7 @@ define([
 			return d;
 		},
 */
-		"Updates": function () {
+		Updates: function () {
 			var d = this.async(1500);
 			var refreshRenderingCallCount = 0;
 			var store = new C();
@@ -68,7 +68,8 @@ define([
 			store.store = myStore;
 			return d;
 		},
-		"NullStore": function () {
+
+		NullStore: function () {
 			var d = this.async(1500);
 			var store = new C({
 				store: new M({ data: [{id: "foo", name: "Foo" }], model: null})
@@ -84,7 +85,8 @@ define([
 			store.startup();
 			return d;
 		},
-		"Destroy": function () {
+
+		Destroy: function () {
 			var d = this.async(1500);
 			var store = new C();
 			var myData = [
@@ -118,7 +120,8 @@ define([
 			store.store = myStore;
 			return d;
 		},
-		"Query": function () {
+
+		Query: function () {
 			var d = this.async(1500);
 			var store = new C();
 			store.query = { id: "foo" };
@@ -147,7 +150,8 @@ define([
 			store.store = myStore;
 			return d;
 		},
-		"StoreFuncRange": function () {
+
+		StoreFuncRange: function () {
 			var d = this.async(1500);
 			var store = new C();
 			store.processQueryResult = function (store) {
@@ -178,7 +182,8 @@ define([
 			store.store = myStore;
 			return d;
 		},
-		"StoreFuncSort": function () {
+
+		StoreFuncSort: function () {
 			var d = this.async(1500);
 			var store = new C();
 			store.processQueryResult = function (store) {
@@ -210,6 +215,7 @@ define([
 			store.store = myStore;
 			return d;
 		},
+
 		"Fetch parameter can be cached": function () {
 			var d = this.async(1500);
 			var store = new C();
@@ -240,6 +246,7 @@ define([
 			store.store = myStore;
 			return d;
 		},
+
 		teardown: function () {
 			//container.parentNode.removeChild(container);
 		}

@@ -12,10 +12,12 @@ define([
 	var container;
 	registerSuite({
 		name: "DisplayContainer",
+
 		setup: function () {
 			container = document.createElement("div");
 			document.body.appendChild(container);
 		},
+
 		// test with no controller
 		original: function () {
 			this.timeout = 2500;
@@ -53,6 +55,7 @@ define([
 				testView(view2);
 			});
 		},
+
 		hide: function () {
 			this.timeout = 2500;
 			register("test-hide-display-container", [HTMLElement, Widget, DisplayContainer]);
@@ -90,6 +93,7 @@ define([
 				testView(view2);
 			});
 		},
+
 		event: function () {
 			this.timeout = 2500;
 			var handler;
@@ -123,6 +127,7 @@ define([
 				document.removeEventListener("delite-display-load", handler);
 			});
 		},
+
 		// test with a controller
 		custom: function () {
 			this.tiemout = 2500;
@@ -163,6 +168,7 @@ define([
 				document.removeEventListener("delite-display-load", handler);
 			});
 		},
+
 		teardown: function () {
 			container.parentNode.removeChild(container);
 		}

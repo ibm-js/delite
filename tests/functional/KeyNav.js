@@ -6,13 +6,13 @@ define(["intern!object",
 	registerSuite({
 		name: "KeyNav functional tests",
 
-		"setup": function () {
+		setup: function () {
 			return this.remote
 				.get(require.toUrl("./KeyNavTests.html"))
 				.waitForCondition("ready", 40000);
 		},
 
-		"tabindex": function () {
+		tabIndex: function () {
 			if (/safari|iphone/.test(this.remote.environmentType.browserName)) {
 				// SafariDriver doesn't support tabbing, see https://code.google.com/p/selenium/issues/detail?id=5403
 				return;
@@ -66,6 +66,7 @@ define(["intern!object",
 				});
 
 		},
+
 		"grid arrow navigation": function () {
 			if (/safari|iphone/.test(this.remote.environmentType.browserName)) {
 				// SafariDriver apparently doesn't support arrow keys either
