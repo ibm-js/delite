@@ -9,11 +9,6 @@ title: delite/Scrollable
 scrolling capabilities based on the [`overflow: auto`](http://www.w3.org/TR/CSS2/visufx.html#overflow) 
 CSS property.
 
-By default, the scrolling capabilities are added to the widget's root node
-(that is, the widget itself). The host widget can chose the node thanks to the property
-`scrollableNode`. This property must be set by the subclass at latest in its `buildRendering()`
-method.
-
 ##### Table of Contents
 [Extending Scrollable](#extending)  
 [Using Scrollable](#using)  
@@ -25,7 +20,12 @@ method.
 <a name="extending"></a>
 ## Extending Scrollable
 
-First use-case: creating a widget extending `delite/Scrollable`
+By default, the scrolling capabilities are added to the widget's root node
+(that is, the widget itself). The host widget can chose the node thanks to the property
+`scrollableNode`. This property must be set by the subclass at latest in its `buildRendering()`
+method.
+
+*First use-case: creating a widget extending `delite/Scrollable`*
 
 ```js
 define(["delite/register", "delite/Scrollable", ...],
@@ -51,7 +51,7 @@ Characteristics:
 - Fits for widgets with one single scrollable element.
 - Exposes the API of delite/Scrollable.
 
-Second use-case: creating a widget embedding widgets extending `delite/Scrollable`
+*Second use-case: creating a widget embedding widgets extending `delite/Scrollable`*
 
 ```js
 define(["delite/register", "delite/Scrollable", ...],
