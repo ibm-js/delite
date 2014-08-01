@@ -80,7 +80,7 @@ Characteristics:
 <a name="using"></a>
 ## Using Scrollable
 
-### Scroll direction
+### Scroll Direction
 
 A widget extending `delite/Scrollable` can choose among several scrolling modes
 through the `scrollDirection` property:
@@ -90,7 +90,7 @@ through the `scrollDirection` property:
 * `"both"`: horizontal and vertical scrolling.
 * `"none"`: no scrolling on any direction.
 
-### Programmatic scroll
+### Programmatic Scroll
 
 In additional to the interactive scroll, the API of `delite/Scrollable` provides methods 
 for programmatic scroll:
