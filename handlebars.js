@@ -94,7 +94,9 @@ define(["./template"], function (template) {
 		 */
 		parse: function (templateNode, xmlns) {
 			// Get tag name, reversing the tag renaming done in parse()
-			var tag = templateNode.tagName.replace(/^template-/i, "").toLowerCase();
+			var tag = templateNode.hasAttribute("is") ? templateNode.getAttribute("is") :
+					templateNode.tagName.replace(/^template-/i, "").toLowerCase(),
+				elem = template.getElement(tag);
 
 			// Process attributes
 			var attributes = {}, connects = {}, attachPoints;
@@ -106,7 +108,7 @@ define(["./template"], function (template) {
 						xmlns = item.value;
 						break;
 					case "is":
-						tag = item.value;
+						// already handled above
 						break;
 					case "attach-point":
 					case "data-attach-point":		// in case user wants to use HTML validator
@@ -117,8 +119,19 @@ define(["./template"], function (template) {
 							// on-click="{{handlerMethod}}" sets connects.click = "handlerMethod"
 							connects[item.name.substring(3)] = item.value.replace(/\s*({{|}})\s*/g, "");
 						} else {
-							// x="hello {{foo}} world" --> "hello " + this.foo + " world"
-							attributes[item.name] = toJs(item.value, item.name === "class");
+							// map x="hello {{foo}} world" --> "hello " + this.foo + " world";
+							var propName = template.getProp(tag, item.name);
+							if (propName && typeof elem[propName] !== "string" &&
+								!/{{/.test(item.value) && propName !== "style.cssText") {
+								// This attribute corresponds to a non-string property, and the value specified is a
+								// literal like vertical="false", so *don't* convert value to string.
+								attributes[item.name] = {
+									expr: item.value,
+									dependsOn: []
+								};
+							} else {
+								attributes[item.name] = toJs(item.value, item.name === "class");
+							}
 						}
 					}
 				}

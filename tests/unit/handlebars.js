@@ -247,13 +247,14 @@ define([
 			"boolean bind var": function () {
 				register("handlebars-layout", [HTMLElement, Widget], {
 					vertical: true,
+					num: 0,
 					template: handlebars.compile(
 						"<template class='{{this.vertical ? \"vertical\" : \"horizontal\"}}'></template>"
 					)
 				});
 
 				// This widget uses sub-widgets handlebars-button (defined in first test) and also handlebars-heading.
-				var ComplexWidget = register("handlebars-wit-boolean", [HTMLElement, Widget], {
+				var ComplexWidget = register("handlebars-wit-boolean-bind", [HTMLElement, Widget], {
 					layout: false,
 					template: handlebars.compile(
 						"<template>" +
@@ -267,6 +268,24 @@ define([
 
 				assert.strictEqual(myComplexWidget.firstElementChild.vertical, false, "prop is false not 'false'");
 				assert.strictEqual(myComplexWidget.firstElementChild.className, "horizontal", "className");
+			},
+
+			"attribute boolean/number literal": function () {
+				// This widget uses sub-widgets handlebars-button (defined in first test) and also handlebars-heading.
+				var ComplexWidget = register("handlebars-wit-boolean-lit", [HTMLElement, Widget], {
+					template: handlebars.compile(
+						"<template>" +
+							"<handlebars-layout vertical=false num=123></handlebars-layout>" +
+						"</template>"
+					)
+				});
+
+				var myComplexWidget = new ComplexWidget();
+				myComplexWidget.deliver();
+
+				assert.strictEqual(myComplexWidget.firstElementChild.vertical, false, "prop is false not 'false'");
+				assert.strictEqual(myComplexWidget.firstElementChild.className, "horizontal", "className");
+				assert.strictEqual(myComplexWidget.firstElementChild.num, 123, "num prop number, not string");
 			}
 		},
 
