@@ -5,6 +5,7 @@ define([
 ], function (registerSuite, assert, has) {
 	registerSuite({
 		name: "uacss",
+
 		uacss: function () {
 			if (has("ie")) {
 				assert(/d-ie/.test(document.body.className), "ie");

@@ -130,6 +130,7 @@ define([
 			dd.closeDropDown();
 			assert.ok(helpers.isHidden(popup), "popup hidden again");
 		},
+
 		rtl: function () {
 			// setup
 			dd = new SimpleDropDownButton({

@@ -12,6 +12,7 @@ define([
 				.get(require.toUrl("./DojoParser.html"))
 				.waitForCondition("readyDijit && readyDelite", 30000);
 		},
+
 		"Dijit widgets": {
 			"declarative dijit widget": function () {
 				return this.remote
@@ -19,6 +20,7 @@ define([
 						assert.strictEqual(value, "dijitcalendardeclarative", "declarative dijit widget exists");
 					});
 			},
+
 			"programmatic dijit widget": function () {
 				return this.remote
 					.execute("return dijitRegistry.byId('dijitprogrammaticid').id").then(function (value) {
@@ -34,6 +36,7 @@ define([
 					});
 			}
 		},
+
 		"Custom elements": {
 			"programmatic custom element": function () {
 				return this.remote
@@ -43,6 +46,7 @@ define([
 						});
 
 			},
+
 			"declarative custom element": function () {
 				return this.remote
 					.execute("return typeof(document.getElementById('declarativecustomelement').buildRendering)")

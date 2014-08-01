@@ -6,7 +6,7 @@ define(["intern!object",
 	registerSuite({
 		name: "tabIndex functional tests",
 
-		"setup": function () {
+		setup: function () {
 			return this.remote
 				.get(require.toUrl("./TabIndex.html"))
 				.waitForCondition("ready", 40000);

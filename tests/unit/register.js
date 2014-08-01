@@ -35,7 +35,7 @@ define([
 		},
 
 		// Declare and instantiate a simple widget
-		"simple": function () {
+		simple: function () {
 			TestWidget = register("test-simple-widget", [HTMLElement], {
 				foo: 3,
 				createdCallback: function () {
@@ -81,7 +81,7 @@ define([
 		},
 
 		// Declare and instantiate a widget from a mixin that extends Stateful
-		"stateful": function () {
+		stateful: function () {
 			// Create a mixin for testing purposes.
 			// register() should call this.introspect() if it's defined, because it isn't called naturally.
 			Mixin = register.dcl(Stateful, {
@@ -148,7 +148,7 @@ define([
 
 		},
 
-		"extended": function () {
+		extended: function () {
 			// Create extension of another widget
 			TestExtendedWidget = register("test-extended-widget", [TestWidget], {
 				extFunc: function () {
@@ -179,8 +179,7 @@ define([
 			assert.ok(sawExt, "ext enumerable");
 		},
 
-		"button": function () {
-
+		button: function () {
 			// Create a simple widget extending something other than HTMLElement.
 			TestButtonWidget = register("test-button-widget", [HTMLButtonElement, Mixin], {
 				label: "my label"
@@ -196,7 +195,6 @@ define([
 		},
 
 		"extended button": function () {
-
 			// Create extension of another widget.
 			TestExtendedButtonWidget = register("test-extended-button-widget", [TestButtonWidget], {
 				extFunc: function () {
@@ -216,7 +214,7 @@ define([
 		},
 
 		// Create element is like upgrade() but it also creates the element for you.
-		"createElement": function () {
+		createElement: function () {
 			var tw = register.createElement("test-widget");
 			assert.ok(tw.foo, "TestWidget.foo");
 
@@ -233,7 +231,7 @@ define([
 		},
 
 		// Test the parser, which scans the DOM for registered widgets and upgrades them
-		"parse": function () {
+		parse: function () {
 			register("test-parser-widget", [HTMLElement, Mixin], {
 				createdCalls: 0,
 				startupCalls: 0,
@@ -264,7 +262,7 @@ define([
 		},
 
 		// Test error conditions
-		"errors": function () {
+		errors: function () {
 			var threw;
 
 			try {
