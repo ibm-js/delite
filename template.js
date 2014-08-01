@@ -14,7 +14,7 @@ define(["./register"], function (register) {
 	 * Return cached reference to Element with given tag name.
 	 * @param {string} tag
 	 * @returns {Element}
-	 * @private
+	 * @protected
 	 */
 	function getElement(tag) {
 		if (!(tag in elementCache)) {
@@ -37,7 +37,7 @@ define(["./register"], function (register) {
 	 * @param {string} tag - Tag name.
 	 * @param {string} attrName - Attribute name.
 	 * @returns {string}
-	 * @private
+	 * @protected
 	 */
 	function getProp(tag, attrName) {
 		if (!(tag in attrMap)) {
@@ -69,6 +69,10 @@ define(["./register"], function (register) {
 	}
 
 	return /** @lends module:delite/template. */ {
+		// Export helper funcs so they can be used by handlebars.js
+		getElement: getElement,
+		getProp: getProp,
+
 		/**
 		 * Generate JS code to create and add children to a node named nodeName.
 		 * @param {string} nodeName
