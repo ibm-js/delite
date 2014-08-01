@@ -60,9 +60,9 @@ define([
 				var SpecialNamesMixin = register.dcl(Widget, {
 					tabIndex: "0",
 					_setTabIndexAttr: function (val) {
-						// In a real widget, if you declare a tabIndex property then you better have a custom setter too.
-						// Otherwise, tabIndex updates won't have any effect.  For testing purposes we are just saving
-						// the new value without applying it to any this.focusNode Element.
+						// In a real widget, if you declare a tabIndex property then you better have a custom setter
+						// too.  Otherwise, tabIndex updates won't have any effect.  For testing purposes we are just
+						// saving the new value without applying it to any this.focusNode Element.
 						this._set("tabIndex", val);
 					},
 					postCreate: function () {

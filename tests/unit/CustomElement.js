@@ -64,7 +64,8 @@ define([
 				});
 				container.innerHTML +=
 					"<test-ce-declarative id='d' boolProp='boolProp' numProp='5' stringProp='hello' " +
-					"funcProp='global=123;' funcProp2='globalInstance.func' objProp1='foo:1,bar:2' objProp2='globalObj'/>";
+					"funcProp='global=123;' funcProp2='globalInstance.func' " +
+					"objProp1='foo:1,bar:2' objProp2='globalObj'/>";
 				var d = document.getElementById("d");
 				register.upgrade(d);
 				assert.isTrue(d.boolProp, "d.boolProp");
@@ -161,7 +162,8 @@ define([
 				// and also that CustomElement.on() works.
 
 				// Define a custom element that emits two events, "click" and "custom".
-				// You can catch the events via either programmatic on("click", ...) or declarative on-custom=... syntax.
+				// You can catch the events via either programmatic on("click", ...) or declarative on-custom=...
+				// syntax.
 				MyCustomElement = register("my-custom-element-on", [HTMLElement, CustomElement], { });
 
 				// Create variables accessed from the declarative custom element (see definition in <body>)
