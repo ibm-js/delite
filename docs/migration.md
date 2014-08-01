@@ -104,5 +104,5 @@ Widgets are declared via `register()` rather than `dojo.declare()`, and must ext
 Resources are loaded through `i18n!` plugin rather than a `loadResource()` type method.
 
 ### CSS
-A widget should use [delite/theme!](load.md) or [delite/css!](css.md) to load its own CSS.
+A widget should use [delite/theme!](theme.md) or [delite/css!](css.md) to load its own CSS.
 
