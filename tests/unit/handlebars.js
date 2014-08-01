@@ -242,6 +242,31 @@ define([
 
 				// Make sure all the buttons are siblings of each other, not parent-child.
 				assert.strictEqual(testWidget.children.length, 3, "direct children");
+			},
+
+			"boolean bind var": function () {
+				register("handlebars-layout", [HTMLElement, Widget], {
+					vertical: true,
+					template: handlebars.compile(
+						"<template class='{{this.vertical ? \"vertical\" : \"horizontal\"}}'></template>"
+					)
+				});
+
+				// This widget uses sub-widgets handlebars-button (defined in first test) and also handlebars-heading.
+				var ComplexWidget = register("handlebars-wit-boolean", [HTMLElement, Widget], {
+					layout: false,
+					template: handlebars.compile(
+						"<template>" +
+							"<handlebars-layout vertical={{layout}}></handlebars-layout>" +
+						"</template>"
+					)
+				});
+
+				var myComplexWidget = new ComplexWidget();
+				myComplexWidget.deliver();
+
+				assert.strictEqual(myComplexWidget.firstElementChild.vertical, false, "prop is false not 'false'");
+				assert.strictEqual(myComplexWidget.firstElementChild.className, "horizontal", "className");
 			}
 		},
 
