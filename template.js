@@ -150,9 +150,8 @@ define(["./register"], function (register) {
 
 			// If this node is a custom element, make it immediately display the property changes I've made
 			if (/-/.test(templateNode.tag)) {
-				observeText.push(
-					nodeName + ".deliver();"
-				);
+				buildText.push(nodeName + ".deliver();");
+				observeText.push(nodeName + ".deliver();");
 			}
 
 			// Setup connections
