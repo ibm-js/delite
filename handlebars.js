@@ -62,9 +62,9 @@ define(["./template"], function (template) {
 				if (/this\./.test(prop)) {
 					// JS expression (ex: this.selectionMode === "multiple")
 					parts.push("(" + str + ")");
-					wp[str.match(/this\.(\w+)/g).map(function (thisVar) {
-						return thisVar.substring(5);	// "this.foo" --> "foo"
-					})] = true;
+					str.match(/this\.(\w+)/g).forEach(function (thisVar) {
+						wp[thisVar.substring(5)] = true;	// "this.foo" --> "foo"
+					});
 				} else {
 					// Property (ex: selectionMode) or path (ex: item.foo)
 					wp[prop.replace(/[^\w].*/, "")] = true; // If nested prop (item.foo), watch top level prop (item).

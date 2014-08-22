@@ -580,7 +580,8 @@ define([
 				},
 				template: handlebars.compile(
 					"<template d-shown=\"{{this.mode === 'show'}}\">" +
-						"{{bar}} + {{item.foo}} = {{this.bar + this.item.foo}}" +
+						// Intentionally put expression in separate <span> to make sure watching for changes works
+						"<span>{{bar}} + {{item.foo}}</span> = <span>{{this.bar + this.item.foo}}</span>" +
 					"</template>"
 				)
 			});
