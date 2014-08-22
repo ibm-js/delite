@@ -198,23 +198,21 @@ define(["./template"], function (template) {
 		 * @private
 		 */
 		toDom: function (templateText) {
-			// Rename all the custom elements in the template so that browsers with native
-			// document.createElement() support don't start instantiating nested widgets, creating internal nodes etc.
-			// Regex designed to match:
-			//    - <foo-bar>
-			//    - <button is=...>
-			//    - <template> - needs to be renamed for some reason on browsers with native <template> support
-			//    - <select> - otherwise <select size={{size}}> gets converted to <select size=0> on webkit
-			// Regex will not match:
-			//    - <!-- comment -->
+			// Rename all the elements in the template so that:
+			// 1. browsers with native document.createElement() support don't start instantiating custom elements
+			//    in the template, creating internal nodes etc.
+			// 2. prevent <select size={{size}}> from converting to <select size=0> on webkit
+			// 3. prevent <img src={{foo}}> from starting an XHR for a URL called {{foo}} (webkit, maybe other browsers)
+			// Regex will not match <!-- comment -->.
 			templateText = templateText.replace(
 				/(<\/? *)([-a-zA-Z0-9]+)/g, "$1template-$2");
 
-			// However, do not replace self-closing tags because although <input> is self-closing,
-			// <template-input> is not.
+			// For self-closing tags like <input> that have been converted to <template-input>, we need to add a
+			// closing </template-input> tag.
 			templateText = templateText.replace(
-				/template-(area|base|br|col|command|embed|hr|img|input|keygen|link|meta|param|source|track|wbr)/g,
-				"$1");
+				/* jshint maxlen:200 */
+				/<template-(area|base|br|col|command|embed|hr|img|input|keygen|link|meta|param|source|track|wbr)([^>]*)\/?>/g,
+				"<template-$1$2></template-$1>");
 
 			// Create DOM tree from template.
 			// If template contains SVG nodes then parse as XML, to preserve case of attributes like viewBox.

@@ -1,4 +1,5 @@
 define([
+	"require",
 	"intern!object",
 	"intern/chai!assert",
 	"dojo/on",
@@ -9,7 +10,7 @@ define([
 	"delite/handlebars!./templates/SvgWidget.html",
 	"delite/handlebars!./templates/CompoundWidget.html",
 	"delite/theme!"		// to get CSS rules for d-hidden
-], function (registerSuite, assert, on, handlebars, register, Widget, buttonHBTmpl, svgTmpl, compoundTmpl) {
+], function (require, registerSuite, assert, on, handlebars, register, Widget, buttonHBTmpl, svgTmpl, compoundTmpl) {
 	var container, myButton;
 	registerSuite({
 
@@ -608,6 +609,32 @@ define([
 			node.mode = "hide";
 			node.deliver();
 			assert.strictEqual(node.getAttribute("d-shown"), "false", "d-shown");
+		},
+
+		img: function () {
+			// Test that <img> tag in template doesn't try to load a file called {{item.src}}.
+			// Unfortunately I can't test that automatically, but this code is here for manual testing.
+
+			var ImgWidget = register("handlebars-img", [HTMLElement, Widget], {
+				mode: "show",
+				bar: 1,
+				item: {
+					src: require.toUrl("./images/plus.gif")
+				},
+				template: handlebars.compile(
+					"<template>" +
+						"<img " +		// add line break just to stress regex matching
+							"src='{{item.src}}'>" +
+					"</template>"
+				)
+			});
+
+			var node = new ImgWidget();
+			node.placeAt(container);
+			node.deliver();
+
+			assert.strictEqual(node.firstElementChild.nodeName.toLowerCase(), "img", "tag name");
+			assert(/plus.gif/.test(node.firstElementChild.src, "img src set"));
 		},
 
 		teardown: function () {
