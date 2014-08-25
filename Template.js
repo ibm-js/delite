@@ -1,11 +1,4 @@
-/**
- * Plugin to compile an AST representing a template into a function to generate that DOM,
- * and setup listeners to update the DOM as the widget properties change.
- *
- * See the reference documentation for details on the AST format.
- *
- * @module delite/template
- */
+/** @module delite/Template */
 define(["./register"], function (register) {
 
 	var elementCache = {};
@@ -52,42 +45,87 @@ define(["./register"], function (register) {
 	}
 
 	/**
-	 * Generate code that executes `statement` if any of the properties in `dependencies` change.
-	 * @param {string[]} dependencies - List of variables referenced in `statement.
-	 * @param {string} statement - Content inside if() statement.
-	 * @param {string[]} observeText - Statement appended to this array.
+	 * Class to compile an AST representing a template into a function to generate that template's DOM,
+	 * and set up listeners to update the DOM as the widget properties change.
+	 *
+	 * See the reference documentation for details on the AST format.
+	 *
+	 * @mixin module:delite/Template
 	 */
-	function generateWatchCode(dependencies, statement, observeText) {
-		if (dependencies.length) {
-			observeText.push(
-					"if(" + dependencies.map(function (prop) {
-					return "'" + prop + "' in props";
-				}).join(" || ") + ")",
-					"\t" + statement + ";"
-			);
-		}
-	}
+	var Template = register.dcl(null, /** @lends module:delite/Template# */ {
+		/**
+		 * Given an AST representation of the template, generates a function that:
+		 *
+		 * 1. generates DOM corresponding to the template
+		 * 2. returns an object including a function to be called to update that DOM
+		 *    when widget properties have changed.
+		 *
+		 * The function is available through this.func, i.e.:
+		 *
+		 *     var template = new Template(ast);
+		 *     template.func(document, register);
+		 *
+		 * @param {Object} tree - AST representing the template.
+		 * @param {string} rootNodeName - Name of variable for the root node of the tree, typically `this`.
+		 * @param {boolean} createRootNode - If true, create node; otherwise assume node exists in variable `nodeName`.
+		 * @private
+		 */
+		constructor: function (tree, rootNodeName, createRootNode) {
+			this.buildText = [];	// code to build the initial DOM
+			this.observeText = [];	// code to update the DOM when widget properties change
 
-	return /** @lends module:delite/template. */ {
-		// Export helper funcs so they can be used by handlebars.js
-		getElement: getElement,
-		getProp: getProp,
+			this.generateNodeCode(rootNodeName || "this", createRootNode, tree);
+
+			this.text = this.buildText.join("\n") +
+				["\nreturn { refresh: function(props){"].concat(this.observeText).join("\n\t") + "\n}.bind(this) };\n";
+
+			/* jshint evil:true */
+			this.func = new Function("document", "register", this.text);
+		},
+
+		/**
+		 * Text of the generated function.
+		 * @member {string}
+		 */
+		text: "",
+
+		/**
+		 * Generated function.
+		 * @member {Function}
+		 * @readonly
+		 */
+		func: null,
+
+		/**
+		 * Generate code that executes `statement` if any of the properties in `dependencies` change.
+		 * @param {string[]} dependencies - List of variables referenced in `statement.
+		 * @param {string} statement - Content inside if() statement.
+		 * @private
+		 */
+		generateWatchCode: function (dependencies, statement) {
+			if (dependencies.length) {
+				this.observeText.push(
+						"if(" + dependencies.map(function (prop) {
+						return "'" + prop + "' in props";
+					}).join(" || ") + ")",
+						"\t" + statement + ";"
+				);
+			}
+		},
 
 		/**
 		 * Generate JS code to create and add children to a node named nodeName.
 		 * @param {string} nodeName
 		 * @param {Object[]} children
-		 * @param {string[]} buildText - (output param) add code to build the DOM to this array
-		 * @param {string[]} observeText - (output param) add code to run in this.observe() callback to this array
 		 * @private
 		 */
-		generateNodeChildrenCode: function (nodeName, children, buildText, observeText) {
+		generateNodeChildrenCode: function (nodeName, children) {
 			children.forEach(function (child, idx) {
 				var childName = (nodeName === "this" ? "" : nodeName) + "c" + (idx + 1);
 				if (child.tag) {
 					// Standard DOM node, recurse
-					this.generateNodeCode(childName, true, child, buildText, observeText);
-					buildText.push(
+					this.generateNodeCode(childName, true, child);
+					this.buildText.push(
 						nodeName + ".appendChild(" + childName + ");"
 					);
 				} else {
@@ -95,13 +133,13 @@ define(["./register"], function (register) {
 					var textNodeName = childName + "t" + (idx + 1);
 
 					// code to create DOM text node
-					buildText.push(
+					this.buildText.push(
 						"var " + textNodeName + " = document.createTextNode(" + child.expr + ");",
 						nodeName + ".appendChild(" + textNodeName + ");"
 					);
 
 					// watch for widget property changes and update DOM text node
-					generateWatchCode(child.dependsOn, textNodeName + ".nodeValue = " + child.expr, observeText);
+					this.generateWatchCode(child.dependsOn, textNodeName + ".nodeValue = " + child.expr);
 				}
 			}, this);
 		},
@@ -112,11 +150,9 @@ define(["./register"], function (register) {
 		 * @param {string} nodeName - The node will be in a variable with this name.
 		 * @param {boolean} createNode - If true, create node; otherwise assume node exists in variable `nodeName`
 		 * @param {Object} templateNode - An object representing a node in the template, as described in module summary.
-		 * @param {string[]} buildText - (output param) add code to build the DOM to this array
-		 * @param {string[]} observeText - (output param) add code to run in this.observe() callback to this array
 		 * @private
 		 */
-		generateNodeCode: function (nodeName, createNode, templateNode, buildText, observeText) {
+		generateNodeCode: function (nodeName, createNode, templateNode) {
 			/* jshint maxcomplexity:11*/
 			// Helper string for setting up attach-point(s), ex: "this.foo = this.bar = ".
 			var ap = (templateNode.attachPoints || []).map(function (n) {
@@ -125,14 +161,14 @@ define(["./register"], function (register) {
 
 			// Create node
 			if (createNode) {
-				buildText.push(
+				this.buildText.push(
 					"var " + nodeName + " = " + ap + (templateNode.xmlns ?
 					"document.createElementNS('" + templateNode.xmlns + "', '" + templateNode.tag + "');" :
 					"register.createElement('" + templateNode.tag + "');")
 				);
 			} else if (ap) {
 				// weird case that someone set attach-point on root node
-				buildText.push(ap + nodeName + ";");
+				this.buildText.push(ap + nodeName + ";");
 			}
 
 			// Set attributes/properties
@@ -146,16 +182,16 @@ define(["./register"], function (register) {
 						"this.setOrRemoveAttribute(" + nodeName + ", '" + attr + "', " + js + ")";
 
 				// set property/attribute initially
-				buildText.push(codeToSetProp + ";");
+				this.buildText.push(codeToSetProp + ";");
 
 				// watch for changes and update property/attribute
-				generateWatchCode(info.dependsOn, codeToSetProp, observeText);
+				this.generateWatchCode(info.dependsOn, codeToSetProp);
 			}
 
 			// If this node is a custom element, make it immediately display the property changes I've made
 			if (/-/.test(templateNode.tag)) {
-				buildText.push(nodeName + ".deliver();");
-				observeText.push(nodeName + ".deliver();");
+				this.buildText.push(nodeName + ".deliver();");
+				this.observeText.push(nodeName + ".deliver();");
 			}
 
 			// Setup connections
@@ -164,52 +200,17 @@ define(["./register"], function (register) {
 				var callback = /^[a-zA-Z0-9_]+$/.test(handler) ?
 					"this." + handler + ".bind(this)" :		// standard case, connecting to a method in the widget
 					"function(event){" + handler + "}";	// connect to anon func, ex: on-click="g++;". used by dapp.
-				buildText.push("this.on('" + type + "', " + callback + ", " + nodeName  + ");");
+				this.buildText.push("this.on('" + type + "', " + callback + ", " + nodeName  + ");");
 			}
 
 			// Create descendant Elements and text nodes
-			this.generateNodeChildrenCode(nodeName, templateNode.children, buildText, observeText);
-		},
-
-		/**
-		 * Given an AST representation of the template,
-		 * returns the text for a function to generate DOM corresponding to that template,
-		 * and then returns an object including a function to be called to update that DOM
-		 * when widget properties have changed.
-		 *
-		 * @param {string} rootNodeName - Name of variable for the root node of the tree, typically `this`.
-		 * @param {boolean} createRootNode - If true, create node; otherwise assume node exists in variable `nodeName`
-		 * @param {Object} tree
-		 * @returns {string} Javascript code for function.
-		 * @private
-		 */
-		codegen: function (rootNodeName, createRootNode, tree) {
-			var buildText = [],	// code to build the initial DOM
-				observeText = [];	// code to update the DOM when widget properties change
-
-			this.generateNodeCode(rootNodeName, createRootNode, tree, buildText, observeText);
-
-			return buildText.join("\n") +
-				["\nreturn { refresh: function(props){"].concat(observeText).join("\n\t") + "\n}.bind(this) };\n";
-		},
-
-		/**
-		 * Given an AST representation of the template,
-		 * returns a function to generate DOM corresponding to that template,
-		 * and then returns an object including a function to be called to update that DOM
-		 * when widget properties have changed.
-		 *
-		 * @param {string} [rootNodeName] - Name of variable for the root node of the tree, defaults to `this`.
-		 * @param {boolean} [createRootNode] - If true, create root node; otherwise assume it already exists
-		 * in variable `rootNodeName`
-		 * @param {Object} tree
-		 * @returns {Function}
-		 */
-		compile: function (tree, rootNodeName, createRootNode) {
-			var text = this.codegen(rootNodeName || "this", createRootNode, tree);
-
-			/* jshint evil:true */
-			return new Function("document", "register", text);
+			this.generateNodeChildrenCode(nodeName, templateNode.children);
 		}
-	};
+	});
+
+	// Export helper funcs so they can be used by handlebars.js
+	Template.getElement = getElement;
+	Template.getProp = getProp;
+
+	return Template;
 });
