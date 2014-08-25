@@ -1,11 +1,11 @@
 ---
 layout: default
-title: delite/template
+title: delite/Template
 ---
 
-# delite/template
+# delite/Template
 
-`delite/template` is a utility that takes an AST representing a widget template, and compiles it into
+`delite/Template` is a utility class that's constructed from an AST representing a widget template, and compiles it into
 a function for creating a reactive template.  It's used by [delite/handlerbars!](handlebars.md) and designed
 so it can be used with other template syntax parsers too.
 
