@@ -29,6 +29,7 @@ define([
 				template: buttonHBTmpl
 			});
 			myButton = new TestButton();
+			myButton.deliver();
 			assert.strictEqual(myButton.tagName.toLowerCase(), "button", "root node exists");
 			assert.strictEqual(myButton.firstChild.tagName.toLowerCase(), "span", "icon node exists too");
 			assert.strictEqual(myButton.firstChild.className, "d-reset originalClass", "icon class set");
@@ -76,6 +77,7 @@ define([
 					)
 				});
 				var mySpecialPropsWidget = new SpecialPropsWidget();
+				mySpecialPropsWidget.deliver();
 				var input = mySpecialPropsWidget.children[0];
 
 				assert.strictEqual(input.value, "original value", "value set as property");
@@ -88,16 +90,11 @@ define([
 					inputValue: "new value",
 					role: "newRole"
 				});
+				mySpecialPropsWidget.deliver();
 
-				var d = this.async(1000);
-
-				setTimeout(d.callback(function () {
-					assert.strictEqual(input.value, "new value", "value changed");
-					assert.strictEqual(input.className, "newClass", "class changed");
-					assert.strictEqual(input.getAttribute("role"), "newRole", "role changed");
-				}), 10);
-
-				return d;
+				assert.strictEqual(input.value, "new value", "value changed");
+				assert.strictEqual(input.className, "newClass", "class changed");
+				assert.strictEqual(input.getAttribute("role"), "newRole", "role changed");
 			},
 
 			two: function () {
@@ -138,6 +135,8 @@ define([
 					"<ul><li foo=\"a.b('c,d')\" bar='\\\"hello\"'>\"\\{{label}}\n\twas \n\there'</li></ul>")
 			});
 			var myList = new TestList();
+			myList.deliver();
+
 			assert.strictEqual(myList.tagName.toLowerCase(), "ul", "root node exists");
 			assert.strictEqual(myList.firstChild.tagName.toLowerCase(), "li", "child exists");
 			assert.strictEqual(myList.firstChild.getAttribute("foo"), "a.b('c,d')", "single quotes prop");
@@ -407,6 +406,7 @@ define([
 			});
 
 			var node = new TestUndefined();
+			node.deliver();
 			assert.strictEqual(node.className, "", "class #1");
 			assert.strictEqual(node.textContent.trim(), "Hello Bob !", "textContent #1");
 
@@ -431,27 +431,31 @@ define([
 					"<span class={{item.className}}>Hello {{item.first}} {{item.last}}!</span>")
 			});
 
-			var node = new TestNested();
-			assert.strictEqual(node.className, "", "class #1");
-			assert.strictEqual(node.textContent.trim(), "Hello Bob !", "textContent #1");
-
 			var d = this.async(1000);
 
-			node.item = {
-				first: "Tom"
-			};
+			var node = new TestNested();
+
+
 			setTimeout(d.rejectOnError(function () {
-				assert.strictEqual(node.className, "", "class #2");
-				assert.strictEqual(node.textContent.trim(), "Hello Tom !", "textContent #2");
+				assert.strictEqual(node.className, "", "class #1");
+				assert.strictEqual(node.textContent.trim(), "Hello Bob !", "textContent #1");
 
 				node.item = {
-					first: "Fred",
-					last: "Smith",
-					className: "blue"
+					first: "Tom"
 				};
-				setTimeout(d.callback(function () {
-					assert.strictEqual(node.className, "blue", "class #3");
-					assert.strictEqual(node.textContent.trim(), "Hello Fred Smith!", "textContent #3");
+				setTimeout(d.rejectOnError(function () {
+					assert.strictEqual(node.className, "", "class #2");
+					assert.strictEqual(node.textContent.trim(), "Hello Tom !", "textContent #2");
+
+					node.item = {
+						first: "Fred",
+						last: "Smith",
+						className: "blue"
+					};
+					setTimeout(d.callback(function () {
+						assert.strictEqual(node.className, "blue", "class #3");
+						assert.strictEqual(node.textContent.trim(), "Hello Fred Smith!", "textContent #3");
+					}), 10);
 				}), 10);
 			}), 10);
 
@@ -503,16 +507,12 @@ define([
 
 				var node = new TestNested();
 				node.placeAt(container);
+				node.deliver();
 				assert.strictEqual(getComputedStyle(node).display, "none", "hidden");
 
-				var d = this.async(1000);
-
 				node.hideSpan = false;
-				setTimeout(d.callback(function () {
-					assert.strictEqual(getComputedStyle(node).display, "inline", "not hidden");
-				}), 10);
-
-				return d;
+				node.deliver();
+				assert.strictEqual(getComputedStyle(node).display, "inline", "not hidden");
 			},
 
 			"d-shown": function () {
@@ -523,16 +523,12 @@ define([
 
 				var node = new TestNested();
 				node.placeAt(container);
+				node.deliver();
 				assert.strictEqual(getComputedStyle(node).display, "inline", "not hidden");
 
-				var d = this.async(1000);
-
 				node.showSpan = false;
-				setTimeout(d.callback(function () {
-					assert.strictEqual(getComputedStyle(node).display, "none", "hidden");
-				}), 10);
-
-				return d;
+				node.deliver();
+				assert.strictEqual(getComputedStyle(node).display, "none", "hidden");
 			}
 		},
 

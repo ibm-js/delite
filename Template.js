@@ -73,11 +73,18 @@ define(["./register"], function (register) {
 		constructor: function (tree, rootNodeName, createRootNode) {
 			this.buildText = [];	// code to build the initial DOM
 			this.observeText = [];	// code to update the DOM when widget properties change
+			this.dependsOn = {};	// set of properties referenced in the template
 
 			this.generateNodeCode(rootNodeName || "this", createRootNode, tree);
 
-			this.text = this.buildText.join("\n") +
-				["\nreturn { refresh: function(props){"].concat(this.observeText).join("\n\t") + "\n}.bind(this) };\n";
+			// Generate text of function.
+			this.text = this.buildText.join("\n") + "\n" +
+				"return {\n" +
+					"\tdependencies: " + JSON.stringify(Object.keys(this.dependsOn)) + ",\n" +
+					"\trefresh: function(props){\n\t\t" +
+						this.observeText.join("\n\t\t") +
+					"\n\t}.bind(this)\n" +
+				"};\n";
 
 			/* jshint evil:true */
 			this.func = new Function("document", "register", this.text);
@@ -86,6 +93,7 @@ define(["./register"], function (register) {
 		/**
 		 * Text of the generated function.
 		 * @member {string}
+		 * @readonly
 		 */
 		text: "",
 
@@ -98,19 +106,19 @@ define(["./register"], function (register) {
 
 		/**
 		 * Generate code that executes `statement` if any of the properties in `dependencies` change.
+		 * Assumes that dependcies has at least one entry.
 		 * @param {string[]} dependencies - List of variables referenced in `statement.
 		 * @param {string} statement - Content inside if() statement.
 		 * @private
 		 */
 		generateWatchCode: function (dependencies, statement) {
-			if (dependencies.length) {
-				this.observeText.push(
-						"if(" + dependencies.map(function (prop) {
-						return "'" + prop + "' in props";
-					}).join(" || ") + ")",
-						"\t" + statement + ";"
-				);
-			}
+			this.observeText.push(
+					"if(" + dependencies.map(function (prop) {
+					return "'" + prop + "' in props";
+				}).join(" || ") + ")",
+					"\t" + statement + ";"
+			);
+			dependencies.forEach(function (prop) { this.dependsOn[prop] = true; }, this);
 		},
 
 		/**
@@ -132,14 +140,18 @@ define(["./register"], function (register) {
 					// JS code to compute text value
 					var textNodeName = childName + "t" + (idx + 1);
 
-					// code to create DOM text node
+					// Generate code to create DOM text node.  If the text contains property references, just
+					// leave it blank for now, and set the real value in refreshRendering().\
 					this.buildText.push(
-						"var " + textNodeName + " = document.createTextNode(" + child.expr + ");",
+						"var " + textNodeName + " = document.createTextNode(" +
+							(child.dependsOn.length ? "''" : child.expr) + ");",
 						nodeName + ".appendChild(" + textNodeName + ");"
 					);
 
 					// watch for widget property changes and update DOM text node
-					this.generateWatchCode(child.dependsOn, textNodeName + ".nodeValue = " + child.expr);
+					if (child.dependsOn.length) {
+						this.generateWatchCode(child.dependsOn, textNodeName + ".nodeValue = " + child.expr);
+					}
 				}
 			}, this);
 		},
@@ -177,15 +189,18 @@ define(["./register"], function (register) {
 
 				// Generate code to set this property or attribute
 				var propName = getProp(templateNode.tag, attr),
-					js = info.expr,		// code to compute property value
-					codeToSetProp = propName ? nodeName + "." + propName + "=" + js :
-						"this.setOrRemoveAttribute(" + nodeName + ", '" + attr + "', " + js + ")";
+					js = info.expr;		// code to compute property value
 
-				// set property/attribute initially
-				this.buildText.push(codeToSetProp + ";");
-
-				// watch for changes and update property/attribute
-				this.generateWatchCode(info.dependsOn, codeToSetProp);
+				if (info.dependsOn.length) {
+					// Value depends on widget properties that may not be set yet.
+					// Watch for changes to those widget properties and reflect them to the DOM.
+					this.generateWatchCode(info.dependsOn, propName ? nodeName + "." + propName + " = " + js :
+						"this.setOrRemoveAttribute(" + nodeName + ", '" + attr + "', " + js + ")");
+				} else {
+					// Value is a constant; set it during buildRendering().
+					this.buildText.push(propName ? nodeName + "." + propName + " = " + js :
+						nodeName + ".setAttribute('" + attr + "', " + js + ");");
+				}
 			}
 
 			// If this node is a custom element, make it immediately display the property changes I've made
