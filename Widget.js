@@ -213,6 +213,9 @@ define([
 		 * @protected
 		 */
 		postCreate: function () {
+			if (this._templateHandle) {
+				this._templateHandle.dependencies.forEach(this.notifyCurrentValue, this);
+			}
 		},
 
 		/**
