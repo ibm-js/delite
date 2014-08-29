@@ -30,10 +30,6 @@ define([
 		 * @protected
 		 */
 		baseClass: "",
-		_setBaseClassAttr: function (value) {
-			domClass.replace(this, value, this.baseClass);
-			this._set("baseClass", value);
-		},
 
 		/**
 		 * This widget or a widget it contains has focus, or is "active" because
@@ -93,10 +89,17 @@ define([
 			this.postCreate();
 		},
 
-		// Override Invalidating#refreshRendering() to execute the function returned by buildRendering
-		refreshRendering: function (props) {
+		// Override Invalidating#refreshRendering() to execute the template's refreshRendering() code, etc.
+		refreshRendering: function (oldVals) {
 			if (this._templateHandle) {
-				this._templateHandle.refresh(props);
+				this._templateHandle.refresh(oldVals);
+			}
+
+			if ("baseClass" in oldVals) {
+				domClass.replace(this, this.baseClass, oldVals.baseClass);
+			}
+			if ("dir" in oldVals) {
+				domClass.toggle(this, "d-rtl", !this.isLeftToRight());
 			}
 		},
 
@@ -107,15 +110,6 @@ define([
 		 */
 		attachedCallback: function () {
 			this._attached = true;
-
-			// When Widget extends Invalidating some/all of this code should probably be moved to refreshRendering()
-
-			if (this.baseClass) {
-				domClass.add(this, this.baseClass);
-			}
-			if (!this.isLeftToRight()) {
-				domClass.add(this, "d-rtl");
-			}
 
 			// Since safari masks all custom setters for tabIndex on the prototype, call them here manually.
 			// For details see:
@@ -185,6 +179,22 @@ define([
 		},
 
 		/**
+		 * Helper method to set a class (or classes) on a given node, removing the class (or classes) set
+		 * by the previous call to `setClassComponent()` *for the specified component and node*.  Used mainly by
+		 * template.js to set classes without overwriting classes set by the user or other code (ex: CssState).
+		 * @param {string} component - Specifies the category.
+		 * @param {string} value - Class (or classes) to set.
+		 * @param {HTMLElement} [node] - The node to set the property on; defaults to widget root node.
+		 * @protected
+		 */
+		setClassComponent: function (component, value, node) {
+			if (!node) { node = this; }
+			var oldValProp = "_" + component + "Class";
+			domClass.replace(node, value, node[oldValProp] || "");
+			node[oldValProp] = value;
+		},
+
+		/**
 		 * Helper method to set/remove an attribute based on the given value:
 		 *
 		 * - If value is undefined, the attribute is removed.  Useful for attributes like aria-valuenow.
@@ -193,7 +203,7 @@ define([
 		 *
 		 * @param {Element} node - The node to set the property on.
 		 * @param {string} name - Name of the property.
-		 * @param {*} value - Value of the property.
+		 * @param {string} value - Value of the property.
 		 * @protected
 		 */
 		setOrRemoveAttribute: function (node, name, value) {
@@ -216,6 +226,7 @@ define([
 			if (this._templateHandle) {
 				this._templateHandle.dependencies.forEach(this.notifyCurrentValue, this);
 			}
+			["dir", "baseClass"].forEach(this.notifyCurrentValue, this);
 		},
 
 		/**

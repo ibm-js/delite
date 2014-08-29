@@ -165,7 +165,7 @@ define(["./register"], function (register) {
 		 * @private
 		 */
 		generateNodeCode: function (nodeName, createNode, templateNode) {
-			/* jshint maxcomplexity:12*/
+			/* jshint maxcomplexity:15*/
 			// Helper string for setting up attach-point(s), ex: "this.foo = this.bar = ".
 			var ap = (templateNode.attachPoints || []).map(function (n) {
 				return  "this." + n + " = ";
@@ -191,15 +191,28 @@ define(["./register"], function (register) {
 				var propName = getProp(templateNode.tag, attr),
 					js = info.expr;		// code to compute property value
 
-				if (info.dependsOn.length) {
-					// Value depends on widget properties that may not be set yet.
-					// Watch for changes to those widget properties and reflect them to the DOM.
-					this.generateWatchCode(info.dependsOn, propName ? nodeName + "." + propName + " = " + js :
-						"this.setOrRemoveAttribute(" + nodeName + ", '" + attr + "', " + js + ")");
+				if (attr === "class" && !templateNode.xmlns) {
+					// Special path for class to not overwrite classes set by application or by other code.
+					if (info.dependsOn.length) {
+						// Value depends on widget properties that may not be set yet.
+						// Watch for changes to those widget properties and reflect them to the DOM.
+						this.generateWatchCode(info.dependsOn,
+								"this.setClassComponent('template', " + js + ", " + nodeName + ")");
+					} else {
+						// Value is a constant; set it during buildRendering().
+						this.buildText.push("this.setClassComponent('template', " + js + ", " + nodeName + ")");
+					}
 				} else {
-					// Value is a constant; set it during buildRendering().
-					this.buildText.push(propName ? nodeName + "." + propName + " = " + js :
-						nodeName + ".setAttribute('" + attr + "', " + js + ");");
+					if (info.dependsOn.length) {
+						// Value depends on widget properties that may not be set yet.
+						// Watch for changes to those widget properties and reflect them to the DOM.
+						this.generateWatchCode(info.dependsOn, propName ? nodeName + "." + propName + " = " + js :
+							"this.setOrRemoveAttribute(" + nodeName + ", '" + attr + "', " + js + ")");
+					} else {
+						// Value is a constant; set it during buildRendering().
+						this.buildText.push(propName ? nodeName + "." + propName + " = " + js :
+							nodeName + ".setAttribute('" + attr + "', " + js + ");");
+					}
 				}
 			}
 
