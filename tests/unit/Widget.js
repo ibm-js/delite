@@ -175,6 +175,7 @@ define([
 			var myWidget = new TestWidget();
 			myWidget.placeAt(container);
 			myWidget.startup();
+			myWidget.deliver();
 
 			assert(domClass.contains(myWidget, "base2"), "baseClass is base2");
 
@@ -183,6 +184,7 @@ define([
 			myWidgetCustom.baseClass = "customBase";
 			myWidgetCustom.placeAt(container);
 			myWidgetCustom.startup();
+			myWidgetCustom.deliver();
 
 			assert(domClass.contains(myWidgetCustom, "customBase"), "baseClass is customBase");
 		},

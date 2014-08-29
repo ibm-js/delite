@@ -633,6 +633,72 @@ define([
 			assert(/plus.gif/.test(node.firstElementChild.src, "img src set"));
 		},
 
+		"class": function () {
+			// Class is handled specially via addClass()/removeClass() so that it doesn't
+			// overwrite the settings from baseClass or user defined classes.
+
+			var ClassConstWidget = register("handlebars-const-class", [HTMLElement, Widget], {
+				baseClass: "myBaseClass",
+				template: handlebars.compile(
+						"<template class='constClass'>" +
+						"<span class='{{mySubClass}}'>hi</span>" +
+						"</template>"
+				)
+			});
+
+			var ClassVarWidget = register("handlebars-var-class", [HTMLElement, Widget], {
+				baseClass: "myBaseClass",
+				templateClass: "myTemplateClass1",
+				template: handlebars.compile(
+						"<template class='{{templateClass}}'>" +
+						"<span class='{{mySubClass}}'>hi</span>" +
+						"</template>"
+				)
+			});
+
+			// Test declarative with class=const
+			container.innerHTML += "<handlebars-const-class class='userDefinedClass'></handlebars-const-class>";
+			var cwdc = container.lastChild;
+			register.upgrade(cwdc);
+			cwdc.deliver();
+			assert.strictEqual(cwdc.className, "userDefinedClass constClass myBaseClass",
+				"declarative const");
+
+			// Test declarative with class={{foo}}
+			container.innerHTML += "<handlebars-var-class class='userDefinedClass'></handlebars-var-class>";
+			var cwdv = container.lastChild;
+			register.upgrade(cwdv);
+			cwdv.deliver();
+			assert.strictEqual(cwdv.className, "userDefinedClass myTemplateClass1 myBaseClass",
+				"declarative var, before update");
+
+			cwdv.templateClass = "myTemplateClass2";
+			cwdv.deliver();
+			assert.strictEqual(cwdv.className, "userDefinedClass myBaseClass myTemplateClass2",
+				"declarative var, after update");
+
+			// Test programmatic with class=const
+			var cwpc = new ClassConstWidget({
+				className: "userDefinedClass"
+			});
+			cwpc.deliver();
+			assert.strictEqual(cwpc.className, "constClass userDefinedClass myBaseClass",
+				"programmatic const");
+
+			// Test programmatic with class={{foo}}
+			var cwpv = new ClassVarWidget({
+				className: "userDefinedClass"
+			});
+			cwpv.deliver();
+			assert.strictEqual(cwpv.className, "userDefinedClass myTemplateClass1 myBaseClass",
+				"programmatic var, before update");
+
+			cwpv.templateClass = "myTemplateClass2";
+			cwpv.deliver();
+			assert.strictEqual(cwpv.className, "userDefinedClass myBaseClass myTemplateClass2",
+				"programmatic var, after update");
+		},
+
 		teardown: function () {
 			container.parentNode.removeChild(container);
 		}

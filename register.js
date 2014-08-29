@@ -250,6 +250,8 @@ define([
 			for (var name in params || {}) {
 				if (name === "style") {
 					node.style.cssText = params.style;
+				} else if ((name === "class" || name === "className") && node.setClassComponent) {
+					node.setClassComponent("user", params[name]);
 				} else {
 					node[name] = params[name];
 				}
