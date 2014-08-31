@@ -64,9 +64,10 @@ define([
 
 	var PopupManager = dcl(null, /** @lends module:delite/popup */ {
 		/**
-		 * Stack of currently popped up widgets.
+		 * Stack of information about currently popped up widgets.
+		 * See `open()` method to see the properties set in each Object in this stack (widget, wrapper, etc)
 		 * (someone opened _stack[0], and then it opened _stack[1], etc.)
-		 * @member {module:delite/Widget[]} PopupManager._stack
+		 * @member {*} PopupManager._stack
 		 */
 		_stack: [],
 
@@ -317,7 +318,7 @@ define([
 
 			// provide default escape and tab key handling
 			// (this will work for any widget, not just menu)
-			function onKeyDown(evt) {
+			var onKeyDown = function (evt) {
 				if (evt.keyCode === keys.ESCAPE && args.onCancel) {
 					evt.stopPropagation();
 					evt.preventDefault();
@@ -326,11 +327,9 @@ define([
 					evt.stopPropagation();
 					evt.preventDefault();
 					var topPopup = this.getTopPopup();
-					if (topPopup && topPopup.onCancel) {
-						topPopup.onCancel();
-					}
+					topPopup.onCancel();
 				}
-			}
+			}.bind(this);
 			wrapper.addEventListener("keydown", onKeyDown);
 			handlers.push({
 				remove: function () {
@@ -339,17 +338,24 @@ define([
 			});
 
 			// watch for cancel/execute events on the popup and notify the caller
-			// (for a menu, "execute" means clicking an item)
-			if (widget.onCancel && args.onCancel) {
+			if (args.onCancel) {
 				handlers.push(widget.on("cancel", args.onCancel));
 			}
 
-			handlers.push(widget.on(widget.onExecute ? "execute" : "change", function () {
+			// Simple widgets like a Calendar will emit "change" events, whereas complex widgets like
+			// a TooltipDialog/Menu will emit "execute" events.  No way to tell which event the widget will
+			// emit, so listen for both.
+			//
+			// If there's a hierarchy of menus and the user clicks on a nested menu, the callback
+			// registered for the top menu should get the execute event.  At least, that's how it worked in dijit.
+			var executeHandler = function () {
 				var topPopup = this.getTopPopup();
-				if (topPopup && topPopup.onExecute) {
-					topPopup.onExecute();
-				}
-			}));
+				topPopup.onExecute();
+			}.bind(this);
+			handlers.push(
+				widget.on("change", executeHandler),
+				widget.on("execute", executeHandler)
+			);
 
 			stack.push({
 				widget: widget,
@@ -362,7 +368,8 @@ define([
 			});
 
 			if (widget.onOpen) {
-				// TODO: in 2.0 standardize onShow() (used by StackContainer) and onOpen() (used here)
+				// TODO: standardize onShow() (used by StackContainer) and onOpen() (used here).
+				// Also, probably the method is not called on***() anymore??
 				widget.onOpen(best);
 			}
 
