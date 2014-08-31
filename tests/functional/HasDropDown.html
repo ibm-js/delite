@@ -1,0 +1,195 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no"/>
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<title>HasDropDown tests</title>
+	<style>
+		/*
+		The popup has to have some display type where you can set the width.
+		Perhaps this should be done in global.less but I didn't want to hard code the display type to "block"
+		when it could have other values like "table" etc.
+		*/
+		simple-tooltip-dialog, simple-menu {
+			display: block;
+			background: white;
+			border: 1px solid black;
+		}
+		non-focusable-drop-down-button {
+			white-space: nowrap;
+		}
+	</style>
+	<script type="text/javascript" src="../boilerplate.js"></script>
+	<script language="JavaScript" type="text/javascript">
+		var ready = false; // set to true when the test page is ready
+
+		require([
+			"dojo/Deferred",
+			"delite/keys",
+			"delite/register",
+			"delite/HasDropDown",
+			"delite/Widget",
+			"dpointer/events",	// since I'm using touch-action
+			"requirejs-domready/domReady!"
+		], function (Deferred, keys, register, HasDropDown, Widget) {
+
+			// A trivial popup widget
+			var SimpleTooltipDialog = register("simple-tooltip-dialog", [HTMLElement, Widget], {
+				buildRendering: function () {
+					// enable fast click, so testing code doesn't to wait 300ms for submit/cancel buttons to take effect
+					this.setAttribute("touch-action", "none");
+					this.innerHTML = "<input><br>" +
+							"<button type=submit>submit</button><br><button type=button>cancel</button>";
+				},
+				postCreate: function () {
+					this.on("click", function () {
+						this.emit("execute");
+					}.bind(this), this.querySelector("button[type=submit]"))
+					this.on("click", function () {
+						this.emit("cancel");
+					}.bind(this), this.querySelector("button[type=button]"))
+				},
+				focus: function () {
+					this.querySelector("input").focus();
+				}
+			});
+
+
+			// A list of values; select a value by pressing an entry in the list.
+			// This will emit a change event (just like selecting a day in a Calendar).
+			// No keyboard navigation.
+			var SimpleMenu = register("simple-menu", [HTMLElement, Widget], {
+				// Since this is a menu, we don't want to automatically get focus on open, unless it's
+				// opened via the keyboard
+				focusOnOpen: false,
+
+				choice1: "1",
+				choice2: "2",
+				choice3: "3",
+
+				buildRendering: function () {
+					this.className = "choice";
+
+					// enable fast click, so testing code doesn't to wait 300ms for clicking a choice to take effect
+					this.setAttribute("touch-action", "none");
+
+					this.on("click", this.emit.bind(this, "change"));
+					this.on("keydown", function (evt) {
+						if(evt.keyCode == keys.ENTER || evt.keyCode == keys.SPACE) {
+							this.emit("change")
+						}
+					}.bind(this));
+
+					for (var i = 1; i < 4; i++) {
+						this.innerHTML += "<div tabindex='0' index='" + i +
+								"'>choice #" + this["choice" + i] + "</div>";
+					}
+				},
+
+				focus: function () {
+					this.children[0].focus();
+				},
+
+				handleSlideClick: function () {
+					// If user does mouse down on dropdown button, then mouse up on menu, handle
+					// as click on menu.
+					this.emit("change");
+				}
+			});
+
+			// A button that shows a popup
+			var SimpleDropDownButton = register("simple-drop-down-button", [HTMLButtonElement, HasDropDown], {
+				label: "",
+				_setLabelAttr: function (val) {
+					this.textContent = val;
+					this._set("label", val);
+				},
+				orient: ["below"],
+
+				dropDownConstructor: SimpleMenu,
+
+				loadDropDown: function () {
+					return this._dropDown || (this._dropDown = new this.dropDownConstructor({
+						id: this.id + "_popup"
+					}));
+				}
+			});
+
+			// A button that shows a popup, but spends 1000ms the first time pretending to load the popup.
+			var DelayedDropDownButton = register("delayed-drop-down-button", [SimpleDropDownButton], {
+				loadDropDown: function () {
+					if (!this._dropDownPromise) {
+						this._dropDownPromise = new Deferred();
+						setTimeout(function () {
+							this._dropDownPromise.resolve(new this.dropDownConstructor({
+								id: this.id + "_popup"
+							}));
+						}.bind(this), 500);
+					}
+					return this._dropDownPromise;
+				}
+			});
+
+			// A non-focusable "button" that shows a popup.
+			// Should work for mouse, although not for keyboard.
+			var NonFocusableDropDownButton = register("non-focusable-drop-down-button", [HTMLElement, HasDropDown], {
+				label: "",
+				_setLabelAttr: function (val) {
+					this.textContent = val;
+					this._set("label", val);
+				},
+
+				orient: ["below"],
+
+				loadDropDown: function () {
+					return this._dropDown || (this._dropDown = new SimpleMenu({
+						id: this.id + "_popup"
+					}));
+				}
+			});
+
+			// basic drop down with menu
+			new SimpleDropDownButton({
+				id: "dd",
+				label: "show menu dropdown - ltr"
+			}).placeAt(document.body);
+
+			// rtl dropdown with tooltip dialog, delayed open first time
+			new DelayedDropDownButton({
+				id: "rdd",
+				dir: "rtl",
+				label: "show tooltip dropdown after 500ms - rtl",
+				dropDownConstructor: SimpleTooltipDialog
+			}).placeAt(document.body);
+
+			// non-focusable dropdown
+			new NonFocusableDropDownButton({
+				id: "ndd",
+				label: "show popup (non-focusable)"
+			}).placeAt(document.body);
+
+			// auto-width = false
+			new SimpleDropDownButton({
+				id: "nawl",
+				label: "show non-auto-width dropdown - ltr",
+				autoWidth: false
+			}).placeAt(document.body);
+
+			// auto-width = false, dir = rtl
+			new SimpleDropDownButton({
+				id: "nawr",
+				dir: "rtl",
+				label: "show non-auto-width dropdown - rtl",
+				autoWidth: false
+			}).placeAt(document.body);
+
+			// Set global variable to signal that the test page is ready
+			ready = true;
+		});
+	</script>
+</head>
+<body>
+	<input id=input value="for focus testing">
+</body>
+</html>
