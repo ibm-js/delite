@@ -1,24 +1,18 @@
 /** @module delite/HasDropDown */
 define([
 	"dcl/dcl",
-	"dojo/Deferred",
 	"dojo/dom-class", // domClass.add domClass.contains domClass.remove
+	"dojo/when",
 	"requirejs-dplugins/has", // has("touch")
 	"delite/keys", // keys.DOWN_ARROW keys.ENTER keys.ESCAPE
-	"./focus",
+	"./focus",		// enable _onFocus(), _onBlur()
 	"./place",
 	"./popup",
 	"./Widget",
-	"dpointer/events"
-], function (dcl, Deferred, domClass, has, keys, focus, place, popup, Widget) {
-
-	// TODO: this needs an overhaul for 2.0, including
-	//	- use deferreds instead of callbacks
-	//	- use ES5 setters rather than methods??
-	//	- _onXXX() methods should be renamed to _xxxHandler() or something like that
-
+	"dpointer/events"		// so can just monitor for "pointerdown"
+], function (dcl, domClass, when, has, keys, focus, place, popup, Widget) {
 	/**
-	 * Mixin for widgets that need drop down ability.
+	 * Base class for widgets that need drop down ability.
 	 * @mixin module:delite/HasDropDown
 	 * @augments module:delite/Widget
 	 */
@@ -43,7 +37,7 @@ define([
 		_arrowWrapperNode: null,
 
 		/**
-		 * The node to set the aria-expanded class on.
+		 * The node to set the `aria-expanded` class on.
 		 * Can be set in a template via a `attach-point` assignment.
 		 * If missing, then `this.focusNode` or `this._buttonNode` (if `focusNode` is missing) will be used.
 		 * @member {Element}
@@ -61,9 +55,9 @@ define([
 		_aroundNode: null,
 
 		/**
-		 * The widget to display as a popup.  This property *must* be
-		 * defined before the `startup()` method is called.
-		 * @member {module:delite/Widget}
+		 * The widget to display as a popup.  Applications/subwidgets should *either* define this
+		 * property *or* override `loadDropDown()` to return a dropdown widget or Promise for one.
+		 * @member {Element}
 		 */
 		dropDown: null,
 
@@ -111,15 +105,6 @@ define([
 		dropDownPosition: ["below", "above"],
 
 		/**
-		 * If false, click events will not be stopped.
-		 * Set to true in case you want to listen to those events in your subclass.
-		 * @member {boolean}
-		 * @default true
-		 * @protected
-		 */
-		_stopClickEvents: true,
-
-		/**
 		 * Whether or not the drop down is open.
 		 * @member {boolean}
 		 * @readonly
@@ -128,26 +113,23 @@ define([
 
 		/**
 		 * Callback when the user mousedown/touchstart on the arrow icon.
-		 * @param {Event} e
 		 * @private
 		 */
-		_onDropDownMouseDown: function (e) {
+		_dropDownPointerDownHandler: function () {
 			if (this.disabled || this.readOnly) {
 				return;
 			}
 
-			// Prevent default to stop things like text selection, but don't stop propagation, so that:
-			//		1. TimeTextBox etc. can focus the <input> on mousedown
-			//		2. dropDownButtonActive class applied by _CssStateMixin (on button depress)
-			//		3. user defined onMouseDown handler fires
+			// In the past we would call e.preventDefault() to stop things like text selection,
+			// but it doesn't work on IE10 (or IE11?) since it prevents the button from getting focus
+			// (see #17262), so not doing it at all for now.
 			//
-			// Also, don't call preventDefault() on MSPointerDown event (on IE10) because that prevents the button
-			// from getting focus, and then the focus manager doesn't know what's going on (#17262)
-			if (e.type !== "MSPointerDown" && e.type !== "pointerdown") {
-				e.preventDefault();
-			}
+			// Also, don't stop propagation, so that:
+			//		1. TimeTextBox etc. can focus the <input> on mousedown
+			//		2. dropDownButtonActive class applied by CssState (on button depress)
+			//		3. user defined onMouseDown handler fires
 
-			this._docHandler = this.on("pointerup", this._onDropDownMouseUp.bind(this), this.ownerDocument.body);
+			this._docHandler = this.on("pointerup", this._dropDownPointerUpHandler.bind(this), this.ownerDocument.body);
 
 			this.toggleDropDown();
 		},
@@ -169,97 +151,127 @@ define([
 		 * @param {Event} [e]
 		 * @private
 		 */
-		_onDropDownMouseUp: function (e) {
-			/* jshint maxcomplexity:14 */	// TODO: simplify this method?
+		_dropDownPointerUpHandler: function (e) {
+			/* jshint maxcomplexity:14 */
 
-			if (e && this._docHandler) {
+			if (this._docHandler) {
 				this._docHandler.remove();
 				this._docHandler = null;
 			}
-			var dropDown = this.dropDown, overMenu = false;
 
-			if (e && this.opened) {
-				// This code deals with the corner-case when the drop down covers the original widget,
+			// If mousedown on the button, then dropdown opened, then user moved mouse over a menu item
+			// in the drop down, and released the mouse.
+			if (this._currentDropDown) {
+				// This if() statement deals with the corner-case when the drop down covers the original widget,
 				// because it's so large.  In that case mouse-up shouldn't select a value from the menu.
 				// Find out if our target is somewhere in our dropdown widget,
 				// but not over our _buttonNode (the clickable node)
-				var c = place.position(this._buttonNode);
+				var c = place.position(this._buttonNode);	// TODO: use getBoundingClientRect(); adjust for viewport
 				if (!(e.pageX >= c.x && e.pageX <= c.x + c.w) || !(e.pageY >= c.y && e.pageY <= c.y + c.h)) {
-					var t = e.target;
+					var t = e.target, overMenu;
 					while (t && !overMenu) {
 						if (domClass.contains(t, "d-popup")) {
 							overMenu = true;
+							break;
 						} else {
 							t = t.parentNode;
 						}
 					}
 					if (overMenu) {
-						if (dropDown.onItemClick) {
+						if (this._currentDropDown.handleSlideClick) {
 							var menuItem = this.getEnclosingWidget(e.target);
-							if (menuItem && menuItem.onClick && menuItem.getParent) {
-								menuItem.getParent().onItemClick(menuItem, e);
-							}
+							menuItem.handleSlideClick(menuItem, e);
 						}
 						return;
 					}
 				}
 			}
-			if (this.opened) {
-				// Focus the dropdown widget unless it's a menu (in which case focusOnOpen is set to false).
-				// Even if it's a menu, we need to focus it if this is a fake mouse event caused by the user typing
+
+			if (this._openDropDownPromise) {
+				// Focus the drop down once it opens, unless it's a menu.
+				// !this.hovering condition checks if this is a fake mouse event caused by the user typing
 				// SPACE/ENTER while using JAWS.  Jaws converts the SPACE/ENTER key into mousedown/mouseup events.
 				// If this.hovering is false then it's presumably actually a keyboard event.
-
-				// TODO: this.hovering was removed from _CssStateMixin, so need to track hovered node/widget
-				// from this module (or put code back into _CssStateMixin)
-				if (dropDown.focus && (dropDown.focusOnOpen !== false || (e.type === "mouseup" && !this.hovering))) {
-					// Do it on a delay so that we don't steal back focus from the dropdown.
-					this._focusDropDownTimer = this.defer(function () {
-						dropDown.focus();
-						delete this._focusDropDownTimer;
-					});
-				}
+				this.focusDropDownOnOpen(!this.hovering);
 			} else {
 				// The drop down arrow icon probably can't receive focus, but widget itself should get focus.
 				// defer() needed to make it work on IE (test DateTextBox)
 				if (this.focus) {
-					this.defer("focus");
+					this.defer(this.focus);
 				}
 			}
 		},
 
 		/**
-		 * Callback for click event.
-		 * @param {Event} e
-		 * @private
+		 * Helper function to focus the dropdown when it finishes loading and opening.
+		 * Exception: doesn't focus the dropdown when `dropDown.focusOnOpen === false a menu`, unless it
+		 * was opened via the keyboard.   `dropDown.focusOnOpen` is meant to be set for menus.
+		 * @param {boolean} keyboard - True if the user opened the dropdown via the keyboard
 		 */
-		_onDropDownClick: function (e) {
-			// The drop down was already opened on mousedown/keydown; just need to stop the event
-			if (this._stopClickEvents) {
-				e.stopPropagation();
-				e.preventDefault();
-			}
+		focusDropDownOnOpen: function (keyboard) {
+			// Wait until the dropdown appears (if it hasn't appeared already), and then
+			// focus it, unless it's a menu (in which case focusOnOpen is set to false).
+			// Even if it's a menu, we need to focus it
+			this._openDropDownPromise.then(function (ret) {
+				var dropDown = ret.dropDown;
+				if (dropDown.focus && (keyboard || dropDown.focusOnOpen !== false)) {
+					this._focusDropDownTimer = this.defer(function () {
+						dropDown.focus();
+						delete this._focusDropDownTimer;
+					});
+				}
+			}.bind(this));
 		},
 
 		buildRendering: dcl.after(function () {
 			this._buttonNode = this._buttonNode || this.focusNode || this;
 			this._popupStateNode = this._popupStateNode || this.focusNode || this._buttonNode;
-
-			// Add a "d-down-arrow" type class to _buttonNode so theme can set direction of arrow
-			// based on where drop down will normally appear
-			var defaultPos = {
-				"after": this.isLeftToRight() ? "right" : "left",
-				"before": this.isLeftToRight() ? "left" : "right"
-			}[this.dropDownPosition[0]] || this.dropDownPosition[0] || "down";
-
-			domClass.add(this._arrowWrapperNode || this._buttonNode, "d-" + defaultPos + "-arrow");
 		}),
 
 		postCreate: function () {
-			this.on("pointerdown", this._onDropDownMouseDown.bind(this), this._buttonNode);
-			this.on("click", this._onDropDownClick.bind(this), this._buttonNode);
-			this.on("keydown", this._onKey.bind(this), this.focusNode || this);
-			this.on("keyup", this._onKeyUp.bind(this), this.focusNode || this);
+			// basic listeners
+			this.on("pointerdown", this._dropDownPointerDownHandler.bind(this), this._buttonNode);
+			this.on("keydown", this._dropDownKeyDownHandler.bind(this), this.focusNode || this);
+			this.on("keyup", this._dropDownKeyUpHandler.bind(this), this.focusNode || this);
+
+			// set this.hovering when mouse is over widget so we can differentiate real mouse clicks from synthetic
+			// mouse clicks generated from JAWS upon keyboard events
+			this.on("pointerenter", function () {
+				this.hovering = true;
+			}.bind(this));
+			this.on("pointerleave", function () {
+				this.hovering = false;
+			}.bind(this));
+
+			// Stop click events and workaround problem on iOS where a blur event occurs ~300ms after
+			// the focus event, causing the dropdown to open then immediately close.
+			// Workaround iOS problem where clicking a Menu can focus an <input> (or click a button) behind it.
+			// Need to be careful though that you can still focus <input>'s and click <button>'s in a TooltipDialog.
+			// Also, be careful not to break (native) scrolling of dropdown like ComboBox's options list.
+			this.on("touchend", function (evt) {
+				evt.preventDefault();
+			}, this._buttonNode);
+			this.on("click", function (evt) {
+				evt.preventDefault();
+				evt.stopPropagation();
+			}, this._buttonNode);
+
+			// trigger initial setting of d-down-arrow class
+			this.notifyCurrentValue("dropDownPosition");
+		},
+
+		refreshRendering: function (props) {
+			if ("dropDownPosition" in props) {
+				// Add a "d-down-arrow" type class to _buttonNode so theme can set direction of arrow
+				// based on where drop down will normally appear
+				var defaultPos = {
+					"after": this.isLeftToRight() ? "right" : "left",
+					"before": this.isLeftToRight() ? "left" : "right"
+				}[this.dropDownPosition[0]] || this.dropDownPosition[0] || "down";
+
+				this.setClassComponent("arrowDirectionIcon", "d-" + defaultPos + "-arrow",
+						this._arrowWrapperNode || this._buttonNode);
+			}
 		},
 
 		destroy: function () {
@@ -284,22 +296,22 @@ define([
 		 * @param {Event} e
 		 * @private
 		 */
-		_onKey: function (e) {
+		_dropDownKeyDownHandler: function (e) {
 			/* jshint maxcomplexity:14 */
 
 			if (this.disabled || this.readOnly) {
 				return;
 			}
-			var d = this.dropDown, target = e.target;
-			if (d && this.opened && d.handleKey) {
-				if (d.handleKey(e) === false) {
+			var dropDown = this._currentDropDown, target = e.target;
+			if (dropDown && this.opened && dropDown.handleKey) {
+				if (dropDown.handleKey(e) === false) {
 					/* false return code means that the drop down handled the key */
 					e.stopPropagation();
 					e.preventDefault();
 					return;
 				}
 			}
-			if (d && this.opened && e.keyCode === keys.ESCAPE) {
+			if (dropDown && this.opened && e.keyCode === keys.ESCAPE) {
 				this.closeDropDown();
 				e.stopPropagation();
 				e.preventDefault();
@@ -313,8 +325,8 @@ define([
 							(target.type && target.type.toLowerCase() !== "text"))))) {
 				// Toggle the drop down, but wait until keyup so that the drop down doesn't
 				// get a stray keyup event, or in the case of key-repeat (because user held
-				// down key for too long), stray keydown events
-				this._toggleOnKeyUp = true;
+				// down key for too long), stray keydown events.
+				this._openOnKeyUp = true;
 				e.stopPropagation();
 				e.preventDefault();
 			}
@@ -325,14 +337,11 @@ define([
 		 * @param {Event} e
 		 * @private
 		 */
-		_onKeyUp: function () {
-			if (this._toggleOnKeyUp) {
-				delete this._toggleOnKeyUp;
-				this.toggleDropDown();
-				var d = this.dropDown;	// drop down may not exist until toggleDropDown() call
-				if (d && d.focus) {
-					this.defer(d.focus.bind(d), 1);
-				}
+		_dropDownKeyUpHandler: function () {
+			if (this._openOnKeyUp) {
+				delete this._openOnKeyUp;
+				this.openDropDown();
+				this.focusDropDownOnOpen(true);
 			}
 		},
 
@@ -346,49 +355,18 @@ define([
 		}),
 
 		/**
-		 * Returns true if the dropdown exists and its data is loaded. This can
-		 * be overridden in order to force a call to loadDropDown().
-		 * @returns {boolean}
-		 * @protected
-		 */
-		isLoaded: function () {
-			return true;
-		},
-
-		/**
 		 * Creates the drop down if it doesn't exist, loads the data
-		 * if there's an href and it hasn't been loaded yet, and then calls
-		 * the given callback.
-		 * @param {Function} loadCallback
+		 * if there's an href and it hasn't been loaded yet.
+		 * Returns a Promise for the dropdown, or if loaded synchronously, the dropdown itself.
+		 *
+		 * Subclasses should override this method to create custom drop downs on the fly.
+		 * However, they are then responsible for destroying the dropdown when this widget is destroyed.
+		 *
+		 * @returns {Element|Promise} Element or Promise for the dropdown
 		 * @protected
 		 */
-		loadDropDown: function (loadCallback) {
-			// TODO: for 2.0, change API to return a Deferred, instead of calling loadCallback?
-			loadCallback();
-		},
-
-		/**
-		 * Creates the drop down if it doesn't exist, loads the data
-		 * if there's an href and it hasn't been loaded yet, and
-		 * then opens the drop down.  This is basically a callback when the
-		 * user presses the down arrow button to open the drop down.
-		 * @returns {Promise} Promise for the drop down widget that fires when drop down is created and loaded.
-		 * @protected
-		 */
-		loadAndOpenDropDown: function () {
-			var d = new Deferred();
-
-			function afterLoad() {
-				this.openDropDown();
-				d.resolve(this.dropDown);
-			}
-
-			if (!this.isLoaded()) {
-				this.loadDropDown(afterLoad.bind(this));
-			} else {
-				afterLoad.call(this);
-			}
-			return d;
+		loadDropDown: function () {
+			return this.dropDown;
 		},
 
 		/**
@@ -402,66 +380,75 @@ define([
 				return;
 			}
 			if (!this.opened) {
-				this.loadAndOpenDropDown();
+				return this.openDropDown();
 			} else {
-				this.closeDropDown(true);	// refocus button to avoid hiding node w/focus
+				return this.closeDropDown(true);	// refocus button to avoid hiding node w/focus
 			}
 		},
 
 		/**
-		 * Opens the dropdown for this widget.  To be called only when this.dropDown
-		 * has been created and is ready to display (i.e. its data is loaded).
-		 * @returns {*} Return value of delite/popup.open().
+		 * Creates the drop down if it doesn't exist, loads the data
+		 * if there's an href and it hasn't been loaded yet, and
+		 * then opens the drop down.  This is basically a callback when the
+		 * user presses the down arrow button to open the drop down.
+		 * @returns {Promise} Promise for the drop down widget that fires when drop down is created and loaded.
 		 * @protected
 		 */
 		openDropDown: function () {
-			var dropDown = this.dropDown,
-				aroundNode = this._aroundNode || this,
-				self = this;
+			return this._openDropDownPromise ||
+				(this._openDropDownPromise = when(this.loadDropDown()).then(function (dropDown) {
+				this._currentDropDown = dropDown;
+				var aroundNode = this._aroundNode || this,
+					self = this;
 
-			var retVal = popup.open({
-				parent: this,
-				popup: dropDown,
-				around: aroundNode,
-				orient: this.dropDownPosition,
-				maxHeight: this.maxHeight,
-				onExecute: function () {
-					self.closeDropDown(true);
-				},
-				onCancel: function () {
-					self.closeDropDown(true);
-				},
-				onClose: function () {
-					domClass.remove(self._popupStateNode, "d-drop-down-open");
-					self._set("opened", false);	// use _set() because CssStateMixin is watching
+				var retVal = popup.open({
+					parent: this,
+					popup: dropDown,
+					around: aroundNode,
+					orient: this.dropDownPosition,
+					maxHeight: this.maxHeight,
+					onExecute: function () {
+						self.closeDropDown(true);
+					},
+					onCancel: function () {
+						self.closeDropDown(true);
+					},
+					onClose: function () {
+						domClass.remove(self._popupStateNode, "d-drop-down-open");
+						this.opened = false;
+					}
+				});
+
+				// Set width of drop down if necessary, so that dropdown width + width of scrollbar (from popup wrapper)
+				// matches width of aroundNode
+				if (this.forceWidth ||
+						(this.autoWidth && aroundNode.offsetWidth > dropDown._popupWrapper.offsetWidth)) {
+					var widthAdjust = aroundNode.offsetWidth - dropDown._popupWrapper.offsetWidth;
+					dropDown._popupWrapper.style.width = aroundNode.offsetWidth + "px";
+
+					// If dropdown is right-aligned then compensate for width change by changing horizontal position
+					if (retVal.corner[1] === "R") {
+						dropDown._popupWrapper.style.left =
+							(dropDown._popupWrapper.style.left.replace("px", "") - widthAdjust) + "px";
+					}
 				}
-			});
 
-			// Set width of drop down if necessary, so that dropdown width + width of scrollbar (from popup wrapper)
-			// matches width of aroundNode
-			if (this.forceWidth || (this.autoWidth && aroundNode.offsetWidth > dropDown._popupWrapper.offsetWidth)) {
-				var widthAdjust = aroundNode.offsetWidth - dropDown._popupWrapper.offsetWidth;
-				dropDown._popupWrapper.style.width = aroundNode.offsetWidth + "px";
+				domClass.add(this._popupStateNode, "d-drop-down-open");
+				this.opened = true;
 
-				// If dropdown is right-aligned then compensate for width change by changing horizontal position
-				if (retVal.corner[1] === "R") {
-					dropDown._popupWrapper.style.left =
-						(dropDown._popupWrapper.style.left.replace("px", "") - widthAdjust) + "px";
+				this._popupStateNode.setAttribute("aria-expanded", "true");
+				this._popupStateNode.setAttribute("aria-owns", dropDown.id);
+
+				// Set aria-labelledby on dropdown if it's not already set to something more meaningful
+				if (dropDown.getAttribute("role") !== "presentation" && !dropDown.getAttribute("aria-labelledby")) {
+					dropDown.setAttribute("aria-labelledby", this.id);
 				}
-			}
 
-			domClass.add(this._popupStateNode, "d-drop-down-open");
-			this._set("opened", true);	// use set() because _CssStateMixin is watching
-
-			this._popupStateNode.setAttribute("aria-expanded", "true");
-			this._popupStateNode.setAttribute("aria-owns", dropDown.id);
-
-			// Set aria-labelledby on dropdown if it's not already set to something more meaningful
-			if (dropDown.getAttribute("role") !== "presentation" && !dropDown.getAttribute("aria-labelledby")) {
-				dropDown.setAttribute("aria-labelledby", this.id);
-			}
-
-			return retVal;
+				return {
+					dropDown: dropDown,
+					position: retVal
+				};
+			}.bind(this)));
 		},
 
 		/**
@@ -470,6 +457,13 @@ define([
 		 * @protected
 		 */
 		closeDropDown: function (focus) {
+			if (this._openDropDownPromise) {
+				if (!this._openDropDownPromise.isFulfilled()) {
+					this._openDropDownPromise.cancel();
+				}
+				delete this._openDropDownPromise;
+			}
+
 			if (this._focusDropDownTimer) {
 				this._focusDropDownTimer.remove();
 				delete this._focusDropDownTimer;
@@ -480,9 +474,10 @@ define([
 				if (focus && this.focus) {
 					this.focus();
 				}
-				popup.close(this.dropDown);
+				popup.close(this._currentDropDown);
 				this.opened = false;
 			}
+			delete this._currentDropDown;
 		}
 	});
 });
