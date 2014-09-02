@@ -180,7 +180,7 @@ define([
 			var newStack = [];
 			try {
 				while (node) {
-					var popupParent = node.getAttribute("d-popup-parent");
+					var popupParent = node.getAttribute && node.getAttribute("d-popup-parent");
 					if (popupParent) {
 						node = node.ownerDocument.getElementById(popupParent);
 					} else if (node.tagName && node.tagName.toLowerCase() === "body") {
@@ -261,10 +261,9 @@ define([
 			for (i = lastOldIdx; i >= 0 && oldStack[i] !== newStack[i]; i--) {
 				widget = oldStack[i];
 				if (widget) {
-					widget._hasBeenBlurred = true;		// TODO: used by form widgets, should be moved there
 					widget.focused = false;
 					if (widget._onBlur) {
-						widget._onBlur(by);
+						widget._onBlur();
 					}
 					this.emit("widget-blur", widget, by);
 				}
