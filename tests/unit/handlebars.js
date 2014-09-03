@@ -121,7 +121,7 @@ define([
 					assert.strictEqual(select.getAttribute("foo"), "2", "foo");
 					assert.strictEqual(select.size, 2, "size");
 					assert.strictEqual(select.multiple, true, "multiple");
-				}), 10);
+				}), 100);
 
 				return d;
 			}
@@ -220,8 +220,8 @@ define([
 					setTimeout(d.callback(function () {
 						assert.strictEqual(headingWidget.textContent, "new heading", "heading changed");
 						assert.strictEqual(buttonWidget.textContent.trim(), "new button label", "button changed");
-					}), 10);
-				}), 10);
+					}), 100);
+				}), 100);
 
 				return d;
 			},
@@ -455,9 +455,9 @@ define([
 					setTimeout(d.callback(function () {
 						assert.strictEqual(node.className, "blue", "class #3");
 						assert.strictEqual(node.textContent.trim(), "Hello Fred Smith!", "textContent #3");
-					}), 10);
-				}), 10);
-			}), 10);
+					}), 100);
+				}), 100);
+			}), 100);
 
 			return d;
 		},
