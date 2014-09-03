@@ -290,7 +290,7 @@ define([
 				className: "d-popup " + (widget.baseClass || widget["class"] || "").split(" ")[0] + "Popup"
 			});
 			wrapper.style.zIndex = this._beginZIndex + stack.length;
-			wrapper.setAttribute("d-popup-parent", args.parent ? args.parent.id : "");
+			wrapper._popupParent = args.parent ? args.parent : null;
 
 			if (stack.length === 0 && around) {
 				// First element on stack. Save position of aroundNode and setup listener for changes to that position.
