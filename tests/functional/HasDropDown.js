@@ -41,8 +41,10 @@ define([
 								dropDown: document.getElementById("dd_popup").getBoundingClientRect()
 							};
 						}).then(function (pos) {
-							assert(Math.abs(pos.anchor.left - pos.dropDown.left) < 1, "drop down and anchor left aligned");
-							assert(Math.abs(pos.anchor.width - pos.dropDown.width) < 1, "drop down same width as anchor");
+							assert(Math.abs(pos.anchor.left - pos.dropDown.left) < 1,
+								"drop down and anchor left aligned");
+							assert(Math.abs(pos.anchor.width - pos.dropDown.width) < 1,
+								"drop down same width as anchor");
 						})
 						.clickElement()
 						.isDisplayed().then(function (visible) {
