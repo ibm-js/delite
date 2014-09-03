@@ -180,9 +180,9 @@ define([
 			var newStack = [];
 			try {
 				while (node) {
-					var popupParent = node.getAttribute("d-popup-parent");
+					var popupParent = node._popupParent;
 					if (popupParent) {
-						node = node.ownerDocument.getElementById(popupParent);
+						node = popupParent;
 					} else if (node.tagName && node.tagName.toLowerCase() === "body") {
 						// is this the root of the document or just the root of an iframe?
 						if (node === document.body) {
