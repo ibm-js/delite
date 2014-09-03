@@ -17,9 +17,39 @@ define([
 			}
 		}),
 
+		appendChild: dcl.superCall(function (sup) {
+			return function (child) {
+				var res = sup.call(this, child);
+				this.onAddChild(child);
+				return res;
+			};
+		}),
+
+		insertBefore: dcl.superCall(function (sup) {
+			return function (newChild, refChild) {
+				var res = sup.call(this, newChild, refChild);
+				this.onAddChild(newChild);
+				return res;
+			};
+		}),
+
 		/**
-		 * Inserts specified Element as a child of this widget's
-		 * container node, and possibly does other processing (such as layout).
+		 * Callback whenever a child element is added to this widget.
+		 * @param node
+		 */
+		onAddChild: function (node) {
+			// If I've been started but the child widget hasn't been started,
+			// start it now.  Make sure to do this after widget has been
+			// inserted into the DOM tree, so it can see that it's being controlled by me,
+			// so it doesn't try to size itself.
+			if (this._started && !node._started && node.startup) {
+				node.startup();
+			}
+		},
+
+		/**
+		 * Inserts the specified Element at the specified index.
+		 * For example, `.addChild(node, 3)` sets this widget's fourth child to node.
 		 * @param {Element} node - Element to add as a child.
 		 * @param {number} [insertIndex] - Position the child as at the specified position relative to other children.
 		 */
@@ -27,18 +57,10 @@ define([
 			// Note: insertBefore(node, null) equivalent to appendChild().  Null arg is needed (only) on IE.
 			var cn = this.containerNode, nextSibling = cn.children[insertIndex];
 			cn.insertBefore(node, nextSibling || null);
-
-			// If I've been started but the child widget hasn't been started,
-			// start it now.  Make sure to do this after widget has been
-			// inserted into the DOM tree, so it can see that it's being controlled by me,
-			// so it doesn't try to size itself.
-			if (this._started && !node._started && dcl.isInstanceOf(node, Widget)) {
-				node.startup();
-			}
 		},
 
 		/**
-		 * Removes the passed node instance from this widget but does
+		 * Detaches the specified node instance from this widget but does
 		 * not destroy it.  You can also pass in an integer indicating
 		 * the index within the container to remove (ie, removeChild(5) removes the sixth node).
 		 * @param {Element|number} node
