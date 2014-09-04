@@ -195,8 +195,8 @@ define(["intern!object",
 						"return [domStyleGlobal.get(lotsOfChoicesPopup, 'height'), " +
 							"winUtilsGlobal.getBox().h, domStyleGlobal.get(lotsOfChoicesPopup.parentNode, 'height')];")
 					.then(function (value) {
-						assert.isTrue(value[0] > value[1], "lotsOfChoicesPopup popup is not taller than the viewport");
 						assert.isTrue(value[2] < value[1], "lotsOfChoicesPopup wrapper is not shorter than viewport");
+						assert.isTrue(value[0] < value[1], "lotsOfChoicesPopup popup is not shorter than the viewport");
 					})
 					.elementById("closeLotsOfChoicesPopupButton")
 						.click()
@@ -213,8 +213,8 @@ define(["intern!object",
 					.execute("return [domStyleGlobal.get(tallChoiceDropDown, 'height'), " +
 						"winUtilsGlobal.getBox().h, domStyleGlobal.get(tallChoiceDropDown.parentNode, 'height')];")
 					.then(function (value) {
-						assert.isTrue(value[0] > value[1], "tallChoiceDropDown popup is not taller than the viewport");
 						assert.isTrue(value[2] < value[1], "tallChoiceDropDown wrapper is not shorter than viewport");
+						assert.isTrue(value[0] < value[1], "tallChoiceDropDown popup is not shorter than the viewport");
 					});
 			}
 		}
