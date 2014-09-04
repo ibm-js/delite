@@ -7,7 +7,7 @@ define(["dcl/dcl", "dojo/when", "decor/Invalidating"], function (dcl, when, Inva
 	 *
 	 * Classes extending this mixin automatically create render items that are consumable
 	 * from store items after querying the store. This happens each time the `store`, `query` or
-	 * `queryOptions` properties are set. If that store is Observable it will be observed and render items
+	 * `queryOptions` properties are set. If that store is Trackable it will be observed and render items
 	 * will be automatically updated, added or deleted based on store notifications.
 	 *
 	 * @mixin module:delite/Store
@@ -29,8 +29,8 @@ define(["dcl/dcl", "dojo/when", "decor/Invalidating"], function (dcl, when, Inva
 
 		/**
 		 * A function that processes the collection returned by the store query and returns a new collection
-		 * (to sort it, range it etc...). This processing is applied before potentially tracking the store
-		 * for modifications (if Observable).
+		 * (to sort it, etc...). This processing is applied before potentially tracking the store
+		 * for modifications (if Trackable).
 		 * Changing this function on the instance will not automatically refresh the class.
 		 * @default identity function
 		 */
@@ -65,17 +65,19 @@ define(["dcl/dcl", "dojo/when", "decor/Invalidating"], function (dcl, when, Inva
 		},
 
 		/**
-		 * This method is called once the query has been executed to initial the renderItems array
+		 * This method is called once the query has been executed to initialize the renderItems array
 		 * with the list of initial render items.
 		 *
 		 * This method sets the renderItems property to the render items array passed as parameter. Once
 		 * done, it fires a 'query-success' event.
 		 * @param {Object[]} renderItems - The array of initial render items to be set in the renderItems property.
+		 * @returns {Object[]} the renderItems array.
 		 * @protected
 		 */
 		initItems: function (renderItems) {
 			this.renderItems = renderItems;
 			this.emit("query-success", { renderItems: renderItems, cancelable: false, bubbles: true });
+			return renderItems;
 		},
 
 		/**
@@ -98,7 +100,7 @@ define(["dcl/dcl", "dojo/when", "decor/Invalidating"], function (dcl, when, Inva
 		 * It will be called automatically when modifying the store related properties or by the subclass
 		 * if needed.
 		 * @param processQueryResult - A function that processes the collection returned by the store query
-		 * and returns a new collection (to sort it, range it etc...)., applied before tracking.
+		 * and returns a new collection (to sort it, etc...)., applied before tracking.
 		 * @returns {Promise} If store to be processed is not null a promise that will be resolved when the loading 
 		 * process will be finished.
 		 * @protected
@@ -113,8 +115,9 @@ define(["dcl/dcl", "dojo/when", "decor/Invalidating"], function (dcl, when, Inva
 					collection.on("add", this._itemAdded.bind(this));
 					collection.on("update", this._itemUpdated.bind(this));
 					collection.on("remove", this._itemRemoved.bind(this));
+					collection.on("refresh", this._refreshHandler.bind(this));
 				}
-				return this.fetch(collection);
+				return this.processCollection(collection);
 			} else {
 				this.initItems([]);
 			}
@@ -123,12 +126,21 @@ define(["dcl/dcl", "dojo/when", "decor/Invalidating"], function (dcl, when, Inva
 		/**
 		 * Called to process the items returned after querying the store.
 		 * @param {dstore/Collection} collection - Items to be displayed.
+		 * @protected
+		 */
+		processCollection: function (collection) {
+			return this.fetch(collection).then(function (items) {
+				return this.initItems(items.map(this.itemToRenderItem.bind(this)));
+			}.bind(this), this._queryError.bind(this));
+		},
+
+		/**
+		 * Called to perform the fetch operation on the collection.
+		 * @param {dstore/Collection} collection - Items to be displayed.
+		 * @protected
 		 */
 		fetch: function (collection) {
-			return when(collection.map(function (item) {
-				// if we have a mapping function between store item and some intermediary items use it
-				return this.itemToRenderItem(item);
-			}, this)).then(this.initItems.bind(this), this._queryError.bind(this));
+			return collection.fetch();
 		},
 
 		_queryError: function (error) {
@@ -201,11 +213,15 @@ define(["dcl/dcl", "dojo/when", "decor/Invalidating"], function (dcl, when, Inva
 			this.itemRemoved(previousIndex, renderItems);
 			this.itemAdded(newIndex, renderItem, renderItems);
 		},
+		
+		_refreshHandler: function () {
+			this.queryStoreAndInitItems(this.processQueryResult);
+		},
 
 		/**
 		 * When the store is observed and an item is removed in the store this method is called to remove the
 		 * corresponding render item. This can be redefined but must not be called directly.
-		 * @param {Event} event - The "remove" `dstore/Observable` event.
+		 * @param {Event} event - The "remove" `dstore/Trackable` event.
 		 * @protected
 		 */
 		_itemRemoved: function (event) {
@@ -221,7 +237,7 @@ define(["dcl/dcl", "dojo/when", "decor/Invalidating"], function (dcl, when, Inva
 		/**
 		 * When the store is observed and an item is updated in the store this method is called to update the
 		 * corresponding render item.  This can be redefined but must not be called directly.
-		 * @param {Event} event - The "update" `dstore/Observable` event.
+		 * @param {Event} event - The "update" `dstore/Trackable` event.
 		 * @private
 		 */
 		_itemUpdated: function (event) {
@@ -246,7 +262,7 @@ define(["dcl/dcl", "dojo/when", "decor/Invalidating"], function (dcl, when, Inva
 		/**
 		 * When the store is observed and an item is added in the store this method is called to add the
 		 * corresponding render item. This can be redefined but must not be called directly.
-		 * @param {Event} event - The "add" `dstore/Observable` event.
+		 * @param {Event} event - The "add" `dstore/Trackable` event.
 		 * @private
 		 */
 		_itemAdded: function (event) {

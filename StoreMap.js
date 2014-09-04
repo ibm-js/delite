@@ -128,20 +128,22 @@ define(["dcl/dcl", "./Store"], function (dcl, Store) {
 		},
 
 		/**
-		 * Creates a store item based from the widget internal item based on the various mapped properties. 
+		 * Creates a store item based from the widget internal item based on the various mapped properties. Works 
+		 * asynchronously.
 		 * @param {Object} renderItem - The render item.
-		 * @returns {Object}		
+		 * @returns {Promise}		
 		 */
 		renderItemToItem: function (renderItem) {
-			var item = {}, store = this.store;
+			var tmp = {}, store = this.store;
 			// special id case
-			item[store.idProperty] = renderItem.id;
+			tmp[store.idProperty] = renderItem.id;
 			for (var key in renderItem) {
-				setvalue(this, item, key, store, renderItem[key]);
+				setvalue(this, tmp, key, store, renderItem[key]);
 			}
-			var r = store.get(renderItem[store.idProperty]);
-			dcl.mix(r, item);
-			return r;
+			return store.get(renderItem[store.idProperty]).then(function (item) {
+				dcl.mix(item, tmp);
+				return item;
+			});
 		},
 
 		/**

@@ -53,7 +53,7 @@ render items using this mapping.
 Once created the render items array is passed into the `initItems()` function and by default store in the
 `renderItems` property.
 
-In addition to this, if the store is an observable store (`dstore/Observable`) the changes to the data in the store will
+In addition to this, if the store is an observable store (`dstore/Trackable`) the changes to the data in the store will
 be tracked and the following functions will be called on each type of modification:
 
 * `itemRemoved` if an item has been removed
