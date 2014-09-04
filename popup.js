@@ -233,7 +233,8 @@ define([
 			// If we are opening a new popup that isn't a child of a currently opened popup, then
 			// close currently opened popup(s).   This should happen automatically when the old popups
 			// gets the _onBlur() event, except that the _onBlur() event isn't reliable on IE, see [22198].
-			while (stack.length && (!args.parent || !args.parent.contains(stack[stack.length - 1].widget))) {
+			// TODO: check if this code still needed for delite
+			while (stack.length && (!args.parent || !stack[stack.length - 1].widget.contains(args.parent))) {
 				this.close(stack[stack.length - 1].widget);
 			}
 
