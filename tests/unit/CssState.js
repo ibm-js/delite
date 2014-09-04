@@ -24,30 +24,24 @@ define([
 				disabled: true,
 				checked: true
 			});
+			widget.deliver();
 
-			var d = this.async(1000);
+			assert(domClass.contains(widget, "d-error"), "error state");
+			assert(domClass.contains(widget, "d-disabled"), "disabled");
+			assert(domClass.contains(widget, "d-checked"), "checked");
 
-			setTimeout(d.rejectOnError(function () {
-				assert(domClass.contains(widget, "d-error"), "error state");
-				assert(domClass.contains(widget, "d-disabled"), "disabled");
-				assert(domClass.contains(widget, "d-checked"), "checked");
+			widget.mix({
+				state: "incomplete",
+				disabled: false,
+				checked: "mixed"
+			});
+			widget.deliver();
 
-				widget.mix({
-					state: "incomplete",
-					disabled: false,
-					checked: "mixed"
-				});
-
-				setTimeout(d.callback(function () {
-					assert(!domClass.contains(widget, "d-error"), "not error state");
-					assert(domClass.contains(widget, "d-incomplete"), "incomplete state");
-					assert(!domClass.contains(widget, "d-disabled"), "not disabled");
-					assert(domClass.contains(widget, "d-mixed"), "half checked");
-					assert(!domClass.contains(widget, "d-checked"), "original checked removed");
-				}), 10);
-			}), 10);
-
-			return d;
+			assert(!domClass.contains(widget, "d-error"), "not error state");
+			assert(domClass.contains(widget, "d-incomplete"), "incomplete state");
+			assert(!domClass.contains(widget, "d-disabled"), "not disabled");
+			assert(domClass.contains(widget, "d-mixed"), "half checked");
+			assert(!domClass.contains(widget, "d-checked"), "original checked removed");
 		}
 	});
 });
