@@ -128,12 +128,6 @@ define([
 				widget.ownerDocument.body.appendChild(wrapper);
 				wrapper.appendChild(widget);
 
-				var s = widget.style;
-				s.display = "";
-				s.visibility = "";
-				s.position = "";
-				s.top = "0px";
-
 				widget._popupWrapper = wrapper;
 				advise.after(widget, "destroy", destroyWrapper);
 
@@ -165,6 +159,7 @@ define([
 				style = wrapper.style,
 				ltr = isDocLtr(widget.ownerDocument);
 
+			// TODO: move to CSS class (d-offscreen?), but need to know direction of widget or at least page
 			dcl.mix(style, {
 				visibility: "hidden",
 				top: "-9999px",
@@ -192,15 +187,8 @@ define([
 
 			dcl.mix(wrapper.style, {
 				display: "none",
-				height: "auto",		// Open may have limited the height to fit in the viewport
-				overflow: "visible",
-				border: ""			// Open() may have moved border from popup to wrapper.
+				height: "auto"		// Open may have limited the height to fit in the viewport
 			});
-
-			// Open() may have moved border from popup to wrapper.  Move it back.
-			if ("_originalStyle" in widget) {
-				widget.style.cssText = widget._originalStyle;
-			}
 		},
 
 		/**
@@ -258,8 +246,7 @@ define([
 			}
 
 			// Limit height to space available in viewport either above or below aroundNode (whichever side has more
-			// room), adding scrollbar if necessary. Can't add scrollbar to widget because it may be a <table> (ex:
-			// deliteful/Menu), so add to wrapper, and then move popup's border to wrapper so scroll bar inside border.
+			// room).  This may make the popup widget display a scrollbar (or multiple scrollbars).
 			var maxHeight;
 			if ("maxHeight" in args && args.maxHeight !== -1) {
 				maxHeight = args.maxHeight || Infinity;
@@ -271,18 +258,9 @@ define([
 					};
 				maxHeight = Math.floor(Math.max(aroundPos.top, viewport.h - (aroundPos.top + aroundPos.height)));
 			}
+
 			if (widget.offsetHeight > maxHeight) {
-				// Get style of popup's border.  Unfortunately getComputedStyle(node).border doesn't work on FF or IE,
-				// and getComputedStyle(node).borderColor etc. doesn't work on FF, so need to use fully qualified names.
-				var cs = getComputedStyle(widget),
-					borderStyle = cs.borderLeftWidth + " " + cs.borderLeftStyle + " " + cs.borderLeftColor;
-				dcl.mix(wrapper.style, {
-					overflowY: "scroll",
-					height: maxHeight + "px",
-					border: borderStyle	// so scrollbar is inside border
-				});
-				widget._originalStyle = widget.style.cssText;
-				widget.style.border = "none";
+				wrapper.style.height = maxHeight + "px";
 			}
 
 			dcl.mix(wrapper, {
@@ -300,7 +278,7 @@ define([
 			}
 
 			if (has("config-bgIframe") && !widget.bgIframe) {
-				// setting widget.bgIframe triggers cleanup in Widget.destroyRendering()
+				// setting widget.bgIframe triggers cleanup in Widget.destroy()
 				widget.bgIframe = new BackgroundIframe(wrapper);
 			}
 
