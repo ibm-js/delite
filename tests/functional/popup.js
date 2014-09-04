@@ -63,9 +63,9 @@ define(["intern!object",
 						.click()
 						.end()
 					.wait(500)
-					.elementById("nestedPopupOpener")
+					.elementById("nestedOpener")
 						.isDisplayed(function (err, displayed) {
-							assert.isTrue(displayed, "nestedPopupOpener popup wasn't visible");
+							assert.isTrue(displayed, "nestedOpener popup wasn't visible");
 						})
 						.end();
 			},
@@ -94,9 +94,9 @@ define(["intern!object",
 							assert.isFalse(displayed, "showNestedMenuButton_dropdown popup not visible");
 						})
 						.end()
-					.elementById("nestedPopupOpener_dropdown")
+					.elementById("nestedOpener_dropdown")
 						.isDisplayed(function (err, displayed) {
-							assert.isFalse(displayed, "nestedPopupOpener_dropdown popup not visible");
+							assert.isFalse(displayed, "nestedOpener_dropdown popup not visible");
 						})
 						.end();
 			}
@@ -119,9 +119,12 @@ define(["intern!object",
 				.elementById("openAt1015Button")
 					.click()
 					.end()
-				.execute("return domGeometryGlobal.position(xyPopup)").then(function (value) {
-					assert.strictEqual(value.x, 10, "popup x coord");
-					assert.strictEqual(value.y, 15, "popup y coord");
+				// note: "return xyPopup.getBoundingClientRect();" doesn't work on IE; webdriver bug.
+				// TODO: retest with Intern 2.0
+				.execute("var pos = xyPopup.getBoundingClientRect(); return {left: pos.left, top: pos.top};")
+						.then(function (pos) {
+					assert.strictEqual(pos.left, 10, "popup x coord " + JSON.stringify(pos));
+					assert.strictEqual(pos.top, 15, "popup y coord " + JSON.stringify(pos));
 				})
 				.elementById("closeAt1015Button")
 					.click()
@@ -143,15 +146,15 @@ define(["intern!object",
 			around: function () {
 				this.timeout = 120000;
 				return this.remote
-					.execute("return tooltipGlobal.orientCalls.length").then(function (value) {
+					.execute("return tooltip.orientCalls.length").then(function (value) {
 						assert.notStrictEqual(value, 0, "tooltipGlobal.orientCalls.length");
 					})
-					.execute("return tooltipGlobal.orientCalls.pop();").then(function (final) {
+					.execute("return tooltip.orientCalls.pop();").then(function (final) {
 						assert.strictEqual(final.corner, "TL", "popup corner");
 						assert.strictEqual(final.aroundCorner, "BL", "aroundNode corner");
 					})
-					.execute("return tooltipGlobal.onOpenArg").then(function (value) {
-						assert.ok(value, "tooltipGlobal.onOpenArg");
+					.execute("return tooltip.onOpenArg").then(function (value) {
+						assert.ok(value, "tooltip.onOpenArg");
 						assert.strictEqual(value.corner, "TL", "popup corner");
 						assert.strictEqual(value.aroundCorner, "BL", "popup aroundCorner");
 					});
@@ -160,20 +163,20 @@ define(["intern!object",
 			at: function () {
 				this.timeout = 120000;
 				return this.remote
-					.execute("tooltipGlobal.orientCalls = []; delete tooltipGlobal.onOpenArg;")
+					.execute("tooltip.orientCalls = []; delete tooltip.onOpenArg;")
 					.elementById("openTooltipAt1015Button")
 						.click()
 						.end()
-					.execute("return tooltipGlobal.orientCalls.length").then(function (value) {
-						assert.notStrictEqual(value, 0, "tooltipGlobal.orientCalls.length");
+					.execute("return tooltip.orientCalls.length").then(function (value) {
+						assert.notStrictEqual(value, 0, "tooltip.orientCalls.length");
 					})
-					.execute("return tooltipGlobal.orientCalls.pop()").then(function (value) {
+					.execute("return tooltip.orientCalls.pop()").then(function (value) {
 						// The final call to orient(), as well as the call to onOpen(), should have been for the final
 						// position of the node, where corner == TL and aroundCorner == BR (they are caddy-corner).
 						assert.strictEqual(value.corner, "TL", "popup corner");
 						assert.strictEqual(value.aroundCorner, "BR", "aroundNode corner");
 					})
-					.execute("return tooltipGlobal.onOpenArg").then(function (value) {
+					.execute("return tooltip.onOpenArg").then(function (value) {
 						assert.ok(value, "onOpen called");
 						assert.strictEqual(value.corner, "TL", "popup corner");
 						assert.strictEqual(value.aroundCorner, "BR", "aroundNode corner");
@@ -192,11 +195,14 @@ define(["intern!object",
 						.click()
 						.end()
 					.execute(
-						"return [domStyleGlobal.get(lotsOfChoicesPopup, 'height'), " +
-							"winUtilsGlobal.getBox().h, domStyleGlobal.get(lotsOfChoicesPopup.parentNode, 'height')];")
+						"return [getComputedStyle(lotsOfChoicesPopup).height.replace(/px/, ''), " +
+							"document.documentElement.clientHeight, " +
+							"getComputedStyle(lotsOfChoicesPopup.parentNode).height.replace(/px/, '')];")
 					.then(function (value) {
-						assert.isTrue(value[2] < value[1], "lotsOfChoicesPopup wrapper is not shorter than viewport");
-						assert.isTrue(value[0] < value[1], "lotsOfChoicesPopup popup is not shorter than the viewport");
+						assert.isTrue(value[2] < value[1], "lotsOfChoicesPopup wrapper not shorter than viewport " +
+							value[2] + ", " + value[1]);
+						assert.isTrue(value[0] < value[1], "lotsOfChoicesPopup popup not shorter than viewport " +
+							value[0] + ", " + value[1]);
 					})
 					.elementById("closeLotsOfChoicesPopupButton")
 						.click()
@@ -210,8 +216,9 @@ define(["intern!object",
 					.elementById("tallChoiceDropDownButton")
 						.click()
 						.end()
-					.execute("return [domStyleGlobal.get(tallChoiceDropDown, 'height'), " +
-						"winUtilsGlobal.getBox().h, domStyleGlobal.get(tallChoiceDropDown.parentNode, 'height')];")
+					.execute("return [getComputedStyle(tallChoiceDropDown).height.replace(/px/, ''), " +
+						"document.documentElement.clientHeight, " +
+						"getComputedStyle(tallChoiceDropDown.parentNode).height.replace(/px/, '')];")
 					.then(function (value) {
 						assert.isTrue(value[2] < value[1], "tallChoiceDropDown wrapper is not shorter than viewport");
 						assert.isTrue(value[0] < value[1], "tallChoiceDropDown popup is not shorter than the viewport");
