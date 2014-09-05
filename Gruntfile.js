@@ -81,6 +81,9 @@ module.exports = function (grunt) {
 							".",
 							"./README.md",
 							"./package.json"
+						],
+						imports: [
+							"../decor/out"
 						]
 					}
 				]
@@ -96,7 +99,10 @@ module.exports = function (grunt) {
 							"./README.md",
 							"./package.json"
 						],
-						dest: "./out/doclets.json"
+						dest: "./out/doclets.json",
+						imports: [
+							"../decor/out"
+						]
 					}
 				]
 			}
