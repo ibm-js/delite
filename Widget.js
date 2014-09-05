@@ -111,6 +111,15 @@ define([
 		attachedCallback: function () {
 			this._attached = true;
 
+			// Ensure these CSS classes are set synchronously. 
+			// Also set asynchronously in refreshRendering().
+			if (this.baseClass) {
+				domClass.add(this, this.baseClass);
+			}
+			if (!this.isLeftToRight()) {
+				domClass.add(this, "d-rtl");
+			}
+			
 			// Since safari masks all custom setters for tabIndex on the prototype, call them here manually.
 			// For details see:
 			//		https://bugs.webkit.org/show_bug.cgi?id=36423
