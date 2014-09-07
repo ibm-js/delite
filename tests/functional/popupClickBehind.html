@@ -1,0 +1,141 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+<title>popup "click behind" functional test</title>
+
+<script src="../boilerplate.js"></script>
+
+<style type="text/css">
+	div {
+		background: white;
+		border: solid 1px gray;
+	}
+
+	/* the menu type test widgets */
+	.choice {
+		display: block;
+	}
+
+	.choice div {
+		width: 100px;
+		cursor: pointer;
+	}
+
+	.choice div:hover {
+		background: #ccc;
+	}
+
+</style>
+
+<script language="JavaScript" type="text/javascript">
+var ready = false; // set to true when the test page is ready
+
+require([
+	"delite/popup", "delite/register", "delite/Widget",
+	"requirejs-domready/domReady!"
+], function (popupUtil, register, Widget) {
+
+	// A button that shows a popup.
+	// Supply popup as parameter when instantiating this widget.
+	var SimpleDropDownButton = register("simple-dropdown-button", [HTMLButtonElement, Widget], {
+		label: "show popup",
+		_setLabelAttr: function (label) {
+			this.textContent = label;
+			this._set("label", label);
+		},
+
+		orient: ["below"],
+
+		buildRendering: function () {
+			this.on("click", this._openPopup.bind(this));
+		},
+
+		_openPopup: function () {
+			var self = this;
+
+			popupUtil.open({
+				popup: this.popup,
+				parent: this,
+				around: this,
+				orient: this.orient,
+				onCancel: function () {
+					console.log(self.id + ": cancel of child");
+				},
+				onExecute: function () {
+					console.log(self.id + ": execute of child");
+					popupUtil.close(self.popup);
+					self.open = false;
+				}
+			});
+
+			this.open = true;
+			console.log(this.popup.id, JSON.stringify(this.popup.getBoundingClientRect()));
+		},
+
+		closePopup: function () {
+			if (this.open) {
+				popupUtil.close(this.popup);
+				this.open = false;
+			}
+		},
+
+		_onBlur: function () {
+			// summary:
+			//		This is called from focus manager and when we get the signal we
+			//		need to close the drop down
+			console.log(this.id + ": close popup due to blur");
+			this.closePopup();
+		}
+	});
+
+	// A list of values; select a value by pressing an entry in the list.
+	var SimpleChoiceWidget = register("simple-choice-widget", [HTMLElement, Widget], {
+		choice1: "1",
+		choice2: "2",
+		choice3: "3",
+
+		buildRendering: function () {
+			this.className = "choice";
+
+			for (var i = 1; i < 4; i++) {
+				this.innerHTML += "<div>choice #" + this["choice" + i] + "</div>";
+			}
+
+			// on click, emit execute event so that popup closes
+			this.on("click", this._clickHandler.bind(this));
+		},
+
+		_clickHandler: function (evt) {
+			console.log("clicked " + evt.target.innerHTML);
+			this.emit("execute");
+		}
+	});
+
+	// Create a button that displays a simple drop down
+	new SimpleDropDownButton({
+		id: "choiceDropDownButton",
+		label: "show choice drop down",
+		popup: new SimpleChoiceWidget({id: "choiceDropDown"})
+	}).placeAt(document.body);
+
+	// Create buttons that will appear behind the drop down,
+	// to test that they don't get clicked
+	for (var i = 0; i < 3; i++) {
+		document.body.appendChild(document.createElement("br"));
+		var button = document.createElement("button");
+		button.type = "button";
+		button.innerHTML = "not clicked";
+		button.onclick = function () { this.innerHTML = "clicked!"; }
+		document.body.appendChild(button);
+	}
+	ready = true;
+
+});
+
+</script>
+</head>
+<body>
+<h1>test that buttons behind popups don't get clicked</h1>
+</body>
+</html>

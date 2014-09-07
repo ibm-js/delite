@@ -130,17 +130,6 @@ define([
 
 				widget._popupWrapper = wrapper;
 				advise.after(widget, "destroy", destroyWrapper);
-
-				// Workaround iOS problem where clicking a Menu can focus an <input> (or click a button) behind it.
-				// Need to be careful though that you can still focus <input>'s and click <button>'s in a TooltipDialog.
-				// Also, be careful not to break (native) scrolling of dropdown like ComboBox's options list.
-				if ("ontouchend" in document) {
-					wrapper.addEventListener("touchend", function (evt) {
-						if (!/^(input|button|textarea)$/i.test(evt.target.tagName)) {
-							evt.preventDefault();
-						}
-					});
-				}
 			}
 
 			return wrapper;
