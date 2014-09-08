@@ -285,6 +285,20 @@ define([
 			return this.containerNode ? Array.prototype.slice.call(this.containerNode.children) : [];
 		},
 
+		appendChild: dcl.superCall(function (sup) {
+			return function (child) {
+				var parentNode = this._created ? this.containerNode || this : this;
+				return sup.call(parentNode, child);
+			};
+		}),
+
+		insertBefore: dcl.superCall(function (sup) {
+			return function (newChild, refChild) {
+				var parentNode = this._created ? this.containerNode || this : this;
+				return sup.call(parentNode, newChild, refChild);
+			};
+		}),
+
 		/**
 		 * Returns the parent widget of this widget.
 		 */
