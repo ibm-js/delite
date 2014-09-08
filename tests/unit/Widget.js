@@ -213,7 +213,6 @@ define([
 
 
 		placeAt: {
-
 			setup: function () {
 				SimpleWidget = register("simple-widget-place-at", [HTMLElement, Widget], {
 					buildRendering: function () {
@@ -232,7 +231,7 @@ define([
 			"Place as widget child": function () {
 				// add the child to the SimpleWidget now
 				pane1 = (new SimpleWidget({ title: "pane1" })).placeAt("simple-place-at-id");
-				assert.strictEqual(pane1, simple.getChildren()[0], "pane1 is child of SimpleWidget");
+				assert.strictEqual(pane1, simple.containerNode.children[0], "pane1 is child of SimpleWidget");
 				assert.strictEqual(simple.containerNode, pane1.parentNode, "pane1 added to simple.containerNode");
 			},
 
@@ -240,8 +239,8 @@ define([
 				// add this child (created second) as the new first child
 				var pane2 = (new SimpleWidget({ title: "pane2" })).placeAt("simple-place-at-id", 0);
 				assert.strictEqual(simple.containerNode, pane2.parentNode, "pane2 added to simple.containerNode");
-				assert.strictEqual(pane2, simple.getChildren()[0], "pane2 is new first child of SimpleWidget");
-				assert.strictEqual(pane1, simple.getChildren()[1], "pane1 is now second child of SimpleWidget");
+				assert.strictEqual(pane2, simple.containerNode.children[0], "pane2 is new first child of SimpleWidget");
+				assert.strictEqual(pane1, simple.containerNode.children[1], "pane1 now second child of SimpleWidget");
 			},
 
 			"Place before": function () {
@@ -270,13 +269,13 @@ define([
 				simple.startup();
 				var pane3 = (new SimpleWidget({ title: "pane3" })).placeAt("simple-place-at-id", "first");
 				assert.strictEqual(simple.containerNode, pane3.parentNode, "pane3 added to simple.containerNode");
-				assert.strictEqual(pane3, simple.getChildren()[0], "pane3 is new first child of SimpleWidget");
+				assert.strictEqual(pane3, simple.containerNode.children[0], "pane3 is new first child of SimpleWidget");
 				assert.ok(pane3._started, "pane3 was automatically started because simple was already started");
 			},
 
 			"Place last widget": function () {
 				var pane4 = (new SimpleWidget({ title: "pane4" })).placeAt(simple.containerNode, "last");
-				assert.strictEqual(pane4, simple.getChildren()[simple.getChildren().length - 1],
+				assert.strictEqual(pane4, simple.containerNode.children[simple.containerNode.children.length - 1],
 					"pane4 is new last child of SimpleWidget");
 				assert.ok(pane4._started, "pane4 was automatically started because simple was already started");
 			},

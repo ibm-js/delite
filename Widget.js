@@ -41,20 +41,6 @@ define([
 		focused: false,
 		
 		/**
-		 * Designates where children of the source DOM node will be placed.
-		 * "Children" in this case refers to both DOM nodes and widgets.
-		 *
-		 * containerNode must be defined for any widget that accepts innerHTML
-		 * (like ContentPane or BorderContainer or even Button), and conversely
-		 * is undefined for widgets that don't, like TextBox.
-		 *
-		 * @member {Element}
-		 * @default undefined
-		 * @protected
-		 */
-		containerNode: undefined,
-
-		/**
 		 * Set to true when startup() has completed.
 		 * @member {boolean}
 		 * @protected
@@ -268,21 +254,6 @@ define([
 				this.bgIframe.destroy();
 				delete this.bgIframe;
 			}
-		},
-
-		/**
-		 * Returns all direct children of this widget, i.e. all widgets or DOM nodes underneath
-		 * `this.containerNode` whose parent is this widget.  Note that it does not return all
-		 * descendants, but rather just direct children.
-		 *
-		 * The result intentionally excludes internally created widgets (a.k.a. supporting widgets)
-		 * outside of `this.containerNode`.
-		 *
-		 * @returns {Element[]}
-		 */
-		getChildren: function () {
-			// use Array.prototype.slice to transform the live HTMLCollection into an Array
-			return this.containerNode ? Array.prototype.slice.call(this.containerNode.children) : [];
 		},
 
 		/**

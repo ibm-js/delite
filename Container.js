@@ -5,37 +5,79 @@ define([
 ], function (dcl, Widget) {
 
 	/**
-	 * Widget that contains a set of Element children (either widgets or plain DOM nodes).
+	 * Base class for widgets that contain content.
+	 * Useful both for widgets that contain free-form markup (ex: ContentPane),
+	 * and widgets that contain an ordered list of children (ex: Toolbar).
+	 *
+	 * Note that Container is not meant to be used for widgets that just internally create child
+	 * widgets (ex: a StarRating widget creates stars), but rather for when the widget has children from
+	 * the application's perspective (i.e. from the perspective of the widget *user* rather
+	 * than the widget *author*).
+	 *
 	 * @mixin module:delite/Container
 	 * @augments module:delite/Widget
 	 */
 	return dcl(Widget, /** @lends module:delite/Container# */{
-		buildRendering: dcl.after(function () {
-			if (!this.containerNode) {
-				// All widgets with descendants must set containerNode.
-				this.containerNode = this;
+		/**
+		 * Designates where children of the source DOM node will be placed,
+		 * and also the target for nodes inserted via `.appendChild()`, `.insertBefore()`, etc.
+		 * "Children" in this case refers to both DOM nodes and widgets.
+		 *
+		 * @member {Element}
+		 * @default Widget root node itself.
+		 * @protected
+		 */
+		containerNode: undefined,
+
+		buildRendering: dcl.advise({
+			before: function () {
+				// Save original markup to put into this.containerNode.
+				var srcDom = this._srcDom = this.ownerDocument.createDocumentFragment();
+				while (this.firstChild) {
+					srcDom.appendChild(this.firstChild);
+				}
+			},
+
+			after: function () {
+				if (!this.containerNode) {
+					// All widgets with descendants must set containerNode.
+					this.containerNode = this;
+				}
+
+				// Put original markup into this.containerNode.  Note that appendChild() on a DocumentFragment will
+				// loop through all the Elements in the document fragment, adding each one.
+				this.containerNode.appendChild(this._srcDom);
 			}
 		}),
 
 		appendChild: dcl.superCall(function (sup) {
 			return function (child) {
-				var res = sup.call(this, child);
-				this.onAddChild(child);
-				return res;
+				if (this._created) {
+					var res = sup.call(this.containerNode, child);
+					this.onAddChild(child);
+					return res;
+				} else {
+					return sup.call(this, child);
+				}
 			};
 		}),
 
 		insertBefore: dcl.superCall(function (sup) {
 			return function (newChild, refChild) {
-				var res = sup.call(this, newChild, refChild);
-				this.onAddChild(newChild);
-				return res;
+				if (this._created) {
+					var res = sup.call(this.containerNode, newChild, refChild);
+					this.onAddChild(newChild);
+					return res;
+				} else {
+					return sup.call(this, newChild, refChild);
+				}
 			};
 		}),
 
 		/**
-		 * Callback whenever a child element is added to this widget.
-		 * @param node
+		 * Callback whenever a child element is added to this widget via `appendChild()`, `insertBefore()`,
+		 * or a method like `addChild()` that internally calls `appendChild()` and/or `insertBefore()`.
+		 * @param {Element} node
 		 */
 		onAddChild: function (node) {
 			// If I've been started but the child widget hasn't been started,
@@ -76,7 +118,22 @@ define([
 		},
 
 		/**
-		 * Returns true if widget has child widgets, i.e. if this.containerNode contains widgets.
+		 * Returns all direct children of this widget, i.e. all widgets or DOM nodes underneath
+		 * `this.containerNode`.  Note that it does not return all
+		 * descendants, but rather just direct children.
+		 *
+		 * The result intentionally excludes element outside off `this.containerNode`.  So, it is different than
+		 * accessing the `children` or `childNode` properties.
+		 *
+		 * @returns {Element[]}
+		 */
+		getChildren: function () {
+			// use Array.prototype.slice to transform the live HTMLCollection into an Array
+			return Array.prototype.slice.call(this.containerNode.children);
+		},
+
+		/**
+		 * Returns true if widget has child nodes, i.e. if `this.containerNode` contains widgets.
 		 * @returns {boolean}
 		 */
 		hasChildren: function () {
