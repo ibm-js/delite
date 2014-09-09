@@ -223,10 +223,10 @@ define([
 				assert.strictEqual(store.renderItems.length, 2);
 				assert.deepEqual(store.renderItems[0], { id: "foo", foo: "Foo", bar: "1" });
 				assert.deepEqual(store.renderItems[1], { id: "bar", foo: "Bar", bar: "2" });
-				store.renderItemToItem(store.renderItems[0]).then(d.callback(function(item) {
+				store.renderItemToItem(store.renderItems[0]).then(d.callback(function (item) {
 					assert.deepEqual(item, myData[0]);
 					var renderItem = store.itemToRenderItem(item);
-					assert.deepEqual(renderItem, { id: "foo", foo: "Foo", bar: "1" });					
+					assert.deepEqual(renderItem, { id: "foo", foo: "Foo", bar: "1" });
 				}));
 			}));
 			store.startup();
