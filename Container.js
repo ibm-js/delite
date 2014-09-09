@@ -23,28 +23,48 @@ define([
 		 */
 		containerNode: undefined,
 
-		buildRendering: dcl.after(function () {
-			if (!this.containerNode) {
-				// All widgets with descendants must set containerNode.
-				this.containerNode = this;
+		buildRendering: dcl.advise({
+			before: function () {
+				// Save original markup to put into this.containerNode.
+				var srcDom = this._srcDom = this.ownerDocument.createDocumentFragment();
+				while (this.firstChild) {
+					srcDom.appendChild(this.firstChild);
+				}
+			},
+
+			after: function () {
+				if (!this.containerNode) {
+					// All widgets with descendants must set containerNode.
+					this.containerNode = this;
+				}
+
+				// Put original markup into this.containerNode.  Note that appendChild() on a DocumentFragment will
+				// loop through all the Elements in the document fragment, adding each one.
+				this.containerNode.appendChild(this._srcDom);
 			}
 		}),
 
 		appendChild: dcl.superCall(function (sup) {
 			return function (child) {
-				var parentNode = this._created ? this.containerNode || this : this;
-				var res = sup.call(parentNode, child);
-				this.onAddChild(child);
-				return res;
+				if (this._created) {
+					var res = sup.call(this.containerNode, child);
+					this.onAddChild(child);
+					return res;
+				} else {
+					return sup.call(this, child);
+				}
 			};
 		}),
 
 		insertBefore: dcl.superCall(function (sup) {
 			return function (newChild, refChild) {
-				var parentNode = this._created ? this.containerNode || this : this;
-				var res = sup.call(parentNode, newChild, refChild);
-				this.onAddChild(newChild);
-				return res;
+				if (this._created) {
+					var res = sup.call(this.containerNode, newChild, refChild);
+					this.onAddChild(newChild);
+					return res;
+				} else {
+					return sup.call(this, newChild, refChild);
+				}
 			};
 		}),
 
