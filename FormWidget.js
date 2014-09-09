@@ -9,8 +9,8 @@ define([
 	 * to native HTML elements such as `<checkbox>` or `<button>`,
 	 * which can be children of a `<form>` node.
 	 *
-	 * Note that FormWidget requires that this.focusNode be a sub-node of theAdd widget, rather than the
-	 * root node.  This is because of it's processing of `tabIndex`.
+	 * Note that FormWidget requires that `this.focusNode` be a sub-node of the widget, rather than the
+	 * root node.  This is because of its processing of `tabIndex`.
 	 *
 	 * @mixin module:delite/FormWidget
 	 * @augments module:delite/Widget
@@ -109,6 +109,65 @@ define([
 					// squelch errors from hidden nodes
 				}
 			}
-		}
+		},
+
+		////////////////////////////////////////////////////////////////////////////////////////////
+		// Override setAttribute() etc. to put aria-label etc. onto the focus node rather than the root
+		// node, so that screen readers work properly.
+		setAttribute: dcl.superCall(function (sup) {
+			return function (name, value) {
+				if (/^aria-/.test(name)) {
+					this.focusNode.setAttribute(name, value);
+				} else {
+					sup.call(this, name, value);
+				}
+			};
+		}),
+
+		getAttribute: dcl.superCall(function (sup) {
+			return function (name) {
+				if (/^aria-/.test(name)) {
+					return this.focusNode.getAttribute(name);
+				} else {
+					return sup.call(this, name);
+				}
+			};
+		}),
+
+		hasAttribute: dcl.superCall(function (sup) {
+			return function (name) {
+				if (/^aria-/.test(name)) {
+					return this.focusNode.hasAttribute(name);
+				} else {
+					return sup.call(this, name);
+				}
+			};
+		}),
+
+		removeAttribute: dcl.superCall(function (sup) {
+			return function (name) {
+				if (/^aria-/.test(name)) {
+					this.focusNode.removeAttribute(name);
+				} else {
+					sup.call(this, name);
+				}
+			};
+		}),
+
+		createdCallback: dcl.advise({
+			after: function () {
+				// Move all initially specified aria- attributes to focus node.
+				var attr, idx = 0;
+				while ((attr = this.attributes[idx++])) {
+					if (/^aria-/.test(attr.name)) {
+						this.setAttribute(attr.name, attr.value);
+
+						// force remove from root node not this.focusNode
+						HTMLElement.prototype.removeAttribute.call(this, attr.name);
+					}
+				}
+			}
+		}),
+
 	});
 });
