@@ -5,16 +5,22 @@ define([
 ], function (dcl, Widget) {
 
 	/**
-	 * Widget that contains child Elements.
-	 * Useful for widgets that contain free-form markup (ex: ContentPane),
-	 * or an orderered list of children (ex: toolbar).
+	 * Base class for widgets that contain content.
+	 * Useful both for widgets that contain free-form markup (ex: ContentPane),
+	 * and widgets that contain an ordered list of children (ex: Toolbar).
+	 *
+	 * Note that Container is not meant to be used for widgets that just internally create child
+	 * widgets (ex: a StarRating widget creates stars), but rather for when the widget has children from
+	 * the application's perspective (i.e. from the perspective of the widget *user* rather
+	 * than the widget *author*).
 	 *
 	 * @mixin module:delite/Container
 	 * @augments module:delite/Widget
 	 */
 	return dcl(Widget, /** @lends module:delite/Container# */{
 		/**
-		 * Designates where children of the source DOM node will be placed.
+		 * Designates where children of the source DOM node will be placed,
+		 * and also the target for nodes inserted via `.appendChild()`, `.insertBefore()`, etc.
 		 * "Children" in this case refers to both DOM nodes and widgets.
 		 *
 		 * @member {Element}
