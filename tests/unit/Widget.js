@@ -189,56 +189,6 @@ define([
 			assert(domClass.contains(myWidgetCustom, "customBase"), "baseClass is customBase");
 		},
 
-		containerNode: function () {
-			var MyContainer = register("my-container-node", [HTMLElement, Widget], {
-				buildRendering: function () {
-					// during buildRendering(), this.appendChild() should always go to root node, so
-					// "last" should be a sibling of "first"
-					var s1 = this.ownerDocument.createElement("span");
-					s1.innerHTML = "first";
-					this.appendChild(s1);
-
-					this.appendChild(this.containerNode = this.ownerDocument.createElement("div"));
-
-					var s3 = this.ownerDocument.createElement("span");
-					s3.innerHTML = "last";
-					this.appendChild(s3);
-				}
-			});
-
-			// add a started container
-			var myWidget = new MyContainer();
-			document.body.appendChild(myWidget);
-			myWidget.startup();
-
-			// appendChild() and insertBefore() should add children to the containerNode, not the root node
-			var child1 = document.createElement("span");
-			child1.innerHTML = "child 1";
-			myWidget.appendChild(child1);
-
-			var child3 = document.createElement("span");
-			child3.innerHTML = "child 3";
-			myWidget.insertBefore(child3, null);	// this should work the same as appendChild()
-
-			var child2 = document.createElement("span");
-			child2.innerHTML = "child 2";
-			myWidget.insertBefore(child2, child3);
-
-			// Convert result of querySelectorAll() etc. into array of strings
-			function getStrings(res) {
-				return Array.prototype.map.call(res, function (elem) {
-					return elem.innerHTML;
-				});
-			}
-
-			assert.deepEqual(getStrings(myWidget.getChildren()),
-				["child 1", "child 2", "child 3"], "getChildren()");
-			assert.deepEqual(getStrings(myWidget.querySelectorAll("span")),
-				["first", "child 1", "child 2", "child 3", "last"], "all children, from root node");
-
-			// TODO: why getChildren() instead of .children?
-		},
-
 		startup: function () {
 			var TestSimpleWidget = register("widget-simple", [HTMLElement, Widget], {
 			});
@@ -281,7 +231,7 @@ define([
 			"Place as widget child": function () {
 				// add the child to the SimpleWidget now
 				pane1 = (new SimpleWidget({ title: "pane1" })).placeAt("simple-place-at-id");
-				assert.strictEqual(pane1, simple.getChildren()[0], "pane1 is child of SimpleWidget");
+				assert.strictEqual(pane1, simple.containerNode.children[0], "pane1 is child of SimpleWidget");
 				assert.strictEqual(simple.containerNode, pane1.parentNode, "pane1 added to simple.containerNode");
 			},
 
@@ -289,8 +239,8 @@ define([
 				// add this child (created second) as the new first child
 				var pane2 = (new SimpleWidget({ title: "pane2" })).placeAt("simple-place-at-id", 0);
 				assert.strictEqual(simple.containerNode, pane2.parentNode, "pane2 added to simple.containerNode");
-				assert.strictEqual(pane2, simple.getChildren()[0], "pane2 is new first child of SimpleWidget");
-				assert.strictEqual(pane1, simple.getChildren()[1], "pane1 is now second child of SimpleWidget");
+				assert.strictEqual(pane2, simple.containerNode.children[0], "pane2 is new first child of SimpleWidget");
+				assert.strictEqual(pane1, simple.containerNode.children[1], "pane1 now second child of SimpleWidget");
 			},
 
 			"Place before": function () {
@@ -319,13 +269,13 @@ define([
 				simple.startup();
 				var pane3 = (new SimpleWidget({ title: "pane3" })).placeAt("simple-place-at-id", "first");
 				assert.strictEqual(simple.containerNode, pane3.parentNode, "pane3 added to simple.containerNode");
-				assert.strictEqual(pane3, simple.getChildren()[0], "pane3 is new first child of SimpleWidget");
+				assert.strictEqual(pane3, simple.containerNode.children[0], "pane3 is new first child of SimpleWidget");
 				assert.ok(pane3._started, "pane3 was automatically started because simple was already started");
 			},
 
 			"Place last widget": function () {
 				var pane4 = (new SimpleWidget({ title: "pane4" })).placeAt(simple.containerNode, "last");
-				assert.strictEqual(pane4, simple.getChildren()[simple.getChildren().length - 1],
+				assert.strictEqual(pane4, simple.containerNode.children[simple.containerNode.children.length - 1],
 					"pane4 is new last child of SimpleWidget");
 				assert.ok(pane4._started, "pane4 was automatically started because simple was already started");
 			},

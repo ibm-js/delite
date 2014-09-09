@@ -170,6 +170,54 @@ define([
 
 			// cleanup
 			container.parentNode.removeChild(container);
+		},
+
+		containerNode: function () {
+			var MyContainer = register("my-container-node", [HTMLElement, Container], {
+				buildRendering: function () {
+					// during buildRendering(), this.appendChild() should always go to root node, so
+					// "last" should be a sibling of "first"
+					var s1 = this.ownerDocument.createElement("span");
+					s1.innerHTML = "first";
+					this.appendChild(s1);
+
+					this.appendChild(this.containerNode = this.ownerDocument.createElement("div"));
+
+					var s3 = this.ownerDocument.createElement("span");
+					s3.innerHTML = "last";
+					this.appendChild(s3);
+				}
+			});
+
+			// add a started container
+			var myWidget = new MyContainer();
+			document.body.appendChild(myWidget);
+			myWidget.startup();
+
+			// appendChild() and insertBefore() should add children to the containerNode, not the root node
+			var child1 = document.createElement("span");
+			child1.innerHTML = "child 1";
+			myWidget.appendChild(child1);
+
+			var child3 = document.createElement("span");
+			child3.innerHTML = "child 3";
+			myWidget.insertBefore(child3, null);	// this should work the same as appendChild()
+
+			var child2 = document.createElement("span");
+			child2.innerHTML = "child 2";
+			myWidget.insertBefore(child2, child3);
+
+			// Convert result of querySelectorAll() etc. into array of strings
+			function getStrings(res) {
+				return Array.prototype.map.call(res, function (elem) {
+					return elem.innerHTML;
+				});
+			}
+
+			assert.deepEqual(getStrings(myWidget.getChildren()),
+				["child 1", "child 2", "child 3"], "getChildren()");
+			assert.deepEqual(getStrings(myWidget.querySelectorAll("span")),
+				["first", "child 1", "child 2", "child 3", "last"], "all children, from root node");
 		}
 	});
 });

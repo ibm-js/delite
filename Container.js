@@ -5,11 +5,24 @@ define([
 ], function (dcl, Widget) {
 
 	/**
-	 * Widget that contains a set of Element children (either widgets or plain DOM nodes).
+	 * Widget that contains child Elements.
+	 * Useful for widgets that contain free-form markup (ex: ContentPane),
+	 * or an orderered list of children (ex: toolbar).
+	 *
 	 * @mixin module:delite/Container
 	 * @augments module:delite/Widget
 	 */
 	return dcl(Widget, /** @lends module:delite/Container# */{
+		/**
+		 * Designates where children of the source DOM node will be placed.
+		 * "Children" in this case refers to both DOM nodes and widgets.
+		 *
+		 * @member {Element}
+		 * @default Widget root node itself.
+		 * @protected
+		 */
+		containerNode: undefined,
+
 		buildRendering: dcl.after(function () {
 			if (!this.containerNode) {
 				// All widgets with descendants must set containerNode.
@@ -19,7 +32,8 @@ define([
 
 		appendChild: dcl.superCall(function (sup) {
 			return function (child) {
-				var res = sup.call(this, child);
+				var parentNode = this._created ? this.containerNode || this : this;
+				var res = sup.call(parentNode, child);
 				this.onAddChild(child);
 				return res;
 			};
@@ -27,15 +41,17 @@ define([
 
 		insertBefore: dcl.superCall(function (sup) {
 			return function (newChild, refChild) {
-				var res = sup.call(this, newChild, refChild);
+				var parentNode = this._created ? this.containerNode || this : this;
+				var res = sup.call(parentNode, newChild, refChild);
 				this.onAddChild(newChild);
 				return res;
 			};
 		}),
 
 		/**
-		 * Callback whenever a child element is added to this widget.
-		 * @param node
+		 * Callback whenever a child element is added to this widget via `appendChild()`, `insertBefore()`,
+		 * or a method like `addChild()` that internally calls `appendChild()` and/or `insertBefore()`.
+		 * @param {Element} node
 		 */
 		onAddChild: function (node) {
 			// If I've been started but the child widget hasn't been started,
@@ -76,7 +92,22 @@ define([
 		},
 
 		/**
-		 * Returns true if widget has child widgets, i.e. if this.containerNode contains widgets.
+		 * Returns all direct children of this widget, i.e. all widgets or DOM nodes underneath
+		 * `this.containerNode`.  Note that it does not return all
+		 * descendants, but rather just direct children.
+		 *
+		 * The result intentionally excludes element outside off `this.containerNode`.  So, it is different than
+		 * accessing the `children` or `childNode` properties.
+		 *
+		 * @returns {Element[]}
+		 */
+		getChildren: function () {
+			// use Array.prototype.slice to transform the live HTMLCollection into an Array
+			return Array.prototype.slice.call(this.containerNode.children);
+		},
+
+		/**
+		 * Returns true if widget has child nodes, i.e. if `this.containerNode` contains widgets.
 		 * @returns {boolean}
 		 */
 		hasChildren: function () {
