@@ -187,6 +187,13 @@ define([
 			myWidgetCustom.deliver();
 
 			assert(domClass.contains(myWidgetCustom, "customBase"), "baseClass is customBase");
+			
+			// Check that, in the markup case, the base class is already set after parsing. 
+			var html = "<test-lifecycle-widget2 id='widgetForTestingBaseClass'></test-lifecycle-widget2>";
+			container.innerHTML = html;
+			register.parse(container);
+			var w = document.getElementById("widgetForTestingBaseClass");
+			assert(domClass.contains(w, "base2"), "baseClass is base2 in markup case");
 		},
 
 		startup: function () {
