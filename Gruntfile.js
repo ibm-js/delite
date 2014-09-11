@@ -84,7 +84,11 @@ module.exports = function (grunt) {
 						],
 						imports: [
 							"../decor/out"
-						]
+						],
+						paths: {
+							"decor": "../../../../decor/docs/api/0.2.0-dev/decor"
+						},
+						packagePathFormat: "${name}/docs/api/${version}"
 					}
 				]
 			},
