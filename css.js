@@ -174,18 +174,36 @@ define([
 			 * @param {Array} loadList - List of css files contained in current css layer.
 			 */
 			writeLayer: function (writePluginFiles, dest, loadList) {
-				// This is a node-require so it is synchronous.
-				var path = require.toUrl(module.id).replace(/[^\/]*$/, "node_modules/clean-css");
-				var CleanCSS = require.nodeRequire(require.getNodePath(path));
+				function tryRequire(paths) {
+					var module;
+					var path = paths.shift();
+					if (path) {
+						try {
+							// This is a node-require so it is synchronous.
+							module = require.nodeRequire(path);
+						} catch (e) {
+							return tryRequire(paths);
+						}
+					}
+					return module;
+				}
 
-				var result = "";
-				loadList.forEach(function (src) {
-					result += new CleanCSS({
-						relativeTo: "./",
-						target: dest
-					}).minify("@import url(" + src + ");");
-				});
-				writePluginFiles(dest, result);
+				var path = require.getNodePath(require.toUrl(module.id).replace(/[^\/]*$/, "node_modules/clean-css"));
+				var CleanCSS = tryRequire([path, "clean-css"]);
+
+				if (CleanCSS) {
+					var result = "";
+					loadList.forEach(function (src) {
+						result += new CleanCSS({
+							relativeTo: "./",
+							target: dest
+						}).minify("@import url(" + src + ");");
+					});
+					writePluginFiles(dest, result);
+				} else {
+					console.log(">> Node module clean-css not found. Skipping CSS inlining. If you want CSS inlining" +
+						" run 'npm install clean-css' in your console.");
+				}
 			},
 
 			/**
