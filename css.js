@@ -193,13 +193,22 @@ define([
 
 				if (CleanCSS) {
 					var result = "";
-					loadList = loadList.map(require.toUrl);
+					loadList = loadList.map(require.toUrl)
+						.filter(function (path) {
+							var fs = require.nodeRequire("fs");
+							if (!fs.existsSync(path)) {
+								console.log(">> Css file '" + path + "' was not found.");
+								return false;
+							}
+							return true;
+						});
 					loadList.forEach(function (src) {
 						result += new CleanCSS({
 							relativeTo: "./",
 							target: dest
 						}).minify("@import url(" + src + ");");
 					});
+
 					writePluginFiles(dest, result);
 				} else {
 					console.log(">> Node module clean-css not found. Skipping CSS inlining. If you want CSS inlining" +
