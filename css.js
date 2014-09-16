@@ -193,6 +193,7 @@ define([
 
 				if (CleanCSS) {
 					var result = "";
+					loadList = loadList.map(require.toUrl);
 					loadList.forEach(function (src) {
 						result += new CleanCSS({
 							relativeTo: "./",
