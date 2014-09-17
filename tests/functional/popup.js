@@ -1,7 +1,10 @@
-define(["intern!object",
+define([
+	"require",
+	"intern",
+	"intern!object",
 	"intern/chai!assert",
-	"require"
-], function (registerSuite, assert, require) {
+	"intern/dojo/node!leadfoot/helpers/pollUntil"
+], function (require, intern, registerSuite, assert, pollUntil) {
 
 	registerSuite({
 		name: "popup functional tests",
@@ -9,7 +12,8 @@ define(["intern!object",
 		setup: function () {
 			return this.remote
 				.get(require.toUrl("./popup.html"))
-				.waitForCondition("ready", 40000);
+				.then(pollUntil("return ready || null;", [],
+					intern.config.WAIT_TIMEOUT, intern.config.POLL_INTERVAL));
 		},
 
 		"repeat move off screen": function () {
@@ -21,17 +25,17 @@ define(["intern!object",
 		},
 
 		"open popup on the edge of another widget": function () {
-			this.timeout = 120000;
+			this.timeout = intern.config.TEST_TIMEOUT;
 			return this.remote
-				.elementById("choiceDropDownButton")
+				.findById("choiceDropDownButton")
 					.click()
 					.end()
-				.elementById("choiceDropDown")
+				.findById("choiceDropDown")
 					.isDisplayed(function (err, displayed) {
 						assert.isTrue(displayed, "choiceDropDown popup visible");
 					})
 					.end()
-				.elementById("choiceDropDownButton_dropdown")	// parent of choiceDropDown
+				.findById("choiceDropDownButton_dropdown")	// parent of choiceDropDown
 				.getAttribute("role").then(function (role) {
 					assert.strictEqual(role, "region", "popup's wrapper node needs role=region");
 				})
@@ -42,13 +46,13 @@ define(["intern!object",
 		},
 
 		"close popup on the edge of another widget": function () {
-			this.timeout = 120000;
+			this.timeout = intern.config.TEST_TIMEOUT;
 			return this.remote
-				.elementById("stub-for-blurring")
+				.findById("stub-for-blurring")
 					.click()
 					.end()
-				.wait(500)
-				.elementById("choiceDropDown")
+				.sleep(500)
+				.findById("choiceDropDown")
 					.isDisplayed(function (err, displayed) {
 						assert.isFalse(displayed, "choiceDropDown popup not visible");
 					})
@@ -57,13 +61,13 @@ define(["intern!object",
 
 		nested: {
 			"open around": function () {
-				this.timeout = 120000;
+				this.timeout = intern.config.TEST_TIMEOUT;
 				return this.remote
-					.elementById("showNestedMenuButton")
+					.findById("showNestedMenuButton")
 						.click()
 						.end()
-					.wait(500)
-					.elementById("nestedOpener")
+					.sleep(500)
+					.findById("nestedOpener")
 						.isDisplayed(function (err, displayed) {
 							assert.isTrue(displayed, "nestedOpener popup wasn't visible");
 						})
@@ -71,11 +75,11 @@ define(["intern!object",
 			},
 
 			open: function () {
-				this.timeout = 120000;
+				this.timeout = intern.config.TEST_TIMEOUT;
 				return this.remote
 					.execute("nestedOpener._openPopup(nestedChoice1)")
-					.wait(500)
-					.elementById("nestedChoice1")
+					.sleep(500)
+					.findById("nestedChoice1")
 						.isDisplayed(function (err, displayed) {
 							assert.isTrue(displayed, "nestedChoice1 popup wasn't visible");
 						})
@@ -83,18 +87,18 @@ define(["intern!object",
 			},
 
 			close: function () {
-				this.timeout = 120000;
+				this.timeout = intern.config.TEST_TIMEOUT;
 				return this.remote
-					.elementById("stub-for-blurring")
+					.findById("stub-for-blurring")
 						.click()
 						.end()
-					.wait(500)
-					.elementById("showNestedMenuButton_dropdown")
+					.sleep(500)
+					.findById("showNestedMenuButton_dropdown")
 						.isDisplayed(function (err, displayed) {
 							assert.isFalse(displayed, "showNestedMenuButton_dropdown popup not visible");
 						})
 						.end()
-					.elementById("nestedOpener_dropdown")
+					.findById("nestedOpener_dropdown")
 						.isDisplayed(function (err, displayed) {
 							assert.isFalse(displayed, "nestedOpener_dropdown popup not visible");
 						})
@@ -103,7 +107,7 @@ define(["intern!object",
 		},
 
 		"no hidden tab stops": function () {
-			this.timeout = 120000;
+			this.timeout = intern.config.TEST_TIMEOUT;
 			return this.remote
 				.execute("return tabOrder()[0].id").then(function (value) {
 					assert.strictEqual(value, "inputAtStart");
@@ -114,9 +118,9 @@ define(["intern!object",
 		},
 
 		"x/y placement": function () {
-			this.timeout = 120000;
+			this.timeout = intern.config.TEST_TIMEOUT;
 			return this.remote
-				.elementById("openAt1015Button")
+				.findById("openAt1015Button")
 					.click()
 					.end()
 				// note: "return xyPopup.getBoundingClientRect();" doesn't work on IE; webdriver bug.
@@ -126,25 +130,25 @@ define(["intern!object",
 					assert.strictEqual(pos.left, 10, "popup x coord " + JSON.stringify(pos));
 					assert.strictEqual(pos.top, 15, "popup y coord " + JSON.stringify(pos));
 				})
-				.elementById("closeAt1015Button")
+				.findById("closeAt1015Button")
 					.click()
 					.end();
 		},
 
 		"orient callback": {
 			setup: function () {
-				this.timeout = 120000;
+				this.timeout = intern.config.TEST_TIMEOUT;
 				return this.remote
-					.elementById("tooltipDropDownButton")
+					.findById("tooltipDropDownButton")
 						.click()
 						.end()
-					.elementById("stub-for-blurring")
+					.findById("stub-for-blurring")
 						.click()
 						.end();
 			},
 
 			around: function () {
-				this.timeout = 120000;
+				this.timeout = intern.config.TEST_TIMEOUT;
 				return this.remote
 					.execute("return tooltip.orientCalls.length").then(function (value) {
 						assert.notStrictEqual(value, 0, "tooltipGlobal.orientCalls.length");
@@ -161,10 +165,10 @@ define(["intern!object",
 			},
 
 			at: function () {
-				this.timeout = 120000;
+				this.timeout = intern.config.TEST_TIMEOUT;
 				return this.remote
 					.execute("tooltip.orientCalls = []; delete tooltip.onOpenArg;")
-					.elementById("openTooltipAt1015Button")
+					.findById("openTooltipAt1015Button")
 						.click()
 						.end()
 					.execute("return tooltip.orientCalls.length").then(function (value) {
@@ -181,7 +185,7 @@ define(["intern!object",
 						assert.strictEqual(value.corner, "TL", "popup corner");
 						assert.strictEqual(value.aroundCorner, "BR", "aroundNode corner");
 					})
-					.elementById("closeTooltipAt1015Button")
+					.findById("closeTooltipAt1015Button")
 						.click()
 						.end();
 			}
@@ -189,9 +193,9 @@ define(["intern!object",
 
 		scrollbar: {
 			at: function () {
-				this.timeout = 120000;
+				this.timeout = intern.config.TEST_TIMEOUT;
 				return this.remote
-					.elementById("openLotsOfChoicesPopupButton")
+					.findById("openLotsOfChoicesPopupButton")
 						.click()
 						.end()
 					.execute(
@@ -204,16 +208,16 @@ define(["intern!object",
 						assert.isTrue(value[0] < value[1], "lotsOfChoicesPopup popup not shorter than viewport " +
 							value[0] + ", " + value[1]);
 					})
-					.elementById("closeLotsOfChoicesPopupButton")
+					.findById("closeLotsOfChoicesPopupButton")
 						.click()
 						.end();
 
 			},
 
 			around: function () {
-				this.timeout = 120000;
+				this.timeout = intern.config.TEST_TIMEOUT;
 				return this.remote
-					.elementById("tallChoiceDropDownButton")
+					.findById("tallChoiceDropDownButton")
 						.click()
 						.end()
 					.execute("return [getComputedStyle(tallChoiceDropDown).height.replace(/px/, ''), " +

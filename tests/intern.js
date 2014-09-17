@@ -10,7 +10,6 @@ define({
 	// The port on which the instrumenting proxy will listen
 	proxyPort: 9000,
 
-
 	// Browsers to run integration testing against. Note that version numbers must be strings if used with Sauce
 	// OnDemand. Options that will be permutated are browserName, version, platform, and platformVersion; any other
 	// capabilities options specified for an environment will be copied as-is
@@ -18,28 +17,34 @@ define({
 		{ browserName: "internet explorer", version: "11", platform: "Windows 8.1", name : "delite" },
 		{ browserName: "internet explorer", version: "10", platform: "Windows 8", name : "delite" },
 		// { browserName: "internet explorer", version: "9", platform: "Windows 7" },
-		{ browserName: "firefox", version: "28", platform: "Windows 7", name : "delite" },
-		{ browserName: "chrome", version: "33", platform: "Windows 7", name : "delite" },
-		{ browserName: "safari", version: "7", platform: "OS X 10.9", name : "delite" },
+		{ browserName: "firefox", version: "31", platform: "Windows 7", name : "delite" },
+		{ browserName: "chrome", version: "36", platform: "Windows 7", name : "delite" },
+		{ browserName: "safari", version: "7", platform: "OS X 10.9", name : "delite" }
 
 		// Mobile
-		{ browserName: "iphone", platform: "OS X 10.9", version: "7.1", name : "delite"}
-		// , { browserName: "android", platform: "Android" }		not currently working
+
+		// comment out iOS until fix https://github.com/theintern/intern/issues/274 released (> intern 2.1)
+		//, { platformName: "iOS", platformVersion: "7.1", browserName: "safari", deviceName: "iPhone Simulator",
+		//	"appium-version": "1.2.2", name: "delite" }
+
+		// android not working either
+		// , { browserName: "android", platform: "Android" }
 	],
 
 	// Maximum number of simultaneous integration tests that should be executed on the remote WebDriver service
 	maxConcurrency: 3,
 
 	// Whether or not to start Sauce Connect before running tests
-	useSauceConnect: true,
+	tunnel: "SauceLabsTunnel",
 
-	// Connection information for the remote WebDriver service. If using Sauce Labs, keep your username and password
-	// in the SAUCE_USERNAME and SAUCE_ACCESS_KEY environment variables unless you are sure you will NEVER be
-	// publishing this configuration file somewhere
-	webdriver: {
-		host: "localhost",
-		port: 4444
-	},
+	// Maximum duration of a test, in milliseconds
+	TEST_TIMEOUT: 300000, // 5 minutes
+
+	// Maximum time to wait for something (pollUntil, etc...)
+	WAIT_TIMEOUT: 180000, // 3 minutes
+
+	// Interval between two polling requests, in milliseconds (for pollUntil)
+	POLL_INTERVAL: 500, // 0.5 seconds
 
 	loader: {
 		baseUrl: typeof window !== "undefined" ? "../../.." : ".."
