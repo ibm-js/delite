@@ -130,7 +130,11 @@ define(["dcl/dcl", "dojo/when", "decor/Invalidating"], function (dcl, when, Inva
 		 */
 		processCollection: function (collection) {
 			return this.fetch(collection).then(function (items) {
-				return this.initItems(items.map(this.itemToRenderItem.bind(this)));
+				try {
+					return this.initItems(items.map(this.itemToRenderItem.bind(this)));
+				} catch (err) {
+					this._queryError(err);
+				}
 			}.bind(this), this._queryError.bind(this));
 		},
 
