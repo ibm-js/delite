@@ -233,17 +233,14 @@ define([
 		};
 
 		loadCss.onLayerEnd = function (write, data) {
-			function getLayerPath() {
-				return data.path.replace(/^(?:\.\/)?(([^\/]*\/)*)[^\/]*$/, "$1css/layer.css");
-			}
-
 			if (data.name && data.path) {
-				var dest = getLayerPath();
+				var dest = data.path.replace(/^(?:\.\/)?(([^\/]*\/)*)[^\/]*$/, "$1css/layer.css");
+				var destMid = data.name.replace(/^(([^\/]*\/)*)[^\/]*$/, "$1css/layer.css");
 
 				// Write layer file
 				buildFunctions.writeLayer(writePluginFiles, dest, loadList);
 				// Write css config on the layer
-				buildFunctions.writeConfig(write, module.id, dest, loadList);
+				buildFunctions.writeConfig(write, module.id, destMid, loadList);
 				// Reset loadList
 				loadList = [];
 			}
