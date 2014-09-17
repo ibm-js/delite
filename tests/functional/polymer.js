@@ -1,8 +1,10 @@
 define([
+	"require",
+	"intern",
 	"intern!object",
 	"intern/chai!assert",
-	"require"
-], function (registerSuite, assert, require) {
+	"intern/dojo/node!leadfoot/helpers/pollUntil"
+], function (require, intern, registerSuite, assert, pollUntil) {
 
 	registerSuite({
 		name: "polymer compatibility test",
@@ -10,7 +12,9 @@ define([
 		"setup": function () {
 			return this.remote
 				.get(require.toUrl("./polymer.html"))
-				.waitForCondition("ready", 40000);
+				.then(pollUntil("return ready || null;", [],
+					intern.config.WAIT_TIMEOUT, intern.config.POLL_INTERVAL))
+				.sleep(100);		// wait for refresh
 		},
 
 		"widget created": function () {
