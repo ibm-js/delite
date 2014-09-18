@@ -101,6 +101,16 @@ define(["dcl/dcl", "./Store"], function (dcl, Store) {
 			};
 		}),
 
+		queryStoreAndInitItems: dcl.superCall(function (sup) {
+			return function (processQueryResult, force) {
+				if (this.attached || force) {
+					sup.apply(this, arguments);
+				} else {
+					this._pendingQuery = true;
+				}
+			};
+		}),
+
 		attachedCallback: function () {
 			// This runs after the attributes have been processed (and converted into properties),
 			// and after any properties specified to the constructor have been mixed in.
@@ -125,8 +135,13 @@ define(["dcl/dcl", "./Store"], function (dcl, Store) {
 
 			this._mappedKeys = mappedKeys;
 			this.deliver();
+			
+			if (this._pendingQuery) {
+				this._pendingQuery = false;
+				this.queryStoreAndInitItems(this.processQueryResult, true);
+			}
 		},
-
+	
 		/**
 		 * Creates a store item based from the widget internal item based on the various mapped properties. Works 
 		 * asynchronously.
