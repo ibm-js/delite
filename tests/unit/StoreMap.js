@@ -52,6 +52,31 @@ define([
 			store.store = myStore;
 			return d;
 		},
+		
+		// Test case for delite #283.
+		"Regular - late startup": function () {
+			var C = register("test-storemap-late-startup", [HTMLElement, Widget, StoreMap], {
+				fooAttr: "name",
+				barFunc: function (item) {
+					return item.firstname;
+				}
+			});
+			var d = this.async(2000);
+			var store = new C();
+			var myData = [
+				{ id: "foo", name: "Foo", firstname: "1" },
+				{ id: "bar", name: "Bar", firstname: "2" }
+			];
+			var myStore = new M({ data: myData});
+			store.store = myStore;
+			
+			store.on("query-success", d.callback(function () {
+				// startup() called late, after adding data to the store
+				store.startup(); // this currently ends by calling deliver()
+				assert.strictEqual(store.renderItems.length, 2);
+			}));
+			return d;
+		},
 
 		copyAll: function () {
 			var C = register("test-storemap-2", [HTMLElement, Widget, StoreMap], {
