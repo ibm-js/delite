@@ -216,15 +216,18 @@ define([
 		},
 
 		/**
-		 * Processing after the DOM fragment is added to the document.
-		 *
 		 * Called after a widget and its children have been created and added to the page,
-		 * and all related widgets have finished their create() cycle, up through `postCreate()`.
+		 * and all related widgets have finished their creation cycle, up through `postCreate()`.
+		 *
+		 * Most widgets should add initialization code to `attachedCallback()` rather than `startup()`.
+		 * Code in `startup()` is only necessary for widgets that can't be initialized until related widgets have been
+		 * created.  For example, hypothetically, if `DisplayContainer#selectedChildId` could not be processed
+		 * until the specified child DOM node existed, and had been upgraded from a plain DOM node into a widget.
+		 * `startup()` may be removed in the future.
 		 *
 		 * Note that `startup()` may be called while the widget is still hidden, for example if the widget is
-		 * inside a hidden deliteful/Dialog or an unselected tab of a deliteful/TabContainer.
-		 * For widgets that need to do layout, it's best to put that layout code inside `resize()`, and then
-		 * extend delite/LayoutWidget so that `resize()` is called when the widget is visible.
+		 * inside a hidden dialog or an unselected tab of a TabContainer, so the widget shouldn't try to do
+		 * layout in startup().
 		 */
 		startup: function () {
 			if (this._started) {
