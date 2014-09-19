@@ -154,20 +154,17 @@ define([
 			};
 		}),
 
-		createdCallback: dcl.advise({
-			after: function () {
-				// Move all initially specified aria- attributes to focus node.
-				var attr, idx = 0;
-				while ((attr = this.attributes[idx++])) {
-					if (/^aria-/.test(attr.name)) {
-						this.setAttribute(attr.name, attr.value);
+		createdCallback: function () {
+			// Move all initially specified aria- attributes to focus node.
+			var attr, idx = 0;
+			while ((attr = this.attributes[idx++])) {
+				if (/^aria-/.test(attr.name)) {
+					this.setAttribute(attr.name, attr.value);
 
-						// force remove from root node not this.focusNode
-						HTMLElement.prototype.removeAttribute.call(this, attr.name);
-					}
+					// force remove from root node not this.focusNode
+					HTMLElement.prototype.removeAttribute.call(this, attr.name);
 				}
 			}
-		}),
-
+		}
 	});
 });

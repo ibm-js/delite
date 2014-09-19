@@ -234,10 +234,17 @@ define([
 		parse: function () {
 			register("test-parser-widget", [HTMLElement, Mixin], {
 				createdCalls: 0,
-				startupCalls: 0,
 				createdCallback: function () {
 					this.createdCalls++;
 				},
+
+				attachedCalls: 0,
+				attachedCallback: function () {
+					this.attachedCalls++;
+				},
+
+				// The parser also calls a startup() method if it exists, so test that
+				startupCalls: 0,
 				startup: function () {
 					this._started = true;	// done by Widget, required by register.parse
 					this.startupCalls++;
@@ -253,11 +260,13 @@ define([
 			register.parse(container);
 			assert.strictEqual("my label", document.getElementById("ebw2").label, "ebw2.label");
 			assert.strictEqual(1, document.getElementById("pw").createdCalls, "pw.createdCalls");
+			assert.strictEqual(1, document.getElementById("pw").attachedCalls, "pw.attachedCalls");
 			assert.strictEqual(1, document.getElementById("pw").startupCalls, "pw.startupCalls");
 
 			// Call parse again to make sure that we don't repeat
 			register.parse(container);
 			assert.strictEqual(1, document.getElementById("pw").createdCalls, "pw.createdCalls");
+			assert.strictEqual(1, document.getElementById("pw").attachedCalls, "pw.attachedCalls");
 			assert.strictEqual(1, document.getElementById("pw").startupCalls, "pw.startupCalls");
 		},
 

@@ -101,7 +101,7 @@ define(["dcl/dcl", "./Store"], function (dcl, Store) {
 			};
 		}),
 
-		startup: function () {
+		attachedCallback: function () {
 			// This runs after the attributes have been processed (and converted into properties),
 			// and after any properties specified to the constructor have been mixed in.
 

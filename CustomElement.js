@@ -32,7 +32,7 @@ define([
 	 * @augments module:decor/Stateful
 	 * @augments module:decor/Destroyable
 	 */
-	return dcl([Stateful, Destroyable], /** @lends module:delite/CustomElement# */{
+	var CustomElement = dcl([Stateful, Destroyable], /** @lends module:delite/CustomElement# */{
 		_getProps: function () {
 			// Override _Stateful._getProps() to ignore properties from the HTML*Element superclasses, like "style".
 			// You would need to explicitly declare style: "" in your widget to get it here.
@@ -63,6 +63,19 @@ define([
 			return hash;
 		},
 
+		/**
+		 * Set to true when createdCallback() has completed.
+		 * @member {boolean}
+		 * @protected
+		 */
+		_created: false,
+
+		/**
+		 * Called when the custom element is created, or when register.parse() parses a custom tag.
+		 *
+		 * This method is automatically chained, so subclasses generally do not need to use `dcl.superCall()`,
+		 * `dcl.advise()`, etc.
+		 */
 		createdCallback: dcl.advise({
 			before: function () {
 				// Mark this object as observable with Object.observe() shim
@@ -87,6 +100,25 @@ define([
 					}
 				}, this);
 			}
+		}),
+
+		/**
+		 * Set to true when attachedCallback() has completed.
+		 * @member {boolean}
+		 * @protected
+		 */
+		_attached: false,
+
+		/**
+		 * Called when the element is added to the document, after `createdCallback()` completes.
+		 * Note though that for programatically created custom elements, the app must manually call
+		 * this method.
+		 *
+		 * This method is automatically chained, so subclasses generally do not need to use `dcl.superCall()`,
+		 * `dcl.advise()`, etc.
+		 */
+		attachedCallback: dcl.after(function () {
+			this._attached = true;
 		}),
 
 		/**
@@ -333,4 +365,11 @@ define([
 			return outAry;
 		}
 	});
+
+	// Setup automatic chaining for lifecycle methods.
+	// destroy() is chained in Destroyable.js.
+	dcl.chainAfter(CustomElement, "createdCallback");
+	dcl.chainAfter(CustomElement, "attachedCallback");
+
+	return CustomElement;
 });
