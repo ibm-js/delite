@@ -37,7 +37,7 @@ define(["delite/popup"], function(popup){
 	popup.moveOffScreen(dropDown);
 
 	// if the pop-up has not been started yet, start it now
-	if(dropDown.startup && !dropDown._started){
+	if(dropDown.startup && !dropDown.started){
 		dropDown.startup();
 	}
 

@@ -177,7 +177,7 @@ define([
 			},
 
 			_setTextDirAttr: function (/*String*/ textDir) {
-				if (!this._created || this.textDir !== textDir) {
+				if (!this.created || this.textDir !== textDir) {
 					this._set("textDir", textDir);
 					if (this.textDir && this.title) {
 						this.containerNode.title = this.enforceTextDirWithUcc(null, this.title);

@@ -24,26 +24,26 @@ define([
 		 * @member {Element}
 		 * @protected
 		 */
-		_buttonNode: null,
+		buttonNode: null,
 
 		/**
 		 * Will set CSS class `d-up-arrow-button`, `d-down-arrow-button`, `d-right-arrow-button` etc. on this node
 		 * depending on where the drop down is set to be positioned.
 		 * Can be set in a template via a `attach-point` assignment.
-		 * If missing, then `this._buttonNode` will be used.
+		 * If missing, then `this.buttonNode` will be used.
 		 * @member {Element}
 		 * @protected
 		 */
-		_arrowWrapperNode: null,
+		arrowWrapperNode: null,
 
 		/**
 		 * The node to set the `aria-expanded` class on.
 		 * Can be set in a template via a `attach-point` assignment.
-		 * If missing, then `this.focusNode` or `this._buttonNode` (if `focusNode` is missing) will be used.
+		 * If missing, then `this.focusNode` or `this.buttonNode` (if `focusNode` is missing) will be used.
 		 * @member {Element}
 		 * @protected
 		 */
-		_popupStateNode: null,
+		popupStateNode: null,
 
 		/**
 		 * The node to display the popup around.
@@ -52,7 +52,7 @@ define([
 		 * @member {Element}
 		 * @protected
 		 */
-		_aroundNode: null,
+		aroundNode: null,
 
 		/**
 		 * The widget to display as a popup.  Applications/subwidgets should *either* define this
@@ -165,8 +165,8 @@ define([
 				// This if() statement deals with the corner-case when the drop down covers the original widget,
 				// because it's so large.  In that case mouse-up shouldn't select a value from the menu.
 				// Find out if our target is somewhere in our dropdown widget,
-				// but not over our _buttonNode (the clickable node)
-				var c = place.position(this._buttonNode);	// TODO: use getBoundingClientRect(); adjust for viewport
+				// but not over our buttonNode (the clickable node)
+				var c = place.position(this.buttonNode);	// TODO: use getBoundingClientRect(); adjust for viewport
 				if (!(e.pageX >= c.x && e.pageX <= c.x + c.w) || !(e.pageY >= c.y && e.pageY <= c.y + c.h)) {
 					var t = e.target, overMenu;
 					while (t && !overMenu) {
@@ -224,13 +224,13 @@ define([
 		},
 
 		buildRendering: dcl.after(function () {
-			this._buttonNode = this._buttonNode || this.focusNode || this;
-			this._popupStateNode = this._popupStateNode || this.focusNode || this._buttonNode;
+			this.buttonNode = this.buttonNode || this.focusNode || this;
+			this.popupStateNode = this.popupStateNode || this.focusNode || this.buttonNode;
 		}),
 
 		postCreate: function () {
 			// basic listeners
-			this.on("pointerdown", this._dropDownPointerDownHandler.bind(this), this._buttonNode);
+			this.on("pointerdown", this._dropDownPointerDownHandler.bind(this), this.buttonNode);
 			this.on("keydown", this._dropDownKeyDownHandler.bind(this), this.focusNode || this);
 			this.on("keyup", this._dropDownKeyUpHandler.bind(this), this.focusNode || this);
 
@@ -250,11 +250,11 @@ define([
 			// Also, be careful not to break (native) scrolling of dropdown like ComboBox's options list.
 			this.on("touchend", function (evt) {
 				evt.preventDefault();
-			}, this._buttonNode);
+			}, this.buttonNode);
 			this.on("click", function (evt) {
 				evt.preventDefault();
 				evt.stopPropagation();
-			}, this._buttonNode);
+			}, this.buttonNode);
 
 			// trigger initial setting of d-down-arrow class
 			this.notifyCurrentValue("dropDownPosition");
@@ -262,7 +262,7 @@ define([
 
 		refreshRendering: function (props) {
 			if ("dropDownPosition" in props) {
-				// Add a "d-down-arrow" type class to _buttonNode so theme can set direction of arrow
+				// Add a "d-down-arrow" type class to buttonNode so theme can set direction of arrow
 				// based on where drop down will normally appear
 				var defaultPos = {
 					"after": this.isLeftToRight() ? "right" : "left",
@@ -270,7 +270,7 @@ define([
 				}[this.dropDownPosition[0]] || this.dropDownPosition[0] || "down";
 
 				this.setClassComponent("arrowDirectionIcon", "d-" + defaultPos + "-arrow",
-						this._arrowWrapperNode || this._buttonNode);
+						this.arrowWrapperNode || this.buttonNode);
 			}
 		},
 
@@ -398,7 +398,7 @@ define([
 			return this._openDropDownPromise ||
 				(this._openDropDownPromise = when(this.loadDropDown()).then(function (dropDown) {
 				this._currentDropDown = dropDown;
-				var aroundNode = this._aroundNode || this,
+				var aroundNode = this.aroundNode || this,
 					self = this;
 
 				var retVal = popup.open({
@@ -414,7 +414,7 @@ define([
 						self.closeDropDown(true);
 					},
 					onClose: function () {
-						domClass.remove(self._popupStateNode, "d-drop-down-open");
+						domClass.remove(self.popupStateNode, "d-drop-down-open");
 						this.opened = false;
 					}
 				});
@@ -433,11 +433,11 @@ define([
 					}
 				}
 
-				domClass.add(this._popupStateNode, "d-drop-down-open");
+				domClass.add(this.popupStateNode, "d-drop-down-open");
 				this.opened = true;
 
-				this._popupStateNode.setAttribute("aria-expanded", "true");
-				this._popupStateNode.setAttribute("aria-owns", dropDown.id);
+				this.popupStateNode.setAttribute("aria-expanded", "true");
+				this.popupStateNode.setAttribute("aria-owns", dropDown.id);
 
 				// Set aria-labelledby on dropdown if it's not already set to something more meaningful
 				if (dropDown.getAttribute("role") !== "presentation" && !dropDown.getAttribute("aria-labelledby")) {
@@ -470,7 +470,7 @@ define([
 			}
 
 			if (this.opened) {
-				this._popupStateNode.setAttribute("aria-expanded", "false");
+				this.popupStateNode.setAttribute("aria-expanded", "false");
 				if (focus && this.focus) {
 					this.focus();
 				}

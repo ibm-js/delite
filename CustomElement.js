@@ -68,7 +68,7 @@ define([
 		 * @member {boolean}
 		 * @protected
 		 */
-		_created: false,
+		created: false,
 
 		/**
 		 * Called when the custom element is created, or when register.parse() parses a custom tag.
@@ -88,7 +88,7 @@ define([
 			},
 
 			after: function () {
-				this._created = true;
+				this.created = true;
 
 				// Now that creation has finished, apply parameters that were specified declaratively.
 				// This is consistent with the timing that parameters are applied for programmatic creation.
@@ -107,7 +107,7 @@ define([
 		 * @member {boolean}
 		 * @protected
 		 */
-		_attached: false,
+		attached: false,
 
 		/**
 		 * Called when the element is added to the document, after `createdCallback()` completes.
@@ -118,7 +118,7 @@ define([
 		 * `dcl.advise()`, etc.
 		 */
 		attachedCallback: dcl.after(function () {
-			this._attached = true;
+			this.attached = true;
 		}),
 
 		/**
@@ -163,7 +163,7 @@ define([
 				return getObject(value) ||
 					(this[name] instanceof Array ? (value ? value.split(/\s+/) : []) : stringToObject(value));
 			case "function":
-				return this._parseFunctionAttr(value, []);
+				return this.parseFunctionAttribute(value, []);
 			}
 		},
 
@@ -179,7 +179,7 @@ define([
 		 * @param {string[]} params - When generating a function from inline javascript, give it these parameter names.
 		 * @protected
 		 */
-		_parseFunctionAttr: function (value, params) {
+		parseFunctionAttribute: function (value, params) {
 			/* jshint evil:true */
 			// new Function() will only be executed if you have properties that are of function type in your widget
 			// and that you use them in your tag attributes as follows:
@@ -203,7 +203,7 @@ define([
 		 * @param {string} value - Attribute value.
 		 * @protected
 		 */
-		_parseAttr: function (name, value) {
+		parseAttribute: function (name, value) {
 			var pcm = this._propCaseMap;
 			if (name in pcm) {
 				name =  pcm[name]; // convert to correct case for widget
@@ -214,14 +214,14 @@ define([
 			} else if (/^on-/.test(name)) {
 				return {
 					event: name.substring(3),
-					callback: this._parseFunctionAttr(value, ["event"])
+					callback: this.parseFunctionAttribute(value, ["event"])
 				};
 			}
 		},
 
 		/**
 		 * Parse declaratively specified attributes for widget properties and connects.
-		 * @returns {Array} Info about the attributes and their values as returned by _parseAttr().
+		 * @returns {Array} Info about the attributes and their values as returned by parseAttribute().
 		 * @private
 		 */
 		_mapAttributes: function () {
@@ -232,7 +232,7 @@ define([
 
 			while ((attr = this.attributes[idx++])) {
 				var name = attr.name.toLowerCase();	// note: will be lower case already except for IE9
-				var parsedAttr = this._parseAttr(name, attr.value);
+				var parsedAttr = this.parseAttribute(name, attr.value);
 				if (parsedAttr) {
 					parsedAttrs.push(parsedAttr);
 					attrsToRemove.push(attr);

@@ -12,10 +12,10 @@ A List, Tree, or Grid widget could all be subclasses of KeyNav.
 To use this base class, the subclass must implement a number of abstract methods.  For LEFT/RIGHT/UP/DOWN arrow key
 navigation, implement:
 
-* _onLeftArrow()
-* _onRightArrow()
-* _onDownArrow()
-* _onUpArrow()
+* onLeftArrow()
+* onRightArrow()
+* onDownArrow()
+* onUpArrow()
 
 These methods are meant to navigate relative to the current node,
 so they should operate based on `this.focusedChild`.

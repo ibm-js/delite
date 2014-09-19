@@ -250,7 +250,7 @@ define([
 				return resolvedDeferred.promise;
 			}
 
-			if (!this._started) {
+			if (!this.started) {
 				this.startup();
 			}
 
@@ -507,7 +507,7 @@ define([
 			},
 
 			_setTextDirAttr: function (textDir) {
-				if (this._created && this.textDir !== textDir) {
+				if (this.created && this.textDir !== textDir) {
 					this._set("textDir", textDir);
 					this.set("title", this.title);
 				}

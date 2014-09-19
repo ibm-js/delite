@@ -52,7 +52,7 @@ define([
 
 		appendChild: dcl.superCall(function (sup) {
 			return function (child) {
-				if (this._created) {
+				if (this.created) {
 					var res = sup.call(this.containerNode, child);
 					this.onAddChild(child);
 					return res;
@@ -64,7 +64,7 @@ define([
 
 		insertBefore: dcl.superCall(function (sup) {
 			return function (newChild, refChild) {
-				if (this._created) {
+				if (this.created) {
 					var res = sup.call(this.containerNode, newChild, refChild);
 					this.onAddChild(newChild);
 					return res;
@@ -84,7 +84,7 @@ define([
 			// start it now.  Make sure to do this after widget has been
 			// inserted into the DOM tree, so it can see that it's being controlled by me,
 			// so it doesn't try to size itself.
-			if (this._started && !node._started && node.startup) {
+			if (this.started && !node.started && node.startup) {
 				node.startup();
 			}
 		},

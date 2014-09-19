@@ -84,7 +84,7 @@ define(["dcl/dcl", "./Store"], function (dcl, Store) {
 		// Convert all attributes like foofunc="..." or fooattr="..." to instance properties.
 		// foofunc="return item.value" converted to property named fooFunc w/value
 		// function(item, store, value){ return item.value; }
-		_parseAttr: dcl.superCall(function (sup) {
+		parseAttribute: dcl.superCall(function (sup) {
 			return function (name, value) {
 				if (/Attr$|Func$/i.test(name)) {
 					name = name.toLowerCase();	// needed only on IE9
@@ -93,7 +93,7 @@ define(["dcl/dcl", "./Store"], function (dcl, Store) {
 					return {
 						prop: name,
 						value: /Attr$/.test(name) ? value :
-							this._parseFunctionAttr(value, ["item", "store", "value"])
+							this.parseFunctionAttribute(value, ["item", "store", "value"])
 					};
 				} else {
 					return sup.apply(this, arguments);
