@@ -265,38 +265,30 @@ define([
 		},
 
 		/**
-		 * Signal that a synthetic event occurred.
-		 *
-		 * Emits an event of specified type, based on eventObj.
-		 * Also calls onType() method, if present, and returns value from that method.
-		 * Modifies eventObj by adding missing parameters (bubbles, cancelable, widget).
-		 *
+		 * Emits a synthetic event of specified type, based on eventObj.
 		 * @param {string} type - Name of event.
-		 * @param {Object} [eventObj] - Properties to mix in to emitted event.
+		 * @param {Object} [eventObj] - Properties to mix in to emitted event.  Can also contain
+		 * `bubbles` and `cancelable` properties to control how the event is emitted.
 		 * @returns {boolean} True if the event was *not* canceled, false if it was canceled.
 		 * @example
 		 * myWidget.emit("query-success", {});
 		 * @protected
 		 */
 		emit: function (type, eventObj) {
-			// Emit event, but (for the case of the Widget subclass)
-			// avoid spurious emit()'s as parent sets properties on child during startup/destroy
-			if (this._started !== false && !this._beingDestroyed) {
-				eventObj = eventObj || {};
-				var bubbles = "bubbles" in eventObj ? eventObj.bubbles : true;
-				var cancelable = "cancelable" in eventObj ? eventObj.cancelable : true;
+			eventObj = eventObj || {};
+			var bubbles = "bubbles" in eventObj ? eventObj.bubbles : true;
+			var cancelable = "cancelable" in eventObj ? eventObj.cancelable : true;
 
-				// Note: can't use jQuery.trigger() because it doesn't work with addEventListener(),
-				// see http://bugs.jquery.com/ticket/11047
-				var nativeEvent = this.ownerDocument.createEvent("HTMLEvents");
-				nativeEvent.initEvent(type, bubbles, cancelable);
-				for (var i in eventObj) {
-					if (!(i in nativeEvent)) {
-						nativeEvent[i] = eventObj[i];
-					}
+			// Note: can't use jQuery.trigger() because it doesn't work with addEventListener(),
+			// see http://bugs.jquery.com/ticket/11047
+			var nativeEvent = this.ownerDocument.createEvent("HTMLEvents");
+			nativeEvent.initEvent(type, bubbles, cancelable);
+			for (var i in eventObj) {
+				if (!(i in nativeEvent)) {
+					nativeEvent[i] = eventObj[i];
 				}
-				return this.dispatchEvent(nativeEvent);
 			}
+			return this.dispatchEvent(nativeEvent);
 		},
 
 		/**
