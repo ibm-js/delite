@@ -31,7 +31,7 @@
 					this.appendChild(this.labelNode);
 				},
 
-				startup: function () {
+				attachedCallback: function () {
 					// We could do this in _setTabIndexAttr() but I want to test that observe() is working
 					this.observe(function (props) {
 						if ("tabIndex" in props) {

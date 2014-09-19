@@ -16,7 +16,7 @@ define([
 	 * Base class for all widgets, i.e. custom elements that appear visually.
 	 *
 	 * Provides stubs for widget lifecycle methods for subclasses to extend, like `buildRendering()`,
-	 * `postCreate()`, `startup()`, and `destroy()`, and also public API methods like `observe()`.
+	 * `postCreate()`, and `destroy()`, and also public API methods like `observe()`.
 	 * @mixin module:delite/Widget
 	 * @augments module:delite/CustomElement
 	 * @augments module:decor/Invalidating
@@ -89,14 +89,7 @@ define([
 			}
 		},
 
-		/**
-		 * Called when the widget is first inserted into the document.
-		 * If widget is created programatically then app must call startup() to trigger this method.
-		 * @protected
-		 */
 		attachedCallback: function () {
-			this._attached = true;
-
 			// Since safari masks all custom setters for tabIndex on the prototype, call them here manually.
 			// For details see:
 			//		https://bugs.webkit.org/show_bug.cgi?id=36423
@@ -138,6 +131,9 @@ define([
 
 		/**
 		 * Processing before `buildRendering()`.
+		 *
+		 * This method is automatically chained, so subclasses generally do not need to use `dcl.superCall()`,
+		 * `dcl.advise()`, etc.
 		 * @protected
 		 */
 		preCreate: function () {
@@ -206,6 +202,9 @@ define([
 		 * Called after the DOM fragment has been created, but not necessarily
 		 * added to the document.  Do not include any operations which rely on
 		 * node dimensions or placement.
+		 *
+		 * This method is automatically chained, so subclasses generally do not need to use `dcl.superCall()`,
+		 * `dcl.advise()`, etc.
 		 * @protected
 		 */
 		postCreate: function () {
@@ -230,6 +229,7 @@ define([
 		 * layout in startup().
 		 */
 		startup: function () {
+			// TODO: remove this method before 1.0 release if it isn't being used
 			if (this._started) {
 				return;
 			}
@@ -399,7 +399,6 @@ define([
 	// destroy() is chained in Destroyable.js.
 	dcl.chainAfter(Widget, "preCreate");
 	dcl.chainAfter(Widget, "postCreate");
-	dcl.chainAfter(Widget, "startup");
 
 	return Widget;
 });
