@@ -182,7 +182,6 @@ define([
 				"class": this["class"].split(/\s/).map(function (s) {
 					return s + "_underlay";
 				}).join(" "),
-				_onKeyDown: lang.hitch(this, "_onKey"),
 				ownerDocument: this.ownerDocument
 			};
 		},
@@ -274,7 +273,7 @@ define([
 			var win = winUtils.get(this.ownerDocument);
 			this._modalconnects.push(on(win, "scroll", lang.hitch(this, "resize", null)));
 
-			this._modalconnects.push(on(this.domNode, "keydown", lang.hitch(this, "_onKey")));
+			this._modalconnects.push(on(win, "keydown", lang.hitch(this, "_onKey")));
 
 			domStyle.set(this.domNode, {
 				opacity: 0,
