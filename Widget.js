@@ -45,7 +45,7 @@ define([
 		 * @member {boolean}
 		 * @protected
 		 */
-		_started: false,
+		started: false,
 
 		/**
 		 * Unique id for this widget, separate from id attribute (which may or may not be set).
@@ -230,19 +230,19 @@ define([
 		 */
 		startup: function () {
 			// TODO: remove this method before 1.0 release if it isn't being used
-			if (this._started) {
+			if (this.started) {
 				return;
 			}
 
-			if (!this._attached) {
+			if (!this.attached) {
 				this.attachedCallback();
 			}
 
-			this._started = true;
+			this.started = true;
 			this.findCustomElements(this).forEach(function (obj) {
-				if (!obj._started && !obj._destroyed && typeof obj.startup === "function") {
+				if (!obj.started && !obj._destroyed && typeof obj.startup === "function") {
 					obj.startup();
-					obj._started = true;
+					obj.started = true;
 				}
 			});
 		},
@@ -329,7 +329,7 @@ define([
 
 			// Start this iff it has a parent widget that's already started.
 			// TODO: for 2.0 maybe it should also start the widget when this.getParent() returns null??
-			if (!this._started && (this.getParent() || {})._started) {
+			if (!this.started && (this.getParent() || {}).started) {
 				this.startup();
 			}
 

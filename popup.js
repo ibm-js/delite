@@ -231,7 +231,7 @@ define([
 			// off screen) so we can do sizing calculations.
 			var wrapper = this.moveOffScreen(widget);
 
-			if (widget.startup && !widget._started) {
+			if (widget.startup && !widget.started) {
 				widget.startup(); // this has to be done after being added to the DOM
 			}
 

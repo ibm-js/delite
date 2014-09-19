@@ -173,7 +173,7 @@ define([
 			assert.deepEqual(log, ["a1", "a2", "a3", "ib1", "ib3"], "log");
 			assert.deepEqual(["ib1", "a1", "a2", "ib3", "a3"],
 				Array.prototype.map.call(container.children, function (child) { return child.id; }), "children");
-			assert(Array.prototype.every.call(container.children, function (child) { return child._started; }),
+			assert(Array.prototype.every.call(container.children, function (child) { return child.started; }),
 				"all children started");
 
 			// cleanup

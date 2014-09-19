@@ -246,7 +246,7 @@ define([
 				// The parser also calls a startup() method if it exists, so test that
 				startupCalls: 0,
 				startup: function () {
-					this._started = true;	// done by Widget, required by register.parse
+					this.started = true;	// done by Widget, required by register.parse
 					this.startupCalls++;
 				}
 			});

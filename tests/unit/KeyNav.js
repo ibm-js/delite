@@ -17,7 +17,7 @@ define([
 			document.body.appendChild(container);
 		},
 
-		_getNext: function () {
+		getNext: function () {
 			var skn = new SimpleKeyNav();
 			skn.placeAt(container);
 			skn.innerHTML = "<div label='not a child'>not a child</div>" +
@@ -36,7 +36,7 @@ define([
 			function scanAll(dir) {
 				var children = [], child = skn;
 				for (var i = 0; i < 7; i++) {
-					child = skn._getNext(child, dir);
+					child = skn.getNext(child, dir);
 					children.push(child.getAttribute("label"));
 				}
 				return children;
@@ -48,12 +48,12 @@ define([
 				"children in reverse order");
 		},
 
-		_getNextOnEmptyContainer: function () {
+		getNextOnEmptyContainer: function () {
 			var skn2 = new SimpleKeyNav();
 			skn2.placeAt(container);
 
-			assert.isNull(skn2._getNext(skn2, 1), "forward");
-			assert.isNull(skn2._getNext(skn2, -1), "backward");
+			assert.isNull(skn2.getNext(skn2, 1), "forward");
+			assert.isNull(skn2.getNext(skn2, -1), "backward");
 		},
 
 		teardown: function () {

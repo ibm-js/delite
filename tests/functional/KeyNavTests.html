@@ -26,20 +26,20 @@
 				multiCharSearchDuration: 100,
 
 				// Simple arrow key support.
-				_onLeftArrow: function () {
+				onLeftArrow: function () {
 					var listItem = this.focusedChild.parentNode;
 					this.focusChild(this.focusedChild.previousElementSibling || listItem.lastElementChild);
 				},
-				_onRightArrow: function () {
+				onRightArrow: function () {
 					var listItem = this.focusedChild.parentNode;
 					this.focusChild(this.focusedChild.nextElementSibling || listItem.firstElementChild);
 				},
-				_onDownArrow: function () {
+				onDownArrow: function () {
 					// For simplicity I'll just go to the first field in the next row
 					var listItem = this.focusedChild.parentNode;
 					this.focusChild((listItem.nextElementSibling || this.firstElementChild).firstElementChild);
 				},
-				_onUpArrow: function () {
+				onUpArrow: function () {
 					// For simplicity I'll just go to the first field in the previous row
 					var listItem = this.focusedChild.parentNode;
 					this.focusChild((listItem.previousElementSibling || this.lastElementChild).firstElementChild);
@@ -57,14 +57,14 @@
 				childSelector: function (child) {
 					return child !== this;
 				},
-				_onDownArrow: function () {
-					var nextChild = this._getNext(this.focusedChild, 1);
+				onDownArrow: function () {
+					var nextChild = this.getNext(this.focusedChild, 1);
 					if (nextChild) {
 						this.focusChild(nextChild);
 					}
 				},
-				_onUpArrow: function () {
-					var previousChild = this._getNext(this.focusedChild, -1);
+				onUpArrow: function () {
+					var previousChild = this.getNext(this.focusedChild, -1);
 					if (previousChild) {
 						this.focusChild(previousChild);
 					}

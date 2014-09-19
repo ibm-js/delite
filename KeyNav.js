@@ -25,7 +25,7 @@ define([
 	  * 
 	  * To use this mixin, the subclass must:
 	  * 
-	  * - Implement `_onLeftArrow()`, `_onRightArrow()``_onDownArrow()`, `_onUpArrow()` methods to handle
+	  * - Implement `onLeftArrow()`, `onRightArrow()``onDownArrow()`, `onUpArrow()` methods to handle
 	  *   left/right/up/down keystrokes.
 	  * - Set all navigable descendants' initial tabIndex to "-1"; both initial descendants and any
 	  * descendants added later, by for example `addChild()`.
@@ -52,7 +52,7 @@ define([
 
 		/**
 		 * Hash mapping key code (arrow keys and home/end key) to functions to handle those keys.
-		 * Usually not used directly, as subclasses can instead override _onLeftArrow() etc.
+		 * Usually not used directly, as subclasses can instead override onLeftArrow() etc.
 		 * Must be set before postCreate().
 		 * @member {Object}
 		 * @protected
@@ -117,10 +117,10 @@ define([
 				keyCodes[keys.END] = function () {
 					self.focusLastChild();
 				};
-				keyCodes[this.isLeftToRight() ? keys.LEFT_ARROW : keys.RIGHT_ARROW] = this._onLeftArrow.bind(this);
-				keyCodes[this.isLeftToRight() ? keys.RIGHT_ARROW : keys.LEFT_ARROW] = this._onRightArrow.bind(this);
-				keyCodes[keys.UP_ARROW] = this._onUpArrow.bind(this);
-				keyCodes[keys.DOWN_ARROW] = this._onDownArrow.bind(this);
+				keyCodes[this.isLeftToRight() ? keys.LEFT_ARROW : keys.RIGHT_ARROW] = this.onLeftArrow.bind(this);
+				keyCodes[this.isLeftToRight() ? keys.RIGHT_ARROW : keys.LEFT_ARROW] = this.onRightArrow.bind(this);
+				keyCodes[keys.UP_ARROW] = this.onUpArrow.bind(this);
+				keyCodes[keys.DOWN_ARROW] = this.onDownArrow.bind(this);
 			}
 
 			this.on("keypress", this._onContainerKeypress.bind(this)),
@@ -141,7 +141,7 @@ define([
 		 * @protected
 		 * @abstract
 		 */
-		_onLeftArrow: function () {
+		onLeftArrow: function () {
 		},
 
 		/**
@@ -150,7 +150,7 @@ define([
 		 * @protected
 		 * @abstract
 		 */
-		_onRightArrow: function () {
+		onRightArrow: function () {
 		},
 
 		/**
@@ -158,7 +158,7 @@ define([
 		 * @protected
 		 * @abstract
 		 */
-		_onUpArrow: function () {
+		onUpArrow: function () {
 		},
 
 		/**
@@ -166,7 +166,7 @@ define([
 		 * @protected
 		 * @abstract
 		 */
-		_onDownArrow: function () {
+		onDownArrow: function () {
 		},
 
 		/**
@@ -181,7 +181,7 @@ define([
 		 * @protected
 		 */
 		focusFirstChild: function () {
-			this.focusChild(this._getNext(this, 1));
+			this.focusChild(this.getNext(this, 1));
 		},
 
 		/**
@@ -189,7 +189,7 @@ define([
 		 * @protected
 		 */
 		focusLastChild: function () {
-			this.focusChild(this._getNext(this, -1));
+			this.focusChild(this.getNext(this, -1));
 		},
 
 		/**
@@ -420,7 +420,7 @@ define([
 			}, this.multiCharSearchDuration);
 			var currentItem = this.focusedChild || null;
 			if (searchLen === 1 || !currentItem) {
-				currentItem = this._getNext(currentItem, 1); // skip current
+				currentItem = this.getNext(currentItem, 1); // skip current
 				if (!currentItem) {
 					return;
 				} // no items
@@ -435,7 +435,7 @@ define([
 					numMatches = -1;
 					break;
 				}
-				currentItem = this._getNext(currentItem, 1);
+				currentItem = this.getNext(currentItem, 1);
 			} while (currentItem !== stop);
 
 			this.onKeyboardSearch(matchedItem, evt, searchString, numMatches);
@@ -450,7 +450,7 @@ define([
 		 * @returns {Element}
 		 * @protected
 		 */
-		_getNext: function (child, dir) {
+		getNext: function (child, dir) {
 			var root = this, origChild = child;
 			function dfsNext(node) {
 				if (node.firstElementChild) { return node.firstElementChild; }
