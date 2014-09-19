@@ -35,8 +35,6 @@ define([
 		postCreate: function () {
 			// Append the underlay to the body
 			this.ownerDocument.body.appendChild(this);
-
-			this.on("keydown", this._onKeyDown.bind(this));
 		},
 
 		/**
@@ -93,17 +91,10 @@ define([
 			}
 		},
 
-		destroy: register.before(function () {
+		destroy: function () {
 			while (this._modalConnects.length) {
 				(this._modalConnects.pop()).remove();
 			}
-		}),
-
-		/**
-		 * Extension point so Dialog can monitor keyboard events on the underlay.
-		 * @protected
-		 */
-		_onKeyDown: function () {
 		}
 	});
 
