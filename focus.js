@@ -78,7 +78,7 @@ define([
 					return;
 				}
 
-				_this._onTouchNode(effectiveNode || evt.target, "mouse");
+				_this._pointerDownOrFocusHandler(effectiveNode || evt.target, "mouse");
 			}
 
 			function focusHandler(evt) {
@@ -94,11 +94,11 @@ define([
 					return;
 				}
 
-				_this._onFocusNode(effectiveNode || evt.target);
+				_this._focusHandler(effectiveNode || evt.target);
 			}
 
 			function blurHandler(evt) {
-				_this._onBlurNode(effectiveNode || evt.target);
+				_this._blurHandler(effectiveNode || evt.target);
 			}
 
 			if (body) {
@@ -125,7 +125,7 @@ define([
 		 * @param {Element} node
 		 * @private
 		 */
-		_onBlurNode: function (node) { // jshint unused: vars
+		_blurHandler: function (node) { // jshint unused: vars
 			var now = (new Date()).getTime();
 
 			// IE9+ and chrome have a problem where focusout events come after the corresponding focusin event.
@@ -141,8 +141,8 @@ define([
 			}
 
 			if (now < lastTouchOrFocusin + 100) {
-				// This blur event is coming late (after the call to _onTouchNode() rather than before.
-				// So let _onTouchNode() handle setting the widget stack.
+				// This blur event is coming late (after the call to _pointerDownOrFocusHandler() rather than before.
+				// So let _pointerDownOrFocusHandler() handle setting the widget stack.
 				// See https://bugs.dojotoolkit.org/ticket/17668
 				return;
 			}
@@ -160,7 +160,7 @@ define([
 		 * @param {string} by - "mouse" if the focus/touch was caused by a mouse down event.
 		 * @private
 		 */
-		_onTouchNode: function (node, by) {
+		_pointerDownOrFocusHandler: function (node, by) {
 			// Keep track of time of last focusin or touch event.
 			lastTouchOrFocusin = (new Date()).getTime();
 
@@ -212,7 +212,7 @@ define([
 		 * @param {Element} node
 		 * @private
 		 */
-		_onFocusNode: function (node) {
+		_focusHandler: function (node) {
 			if (!node) {
 				return;
 			}
@@ -234,7 +234,7 @@ define([
 				delete this._clearFocusTimer;
 			}
 
-			this._onTouchNode(node);
+			this._pointerDownOrFocusHandler(node);
 		},
 
 		/**

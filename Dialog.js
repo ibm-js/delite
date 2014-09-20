@@ -209,7 +209,7 @@ define([
 			}
 		},
 
-		_onKey: function (/*Event*/ evt) {
+		keyDownHandler: function (/*Event*/ evt) {
 			// summary:
 			//		Handles the keyboard events for accessibility reasons
 			// tags:
@@ -273,7 +273,7 @@ define([
 			var win = winUtils.get(this.ownerDocument);
 			this._modalconnects.push(on(win, "scroll", lang.hitch(this, "resize", null)));
 
-			this._modalconnects.push(on(win, "keydown", lang.hitch(this, "_onKey")));
+			this._modalconnects.push(on(win, "keydown", lang.hitch(this, "keyDownHandler")));
 
 			domStyle.set(this.domNode, {
 				opacity: 0,
