@@ -25,7 +25,7 @@ define([
 	var Widget = dcl([CustomElement, Invalidating], /** @lends module:delite/Widget# */ {
 
 		/**
-		 * Root CSS class of the widget (ex: d-text-box)
+		 * Root CSS class of the widget (ex: "d-text-box")
 		 * @member {string}
 		 * @protected
 		 */
@@ -41,7 +41,7 @@ define([
 		focused: false,
 		
 		/**
-		 * Set to true when startup() has completed.
+		 * Set to true when `startup()` has completed.
 		 * @member {boolean}
 		 * @protected
 		 */
