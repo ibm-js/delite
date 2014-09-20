@@ -64,17 +64,19 @@ define([
 		},
 
 		/**
-		 * Set to true when createdCallback() has completed.
+		 * Set to true when `createdCallback()` has completed.
 		 * @member {boolean}
 		 * @protected
 		 */
 		created: false,
 
 		/**
-		 * Called when the custom element is created, or when register.parse() parses a custom tag.
+		 * Called when the custom element is created, or when `register.parse()` parses a custom tag.
 		 *
 		 * This method is automatically chained, so subclasses generally do not need to use `dcl.superCall()`,
 		 * `dcl.advise()`, etc.
+		 * @method
+		 * @protected
 		 */
 		createdCallback: dcl.advise({
 			before: function () {
@@ -103,7 +105,7 @@ define([
 		}),
 
 		/**
-		 * Set to true when attachedCallback() has completed.
+		 * Set to true when `attachedCallback()` has completed.
 		 * @member {boolean}
 		 * @protected
 		 */
@@ -116,6 +118,7 @@ define([
 		 *
 		 * This method is automatically chained, so subclasses generally do not need to use `dcl.superCall()`,
 		 * `dcl.advise()`, etc.
+		 * @method
 		 */
 		attachedCallback: dcl.after(function () {
 			this.attached = true;
@@ -168,10 +171,10 @@ define([
 		},
 
 		/**
-		 * Helper to parse function attribute in markup.  Unlike _parsePrototypeAttr(), does not require a
+		 * Helper to parse function attribute in markup.  Unlike `_parsePrototypeAttr()`, does not require a
 		 * corresponding widget property.  Functions can be specified as global variables or as inline javascript:
 		 *
-		 * ```
+		 * ```html
 		 * <my-widget funcAttr="globalFunction" on-click="console.log(event.pageX);">
 		 * ```
 		 *
@@ -193,11 +196,11 @@ define([
 		},
 
 		/**
-		 * Helper for _mapAttributes().  Interpret a given attribute specified in markup, returning either:
+		 * Helper for parsing declarative widgets.  Interpret a given attribute specified in markup, returning either:
 		 *
-		 * - undefined: ignore
-		 * - {prop: prop, value: value}: set this[prop] = value
-		 * - {event: event, callback: callback}: call this.on(event, callback);
+		 * - `undefined`: ignore
+		 * - `{prop: prop, value: value}`: set `this[prop] = value`
+		 * - `{event: event, callback: callback}`: call `this.on(event, callback)`
 		 *
 		 * @param {string} name - Attribute name.
 		 * @param {string} value - Attribute value.
@@ -221,7 +224,7 @@ define([
 
 		/**
 		 * Parse declaratively specified attributes for widget properties and connects.
-		 * @returns {Array} Info about the attributes and their values as returned by parseAttribute().
+		 * @returns {Array} Info about the attributes and their values as returned by `parseAttribute()`.
 		 * @private
 		 */
 		_mapAttributes: function () {
@@ -296,7 +299,7 @@ define([
 		 *
 		 * Note that the function is not run in any particular scope, so if (for example) you want it to run
 		 * in the widget's scope you must do `myWidget.on("click", myWidget.func.bind(myWidget))`.
-		 * @param {string|Function} type - Name of event (ex: "click") or extension event like `touch.press`.
+		 * @param {string} type - Name of event (ex: "click").
 		 * @param {Function} func - Callback function.
 		 * @param {Element} [node] - Element to attach handler to, defaults to `this`.
 		 * @returns {Object} Handle with `remove()` method to cancel the event.
@@ -338,7 +341,7 @@ define([
 
 		/**
 		 * Search subtree under root returning custom elements found.
-		 * @param {Element} [root] Node to search under.
+		 * @param {Element} [root] - Node to search under.
 		 */
 		findCustomElements: function (root) {
 			var outAry = [];
