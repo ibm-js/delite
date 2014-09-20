@@ -18,21 +18,22 @@ define([
 		// Set value and fire an input event if the value changed since the last call.
 		// @param {*} newValue - The new value.
 		return function (newValue) {
-			if ((typeof newValue !== typeof this[prevValueProp]) ||
-				(this.compare(newValue, this[prevValueProp]) !== 0)) {
-				this[prevValueProp] = this.value = newValue;
-				if (this[deferHandleProp]) {
-					this[deferHandleProp].remove();
-				}
-				// defer allows hidden value processing to run and
-				// also the onChange handler can safely adjust focus, etc
-				this[deferHandleProp] = this.defer(function () {
-					this[deferHandleProp] = null;
-					// make sure rendering is in sync when event handlers are called
-					this.deliver();
-					this.emit(eventType);
-				});
+			this.value = newValue;
+
+			// defer allows debounce, hidden value processing to run, and
+			// also the onChange handler can safely adjust focus, etc.
+			if (this[deferHandleProp]) {
+				this[deferHandleProp].remove();
 			}
+			this[deferHandleProp] = this.defer(function () {
+				delete this[deferHandleProp];
+				if (typeof newValue !== typeof this[prevValueProp] ||
+					this.compare(newValue, this[prevValueProp]) !== 0) { // ignore if value [eventually] set to orig val
+					this[prevValueProp] = newValue;
+					this.deliver();			// make sure rendering is in sync when event handlers are called
+					this.emit(eventType);
+				}
+			});
 		};
 	}
 

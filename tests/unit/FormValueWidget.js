@@ -77,6 +77,25 @@ define([
 			return d;
 		},
 
+		// Test corner case where user changes value but then changes it back before there's a notification.
+		changeThenRevert: function () {
+			var d = this.async(3000);
+			container.addEventListener("change", d.rejectOnError(function () {
+				throw new Error("got change event");
+			}));
+
+			widget.value = "initial value";
+			widget._onFocus();
+			widget.handleOnChange("new value");
+			widget.handleOnChange("initial value");
+
+			setTimeout(d.callback(function () {
+				// if this timeout fires without seeing any change event, we are good
+			}), 100);
+
+			return d;
+		},
+
 		afterEach: function () {
 			container.parentNode.removeChild(container);
 		}
