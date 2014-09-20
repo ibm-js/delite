@@ -123,14 +123,14 @@ define([
 				keyCodes[keys.DOWN_ARROW] = this.onDownArrow.bind(this);
 			}
 
-			this.on("keypress", this._onContainerKeypress.bind(this)),
-			this.on("keydown", this._onContainerKeydown.bind(this)),
+			this.on("keypress", this._keynavKeyPressHandler.bind(this)),
+			this.on("keydown", this._keynavKeyDownHandler.bind(this)),
 			this.on("focusin", function (evt) {
 				var target = self._getTargetElement(evt);
 				if (target === self) {
-					self._onContainerFocus(evt);
+					self._keynavFocusHandler(evt);
 				} else {
-					self._onChildFocus(target, evt);
+					self._childFocusHandler(target, evt);
 				}
 			});
 		},
@@ -206,9 +206,9 @@ define([
 			child.tabIndex = "_savedTabIndex" in this ? this._savedTabIndex : this.tabIndex;
 			child.focus(last ? "end" : "start");
 
-			// Don't set focusedChild here, because the focus event should trigger a call to _onChildFocus(), which will
-			// set it.   More importantly, _onChildFocus(), which may be executed asynchronously (after this function
-			// returns) needs to know the old focusedChild to set its tabIndex to -1.
+			// Don't set focusedChild here, because the focus event should trigger a call to _childFocusHandler(), which
+			// will set it.  More importantly, _childFocusHandler(), which may be executed asynchronously (after this
+			// function returns) needs to know the old focusedChild to set its tabIndex to -1.
 		},
 
 		/**
@@ -219,7 +219,7 @@ define([
 		 * @param {Event} evt
 		 * @private
 		 */
-		_onContainerFocus: function () {
+		_keynavFocusHandler: function () {
 			// Note that we can't use _onFocus() because switching focus from the
 			// _onFocus() handler confuses the focus.js code
 			// (because it causes _onFocusNode() to be called recursively).
@@ -262,7 +262,7 @@ define([
 		 * @param {Element} child
 		 * @private
 		 */
-		_onChildFocus: function (child) {
+		_childFocusHandler: function (child) {
 			if (child && child !== this.focusedChild) {
 				if (this.focusedChild && !this.focusedChild._destroyed) {
 					// mark that the previously focusable node is no longer focusable
@@ -298,7 +298,7 @@ define([
 
 		/**
 		 * When a key is pressed that matches a child item,
-		 * this method is called so that a widget can take appropriate action is necessary.
+		 * this method is called so that a widget can take appropriate action if necessary.
 		 * 
 		 * @param {Element} item
 		 * @param {Event} evt
@@ -338,7 +338,7 @@ define([
 		 * @param {Event} evt
 		 * @private
 		 */
-		_onContainerKeydown: function (evt) {
+		_keynavKeyDownHandler: function (evt) {
 			// Ignore left, right, home, and end on <input> controls
 			if (takesInput(evt.target) &&
 				(evt.keyCode === keys.LEFT_ARROW || evt.keyCode === keys.RIGHT_ARROW ||
@@ -366,7 +366,7 @@ define([
 		 * @param {Event} evt
 		 * @private
 		 */
-		_onContainerKeypress: function (evt) {
+		_keynavKeyPressHandler: function (evt) {
 			// Ignore:
 			//		- keystrokes on <input> and <textarea>
 			// 		- duplicate events on firefox (ex: arrow key that will be handled by keydown handler)
@@ -374,7 +374,7 @@ define([
 			//		- the SPACE key (only occurs on FF)
 			//
 			// Note: if there's no search in progress, then SPACE should be ignored.   If there is a search
-			// in progress, then SPACE is handled in _onContainerKeyDown.
+			// in progress, then SPACE is handled in _keynavKeyDownHandler.
 			if (takesInput(evt.target) || evt.charCode <= keys.SPACE || evt.ctrlKey || evt.altKey || evt.metaKey) {
 				return;
 			}
