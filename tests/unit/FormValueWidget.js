@@ -31,7 +31,7 @@ define([
 			}));
 
 			widget.value = "input value 0";
-			widget._onFocus();
+			widget.emit("delite-activate");
 			widget.handleOnInput("input value 1");
 			widget.handleOnInput("input value 2");
 			widget.handleOnInput("input value 3");
@@ -52,7 +52,7 @@ define([
 			}));
 
 			widget.value = "initial value";
-			widget._onFocus();
+			widget.emit("delite-activate");
 			widget.handleOnChange("change value");
 
 			return d;
@@ -67,7 +67,7 @@ define([
 			}));
 
 			widget.value = "initial value";
-			widget._onFocus();
+			widget.emit("delite-activate");
 			widget.handleOnChange("initial value");
 
 			setTimeout(d.callback(function () {
@@ -85,7 +85,7 @@ define([
 			}));
 
 			widget.value = "initial value";
-			widget._onFocus();
+			widget.emit("delite-activate");
 			widget.handleOnChange("new value");
 			widget.handleOnChange("initial value");
 

@@ -1,8 +1,10 @@
 /**
  * Tracks which widgets are currently "active".
- *
  * A widget is considered active if it or a descendant widget has focus,
  * or if a non-focusable node of this widget or a descendant was recently clicked.
+ *
+ * Emits non-bubbling `delite-activate` and `delite-deactivate` events on widgets
+ * as they become active, or stop being active, as defined above.
  *
  * Call `focus.on("active-widget-stack", callback)` to track the stack of currently focused widgets.
  *
@@ -255,9 +257,7 @@ define([
 				widget = oldStack[i];
 				if (widget) {
 					widget.focused = false;
-					if (widget._onBlur) {
-						widget._onBlur();
-					}
+					widget.emit("delite-deactivate", {bubbles: false, by: by});
 					this.emit("widget-blur", widget, by);
 				}
 			}
@@ -267,9 +267,7 @@ define([
 				widget = newStack[i];
 				if (widget) {
 					widget.focused = true;
-					if (widget._onFocus) {
-						widget._onFocus(by);
-					}
+					widget.emit("delite-activate", {bubbles: true, by: by});
 					this.emit("widget-focus", widget, by);
 				}
 			}

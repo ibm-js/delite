@@ -5,7 +5,7 @@ define([
 	"dojo/when",
 	"requirejs-dplugins/has", // has("touch")
 	"delite/keys", // keys.DOWN_ARROW keys.ENTER keys.ESCAPE
-	"./focus",		// enable _onFocus(), _onBlur()
+	"./focus",		// for delite-deactivate event
 	"./place",
 	"./popup",
 	"./Widget",
@@ -254,6 +254,15 @@ define([
 				evt.stopPropagation();
 			}, this.buttonNode);
 
+			this.on("delite-deactivate", function () {
+				// Called magically when focus has shifted away from this widget and its dropdown.
+
+				// Close dropdown but don't focus my <input>.  User may have focused somewhere else (ex: clicked another
+				// input), and even if they just clicked a blank area of the screen, focusing my <input> will unwantedly
+				// popup the keyboard on mobile.
+				this.closeDropDown(false);
+			}.bind(this));
+
 			// trigger initial setting of d-down-arrow class
 			this.notifyCurrentValue("dropDownPosition");
 		},
@@ -342,15 +351,6 @@ define([
 				this.focusDropDownOnOpen(true);
 			}
 		},
-
-		_onBlur: dcl.before(function () {
-			// Called magically when focus has shifted away from this widget and it's dropdown
-
-			// Close dropdown but don't focus my <input>.  User may have focused somewhere else (ex: clicked another
-			// input), and even if they just clicked a blank area of the screen, focusing my <input> will unwantedly
-			// popup the keyboard on mobile.
-			this.closeDropDown(false);
-		}),
 
 		/**
 		 * Creates the drop down if it doesn't exist, loads the data

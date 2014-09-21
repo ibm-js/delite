@@ -5,7 +5,6 @@ title: delite/focus
 
 # delite/focus
 
-
 delite/focus is a utility module that is used to track and manage active widgets on a page.
 
 At any point in time there is a set of (for lack of a better word) "active" or "focused" widgets,
@@ -24,9 +23,10 @@ Call `focus.on("active-widget-stack", callback)` to track the stack of currently
 Call `focus.on("widget-blur", func)` or `focus.on("widget-focus", ...)` to monitor when
 when widgets become active/inactive.
 
-## _onFocus() and _onBlur()
+## delite-activate and delite-deactivate events
 
-Also, if `delite/focus` is loaded, each widget's `_onFocus()` and `_onBlur()` method will be called
-when that widget becomes active / inactive.
+Also, if `delite/focus` is loaded, every widget will emit a non-bubbling `delite-activate` event
+when it becomes activate (i.e. when it or logical descendant widget is focused or touched), and a non-bubbling
+`delite-deactivate` event when the opposite happens.
 
 
