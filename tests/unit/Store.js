@@ -250,6 +250,28 @@ define([
 			return d;
 		},
 
+		"Error during initItems": function () {
+			// Test case for delite #286: test that a query-error event is fired 
+			// if initItems() raises an error.
+			var d = this.async(2000);
+			var store = new C();
+			store.initItems = function() {
+				throw Error();
+			};
+			var myData = [
+				{ id: "foo", name: "Foo" },
+				{ id: "bar", name: "Bar" }
+			];
+			store.on("query-error", function () {
+				// should fire before the timeout
+				d.resolve();
+			});
+			store.startup();
+			var myStore = new M({ data: myData});
+			store.store = myStore;
+			return d;
+		},
+		
 		// TODO not sure if that test makes sense with the new implementation
 		/*
 		"Fetch parameter can be cached": function () {
