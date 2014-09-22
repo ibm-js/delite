@@ -150,13 +150,14 @@ define([
 					var themeDir = theme[1];
 					var dest = getLayerPath(themeDir);
 					var themedLoadList = loadList.map(function (path) {
-						return require.toUrl(path.replace(/{{theme}}/g, themeDir));
+						return path.replace(/{{theme}}/g, themeDir);
 					});
 					css.buildFunctions.writeLayer(writePluginFiles, dest, themedLoadList);
 				});
 
 				// Write generic css config with {{theme}} on the layer.
-				css.buildFunctions.writeConfig(write, module.id, getLayerPath(), loadList);
+				var destMid = data.name.replace(/^(([^\/]*\/)*)[^\/]*$/, "$1themes/layer_{{theme}}.css");
+				css.buildFunctions.writeConfig(write, module.id, destMid, loadList);
 
 				// Reset loadList
 				loadList = [];
