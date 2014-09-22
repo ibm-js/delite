@@ -6,7 +6,7 @@ define(["dcl/dcl", "decor/sniff", "./Widget"], function (dcl, has, Widget) {
 	 * @augments module:delite/Widget
 	 */
 	return dcl(Widget, /** @lends module:delite/Selection# */{
-		preCreate: function () {
+		preRender: function () {
 			this._set("selectedItems", []);
 		},
 		

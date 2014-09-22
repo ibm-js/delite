@@ -62,7 +62,7 @@ define([
 		/**
 		 * Kick off the life-cycle of a widget.
 		 *
-		 * Calls a number of widget methods (`preCreate()`, `buildRendering()`, and `postCreate()`),
+		 * Calls a number of widget methods (`preRender()`, `buildRendering()`, and `postCreate()`),
 		 * some of which of you'll want to override.
 		 *
 		 * Of course, adventurous developers could override createdCallback entirely, but this should
@@ -70,7 +70,7 @@ define([
 		 * @protected
 		 */
 		createdCallback: function () {
-			this.preCreate();
+			this.preRender();
 			this.buildRendering();
 			this.postCreate();
 		},
@@ -136,7 +136,7 @@ define([
 		 * `dcl.advise()`, etc.
 		 * @protected
 		 */
-		preCreate: function () {
+		preRender: function () {
 			this.widgetId = ++cnt;
 		},
 
@@ -397,7 +397,7 @@ define([
 
 	// Setup automatic chaining for lifecycle methods, except for buildRendering().
 	// destroy() is chained in Destroyable.js.
-	dcl.chainAfter(Widget, "preCreate");
+	dcl.chainAfter(Widget, "preRender");
 	dcl.chainAfter(Widget, "postCreate");
 
 	return Widget;

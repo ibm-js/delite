@@ -85,10 +85,10 @@ Widgets are declared via `register()` rather than `dojo.declare()`, and must ext
 
 1. `create()` renamed to `createdCallback()`
 2. `constructor()` and `postscript()` no longer run; move custom code from constructor
-	to `preCreate()`.
+	to `preRender()`.
 3. The `buildRendering()` method must not try to create the root DOMNode.  It already exists.
    It should just set attributes on the root node, and create sub nodes and/or text inside the root node.
-4. There's no `postMixInProperties()` method any more.   There is one called `preCreate()` that
+4. There's no `postMixInProperties()` method any more.   There is one called `preRender()` that
    runs before rendering.
 5. The widget initialization parameters are not applied until after `buildRendering()` and `postCreate()` complete.
 6. Custom setters still exist, but often its preferable to recomput property values in `computeProperties()` and
