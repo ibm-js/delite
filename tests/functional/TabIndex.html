@@ -25,7 +25,7 @@
 				tabIndex: 0
 			});
 			register("test-tab-index", [HTMLElement, TabbableWidget], {
-				buildRendering: function () {
+				render: function () {
 					this.labelNode = document.createElement("span");
 					this.labelNode.tabIndex = 0;
 					this.appendChild(this.labelNode);

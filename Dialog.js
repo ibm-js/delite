@@ -107,7 +107,7 @@ define([
 			this.inherited(arguments);
 		},
 
-		postCreate: function () {
+		postRender: function () {
 			domStyle.set(this.domNode, {
 				display: "none",
 				position: "absolute"

@@ -199,7 +199,7 @@ define(["./register"], function (register) {
 						this.generateWatchCode(info.dependsOn,
 								"this.setClassComponent('template', " + js + ", " + nodeName + ")");
 					} else {
-						// Value is a constant; set it during buildRendering().
+						// Value is a constant; set it during render().
 						this.buildText.push("this.setClassComponent('template', " + js + ", " + nodeName + ")");
 					}
 				} else {
@@ -209,7 +209,7 @@ define(["./register"], function (register) {
 						this.generateWatchCode(info.dependsOn, propName ? nodeName + "." + propName + " = " + js :
 							"this.setOrRemoveAttribute(" + nodeName + ", '" + attr + "', " + js + ")");
 					} else {
-						// Value is a constant; set it during buildRendering().
+						// Value is a constant; set it during render().
 						this.buildText.push(propName ? nodeName + "." + propName + " = " + js :
 							nodeName + ".setAttribute('" + attr + "', " + js + ");");
 					}

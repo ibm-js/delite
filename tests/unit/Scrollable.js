@@ -55,14 +55,14 @@ define([
 		},
 
 		"scrollableNode property": function () {
-			// Test case for a custom widget which sets the scrollableNode in its buildRendering().
+			// Test case for a custom widget which sets the scrollableNode in its render().
 			var ScrollableWithCustomScrollableNode = register("my-scrollable-widget-sn",
 				[HTMLElement, Widget, Scrollable], {
 					// to be able to check that scrollableNode isn't changed afterwards,
-					// store here the instance of custom node set in buildRendering().
+					// store here the instance of custom node set in render().
 					createdScrollableNode: null,
 
-					buildRendering: dcl.superCall(function (sup) {
+					render: dcl.superCall(function (sup) {
 						return function () {
 							this.scrollableNode = document.createElement("div");
 							this.createdScrollableNode = this.scrollableNode;
@@ -75,7 +75,7 @@ define([
 			w.startup();
 			w.deliver();
 			assert.strictEqual(w.scrollableNode, w.createdScrollableNode,
-				"The scrollableNode property has changed since it was set in buildRendering!");
+				"The scrollableNode property has changed since it was set in render!");
 			// Test that the CSS class d-scrollable has been added by the mixin delite/Scrollable
 			// on the custom scrollableNode.
 			assert.isTrue(domClass.contains(w.scrollableNode, "d-scrollable"),

@@ -11,7 +11,7 @@ define([
 
 		setup: function () {
 			FormWidgetTest = register("form-widget-test", [HTMLElement, FormWidget], {
-				buildRendering: function () {
+				render: function () {
 					this.focusNode = this.ownerDocument.createElement("input");
 					this.appendChild(this.focusNode);
 				}

@@ -69,7 +69,7 @@
 						this.focusChild(previousChild);
 					}
 				},
-				postCreate: function () {
+				postRender: function () {
 					// If the caller has specified a counter node, increment it whenever there's an click event
 					this.on("click", function () {
 						if (this.clickCountNodeId) {
@@ -81,7 +81,7 @@
 
 			// Child of TestContainer
 			var TestContained = register("my-list-item", [HTMLElement, Widget], {
-				postCreate: function () {
+				postRender: function () {
 					// With help of delite/a11yclick, convert SPACE/ENTER key to click event.
 					a11yclick(this);
 					this.tabIndex = "-1";

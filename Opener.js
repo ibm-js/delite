@@ -36,7 +36,7 @@ define([
 		//		modules to be loaded, use this parameter.
 		requires: "",
 
-		buildRendering: function () {
+		render: function () {
 			this.inherited(arguments);
 			this.cover = domConstruct.create("div", {
 				onclick: lang.hitch(this, "_onBlur"),

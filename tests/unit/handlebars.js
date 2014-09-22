@@ -201,8 +201,8 @@ define([
 					headingWidget = myComplexWidget.getElementsByTagName("handlebars-heading")[0],
 					buttonWidget = myComplexWidget.getElementsByTagName("button")[0];
 
-				assert.ok(headingWidget.buildRendering, "heading widget was instantiated");
-				assert.ok(buttonWidget.buildRendering, "button widget was instantiated");
+				assert.ok(headingWidget.render, "heading widget was instantiated");
+				assert.ok(buttonWidget.render, "button widget was instantiated");
 
 				var d = this.async(1000);
 
@@ -300,8 +300,8 @@ define([
 			var myCompoundWidget = new CompoundWidget(),
 				sub1 = myCompoundWidget.getElementsByTagName("test-widget-1")[0],
 				sub2 = myCompoundWidget.getElementsByTagName("test-widget-2")[0];
-			assert(sub1.buildRendering, "sub1 instantiated");
-			assert(sub2.buildRendering, "sub2 instantiated");
+			assert(sub1.render, "sub1 instantiated");
+			assert(sub2.render, "sub2 instantiated");
 		},
 
 		html: function () {

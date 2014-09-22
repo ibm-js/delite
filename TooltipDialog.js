@@ -48,7 +48,7 @@ define([
 
 		_setTitleAttr: "containerNode",
 
-		postCreate: function () {
+		postRender: function () {
 			this.inherited(arguments);
 			this.on("keydown", this._onKey.bind(this), this.containerNode);
 		},

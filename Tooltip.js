@@ -20,7 +20,7 @@ define([
 
 		baseClass: "duiTooltip duiTooltipHidden",
 
-		buildRendering: function () {
+		render: function () {
 			// create the helper nodes here in case the user overwrote domNode.innerHTML
 			this.inherited(arguments);
 			this.anchor = domConstruct.create("div", {"class": "duiTooltipAnchor"}, this.domNode, "first");

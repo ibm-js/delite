@@ -53,14 +53,14 @@ require([
 	// Test widgets
 
 	register("fake-editor", [HTMLElement, Widget], {
-		buildRendering: function () {
+		render: function () {
 			// delite/focus gets confused if <body> gets focused, so need to add an extra <div> and focus that instead
 			var iframe = this.containerNode = this.ownerDocument.createElement("iframe");
 			this.appendChild(iframe);
 			iframe.src = 'javascript:\"<html><body><div contenteditable=true>hello world</div></body></html>\"';
 		},
 
-		postCreate: function () {
+		postRender: function () {
 			focus.registerIframe(this.containerNode);
 		},
 
@@ -74,14 +74,14 @@ require([
 	register("fake-fieldset", [HTMLFieldSetElement, Widget], {});
 
 	register("fake-combobox", [HTMLElement, Widget], {
-		buildRendering: function () {
+		render: function () {
 			this.innerHTML = "<input><span class='button'>&darr;</span>";
 			this.focusNode = this.firstElementChild;	// the <input>
 		}
 	});
 
 	register("fake-spinner", [HTMLElement, Widget], {
-		buildRendering: function () {
+		render: function () {
 			this.innerHTML = "<input><span class='button'>&uarr;</span><span class='button'>&darr;</span>";
 			this.focusNode = this.firstElementChild;	// the <input>
 		}
@@ -91,7 +91,7 @@ require([
 	 * A trivial popup widget.
 	 */
 	var PopupWidget = register("fake-popup", [HTMLElement, Widget], {
-		buildRendering: function () {
+		render: function () {
 			this.id = "popup";
 			this.textContent = "i'm a popup";
 		}
@@ -101,7 +101,7 @@ require([
 	 * A button that shows a popup.
 	 */
 	register("fake-dropdown-button", [HTMLButtonElement, Widget], {
-		postCreate: function () {
+		postRender: function () {
 			this.on("click", this.onClick.bind(this));
 			this.popup = new PopupWidget();
 		},

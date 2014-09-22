@@ -25,7 +25,7 @@ myWidget.numProp = 123;
 It also provides common methods like `on()` and `destroy()`.
 
 Note though that `delite/CustomElement` does not provide the delite specific lifecycle methods
-like `buildRendering()`, `postCreate()`, and `startup()`.  These are from [`Widget`](Widget.md).
+like `render()`, `postRender()`, and `startup()`.  These are from [`Widget`](Widget.md).
 `Delite/CustomElement` instead uses the function names from the Custom Elements specification:
 `createdCallback()` and `enteredViewCallback()`.
 
