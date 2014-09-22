@@ -80,7 +80,7 @@ define(["dcl/dcl", "./Store"], function (dcl, Store) {
 		 */
 		copyAllItemProps: false,
 
-		// Called for each attribute specified declaratively.  Overrides CustomElement#_parseAttribute().
+		// Called for each attribute specified declaratively.  Overrides CustomElement#parseAttribute().
 		// Convert all attributes like foofunc="..." or fooattr="..." to instance properties.
 		// foofunc="return item.value" converted to property named fooFunc w/value
 		// function(item, store, value){ return item.value; }
