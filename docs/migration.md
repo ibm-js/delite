@@ -46,11 +46,11 @@ _inZeroSettingArea: dcl.superCall(function(sup){
 })
 ```
 
-Often though it's simpler than this.   Many widget methods are automatically chained.  So a V1 `postCreate()`
+Often though it's simpler than this.   Many widget methods are automatically chained.  So a V1 `postRender()`
 method like:
 
 ```js
-postCreate: function(){
+postRender: function(){
     this.inherited(arguments);
     ... do stuff ...
 }
@@ -59,7 +59,7 @@ postCreate: function(){
 can (and should) be replaced by:
 
 ```js
-postCreate: function(){
+postRender: function(){
     ... do stuff ...
 }
 ```
@@ -90,7 +90,7 @@ Widgets are declared via `register()` rather than `dojo.declare()`, and must ext
    It should just set attributes on the root node, and create sub nodes and/or text inside the root node.
 4. There's no `postMixInProperties()` method any more.   There is one called `preRender()` that
    runs before rendering.
-5. The widget initialization parameters are not applied until after `buildRendering()` and `postCreate()` complete.
+5. The widget initialization parameters are not applied until after `buildRendering()` and `postRender()` complete.
 6. Custom setters still exist, but often its preferable to recomput property values in `computeProperties()` and
    to redraw the widget in `refreshRendering()`.  Both these methods are called asynchronously after a batch of
    property changes.

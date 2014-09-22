@@ -40,7 +40,7 @@ define([
 				var SpecialNames = register("test-tabindex-names", [HTMLElement, Widget], {
 					tabIndex: "0",
 
-					postCreate: function () {
+					postRender: function () {
 						this.observe(function (props) {
 							if ("tabIndex" in props) {
 								this.watchedTabIndex = this.tabIndex;
@@ -65,7 +65,7 @@ define([
 						// saving the new value without applying it to any this.focusNode Element.
 						this._set("tabIndex", val);
 					},
-					postCreate: function () {
+					postRender: function () {
 						this.observe(function (props) {
 							if ("tabIndex" in props) {
 								this.watchedTabIndex = this._get("tabIndex");
@@ -79,7 +79,7 @@ define([
 					isrange: false,
 					isbool: false,
 
-					postCreate: function () {
+					postRender: function () {
 						this.observe(function (props) {
 							if ("tabIndex" in props) {
 								this.watchedTabIndex = this._get("tabIndex");

@@ -60,7 +60,7 @@ require([
 			iframe.src = 'javascript:\"<html><body><div contenteditable=true>hello world</div></body></html>\"';
 		},
 
-		postCreate: function () {
+		postRender: function () {
 			focus.registerIframe(this.containerNode);
 		},
 
@@ -101,7 +101,7 @@ require([
 	 * A button that shows a popup.
 	 */
 	register("fake-dropdown-button", [HTMLButtonElement, Widget], {
-		postCreate: function () {
+		postRender: function () {
 			this.on("click", this.onClick.bind(this));
 			this.popup = new PopupWidget();
 		},

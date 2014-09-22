@@ -228,7 +228,7 @@ define([
 			this.popupStateNode = this.popupStateNode || this.focusNode || this.buttonNode;
 		}),
 
-		postCreate: function () {
+		postRender: function () {
 			// basic listeners
 			this.on("pointerdown", this._dropDownPointerDownHandler.bind(this), this.buttonNode);
 			this.on("keydown", this._dropDownKeyDownHandler.bind(this), this.focusNode || this);

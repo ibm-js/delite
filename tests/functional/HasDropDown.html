@@ -42,7 +42,7 @@
 					this.innerHTML = "<input><br>" +
 							"<button type=submit>submit</button><br><button type=button>cancel</button>";
 				},
-				postCreate: function () {
+				postRender: function () {
 					this.on("click", function () {
 						this.emit("execute");
 					}.bind(this), this.querySelector("button[type=submit]"));

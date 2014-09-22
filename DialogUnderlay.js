@@ -32,7 +32,7 @@ define([
 			this.className = "d-dialog-underlay";
 		},
 
-		postCreate: function () {
+		postRender: function () {
 			// Append the underlay to the body
 			this.ownerDocument.body.appendChild(this);
 		},
