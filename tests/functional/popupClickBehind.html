@@ -47,7 +47,7 @@ require([
 
 		orient: ["below"],
 
-		buildRendering: function () {
+		render: function () {
 			this.on("click", this._openPopup.bind(this));
 		},
 
@@ -95,7 +95,7 @@ require([
 		choice2: "2",
 		choice3: "3",
 
-		buildRendering: function () {
+		render: function () {
 			this.className = "choice";
 
 			for (var i = 1; i < 4; i++) {

@@ -29,7 +29,7 @@ define([
 		 */
 		containerNode: undefined,
 
-		buildRendering: dcl.advise({
+		render: dcl.advise({
 			before: function () {
 				// Save original markup to put into this.containerNode.
 				var srcDom = this._srcDom = this.ownerDocument.createDocumentFragment();

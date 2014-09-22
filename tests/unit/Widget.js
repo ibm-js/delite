@@ -40,7 +40,7 @@ define([
 				var SpecialNames = register("test-tabindex-names", [HTMLElement, Widget], {
 					tabIndex: "0",
 
-					postCreate: function () {
+					postRender: function () {
 						this.observe(function (props) {
 							if ("tabIndex" in props) {
 								this.watchedTabIndex = this.tabIndex;
@@ -65,7 +65,7 @@ define([
 						// saving the new value without applying it to any this.focusNode Element.
 						this._set("tabIndex", val);
 					},
-					postCreate: function () {
+					postRender: function () {
 						this.observe(function (props) {
 							if ("tabIndex" in props) {
 								this.watchedTabIndex = this._get("tabIndex");
@@ -79,7 +79,7 @@ define([
 					isrange: false,
 					isbool: false,
 
-					postCreate: function () {
+					postRender: function () {
 						this.observe(function (props) {
 							if ("tabIndex" in props) {
 								this.watchedTabIndex = this._get("tabIndex");
@@ -193,7 +193,7 @@ define([
 			var TestSimpleWidget = register("widget-simple", [HTMLElement, Widget], {
 			});
 			var TestStartupWidget = register("widget-startup", [HTMLElement, Widget], {
-				buildRendering: function () {
+				render: function () {
 					this.appendChild(new TestSimpleWidget());
 					this.appendChild(this.containerNode = this.ownerDocument.createElement("div"));
 					this.containerNode.appendChild(new TestSimpleWidget());
@@ -215,7 +215,7 @@ define([
 		placeAt: {
 			setup: function () {
 				SimpleWidget = register("simple-widget-place-at", [HTMLElement, Widget], {
-					buildRendering: function () {
+					render: function () {
 						this.containerNode = document.createElement("div");
 						this.appendChild(this.containerNode);
 					}

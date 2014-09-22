@@ -223,12 +223,10 @@ define([
 			}.bind(this));
 		},
 
-		buildRendering: dcl.after(function () {
+		postRender: function () {
 			this.buttonNode = this.buttonNode || this.focusNode || this;
 			this.popupStateNode = this.popupStateNode || this.focusNode || this.buttonNode;
-		}),
 
-		postCreate: function () {
 			// basic listeners
 			this.on("pointerdown", this._dropDownPointerDownHandler.bind(this), this.buttonNode);
 			this.on("keydown", this._dropDownKeyDownHandler.bind(this), this.focusNode || this);

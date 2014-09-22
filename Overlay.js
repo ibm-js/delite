@@ -24,7 +24,7 @@ define([
 		//		The name of the CSS class of this widget.
 		baseClass: "duiOverlay duiOverlayHidden",
 
-		buildRendering: function () {
+		render: function () {
 			this.inherited(arguments);
 			if (!this.containerNode) {
 				// set containerNode so that getChildren() works

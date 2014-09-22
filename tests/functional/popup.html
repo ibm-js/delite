@@ -55,7 +55,7 @@ require([
 
 		orient: ["below"],
 
-		buildRendering: function () {
+		render: function () {
 			this.on("click", this._openPopup.bind(this));
 		},
 
@@ -99,7 +99,7 @@ require([
 
 	// A trivial popup widget
 	var SimplePopup = register("simple-popup", [HTMLElement, Widget], {
-		buildRendering: function () {
+		render: function () {
 			this.textContent = "i'm a popup";
 
 			// on click, emit execute event so that popup closes
@@ -109,11 +109,11 @@ require([
 
 	// A popup with an orient() method to adjust arrows
 	var Tooltip = register("test-tooltip", [HTMLElement, Widget], {
-		buildRendering: function () {
+		render: function () {
 			this.textContent = "i'm a tooltip";
 		},
 
-		postCreate: function () {
+		postRender: function () {
 			this.orientCalls = [];
 		},
 
@@ -139,7 +139,7 @@ require([
 		choice2: "2",
 		choice3: "3",
 
-		buildRendering: function () {
+		render: function () {
 			this.className = "choice";
 
 			for (var i = 1; i < 4; i++) {
@@ -160,7 +160,7 @@ require([
 	var LotsOfChoicesWidget = register("lots-of-choices-widget", [HTMLElement, Widget], {
 		length: 100,
 
-		buildRendering: function () {
+		render: function () {
 			this.className = "choice";
 			for (var i = 0; i < this.length; i++) {
 				this.innerHTML += "<div>choice #" + i + "</div>";
@@ -206,7 +206,7 @@ require([
 			this.button.popup = popup;
 		},
 
-		buildRendering: function () {
+		render: function () {
 			this.innerHTML +=
 				"<div>" + this.title + "</div>" +
 				"<input>" +
@@ -250,7 +250,7 @@ require([
 		//		Clicking a value in this list will open a nested popup.
 		//		Specify popup1 and popup2 as parameters to this widget.
 
-		buildRendering: function () {
+		render: function () {
 			this.className = "choice";
 
 			for (var i = 1; i < 3; i++) {

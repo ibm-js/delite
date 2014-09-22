@@ -17,7 +17,7 @@ define([
 	 *
 	 * By default, the scrolling capabilities are added to the widget
 	 * node itself. The host widget can chose the node thanks to the property
-	 * `scrollableNode` which must be set at latest in its `buildRendering()`
+	 * `scrollableNode` which must be set at latest in its `render()`
 	 * method.
 	 *
 	 * During interactive or programmatic scrolling, native "scroll"
@@ -59,12 +59,12 @@ define([
 		/**
 		 * Designates the descendant node of this widget which is made scrollable.
 		 *
-		 * If not set otherwise before the `buildRendering()`
+		 * If not set otherwise before the `render()`
 		 * method of the mixin is executed, it is set by default to this widget
 		 * itself (`this`).
 		 *
 		 * Note that this property can be set only at construction time, at latest
-		 * in the `buildRendering()` method of the host widget into which this class is mixed.
+		 * in the `render()` method of the host widget into which this class is mixed.
 		 * It should not be changed afterwards.
 		 * Typically, this property can be set by a host widget which needs scrolling
 		 * capabilities on one its descendant nodes.
@@ -74,13 +74,13 @@ define([
 		 */
 		scrollableNode: null,
 
-		postCreate: function () {
+		postRender: function () {
 			this.notifyCurrentValue("scrollDirection");
 		},
 
-		buildRendering: dcl.after(function () {
+		render: dcl.after(function () {
 			// Do it using after advice to give a chance to a custom widget to
-			// set the scrollableNode at latest in an overridden buildRendering().
+			// set the scrollableNode at latest in an overridden render().
 			if (!this.scrollableNode) {
 				this.scrollableNode = this; // If unspecified, defaults to 'this'.
 			}

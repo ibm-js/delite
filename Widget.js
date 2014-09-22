@@ -15,8 +15,8 @@ define([
 	/**
 	 * Base class for all widgets, i.e. custom elements that appear visually.
 	 *
-	 * Provides stubs for widget lifecycle methods for subclasses to extend, like `buildRendering()`,
-	 * `postCreate()`, and `destroy()`, and also public API methods like `observe()`.
+	 * Provides stubs for widget lifecycle methods for subclasses to extend, like `render()`,
+	 * `postRender()`, and `destroy()`, and also public API methods like `observe()`.
 	 * @mixin module:delite/Widget
 	 * @augments module:delite/CustomElement
 	 * @augments module:decor/Invalidating
@@ -62,7 +62,7 @@ define([
 		/**
 		 * Kick off the life-cycle of a widget.
 		 *
-		 * Calls a number of widget methods (`preCreate()`, `buildRendering()`, and `postCreate()`),
+		 * Calls a number of widget methods (`preRender()`, `render()`, and `postRender()`),
 		 * some of which of you'll want to override.
 		 *
 		 * Of course, adventurous developers could override createdCallback entirely, but this should
@@ -70,9 +70,9 @@ define([
 		 * @protected
 		 */
 		createdCallback: function () {
-			this.preCreate();
-			this.buildRendering();
-			this.postCreate();
+			this.preRender();
+			this.render();
+			this.postRender();
 		},
 
 		// Override Invalidating#refreshRendering() to execute the template's refreshRendering() code, etc.
@@ -130,13 +130,13 @@ define([
 		},
 
 		/**
-		 * Processing before `buildRendering()`.
+		 * Processing before `render()`.
 		 *
 		 * This method is automatically chained, so subclasses generally do not need to use `dcl.superCall()`,
 		 * `dcl.advise()`, etc.
 		 * @protected
 		 */
-		preCreate: function () {
+		preRender: function () {
 			this.widgetId = ++cnt;
 		},
 
@@ -154,7 +154,7 @@ define([
 		 * Most widgets will leverage delite/handlebars! to set `template`, rather than defining this method.
 		 * @protected
 		 */
-		buildRendering: function () {
+		render: function () {
 			if (this.template) {
 				this._templateHandle = this.template(this.ownerDocument, register);
 			}
@@ -207,7 +207,8 @@ define([
 		 * `dcl.advise()`, etc.
 		 * @protected
 		 */
-		postCreate: function () {
+		postRender: function () {
+			this.initializeInvalidating();
 			if (this._templateHandle) {
 				this._templateHandle.dependencies.forEach(this.notifyCurrentValue, this);
 			}
@@ -216,7 +217,7 @@ define([
 
 		/**
 		 * Called after a widget and its children have been created and added to the page,
-		 * and all related widgets have finished their creation cycle, up through `postCreate()`.
+		 * and all related widgets have finished their creation cycle, up through `postRender()`.
 		 *
 		 * Most widgets should add initialization code to `attachedCallback()` rather than `startup()`.
 		 * Code in `startup()` is only necessary for widgets that can't be initialized until related widgets have been
@@ -344,7 +345,7 @@ define([
 		 */
 		getEnclosingWidget: function (node) {
 			do {
-				if (node.nodeType === 1 && node.buildRendering) {
+				if (node.nodeType === 1 && node.render) {
 					return node;
 				}
 			} while ((node = node.parentNode));
@@ -395,10 +396,10 @@ define([
 		Widget = dcl(Widget, Bidi);
 	}
 
-	// Setup automatic chaining for lifecycle methods, except for buildRendering().
+	// Setup automatic chaining for lifecycle methods, except for render().
 	// destroy() is chained in Destroyable.js.
-	dcl.chainAfter(Widget, "preCreate");
-	dcl.chainAfter(Widget, "postCreate");
+	dcl.chainAfter(Widget, "preRender");
+	dcl.chainAfter(Widget, "postRender");
 
 	return Widget;
 });

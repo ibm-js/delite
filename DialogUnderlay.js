@@ -26,13 +26,13 @@ define([
 		// is called first.  The array is shared between instances but that's OK because we never write into it.
 		_modalConnects: [],
 
-		buildRendering: function () {
+		render: function () {
 			// Outer div is used for fade-in/fade-out, and also to hold background iframe.
 			// Inner div has opacity specified in CSS file.
 			this.className = "d-dialog-underlay";
 		},
 
-		postCreate: function () {
+		postRender: function () {
 			// Append the underlay to the body
 			this.ownerDocument.body.appendChild(this);
 		},
