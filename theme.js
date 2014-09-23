@@ -25,7 +25,7 @@ define([
 	"require",
 	"requirejs-dplugins/has",
 	"module",
-	"./css"
+	"requirejs-dplugins/css"
 ], function (req, has, module, css) {
 
 	"use strict";
@@ -119,7 +119,7 @@ define([
 			}
 
 			// Convert list of logical resources into list of dependencies.
-			// ex: Button/css/{{theme}}/Button.css --> delite/css!Button/css/ios/Button.css
+			// ex: Button/css/{{theme}}/Button.css --> requirejs-dplugins/css!Button/css/ios/Button.css
 			var deps = resources.map(function (path) {
 				return css.id + "!" + path.replace(/{{theme}}/, load.getTheme());
 			});
