@@ -48,7 +48,7 @@ define([
 				assert.deepEqual(store.renderItems[1], { id: "fb", foo: "FB", bar: "4" });
 			}));
 			store.startup();
-			var myStore = new M({ data: myData});
+			var myStore = new M({ data: myData });
 			store.store = myStore;
 			return d;
 		},
@@ -67,7 +67,7 @@ define([
 				{ id: "foo", name: "Foo", firstname: "1" },
 				{ id: "bar", name: "Bar", firstname: "2" }
 			];
-			var myStore = new M({ data: myData});
+			var myStore = new M({ data: myData });
 			store.store = myStore;
 			setTimeout(function () {
 				store.startup();

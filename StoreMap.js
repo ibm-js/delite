@@ -106,7 +106,9 @@ define(["dcl/dcl", "./Store"], function (dcl, Store) {
 				if (this.attached || force) {
 					sup.apply(this, arguments);
 				} else {
-					this._pendingQuery = true;
+					// we just keep the last processQueryResult we were called with as we are before attachment
+					// and so only the last one should anyway have actual visual effect
+					this._pendingQuery = processQueryResult;
 				}
 			};
 		}),
@@ -136,12 +138,12 @@ define(["dcl/dcl", "./Store"], function (dcl, Store) {
 			this._mappedKeys = mappedKeys;
 			this.deliver();
 			
-			if (this._pendingQuery) {
-				this._pendingQuery = false;
-				this.queryStoreAndInitItems(this.processQueryResult, true);
+			if (this._pendingQuery != null) {
+				this.queryStoreAndInitItems(this._pendingQuery, true);
+				this._pendingQuery = null;
 			}
 		},
-	
+
 		/**
 		 * Creates a store item based from the widget internal item based on the various mapped properties. Works 
 		 * asynchronously.
