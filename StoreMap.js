@@ -138,7 +138,7 @@ define(["dcl/dcl", "./Store"], function (dcl, Store) {
 			this._mappedKeys = mappedKeys;
 			this.deliver();
 			
-			if (this._pendingQuery != null) {
+			if (this._pendingQuery) {
 				this.queryStoreAndInitItems(this._pendingQuery, true);
 				this._pendingQuery = null;
 			}
