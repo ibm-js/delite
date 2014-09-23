@@ -101,6 +101,18 @@ define(["dcl/dcl", "./Store"], function (dcl, Store) {
 			};
 		}),
 
+		queryStoreAndInitItems: dcl.superCall(function (sup) {
+			return function (processQueryResult, force) {
+				if (this.attached || force) {
+					sup.apply(this, arguments);
+				} else {
+					// we just keep the last processQueryResult we were called with as we are before attachment
+					// and so only the last one should anyway have actual visual effect
+					this._pendingQuery = processQueryResult;
+				}
+			};
+		}),
+
 		attachedCallback: function () {
 			// This runs after the attributes have been processed (and converted into properties),
 			// and after any properties specified to the constructor have been mixed in.
@@ -125,6 +137,11 @@ define(["dcl/dcl", "./Store"], function (dcl, Store) {
 
 			this._mappedKeys = mappedKeys;
 			this.deliver();
+			
+			if (this._pendingQuery) {
+				this.queryStoreAndInitItems(this._pendingQuery, true);
+				this._pendingQuery = null;
+			}
 		},
 
 		/**
