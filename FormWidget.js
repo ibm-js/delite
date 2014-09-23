@@ -18,39 +18,40 @@ define([
 	return dcl(Widget, /** @lends module:delite/FormWidget# */ {
 		/**
 		 * Name used when submitting form; same as "name" attribute or plain HTML elements.
-		 * @member {string} module:delite/FormWidget.name
+		 * @member {string}
 		 */
 		name: "",
 
 		/**
 		 * Corresponds to the native HTML `<input>` element's attribute.
-		 * @member {string} module:delite/FormWidget.alt
+		 * @member {string}
 		 */
 		alt: "",
 
 		/**
 		 * Corresponds to the native HTML `<input>` element's attribute.
-		 * @member {string} module:delite/FormWidget.value
+		 * @member {string}
 		 */
 		value: "",
 
 		/**
 		 * The order in which fields are traversed when user hits the tab key.
-		 * @member {number} module:delite/FormWidget.tabIndex
+		 * @member {number}
 		 * @default 0
 		 */
 		tabIndex: 0,
 
 		/**
-		 * Concatenated list of node names that can receive focus during tab operations.
-		 * @member {string} FormWidget#tabStops
+		 * Comma separated list of tabbable nodes, i.e. comma separated list of widget properties that reference
+		 * the widget DOM nodes that receive focus during tab operations.
+		 * @member {string}
 		 * @default "focusNode"
 		 */
-		tabStops: "focusNode", // should be "" if the widget's only tab stop is the outer root node
+		tabStops: "focusNode",
 
 		/**
 		 * If set to true, the widget will not respond to user input and will not be included in form submission.
-		 * @member {boolean} FormWidget#disabled
+		 * @member {boolean}
 		 * @default false
 		 */
 		disabled: false,
