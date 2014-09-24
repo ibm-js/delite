@@ -53,7 +53,7 @@ define([
 		/**
 		 * Hash mapping key code (arrow keys and home/end key) to functions to handle those keys.
 		 * Usually not used directly, as subclasses can instead override onLeftArrow() etc.
-		 * Must be set before postCreate().
+		 * Must be set before postRender().
 		 * @member {Object}
 		 * @protected
 		 */
@@ -89,7 +89,7 @@ define([
 			return this;
 		},
 
-		postCreate: function () {
+		postRender: function () {
 			// If the user hasn't specified a tabindex declaratively, then set to default value.
 			if (!this.hasAttribute("tabindex")) {
 				this.tabIndex = "0";

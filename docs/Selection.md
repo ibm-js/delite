@@ -54,7 +54,7 @@ require(["delite/register", "delite/Selection", "delite/StoreMap"/*, ...*/],
   function (register, Widget, Selection, StoreMap/*, ...*/) {
   return register("my-widget", [HTMElement, Selection, StoreMap], {
     labelAttr: "label",
-    preCreate: function () {
+    preRender: function () {
       this._childHash = {};
     }
     refreshRendering: function (props) {

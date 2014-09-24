@@ -214,7 +214,7 @@ define([
 					this._set("foo", val);
 				},
 
-				preCreate: function () {
+				preRender: function () {
 					this.instanceProp = 3;
 				},
 

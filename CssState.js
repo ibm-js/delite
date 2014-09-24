@@ -30,7 +30,7 @@ define([
 		 */
 		booleanCssProps: ["disabled", "readOnly", "selected", "focused", "opened"],
 
-		postCreate: function () {
+		postRender: function () {
 			["checked", "state"].concat(this.booleanCssProps).forEach(function (name) {
 				if (this[name]) {
 					this.notifyCurrentValue(name);

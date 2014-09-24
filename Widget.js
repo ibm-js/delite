@@ -16,7 +16,7 @@ define([
 	 * Base class for all widgets, i.e. custom elements that appear visually.
 	 *
 	 * Provides stubs for widget lifecycle methods for subclasses to extend, like `buildRendering()`,
-	 * `postCreate()`, and `destroy()`, and also public API methods like `observe()`.
+	 * `postRender()`, and `destroy()`, and also public API methods like `observe()`.
 	 * @mixin module:delite/Widget
 	 * @augments module:delite/CustomElement
 	 * @augments module:decor/Invalidating
@@ -62,7 +62,7 @@ define([
 		/**
 		 * Kick off the life-cycle of a widget.
 		 *
-		 * Calls a number of widget methods (`preCreate()`, `buildRendering()`, and `postCreate()`),
+		 * Calls a number of widget methods (`preRender()`, `buildRendering()`, and `postRender()`),
 		 * some of which of you'll want to override.
 		 *
 		 * Of course, adventurous developers could override createdCallback entirely, but this should
@@ -70,9 +70,9 @@ define([
 		 * @protected
 		 */
 		createdCallback: function () {
-			this.preCreate();
+			this.preRender();
 			this.buildRendering();
-			this.postCreate();
+			this.postRender();
 		},
 
 		// Override Invalidating#refreshRendering() to execute the template's refreshRendering() code, etc.
@@ -136,7 +136,7 @@ define([
 		 * `dcl.advise()`, etc.
 		 * @protected
 		 */
-		preCreate: function () {
+		preRender: function () {
 			this.widgetId = ++cnt;
 		},
 
@@ -207,7 +207,7 @@ define([
 		 * `dcl.advise()`, etc.
 		 * @protected
 		 */
-		postCreate: function () {
+		postRender: function () {
 			if (this._templateHandle) {
 				this._templateHandle.dependencies.forEach(this.notifyCurrentValue, this);
 			}
@@ -216,7 +216,7 @@ define([
 
 		/**
 		 * Called after a widget and its children have been created and added to the page,
-		 * and all related widgets have finished their creation cycle, up through `postCreate()`.
+		 * and all related widgets have finished their creation cycle, up through `postRender()`.
 		 *
 		 * Most widgets should add initialization code to `attachedCallback()` rather than `startup()`.
 		 * Code in `startup()` is only necessary for widgets that can't be initialized until related widgets have been
@@ -397,8 +397,8 @@ define([
 
 	// Setup automatic chaining for lifecycle methods, except for buildRendering().
 	// destroy() is chained in Destroyable.js.
-	dcl.chainAfter(Widget, "preCreate");
-	dcl.chainAfter(Widget, "postCreate");
+	dcl.chainAfter(Widget, "preRender");
+	dcl.chainAfter(Widget, "postRender");
 
 	return Widget;
 });

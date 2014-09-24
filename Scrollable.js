@@ -74,7 +74,7 @@ define([
 		 */
 		scrollableNode: null,
 
-		postCreate: function () {
+		postRender: function () {
 			this.notifyCurrentValue("scrollDirection");
 		},
 

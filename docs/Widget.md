@@ -14,9 +14,9 @@ and code to read widget parameters specified as DOMNode attributes.
 Declarative creation:
 
 1. Element upgraded to have all methods and properties of the widget class.
-2. `preCreate()` callback executed.
+2. `preRender()` callback executed.
 3. `buildRendering()` callback executed.   Note though that the root node already exists.
-4. `postCreate()` callback.
+4. `postRender()` callback.
 5. Parameters specified as DOMNode attributes (ex: `<d-slider max=10>`) are mixed into the widget, thus calling
    custom setters.
 6. `startup()` callback.
@@ -25,9 +25,9 @@ Programmatic creation is:
 
 1. Element created with widget tag name (ex: `<d-slider>`), and
    upgraded to have all methods and properties of the widget class.
-2. `preCreate()` callback executed.
+2. `preRender()` callback executed.
 3. `buildRendering()` callback executed.   Note though that the root node already exists.
-4. `postCreate()` callback.
+4. `postRender()` callback.
 5. Parameters specified programatically
    (ex: `new MyWidget({title: "..."})`) are mixed into the widget, thus calling
    custom setters.
@@ -39,9 +39,9 @@ on the widget or its ancestor after inserting the widget into the document.
 
 As mentioned above, there are currently five lifecycle methods which can be extended on the widget:
 
-1. `preCreate()`
+1. `preRender()`
 2. `buildRendering()`
-3. `postCreate()`
+3. `postRender()`
 4. `startup()`
 5. `destroy()`
 
