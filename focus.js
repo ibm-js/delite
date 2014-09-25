@@ -258,7 +258,6 @@ define([
 			for (i = lastOldIdx; i >= 0 && oldStack[i] !== newStack[i]; i--) {
 				widget = oldStack[i];
 				if (widget) {
-					widget.focused = false;
 					widget.emit("delite-deactivated", {bubbles: false, by: by});
 					this.emit("widget-blur", widget, by);
 				}
@@ -268,7 +267,6 @@ define([
 			for (i++; i <= lastNewIdx; i++) {
 				widget = newStack[i];
 				if (widget) {
-					widget.focused = true;	// TODO: remove or rename to activated
 					widget.emit("delite-activated", {bubbles: true, by: by});
 					this.emit("widget-focus", widget, by);
 				}
