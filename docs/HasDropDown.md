@@ -60,7 +60,7 @@ When a drop-down is opened, a CSS class `d-drop-down-open` attribute is added to
 By default, these changes apply to `focusNode`, or `buttonNode` if there is no `focusNode`.
 Attaching an element to `popupStateNode` will cause these changes to occur on that element instead.
 
-###aroundNode
+### aroundNode
 
 When the drop-down is opened, it is positioned based on the location of `domNode`.
 Attaching an element to `aroundNode` will cause the drop-down to be positioned relative to that element instead.
@@ -99,4 +99,42 @@ register("my-widget", [HTMLElement, HasDropDown], {
 	  }
   });
 });
+```
+
+## Forwarding keystrokes to the dropdown
+
+Sometimes it's useful to leave focus on the anchor widget (i.e. the widget extending HasDropDown, rather
+than the dropdown itself), but to delegate some keystrokes to the dropdown widget.
+A typical example is a TimeTextBox widget, where the focus remains on the `<input>` so that the left/right
+arrow keys can navigate between the characters, but the up/down arrow keys will switch between choices
+in the drop down.
+
+HasDropDown supports this usage pattern.  The dropdown should have a `handleKey(evt)` method, which
+HasDropDown will call with the `keydown` event.  The `handleKey()` method should return
+false (not undefined, but false) if the dropdown handled the key event, or don't return anything to let the HasDropDown
+widget itself handle the keystroke.
+
+For example, the `hasDropDown()` method of a TimePicker dropdown widget might look like:
+
+```js
+handleKey: function(/*Event*/ evt){
+	if (evt.keyCode == keys.DOWN_ARROW) {
+		this.selectNextNode();
+		evt.stopPropagation();
+		evt.preventDefault();
+		return false;
+	}else if (evt.keyCode == keys.UP_ARROW) {
+		this.selectPreviousNode();
+		evt.stopPropagation();
+		evt.preventDefault();
+		return false;
+	}else if (evt.keyCode == keys.ENTER) {
+		if (this._keyboardSelectedChoice) {
+			this.selectChoice(this._keyboardSelectedChoice);
+		}
+		evt.stopPropagation();
+		evt.preventDefault();
+		return false;
+	}
+}
 ```
