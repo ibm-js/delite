@@ -5,7 +5,7 @@ define([
 	"dojo/when",
 	"requirejs-dplugins/has", // has("touch")
 	"delite/keys", // keys.DOWN_ARROW keys.ENTER keys.ESCAPE
-	"./focus",		// for delite-deactivate event
+	"./focus",		// for delite-deactivated event
 	"./place",
 	"./popup",
 	"./Widget",
@@ -254,7 +254,7 @@ define([
 				evt.stopPropagation();
 			}, this.buttonNode);
 
-			this.on("delite-deactivate", function () {
+			this.on("delite-deactivated", function () {
 				// Called magically when focus has shifted away from this widget and its dropdown.
 
 				// Close dropdown but don't focus my <input>.  User may have focused somewhere else (ex: clicked another

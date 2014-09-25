@@ -23,10 +23,10 @@ Call `focus.on("active-widget-stack", callback)` to track the stack of currently
 Call `focus.on("widget-blur", func)` or `focus.on("widget-focus", ...)` to monitor when
 when widgets become active/inactive.
 
-## delite-activate and delite-deactivate events
+## delite-activated and delite-deactivated events
 
-Also, if `delite/focus` is loaded, every widget will emit a non-bubbling `delite-activate` event
+Also, if `delite/focus` is loaded, every widget will emit a non-bubbling `delite-activated` event
 when it becomes activate (i.e. when it or logical descendant widget is focused or touched), and a non-bubbling
-`delite-deactivate` event when the opposite happens.
+`delite-deactivated` event when the opposite happens.
 
 

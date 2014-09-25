@@ -171,10 +171,10 @@ require([
 			["form", "fieldset1", "fieldset2", "combobox", "editor", "spinner"].forEach(function (id) {
 				var w = document.getElementById(id);
 
-				w.on("delite-activate", function () {
+				w.on("delite-activated", function () {
 					focusCallbacks[id] = true;
 				});
-				w.on("delite-deactivate", function () {
+				w.on("delite-deactivated", function () {
 					blurCallbacks[id] = true;
 				});
 			});

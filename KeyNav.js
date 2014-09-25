@@ -220,9 +220,9 @@ define([
 		 * @private
 		 */
 		_keynavFocusHandler: function () {
-			// Note that we can't use the delite-activate event because switching focus from that
-			// event handler confuses the focus.js code (because it recursively triggers the delite-activate event).
-			// Also, delite-activate would fire when focus went directly to a child widget due to mouse click.
+			// Note that we can't use the delite-activated event because switching focus from that
+			// event handler confuses the focus.js code (because it recursively triggers the delite-activated event).
+			// Also, delite-activated would fire when focus went directly to a child widget due to mouse click.
 
 			// Ignore spurious focus event:
 			// On IE, clicking the scrollbar of a select dropdown moves focus from the focused child item to me

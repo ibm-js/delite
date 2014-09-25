@@ -1,9 +1,10 @@
 /**
  * Tracks which widgets are currently "active".
  * A widget is considered active if it or a descendant widget has focus,
- * or if a non-focusable node of this widget or a descendant was recently clicked.
+ * or if a non-focusable node of this widget or a descendant was the most recent node
+ * to get a touchstart/mousedown/pointerdown event.
  *
- * Emits non-bubbling `delite-activate` and `delite-deactivate` events on widgets
+ * Emits non-bubbling `delite-activated` and `delite-deactivated` events on widgets
  * as they become active, or stop being active, as defined above.
  *
  * Call `focus.on("active-widget-stack", callback)` to track the stack of currently focused widgets.
@@ -27,8 +28,8 @@ define([
 	// Time of the last focusin event
 	var lastFocusin;
 
-	// Time of the last touch/mousedown or focusin event
-	var lastTouchOrFocusin;
+	// Time of the last pointerdown or focusin event
+	var lastPointerDownOrFocusIn;
 
 	var FocusManager = dcl(Evented, /** @lends module:delite/focus */ {
 
@@ -39,9 +40,9 @@ define([
 		activeStack: [],
 
 		/**
-		 * Registers listeners on the specified iframe so that any click
+		 * Registers listeners on the specified iframe so that any pointerdown
 		 * or focus event on that iframe (or anything in it) is reported
-		 * as a focus/click event on the `<iframe>` itself.
+		 * as a focus/pointerdown event on the `<iframe>` itself.
 		 *
 		 * In dijit this was only used by editor; perhaps it should be removed.
 		 *
@@ -54,8 +55,8 @@ define([
 
 		/**
 		 * Registers listeners on the specified window (either the main
-		 * window or an iframe's window) to detect when the user has clicked somewhere
-		 * or focused somewhere.
+		 * window or an iframe's window) to detect when the user has touched / mouse-downed /
+		 * focused somewhere.
 		 *
 		 * Users should call registerIframe() instead of this method.
 		 *
@@ -142,14 +143,15 @@ define([
 				clearTimeout(this._clearActiveWidgetsTimer);
 			}
 
-			if (now < lastTouchOrFocusin + 100) {
+			if (now < lastPointerDownOrFocusIn + 100) {
 				// This blur event is coming late (after the call to _pointerDownOrFocusHandler() rather than before.
 				// So let _pointerDownOrFocusHandler() handle setting the widget stack.
 				// See https://bugs.dojotoolkit.org/ticket/17668
 				return;
 			}
 
-			// If the blur event isn't followed (or preceded) by a focus or touch event, mark all widgets as inactive.
+			// If the blur event isn't followed (or preceded) by a focus or pointerdown event,
+			// mark all widgets as inactive.
 			this._clearActiveWidgetsTimer = setTimeout(function () {
 				delete this._clearActiveWidgetsTimer;
 				this._setStack([]);
@@ -157,14 +159,14 @@ define([
 		},
 
 		/**
-		 * Callback when node is focused or mouse-downed.
-		 * @param {Element} node - The node that was touched.
-		 * @param {string} by - "mouse" if the focus/touch was caused by a mouse down event.
+		 * Callback when node is focused or pointerdown'd.
+		 * @param {Element} node - The node.
+		 * @param {string} by - "mouse" if the focus/pointerdown was caused by a mouse down event.
 		 * @private
 		 */
 		_pointerDownOrFocusHandler: function (node, by) {
-			// Keep track of time of last focusin or touch event.
-			lastTouchOrFocusin = (new Date()).getTime();
+			// Keep track of time of last focusin or pointerdown event.
+			lastPointerDownOrFocusIn = (new Date()).getTime();
 
 			if (this._clearActiveWidgetsTimer) {
 				// forget the recent blur event
@@ -236,7 +238,7 @@ define([
 		/**
 		 * The stack of active widgets has changed.  Send out appropriate events and records new stack.
 		 * @param {module:delite/Widget[]} newStack - Array of widgets, starting from the top (outermost) widget.
-		 * @param {string} by - "mouse" if the focus/touch was caused by a mouse down event.
+		 * @param {string} by - "mouse" if the focus/pointerdown was caused by a mouse down event.
 		 * @private
 		 */
 		_setStack: function (newStack, by) {
@@ -257,7 +259,7 @@ define([
 				widget = oldStack[i];
 				if (widget) {
 					widget.focused = false;
-					widget.emit("delite-deactivate", {bubbles: false, by: by});
+					widget.emit("delite-deactivated", {bubbles: false, by: by});
 					this.emit("widget-blur", widget, by);
 				}
 			}
@@ -266,8 +268,8 @@ define([
 			for (i++; i <= lastNewIdx; i++) {
 				widget = newStack[i];
 				if (widget) {
-					widget.focused = true;
-					widget.emit("delite-activate", {bubbles: true, by: by});
+					widget.focused = true;	// TODO: remove or rename to activated
+					widget.emit("delite-activated", {bubbles: true, by: by});
 					this.emit("widget-focus", widget, by);
 				}
 			}
