@@ -19,6 +19,12 @@
 		non-focusable-drop-down-button {
 			white-space: nowrap;
 		}
+
+		.selected {
+			/* selected entry in a combobox drop down menu */
+			background-color: blue;
+			color: white;
+		}
 	</style>
 	<script type="text/javascript" src="../boilerplate.js"></script>
 	<script language="JavaScript" type="text/javascript">
@@ -55,11 +61,8 @@
 				}
 			});
 
-
-			// A list of values; select a value by pressing an entry in the list.
-			// This will emit a change event (just like selecting a day in a Calendar).
-			// No keyboard navigation.
-			var SimpleMenu = register("simple-menu", [HTMLElement, Widget], {
+			// Base class for focusable and non-focusable menus
+			var MenuBase = register.dcl(Widget, {
 				// Since this is a menu, we don't want to automatically get focus on open, unless it's
 				// opened via the keyboard
 				focusOnOpen: false,
@@ -75,26 +78,77 @@
 					this.setAttribute("touch-action", "none");
 
 					this.on("click", this.emit.bind(this, "change"));
-					this.on("keydown", function (evt) {
-						if(evt.keyCode == keys.ENTER || evt.keyCode == keys.SPACE) {
-							this.emit("change");
-						}
-					}.bind(this));
 
 					for (var i = 1; i < 4; i++) {
-						this.innerHTML += "<div tabindex='0' index='" + i +
+						this.innerHTML += "<div index='" + i +
 								"'>choice #" + this["choice" + i] + "</div>";
 					}
-				},
-
-				focus: function () {
-					this.children[0].focus();
 				},
 
 				handleSlideClick: function () {
 					// If user does mouse down on dropdown button, then mouse up on menu, handle
 					// as click on menu.
 					this.emit("change");
+				}
+			});
+
+			// A list of values; select a value by pressing an entry in the list.
+			// This will emit a change event (just like selecting a day in a Calendar).
+			// No keyboard navigation.
+			var FocusMenu = register("focus-menu", [HTMLElement, MenuBase], {
+				postRender: function () {
+					Array.prototype.forEach.call(this.children, function (child) {
+						child.setAttribute("tabindex", "-1");
+					});
+					this.on("keydown", function (evt) {
+						if(evt.keyCode == keys.ENTER || evt.keyCode == keys.SPACE) {
+							this.emit("change");
+						} else if(evt.keyCode == keys.DOWN_ARROW ) {
+							this.focus((this.selected && this.selected.nextSibling) || this.firstChild);;
+						} else if(evt.keyCode == keys.UP_ARROW ) {
+							this.focus((this.selected && this.selected.previousSibling) || this.lastChild);
+						}
+					}.bind(this));
+				},
+
+				focus: function (selected) {
+					if (this.selected) {
+						this.selected.className = "";
+					}
+					this.selected = selected || this.children[0];
+					this.selected.focus();
+				}
+			});
+
+			// A list of values that doesn't get focus; focus remains on the HasDropDown widget.
+			var NonFocusMenu = register("non-focus-menu", [HTMLElement, MenuBase], {
+				// Indicate that we really don't ever get focus
+				focus: null,
+
+				onOpen: function () {
+					this._select(this.firstChild);
+
+				},
+
+				_select: function (child) {
+					if (this.selected) {
+						this.selected.className = "";
+					}
+					this.selected = child;
+					child.className = "selected";
+				},
+
+				handleKey: function (evt) {
+					if(evt.keyCode == keys.ENTER || evt.keyCode == keys.SPACE) {
+						this.emit("change");
+						this.selected.className = "";
+					} else if(evt.keyCode == keys.DOWN_ARROW ) {
+						this._select(this.selected.nextSibling || this.firstChild);
+						return false;
+					} else if(evt.keyCode == keys.UP_ARROW ) {
+						this._select(this.selected.previousSibling || this.lastChild);
+						return false;
+					}
 				}
 			});
 
@@ -107,7 +161,20 @@
 				},
 				orient: ["below"],
 
-				dropDownConstructor: SimpleMenu,
+				dropDownConstructor: FocusMenu,
+
+				loadDropDown: function () {
+					return this._dropDown || (this._dropDown = new this.dropDownConstructor({
+						id: this.id + "_popup"
+					}));
+				}
+			});
+
+			// A button that shows a popup
+			var ComboBox = register("combo-box", [HTMLInputElement, HasDropDown], {
+				orient: ["below"],
+
+				dropDownConstructor: NonFocusMenu,
 
 				loadDropDown: function () {
 					return this._dropDown || (this._dropDown = new this.dropDownConstructor({
@@ -143,7 +210,7 @@
 				orient: ["below"],
 
 				loadDropDown: function () {
-					return this._dropDown || (this._dropDown = new SimpleMenu({
+					return this._dropDown || (this._dropDown = new FocusMenu({
 						id: this.id + "_popup"
 					}));
 				}
@@ -182,6 +249,11 @@
 				dir: "rtl",
 				label: "show non-auto-width dropdown - rtl",
 				autoWidth: false
+			}).placeAt(document.body);
+
+			// combobox: arrow keys should navigate drop down, focus stays on combo
+			new ComboBox({
+				id: "combobox"
 			}).placeAt(document.body);
 
 			// Set global variable to signal that the test page is ready

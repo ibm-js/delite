@@ -180,7 +180,7 @@ define([
 		},
 
 		// Just to make sure that a non-focusable button can still open the drop down
-		"non focusable": function () {
+		"non focusable HasDropDown": function () {
 			if (this.remote.environmentType.browserName === "internet explorer") {
 				return this.skip("click() doesn't generate mousedown/mouseup, so popup won't open");
 			}
@@ -194,6 +194,38 @@ define([
 					.click()
 					.isDisplayed().then(function (visible) {
 						assert(!visible, "hidden");
+					})
+					.end();
+		},
+
+		"non focusable dropdown": function () {
+			if (this.remote.environmentType.brokenSendKeys || !this.remote.environmentType.nativeEvents) {
+				return this.skip("no keyboard support");
+			}
+			return this.remote.execute("combobox.focus()")
+				.pressKeys(keys.ARROW_DOWN) // open menu
+				.findByTagName("non-focus-menu")
+					.isDisplayed().then(function (visible) {
+						assert(visible, "visible");
+					})
+					.findByClassName("selected")
+						.getVisibleText().then(function (text) {
+							assert.strictEqual(text, "choice #1");
+						})
+						.end()
+					.end()		// deselect "non-focus-menu" so that next pressKeys() call goes to the ComboBox itself
+				.pressKeys(keys.ARROW_DOWN)
+				.findByTagName("non-focus-menu")
+					.findByClassName("selected")
+						.getVisibleText().then(function (text) {
+							assert.strictEqual(text, "choice #2");
+						})
+						.end()
+					.end()		// deselect "non-focus-menu" so that next pressKeys() call goes to the ComboBox itself
+				.pressKeys(" ")	// to close menu
+				.findByTagName("non-focus-menu")
+					.isDisplayed().then(function (visible) {
+						assert.isFalse(visible, "hidden");
 					})
 					.end();
 		},

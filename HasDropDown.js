@@ -211,7 +211,7 @@ define([
 		focusDropDownOnOpen: function (keyboard) {
 			// Wait until the dropdown appears (if it hasn't appeared already), and then
 			// focus it, unless it's a menu (in which case focusOnOpen is set to false).
-			// Even if it's a menu, we need to focus it
+			// Even if it's a menu, we need to focus it when it's opened by the keyboard.
 			this._openDropDownPromise.then(function (ret) {
 				var dropDown = ret.dropDown;
 				if (dropDown.focus && (keyboard || dropDown.focusOnOpen !== false)) {
