@@ -20,7 +20,7 @@ TextBox → ContentPane → TabContainer → TooltipDialog → DropDownButton.
 
 Call `focus.on("active-widget-stack", callback)` to track the stack of currently focused widgets.
 
-Call `focus.on("widget-blur", func)` or `focus.on("widget-focus", ...)` to monitor when
+Call `focus.on("deactivated", func)` or `focus.on("activated", ...)` to monitor when
 when widgets become active/inactive.
 
 ## delite-activated and delite-deactivated events

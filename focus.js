@@ -9,7 +9,7 @@
  *
  * Call `focus.on("active-widget-stack", callback)` to track the stack of currently focused widgets.
  *
- * Call `focus.on("widget-blur", func)` or `focus.on("widget-focus", ...)` to monitor when
+ * Call `focus.on("deactivated", func)` or `focus.on("activated", ...)` to monitor when
  * when widgets become active/inactive.
  *
  * Finally, `focus.focus(node)` will focus a node, suppressing errors if the node doesn't exist.
@@ -259,7 +259,7 @@ define([
 				widget = oldStack[i];
 				if (widget) {
 					widget.emit("delite-deactivated", {bubbles: false, by: by});
-					this.emit("widget-blur", widget, by);
+					this.emit("deactivated", widget, by);
 				}
 			}
 
@@ -268,7 +268,7 @@ define([
 				widget = newStack[i];
 				if (widget) {
 					widget.emit("delite-activated", {bubbles: true, by: by});
-					this.emit("widget-focus", widget, by);
+					this.emit("activated", widget, by);
 				}
 			}
 		},
