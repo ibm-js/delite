@@ -28,7 +28,7 @@ define([
 		 * @member {string[]} module:delite/CssState#booleanCssProps
 		 * @default ["disabled", "readOnly", "selected", "focused", "opened"]
 		 */
-		booleanCssProps: ["disabled", "readOnly", "selected", "focused", "opened"],
+		booleanCssProps: ["disabled", "readOnly", "selected", "opened"],
 
 		postRender: function () {
 			["checked", "state"].concat(this.booleanCssProps).forEach(function (name) {

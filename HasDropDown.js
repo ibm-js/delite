@@ -4,13 +4,13 @@ define([
 	"dojo/dom-class", // domClass.add domClass.contains domClass.remove
 	"dojo/when",
 	"requirejs-dplugins/has", // has("touch")
-	"delite/keys", // keys.DOWN_ARROW keys.ENTER keys.ESCAPE
-	"./focus",		// enable _onFocus(), _onBlur()
+	"./keys", // keys.DOWN_ARROW keys.ENTER keys.ESCAPE
 	"./place",
 	"./popup",
 	"./Widget",
+	"./activationTracker",		// for delite-deactivated event
 	"dpointer/events"		// so can just monitor for "pointerdown"
-], function (dcl, domClass, when, has, keys, focus, place, popup, Widget) {
+], function (dcl, domClass, when, has, keys, place, popup, Widget) {
 	/**
 	 * Base class for widgets that need drop down ability.
 	 * @mixin module:delite/HasDropDown
@@ -254,6 +254,8 @@ define([
 				evt.stopPropagation();
 			}, this.buttonNode);
 
+			this.on("delite-deactivated", this._deactivateHandler.bind(this));
+
 			// trigger initial setting of d-down-arrow class
 			this.notifyCurrentValue("dropDownPosition");
 		},
@@ -273,7 +275,7 @@ define([
 		},
 
 		destroy: function () {
-			// If dropdown is open, close it, to avoid leaving delite/focus in a strange state.
+			// If dropdown is open, close it, to avoid leaving delite/activationTracker in a strange state.
 			// Put focus back on me to avoid the focused node getting destroyed, which flummoxes IE.
 			if (this.opened) {
 				this.closeDropDown(true);
@@ -343,14 +345,14 @@ define([
 			}
 		},
 
-		_onBlur: dcl.before(function () {
-			// Called magically when focus has shifted away from this widget and it's dropdown
+		_deactivateHandler: function () {
+			// Called when focus has shifted away from this widget and it's dropdown
 
 			// Close dropdown but don't focus my <input>.  User may have focused somewhere else (ex: clicked another
 			// input), and even if they just clicked a blank area of the screen, focusing my <input> will unwantedly
 			// popup the keyboard on mobile.
 			this.closeDropDown(false);
-		}),
+		},
 
 		/**
 		 * Creates the drop down if it doesn't exist, loads the data

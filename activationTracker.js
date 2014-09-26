@@ -1,17 +1,18 @@
 /**
  * Tracks which widgets are currently "active".
- *
  * A widget is considered active if it or a descendant widget has focus,
- * or if a non-focusable node of this widget or a descendant was recently clicked.
+ * or if a non-focusable node of this widget or a descendant was the most recent node
+ * to get a touchstart/mousedown/pointerdown event.
  *
- * Call `focus.on("active-widget-stack", callback)` to track the stack of currently focused widgets.
+ * Emits non-bubbling `delite-activated` and `delite-deactivated` events on widgets
+ * as they become active, or stop being active, as defined above.
  *
- * Call `focus.on("widget-blur", func)` or `focus.on("widget-focus", ...)` to monitor when
+ * Call `activationTracker.on("active-widget-stack", callback)` to track the stack of currently active widgets.
+ *
+ * Call `activationTracker.on("deactivated", func)` or `activationTracker.on("activated", ...)` to monitor when
  * when widgets become active/inactive.
  *
- * Finally, `focus.focus(node)` will focus a node, suppressing errors if the node doesn't exist.
- *
- * @module delite/focus
+ * @module delite/activationTracker
  * */
 define([
 	"dcl/advise",
@@ -25,10 +26,10 @@ define([
 	// Time of the last focusin event
 	var lastFocusin;
 
-	// Time of the last touch/mousedown or focusin event
-	var lastTouchOrFocusin;
+	// Time of the last pointerdown or focusin event
+	var lastPointerDownOrFocusIn;
 
-	var FocusManager = dcl(Evented, /** @lends module:delite/focus */ {
+	var ActivationTracker = dcl(Evented, /** @lends module:delite/activationTracker */ {
 
 		/**
 		 * List of currently active widgets (focused widget and its ancestors).
@@ -37,9 +38,9 @@ define([
 		activeStack: [],
 
 		/**
-		 * Registers listeners on the specified iframe so that any click
+		 * Registers listeners on the specified iframe so that any pointerdown
 		 * or focus event on that iframe (or anything in it) is reported
-		 * as a focus/click event on the `<iframe>` itself.
+		 * as a focus/pointerdown event on the `<iframe>` itself.
 		 *
 		 * In dijit this was only used by editor; perhaps it should be removed.
 		 *
@@ -52,8 +53,8 @@ define([
 
 		/**
 		 * Registers listeners on the specified window (either the main
-		 * window or an iframe's window) to detect when the user has clicked somewhere
-		 * or focused somewhere.
+		 * window or an iframe's window) to detect when the user has touched / mouse-downed /
+		 * focused somewhere.
 		 *
 		 * Users should call registerIframe() instead of this method.
 		 *
@@ -140,14 +141,15 @@ define([
 				clearTimeout(this._clearActiveWidgetsTimer);
 			}
 
-			if (now < lastTouchOrFocusin + 100) {
+			if (now < lastPointerDownOrFocusIn + 100) {
 				// This blur event is coming late (after the call to _pointerDownOrFocusHandler() rather than before.
 				// So let _pointerDownOrFocusHandler() handle setting the widget stack.
 				// See https://bugs.dojotoolkit.org/ticket/17668
 				return;
 			}
 
-			// If the blur event isn't followed (or preceded) by a focus or touch event, mark all widgets as inactive.
+			// If the blur event isn't followed (or preceded) by a focus or pointerdown event,
+			// mark all widgets as inactive.
 			this._clearActiveWidgetsTimer = setTimeout(function () {
 				delete this._clearActiveWidgetsTimer;
 				this._setStack([]);
@@ -155,14 +157,14 @@ define([
 		},
 
 		/**
-		 * Callback when node is focused or mouse-downed.
-		 * @param {Element} node - The node that was touched.
-		 * @param {string} by - "mouse" if the focus/touch was caused by a mouse down event.
+		 * Callback when node is focused or pointerdown'd.
+		 * @param {Element} node - The node.
+		 * @param {string} by - "mouse" if the focus/pointerdown was caused by a mouse down event.
 		 * @private
 		 */
 		_pointerDownOrFocusHandler: function (node, by) {
-			// Keep track of time of last focusin or touch event.
-			lastTouchOrFocusin = (new Date()).getTime();
+			// Keep track of time of last focusin or pointerdown event.
+			lastPointerDownOrFocusIn = (new Date()).getTime();
 
 			if (this._clearActiveWidgetsTimer) {
 				// forget the recent blur event
@@ -234,7 +236,7 @@ define([
 		/**
 		 * The stack of active widgets has changed.  Send out appropriate events and records new stack.
 		 * @param {module:delite/Widget[]} newStack - Array of widgets, starting from the top (outermost) widget.
-		 * @param {string} by - "mouse" if the focus/touch was caused by a mouse down event.
+		 * @param {string} by - "mouse" if the focus/pointerdown was caused by a mouse down event.
 		 * @private
 		 */
 		_setStack: function (newStack, by) {
@@ -254,11 +256,8 @@ define([
 			for (i = lastOldIdx; i >= 0 && oldStack[i] !== newStack[i]; i--) {
 				widget = oldStack[i];
 				if (widget) {
-					widget.focused = false;
-					if (widget._onBlur) {
-						widget._onBlur();
-					}
-					this.emit("widget-blur", widget, by);
+					widget.emit("delite-deactivated", {bubbles: false, by: by});
+					this.emit("deactivated", widget, by);
 				}
 			}
 
@@ -266,31 +265,15 @@ define([
 			for (i++; i <= lastNewIdx; i++) {
 				widget = newStack[i];
 				if (widget) {
-					widget.focused = true;
-					if (widget._onFocus) {
-						widget._onFocus(by);
-					}
-					this.emit("widget-focus", widget, by);
-				}
-			}
-		},
-
-		/**
-		 * Focus the specified node, suppressing errors if they occur.
-		 * @param {Element} node
-		 */
-		focus: function (node) {
-			if (node) {
-				try {
-					node.focus();
-				} catch (e) {/*quiet*/
+					widget.emit("delite-activated", {bubbles: false, by: by});
+					this.emit("activated", widget, by);
 				}
 			}
 		}
 	});
 
 	// Create singleton for top window
-	var singleton = new FocusManager();
+	var singleton = new ActivationTracker();
 	singleton.registerWin(window);
 
 	return singleton;

@@ -2,7 +2,7 @@
 define([
 	"dcl/dcl",
 	"./FormWidget",
-	"./focus"
+	"./activationTracker"
 ], function (dcl, FormWidget) {
 
 	/**
@@ -90,8 +90,8 @@ define([
 			}
 		},
 
-		_onFocus: dcl.superCall(function (sup) {
-			return function () {
+		postRender: function () {
+			this.on("delite-activated", function () {
 				// Called when user may be about to start input.
 				// Saves the widget's current value, which is the most recent of:
 				//
@@ -101,11 +101,10 @@ define([
 				//
 				// This is all to avoid firing unnecessary change/input events in the corner case where the
 				// user just selects and releases the Slider handle for example.
-				sup.call(this);
 				this._previousOnChangeValue = this.value;
 				this._previousOnInputValue = this.value;
-			};
-		}),
+			});
+		},
 
 		/**
 		 * Set value and fire a change event if the value changed since the last call.

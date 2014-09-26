@@ -2,11 +2,10 @@ define([
 	"intern!object",
 	"intern/chai!assert",
 	"delite/a11y",
-	"delite/focus",
 	"delite/register",
 	"delite/Widget",
 	"delite/Container"
-], function (registerSuite, assert, a11y, focus, register, Widget, Container) {
+], function (registerSuite, assert, a11y, register, Widget, Container) {
 	var container, PlainWidget, TestContainer, TestContained, html, zero, two, four;
 	/*jshint multistr: true */
 	html = "<label for='input'>before:</label><input id='input'/> \

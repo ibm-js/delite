@@ -350,45 +350,6 @@ define([
 				}
 			} while ((node = node.parentNode));
 			return null;
-		},
-
-		// Focus related methods.  Used by focus.js.
-		
-		/**
-		 * Called when the widget becomes "active" because
-		 * it or a widget inside of it either has focus, or has recently
-		 * been clicked.
-		 * @param {Event} evt - A focus event.
-		 */
-		onFocus: function () {
-			// TODO: we should be firing an event, not calling a callback method?
-		},
-
-		/**
-		 * Called when the widget stops being "active" because
-		 * focus moved to something outside of it, or the user
-		 * clicked somewhere outside of it, or the widget was
-		 * hidden.
-		 */
-		onBlur: function () {
-		},
-
-		/**
-		 * This is where widgets do processing for when they are active,
-		 * such as changing CSS classes.  See `onFocus()` for more details.
-		 * @protected
-		 */
-		_onFocus: function () {
-			this.onFocus();
-		},
-
-		/**
-		 * This is where widgets do processing for when they stop being active,
-		 * such as changing CSS classes.  See `onBlur()` for more details.
-		 * @protected
-		 */
-		_onBlur: function () {
-			this.onBlur();
 		}
 	});
 
