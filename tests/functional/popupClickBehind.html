@@ -47,8 +47,9 @@ require([
 
 		orient: ["below"],
 
-		render: function () {
+		postRender: function () {
 			this.on("click", this._openPopup.bind(this));
+			this.on("delite-deactivate", this._deactivateHandler.bind(this));
 		},
 
 		_openPopup: function () {
@@ -80,10 +81,7 @@ require([
 			}
 		},
 
-		_onBlur: function () {
-			// summary:
-			//		This is called from focus manager and when we get the signal we
-			//		need to close the drop down
+		_deactivateHandler: function () {
 			console.log(this.id + ": close popup due to blur");
 			this.closePopup();
 		}

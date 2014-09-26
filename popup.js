@@ -196,8 +196,8 @@ define([
 		/**
 		 * Popup the widget at the specified position.
 		 *
-		 * Note that whatever widget called delite/popup.open() should also listen to its
-		 * own _onBlur callback (fired from delite/focus.js) to know that focus has moved somewhere
+		 * Note that whatever widget called delite/popup.open() should also require activationTracker and listen for
+		 * delite-deactivate event to know that focus has moved somewhere
 		 * else and thus the popup should be closed.
 		 *
 		 * @param {module:delite/popup.OpenArgs} args
@@ -221,7 +221,7 @@ define([
 
 			// If we are opening a new popup that isn't a child of a currently opened popup, then
 			// close currently opened popup(s).   This should happen automatically when the old popups
-			// gets the _onBlur() event, except that the _onBlur() event isn't reliable on IE, see [22198].
+			// gets the delite-activated event, except that event isn't reliable on IE, see [22198].
 			// TODO: check if this code still needed for delite
 			while (stack.length && (!args.parent || !stack[stack.length - 1].widget.contains(args.parent))) {
 				this.close(stack[stack.length - 1].widget);

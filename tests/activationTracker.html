@@ -2,7 +2,7 @@
 		"http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
-<title>delite/focus automated test</title>
+<title>delite/activationTracker automated test</title>
 
 <script type="text/javascript" src="boilerplate.js"></script>
 
@@ -42,12 +42,12 @@ require([
 	"doh/runner",
 	"dcl/dcl",
 	"dojo/on",
-	"delite/focus",
+	"delite/activationTracker",
 	"delite/popup",
 	"delite/register",
 	"delite/Widget",
 	"requirejs-domready/domReady!"
-], function (doh, dcl, on, focus, popupUtil, register, Widget) {
+], function (doh, dcl, on, activationTracker, popupUtil, register, Widget) {
 
 	//////////////////////////////////////////////////////
 	// Test widgets
@@ -61,7 +61,7 @@ require([
 		},
 
 		postRender: function () {
-			focus.registerIframe(this.containerNode);
+			activationTracker.registerIframe(this.containerNode);
 		},
 
 		focus: function () {
@@ -102,11 +102,12 @@ require([
 	 */
 	register("fake-dropdown-button", [HTMLButtonElement, Widget], {
 		postRender: function () {
-			this.on("click", this.onClick.bind(this));
+			this.on("click", this._clickHandler.bind(this));
+			this.on("delite-deactivated", this._deactivatedHandler.bind(this));
 			this.popup = new PopupWidget();
 		},
 
-		onClick: function (e) {
+		_clickHandler: function (e) {
 			this._openPopup();
 		},
 
@@ -140,11 +141,7 @@ require([
 			}
 		},
 
-		/**
-		 * Called from focus manager and when we get the signal we need to close the drop down.
-		 * @private
-		 */
-		_onBlur: function () {
+		_deactivatedHandler: function () {
 			console.log(this.id + ": close popup due to blur");
 			this.closePopup();
 		}
@@ -159,10 +156,10 @@ require([
 
 	doh.register("setup", [
 		function parse() {
-			focus.on("active-widget-stack", function (fs) {
+			activationTracker.on("active-widget-stack", function (fs) {
 				activeStack = fs.map(function(elem){ return elem.id; }).join(", ");
 				console.log("New active stack: " + activeStack);
-				document.getElementById("focusStack").textContent = activeStack;
+				document.getElementById("activeStack").textContent = activeStack;
 				activeStackChangeNotifications++;
 			});
 			return register.parse();
@@ -171,23 +168,23 @@ require([
 			["form", "fieldset1", "fieldset2", "combobox", "editor", "spinner"].forEach(function (id) {
 				var w = document.getElementById(id);
 
-				w.onFocus = function () {
-					focusCallbacks[id] = true;
-				};
-				w.onBlur = function () {
-					blurCallbacks[id] = true;
-				};
+				w.on("delite-activated", function () {
+					activateEvents[id] = true;
+				});
+				w.on("delite-deactivated", function () {
+					deactivateEvents[id] = true;
+				});
 			});
 		}
 	]);
 
 	function resetEvents() {
-		// These are objects used to track calls to _onFocus and _onBlur in various widgets
-		focusCallbacks = {};
-		blurCallbacks = {};
+		// These are objects used to track delite-activate and delite-deactivate events.
+		activateEvents = {};
+		deactivateEvents = {};
 
 		activeStack = "";
-		document.getElementById("focusStack").textContent = activeStack;
+		document.getElementById("activeStack").textContent = activeStack;
 		activeStackChangeNotifications = 0;
 	}
 
@@ -226,7 +223,7 @@ require([
 					doh.is("form", activeStack);
 
 					// And that the deliteful/Form widget is marked as being "in focus"
-					doh.t(focusCallbacks["form"], "form focused");
+					doh.t(activateEvents["form"], "form focused");
 				}), 500);
 
 				return d;
@@ -247,7 +244,7 @@ require([
 				setTimeout(d.getTestCallback(function () {
 					// Since the deliteful/Form widget didn't leave the focus chain it
 					// shouldn't have any more events (since the resetEvents() call in setUp() above)
-					doh.f("form" in focusCallbacks, "form no new focus event");
+					doh.f("form" in activateEvents, "form no new focus event");
 				}), 500);
 
 				return d;
@@ -263,7 +260,7 @@ require([
 				var d = new doh.Deferred();
 
 				// This onFocus() function from helpers.js would be useful here, except it
-				// defeats the purpose of the test by using delite/focus.
+				// defeats the purpose of the test by using delite/activationTracker.
 				on.once(document.getElementById("combobox").focusNode, "focus", function () {
 					setTimeout(d.getTestCallback(function () {
 						// The focus stack should show the ComboBox plus all parent widgets
@@ -272,11 +269,11 @@ require([
 						// Also check that we got (exactly) one notification about active stack
 						doh.is(1, activeStackChangeNotifications, "one notification on activeStack");
 
-						// _onFocus()/_onBlur was called appropriately
-						doh.f(focusCallbacks["form"], "form was already focused, no duplicate event");
-						doh.f(blurCallbacks["form"], "form wasn't blurred");
-						doh.t(focusCallbacks["fieldset1"], "fieldset1 focused");
-						doh.t(focusCallbacks["combobox"], "combobox focused");
+						// check activation-tracker events were fired
+						doh.f(activateEvents["form"], "form was already focused, no duplicate event");
+						doh.f(deactivateEvents["form"], "form wasn't blurred");
+						doh.t(activateEvents["fieldset1"], "fieldset1 focused");
+						doh.t(activateEvents["combobox"], "combobox focused");
 					}), 100);
 				});
 				document.getElementById("combobox").focusNode.focus();
@@ -320,11 +317,11 @@ require([
 					// The focus stack should show the Editor plus all parent widgets
 					doh.is("form, editor", activeStack, "active stack");
 
-					// _onFocus()/_onBlur was called appropriately
-					doh.f(focusCallbacks["form"], "form was already focused, no duplicate event");
-					doh.f(blurCallbacks["form"], "form wasn't blurred");
-					doh.t(blurCallbacks["fieldset1"], "fieldset no longer focused");
-					doh.t(focusCallbacks["editor"], "editor focused");
+					// check activation-tracker events were fired
+					doh.f(activateEvents["form"], "form was already focused, no duplicate event");
+					doh.f(deactivateEvents["form"], "form wasn't blurred");
+					doh.t(deactivateEvents["fieldset1"], "fieldset no longer focused");
+					doh.t(activateEvents["editor"], "editor focused");
 				}), 500);
 
 				return d;
@@ -377,10 +374,10 @@ require([
 </head>
 <body style="background-color: #fff; color: black; padding: 0; margin: 0" class="claro">
 
-	<h3>delite/focus Automated Test</h3>
+	<h3>delite/activationTracker Automated Test</h3>
 
 	<span id="focusStackLabel">Focus stack:</span>
-	<span id="focusStack"></span>
+	<span id="activeStack"></span>
 	<br><br>
 
 	<label>Form widget:</label><br>
