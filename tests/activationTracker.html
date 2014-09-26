@@ -103,7 +103,7 @@ require([
 	register("fake-dropdown-button", [HTMLButtonElement, Widget], {
 		postRender: function () {
 			this.on("click", this._clickHandler.bind(this));
-			this.on("delite-deactivated", thsi._blurHandler.bind(this));
+			this.on("delite-deactivated", this._deactivatedHandler.bind(this));
 			this.popup = new PopupWidget();
 		},
 
@@ -141,7 +141,7 @@ require([
 			}
 		},
 
-		_blurHandler: function () {
+		_deactivatedHandler: function () {
 			console.log(this.id + ": close popup due to blur");
 			this.closePopup();
 		}

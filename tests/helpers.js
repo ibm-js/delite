@@ -8,7 +8,7 @@ define([
 ], function (Deferred, all, domAttr, domClass, domGeometry, domStyle, kernel, on, query, a11y) {
 
 
-	// Globals used by onFocus()
+// Globals used by onFocus()
 	var curFocusNode, focusListener, focusCallback, focusCallbackDelay;
 
 	return {

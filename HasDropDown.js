@@ -254,14 +254,7 @@ define([
 				evt.stopPropagation();
 			}, this.buttonNode);
 
-			this.on("delite-deactivated", function () {
-				// Called magically when focus has shifted away from this widget and its dropdown.
-
-				// Close dropdown but don't focus my <input>.  User may have focused somewhere else (ex: clicked another
-				// input), and even if they just clicked a blank area of the screen, focusing my <input> will unwantedly
-				// popup the keyboard on mobile.
-				this.closeDropDown(false);
-			}.bind(this));
+			this.on("delite-deactivated", this._deactivateHandler.bind(this));
 
 			// trigger initial setting of d-down-arrow class
 			this.notifyCurrentValue("dropDownPosition");
@@ -350,6 +343,15 @@ define([
 				this.openDropDown();
 				this.focusDropDownOnOpen(true);
 			}
+		},
+
+		_deactivateHandler: function () {
+			// Called when focus has shifted away from this widget and it's dropdown
+
+			// Close dropdown but don't focus my <input>.  User may have focused somewhere else (ex: clicked another
+			// input), and even if they just clicked a blank area of the screen, focusing my <input> will unwantedly
+			// popup the keyboard on mobile.
+			this.closeDropDown(false);
 		},
 
 		/**

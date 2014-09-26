@@ -4,7 +4,7 @@ define([
 	"delite/keys", // keys.END keys.HOME, keys.LEFT_ARROW etc.
 	"./features",
 	"./Widget",
-	"./activationTracker"	// causes _onBlur() to be called when focus removed from KeyNav and logical descendants
+	"./activationTracker"	// delite-deactivate event when focus removed from KeyNav and logical descendants
 ], function (dcl, keys, has, Widget) {
 	/**
 	 * Return true if node is an `<input>` or similar that responds to keyboard input.
@@ -125,7 +125,7 @@ define([
 
 			this.on("keypress", this._keynavKeyPressHandler.bind(this)),
 			this.on("keydown", this._keynavKeyDownHandler.bind(this)),
-			this.on("activation-handler-deactivate", this._deactivateHandler.bind(this)),
+			this.on("delite-deactivate", this._deactivateHandler.bind(this)),
 			this.on("focusin", function (evt) {
 				var target = self._getTargetElement(evt);
 				if (target === self) {
@@ -222,7 +222,7 @@ define([
 		 */
 		_keynavFocusHandler: function () {
 			// Note that we can't use the delite-activated event because switching focus from that
-			// event handler confuses the focus.js code (because it recursively triggers the
+			// event handler confuses the activationTracker.js code (because it recursively triggers the
 			// delite-activated event).  Also, delite-activated would fire when focus went
 			// directly to a child widget due to mouse click.
 

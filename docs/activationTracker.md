@@ -7,8 +7,8 @@ title: delite/activationTracker
 
 delite/activationTracker is a utility module that is used to track and manage active widgets on a page.
 
-At any point in time there is a set of (for lack of a better word) "active" or "activationTrackered" widgets,
-meaning the currently activationTrackered widget and that widget's ancestors.
+At any point in time there is a set of (for lack of a better word) "active" or "focused" widgets,
+meaning the currently focused widget and that widget's ancestors.
 "Ancestor" can mean either DOM ancestor (ex: TextBox → Form), or a logical parent-child relationship
 (ex: TooltipDialog → DropDownButton).
 
@@ -26,7 +26,7 @@ when widgets become active/inactive.
 ## delite-activated and delite-deactivated events
 
 Also, if `delite/activationTracker` is loaded, every widget will emit a non-bubbling `delite-activated` event
-when it becomes activate (i.e. when it or logical descendant widget is activationTrackered or touched), and a non-bubbling
+when it becomes activate (i.e. when it or logical descendant widget is focused or clicked), and a non-bubbling
 `delite-deactivated` event when the opposite happens.
 
 
