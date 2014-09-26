@@ -265,7 +265,7 @@ define([
 			for (i++; i <= lastNewIdx; i++) {
 				widget = newStack[i];
 				if (widget) {
-					widget.emit("delite-activated", {bubbles: true, by: by});
+					widget.emit("delite-activated", {bubbles: false, by: by});
 					this.emit("activated", widget, by);
 				}
 			}
