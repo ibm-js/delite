@@ -2,7 +2,7 @@
 define([
 	"dcl/dcl",
 	"./FormWidget",
-	"./focus"
+	"./activationTracker"
 ], function (dcl, FormWidget) {
 
 	/**
@@ -91,7 +91,7 @@ define([
 		},
 
 		postRender: function () {
-			this.on("delite-activated", function () {
+			this.on("activation-tracker-activated", function () {
 				// Called when user may be about to start input.
 				// Saves the widget's current value, which is the most recent of:
 				//

@@ -31,7 +31,7 @@ define([
 			}));
 
 			widget.value = "input value 0";
-			widget.emit("delite-activated");
+			widget.emit("activation-tracker-activated");
 			widget.handleOnInput("input value 1");
 			widget.handleOnInput("input value 2");
 			widget.handleOnInput("input value 3");
@@ -52,7 +52,7 @@ define([
 			}));
 
 			widget.value = "initial value";
-			widget.emit("delite-activated");
+			widget.emit("activation-tracker-activated");
 			widget.handleOnChange("change value");
 
 			return d;
@@ -67,7 +67,7 @@ define([
 			}));
 
 			widget.value = "initial value";
-			widget.emit("delite-activated");
+			widget.emit("activation-tracker-activated");
 			widget.handleOnChange("initial value");
 
 			setTimeout(d.callback(function () {
@@ -85,7 +85,7 @@ define([
 			}));
 
 			widget.value = "initial value";
-			widget.emit("delite-activated");
+			widget.emit("activation-tracker-activated");
 			widget.handleOnChange("new value");
 			widget.handleOnChange("initial value");
 

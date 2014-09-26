@@ -4,17 +4,15 @@
  * or if a non-focusable node of this widget or a descendant was the most recent node
  * to get a touchstart/mousedown/pointerdown event.
  *
- * Emits non-bubbling `delite-activated` and `delite-deactivated` events on widgets
+ * Emits non-bubbling `activation-tracker-activated` and `activation-tracker-deactivated` events on widgets
  * as they become active, or stop being active, as defined above.
  *
- * Call `focus.on("active-widget-stack", callback)` to track the stack of currently focused widgets.
+ * Call `activationTracker.on("active-widget-stack", callback)` to track the stack of currently active widgets.
  *
- * Call `focus.on("deactivated", func)` or `focus.on("activated", ...)` to monitor when
+ * Call `activationTracker.on("deactivated", func)` or `activationTracker.on("activated", ...)` to monitor when
  * when widgets become active/inactive.
  *
- * Finally, `focus.focus(node)` will focus a node, suppressing errors if the node doesn't exist.
- *
- * @module delite/focus
+ * @module delite/activationTracker
  * */
 define([
 	"dcl/advise",
@@ -31,7 +29,7 @@ define([
 	// Time of the last pointerdown or focusin event
 	var lastPointerDownOrFocusIn;
 
-	var FocusManager = dcl(Evented, /** @lends module:delite/focus */ {
+	var ActivationTracker = dcl(Evented, /** @lends module:delite/activationTracker */ {
 
 		/**
 		 * List of currently active widgets (focused widget and its ancestors).
@@ -258,7 +256,7 @@ define([
 			for (i = lastOldIdx; i >= 0 && oldStack[i] !== newStack[i]; i--) {
 				widget = oldStack[i];
 				if (widget) {
-					widget.emit("delite-deactivated", {bubbles: false, by: by});
+					widget.emit("activation-tracker-deactivated", {bubbles: false, by: by});
 					this.emit("deactivated", widget, by);
 				}
 			}
@@ -267,28 +265,15 @@ define([
 			for (i++; i <= lastNewIdx; i++) {
 				widget = newStack[i];
 				if (widget) {
-					widget.emit("delite-activated", {bubbles: true, by: by});
+					widget.emit("activation-tracker-activated", {bubbles: true, by: by});
 					this.emit("activated", widget, by);
-				}
-			}
-		},
-
-		/**
-		 * Focus the specified node, suppressing errors if they occur.
-		 * @param {Element} node
-		 */
-		focus: function (node) {
-			if (node) {
-				try {
-					node.focus();
-				} catch (e) {/*quiet*/
 				}
 			}
 		}
 	});
 
 	// Create singleton for top window
-	var singleton = new FocusManager();
+	var singleton = new ActivationTracker();
 	singleton.registerWin(window);
 
 	return singleton;

@@ -4,13 +4,13 @@ define([
 	"dojo/dom-class", // domClass.add domClass.contains domClass.remove
 	"dojo/when",
 	"requirejs-dplugins/has", // has("touch")
-	"delite/keys", // keys.DOWN_ARROW keys.ENTER keys.ESCAPE
-	"./focus",		// for delite-deactivated event
+	"./keys", // keys.DOWN_ARROW keys.ENTER keys.ESCAPE
 	"./place",
 	"./popup",
 	"./Widget",
+	"./activationTracker",		// for activation-tracker-deactivated event
 	"dpointer/events"		// so can just monitor for "pointerdown"
-], function (dcl, domClass, when, has, keys, focus, place, popup, Widget) {
+], function (dcl, domClass, when, has, keys, place, popup, Widget) {
 	/**
 	 * Base class for widgets that need drop down ability.
 	 * @mixin module:delite/HasDropDown
@@ -254,7 +254,7 @@ define([
 				evt.stopPropagation();
 			}, this.buttonNode);
 
-			this.on("delite-deactivated", function () {
+			this.on("activation-tracker-deactivated", function () {
 				// Called magically when focus has shifted away from this widget and its dropdown.
 
 				// Close dropdown but don't focus my <input>.  User may have focused somewhere else (ex: clicked another
@@ -282,7 +282,7 @@ define([
 		},
 
 		destroy: function () {
-			// If dropdown is open, close it, to avoid leaving delite/focus in a strange state.
+			// If dropdown is open, close it, to avoid leaving delite/activationTracker in a strange state.
 			// Put focus back on me to avoid the focused node getting destroyed, which flummoxes IE.
 			if (this.opened) {
 				this.closeDropDown(true);

@@ -4,7 +4,7 @@ define([
 	"delite/keys", // keys.END keys.HOME, keys.LEFT_ARROW etc.
 	"./features",
 	"./Widget",
-	"./focus"	// causes _onBlur() to be called when focus removed from KeyNav and logical descendants
+	"./activationTracker"	// causes _onBlur() to be called when focus removed from KeyNav and logical descendants
 ], function (dcl, keys, has, Widget) {
 	/**
 	 * Return true if node is an `<input>` or similar that responds to keyboard input.
@@ -125,6 +125,7 @@ define([
 
 			this.on("keypress", this._keynavKeyPressHandler.bind(this)),
 			this.on("keydown", this._keynavKeyDownHandler.bind(this)),
+			this.on("activation-handler-deactivate", this._deactivateHandler.bind(this)),
 			this.on("focusin", function (evt) {
 				var target = self._getTargetElement(evt);
 				if (target === self) {
@@ -220,9 +221,10 @@ define([
 		 * @private
 		 */
 		_keynavFocusHandler: function () {
-			// Note that we can't use the delite-activated event because switching focus from that
-			// event handler confuses the focus.js code (because it recursively triggers the delite-activated event).
-			// Also, delite-activated would fire when focus went directly to a child widget due to mouse click.
+			// Note that we can't use the activation-tracker-activated event because switching focus from that
+			// event handler confuses the focus.js code (because it recursively triggers the
+			// activation-tracker-activated event).  Also, activation-tracker-activated would fire when focus went
+			// directly to a child widget due to mouse click.
 
 			// Ignore spurious focus event:
 			// On IE, clicking the scrollbar of a select dropdown moves focus from the focused child item to me
@@ -239,7 +241,7 @@ define([
 			this.focus();
 		},
 
-		_onBlur: dcl.after(function () {
+		_deactivateHandler: function () {
 			// When focus is moved away the container, and its descendant (popup) widgets,
 			// then restore the container's tabIndex so that user can tab to it again.
 			// Note that using _onBlur() so that this doesn't happen when focus is shifted
@@ -253,7 +255,7 @@ define([
 				this.focusedChild.tabIndex = "-1";
 				this.focusedChild = null;
 			}
-		}),
+		},
 
 		/**
 		 * Called when a child gets focus, either by user clicking it, or programatically by arrow key handling code.

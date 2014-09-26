@@ -14,7 +14,7 @@ define([
 	"dojo/has", // has("dojo-bidi")
 	"dojo/window", // winUtils.getBox, winUtils.get
 	"dojo/dnd/Moveable", // Moveable
-	"../focus",
+	"../activationTracker",
 	"../Widget",
 	"../_TemplatedMixin",
 	"../CssState",
