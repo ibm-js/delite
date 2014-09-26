@@ -103,7 +103,7 @@ require([
 	register("fake-dropdown-button", [HTMLButtonElement, Widget], {
 		postRender: function () {
 			this.on("click", this._clickHandler.bind(this));
-			this.on("activation-tracker-deactivated", thsi._blurHandler.bind(this));
+			this.on("delite-deactivated", thsi._blurHandler.bind(this));
 			this.popup = new PopupWidget();
 		},
 
@@ -168,10 +168,10 @@ require([
 			["form", "fieldset1", "fieldset2", "combobox", "editor", "spinner"].forEach(function (id) {
 				var w = document.getElementById(id);
 
-				w.on("activation-tracker-activated", function () {
+				w.on("delite-activated", function () {
 					activateEvents[id] = true;
 				});
-				w.on("activation-tracker-deactivated", function () {
+				w.on("delite-deactivated", function () {
 					deactivateEvents[id] = true;
 				});
 			});
@@ -179,7 +179,7 @@ require([
 	]);
 
 	function resetEvents() {
-		// These are objects used to track activation-tracker-activate and activation-tracker-deactivate events.
+		// These are objects used to track delite-activate and delite-deactivate events.
 		activateEvents = {};
 		deactivateEvents = {};
 

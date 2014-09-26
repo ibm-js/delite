@@ -49,7 +49,7 @@ require([
 
 		postRender: function () {
 			this.on("click", this._openPopup.bind(this));
-			this.on("activation-tracker-deactivate", this._deactivateHandler.bind(this));
+			this.on("delite-deactivate", this._deactivateHandler.bind(this));
 		},
 
 		_openPopup: function () {

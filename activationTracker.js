@@ -4,7 +4,7 @@
  * or if a non-focusable node of this widget or a descendant was the most recent node
  * to get a touchstart/mousedown/pointerdown event.
  *
- * Emits non-bubbling `activation-tracker-activated` and `activation-tracker-deactivated` events on widgets
+ * Emits non-bubbling `delite-activated` and `delite-deactivated` events on widgets
  * as they become active, or stop being active, as defined above.
  *
  * Call `activationTracker.on("active-widget-stack", callback)` to track the stack of currently active widgets.
@@ -256,7 +256,7 @@ define([
 			for (i = lastOldIdx; i >= 0 && oldStack[i] !== newStack[i]; i--) {
 				widget = oldStack[i];
 				if (widget) {
-					widget.emit("activation-tracker-deactivated", {bubbles: false, by: by});
+					widget.emit("delite-deactivated", {bubbles: false, by: by});
 					this.emit("deactivated", widget, by);
 				}
 			}
@@ -265,7 +265,7 @@ define([
 			for (i++; i <= lastNewIdx; i++) {
 				widget = newStack[i];
 				if (widget) {
-					widget.emit("activation-tracker-activated", {bubbles: true, by: by});
+					widget.emit("delite-activated", {bubbles: true, by: by});
 					this.emit("activated", widget, by);
 				}
 			}

@@ -8,7 +8,7 @@ define([
 	"./place",
 	"./popup",
 	"./Widget",
-	"./activationTracker",		// for activation-tracker-deactivated event
+	"./activationTracker",		// for delite-deactivated event
 	"dpointer/events"		// so can just monitor for "pointerdown"
 ], function (dcl, domClass, when, has, keys, place, popup, Widget) {
 	/**
@@ -254,7 +254,7 @@ define([
 				evt.stopPropagation();
 			}, this.buttonNode);
 
-			this.on("activation-tracker-deactivated", function () {
+			this.on("delite-deactivated", function () {
 				// Called magically when focus has shifted away from this widget and its dropdown.
 
 				// Close dropdown but don't focus my <input>.  User may have focused somewhere else (ex: clicked another

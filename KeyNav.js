@@ -221,9 +221,9 @@ define([
 		 * @private
 		 */
 		_keynavFocusHandler: function () {
-			// Note that we can't use the activation-tracker-activated event because switching focus from that
+			// Note that we can't use the delite-activated event because switching focus from that
 			// event handler confuses the focus.js code (because it recursively triggers the
-			// activation-tracker-activated event).  Also, activation-tracker-activated would fire when focus went
+			// delite-activated event).  Also, delite-activated would fire when focus went
 			// directly to a child widget due to mouse click.
 
 			// Ignore spurious focus event:

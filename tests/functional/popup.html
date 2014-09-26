@@ -57,7 +57,7 @@ require([
 
 		postRender: function () {
 			this.on("click", this._openPopup.bind(this));
-			this.on("activation-tracker-deactivate", this._deactivateHandler.bind(this))
+			this.on("delite-deactivate", this._deactivateHandler.bind(this))
 		},
 
 		_openPopup: function () {
@@ -259,7 +259,7 @@ require([
 			}
 
 			this.on("click", this._clickHandler.bind(this));
-			this.on("activation-tracker-deactivate", this._deactivateHandler.bind(this));
+			this.on("delite-deactivate", this._deactivateHandler.bind(this));
 		},
 
 		_clickHandler: function (e) {

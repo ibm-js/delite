@@ -23,10 +23,10 @@ Call `activationTracker.on("active-widget-stack", callback)` to track the stack 
 Call `activationTracker.on("deactivated", func)` or `activationTracker.on("activated", ...)` to monitor when
 when widgets become active/inactive.
 
-## activation-tracker-activated and activation-tracker-deactivated events
+## delite-activated and delite-deactivated events
 
-Also, if `delite/activationTracker` is loaded, every widget will emit a non-bubbling `activation-tracker-activated` event
+Also, if `delite/activationTracker` is loaded, every widget will emit a non-bubbling `delite-activated` event
 when it becomes activate (i.e. when it or logical descendant widget is activationTrackered or touched), and a non-bubbling
-`activation-tracker-deactivated` event when the opposite happens.
+`delite-deactivated` event when the opposite happens.
 
 
