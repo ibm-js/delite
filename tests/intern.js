@@ -19,15 +19,13 @@ define({
 		// { browserName: "internet explorer", version: "9", platform: "Windows 7" },
 		{ browserName: "firefox", version: "31", platform: "Windows 7", name : "delite" },
 		{ browserName: "chrome", version: "36", platform: "Windows 7", name : "delite" },
-		{ browserName: "safari", version: "7", platform: "OS X 10.9", name : "delite" }
+		{ browserName: "safari", version: "7", platform: "OS X 10.9", name : "delite" },
 
 		// Mobile
+		{ platformName: "iOS", platformVersion: "7.1", browserName: "safari", deviceName: "iPhone Simulator",
+			"appium-version": "1.2.2", name: "delite" }
 
-		// comment out iOS until fix https://github.com/theintern/intern/issues/274 released (> intern 2.1)
-		//, { platformName: "iOS", platformVersion: "7.1", browserName: "safari", deviceName: "iPhone Simulator",
-		//	"appium-version": "1.2.2", name: "delite" }
-
-		// android not working either
+		// android not working (but not tested with intern 2 yet)
 		// , { browserName: "android", platform: "Android" }
 	],
 
