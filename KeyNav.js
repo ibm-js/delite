@@ -57,7 +57,7 @@ define([
 		 * @member {Object}
 		 * @protected
 		 */
-		_keyNavCodes: null,
+		keyHandlers: null,
 
 		/**
 		 * Selector to identify which descendants Elements are navigable via arrow keys or
@@ -109,8 +109,8 @@ define([
 				this._selectorFunc = function (child) { return child.parentNode === self.containerNode; };
 			}
 
-			if (!this._keyNavCodes) {
-				var keyCodes = this._keyNavCodes = {};
+			if (!this.keyHandlers) {
+				var keyCodes = this.keyHandlers = {};
 				keyCodes[keys.HOME] = function () {
 					self.focusFirstChild();
 				};
@@ -125,7 +125,7 @@ define([
 
 			this.on("keypress", this._keynavKeyPressHandler.bind(this)),
 			this.on("keydown", this._keynavKeyDownHandler.bind(this)),
-			this.on("delite-deactivate", this._deactivateHandler.bind(this)),
+			this.on("delite-deactivate", this._keynavDeactivateHandler.bind(this)),
 			this.on("focusin", function (evt) {
 				var target = self._getTargetElement(evt);
 				if (target === self) {
@@ -241,7 +241,7 @@ define([
 			this.focus();
 		},
 
-		_deactivateHandler: function () {
+		_keynavDeactivateHandler: function () {
 			// When focus is moved away the container, and its descendant (popup) widgets,
 			// then restore the container's tabIndex so that user can tab to it again.
 			// Note that using _onBlur() so that this doesn't happen when focus is shifted
@@ -340,25 +340,43 @@ define([
 		 * @private
 		 */
 		_keynavKeyDownHandler: function (evt) {
-			// Ignore left, right, home, and end on <input> controls
+			// Ignore left, right, home, end, and space on <input> controls
 			if (takesInput(evt.target) &&
 				(evt.keyCode === keys.LEFT_ARROW || evt.keyCode === keys.RIGHT_ARROW ||
-					evt.keyCode === keys.HOME || evt.keyCode === keys.END)) {
+					evt.keyCode === keys.HOME || evt.keyCode === keys.END || evt.keyCode === keys.SPACE)) {
 				return;
 			}
-				
-			var func = this._keyNavCodes[evt.keyCode];
-			if (func) {
-				func(evt, this.focusedChild);
-				evt.stopPropagation();
-				evt.preventDefault();
-				this._searchString = ""; // so a DOWN_ARROW b doesn't search for ab
-			} else if (evt.keyCode === keys.SPACE && this._searchTimer && !(evt.ctrlKey || evt.altKey || evt.metaKey)) {
+
+			if (evt.keyCode === keys.SPACE && this._searchTimer && !(evt.ctrlKey || evt.altKey || evt.metaKey)) {
+				// If the user types some string like "new york", interpret the space as part of the search rather
+				// than to perform some action, even if this.keyHandlers[evt.keyCode] is set).
+
 				// Stop a11yclick from interpreting key as a click event.
-				// Also stop IE from scrolling, and most browsers (except FF) from sending keypress.
+				// Also stop IE from scrolling, and most browsers (except FF) from emitting keypress event.
 				evt.preventDefault();
 
 				this._keyboardSearch(evt, " ");
+			} else {
+				// Otherwise call the handler specified in this.keyHandlers.
+				this._applyKeyHandler(evt);
+			}
+		},
+
+		/**
+		 * Call handler specified in this.keyHandlers[] for the current keystroke.
+		 * @param evt
+		 * @private
+		 */
+		_applyKeyHandler: function (evt) {
+			var func = this.keyHandlers[evt.keyCode];
+			if (func) {
+				if (typeof func === "string") {
+					func = this[func];
+				}
+				func.call(this, evt, this.focusedChild);
+				evt.stopPropagation();
+				evt.preventDefault();
+				this._searchString = ""; // so a DOWN_ARROW b doesn't search for ab
 			}
 		},
 
@@ -377,12 +395,6 @@ define([
 			// Note: if there's no search in progress, then SPACE should be ignored.   If there is a search
 			// in progress, then SPACE is handled in _keynavKeyDownHandler.
 			if (takesInput(evt.target) || evt.charCode <= keys.SPACE || evt.ctrlKey || evt.altKey || evt.metaKey) {
-				return;
-			}
-
-			if (/^(checkbox|radio)$/.test(evt.target.type) &&
-				(evt.charCode === keys.SPACE || evt.charCode === keys.ENTER)) {
-				// Ignore keyboard clicks on checkbox controls
 				return;
 			}
 

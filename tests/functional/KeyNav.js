@@ -186,6 +186,39 @@ define([
 				});
 		},
 
+		"set keyHandlers[keys.SPACE]": function () {
+			if (this.remote.environmentType.brokenSendKeys || !this.remote.environmentType.nativeEvents) {
+				return this.skip("no keyboard support");
+			}
+			return this.remote
+				.findByCssSelector("#keyboardCust > input")
+					.click()
+					.pressKeys("a b c")	// sending space to input shouldn't call registered handler for space key
+					.execute("return spaces.textContent")
+					.then(function (value) {
+						assert.strictEqual(value, "0", "no handler callbacks yet");
+					})
+					.end()
+				.pressKeys(keys.ARROW_DOWN)
+				.pressKeys("new m")// similarly, handler shouldn't be called for space within a searchstring
+				.execute("return document.activeElement.textContent")
+				.then(function (value) {
+					assert.strictEqual(value, "New Mexico", "new m");
+				})
+				.execute("return spaces.textContent")
+				.then(function (value) {
+					assert.strictEqual(value, "0", "no handler callback after 'new m' search");
+				})
+				.sleep(1000)
+				// Now that 1000ms have elapsed, the search should be canceled, and each space typed
+				// should call the handler registered in this.keyHandlers[keys.SPACE]
+				.pressKeys("   ")
+				.execute("return spaces.textContent")
+				.then(function (value) {
+					assert.strictEqual(value, "3", "space key outside of search calls registered handler");
+				});
+		},
+
 		"embedded form controls": function () {
 			if (this.remote.environmentType.brokenSendKeys || !this.remote.environmentType.nativeEvents) {
 				return this.skip("no keyboard support");

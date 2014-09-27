@@ -11,12 +11,13 @@
 		var ready = false; // set to true when the test page is ready
 		require([
 			"delite/a11yclick",
+			"delite/keys",
 			"delite/register",
 			"delite/Widget",
 			"delite/Container",
 			"delite/KeyNav",
 			"requirejs-domready/domReady!"
-		], function (a11yclick, register, Widget, Container, KeyNav) {
+		], function (a11yclick, keys, register, Widget, Container, KeyNav) {
 			// Complex KeyNav subclass with string childSelector
 			register("my-grid", [HTMLElement, KeyNav], {
 				// Specifies which descendants can be navigated to
@@ -77,7 +78,38 @@
 						}
 					}.bind(this));
 				}
-		});
+			});
+
+			// Register keyHandlers[keys.SPACE] handler
+			var MyCustKeyNavCode = register("my-list-cust", [HTMLElement, Container, KeyNav], {
+				// Id of node to update when there's an space event
+				spaceCountNodeId: "",
+
+				childSelector: function (child) {
+					return child !== this;
+				},
+				onDownArrow: function () {
+					var nextChild = this.getNext(this.focusedChild, 1);
+					if (nextChild) {
+						this.focusChild(nextChild);
+					}
+				},
+				onUpArrow: function () {
+					var previousChild = this.getNext(this.focusedChild, -1);
+					if (previousChild) {
+						this.focusChild(previousChild);
+					}
+				},
+				postRender: function () {
+					// If the caller has specified a counter node, increment it whenever there's a space key.
+					// Except if the space is on an <input> or is part of a search, ex: "new york".
+					this.keyHandlers[keys.SPACE] = function () {
+						if (this.spaceCountNodeId) {
+							window[this.spaceCountNodeId].innerHTML = window[this.spaceCountNodeId].innerHTML - -1;
+						}
+					}.bind(this);
+				}
+			});
 
 			// Child of TestContainer
 			var TestContained = register("my-list-item", [HTMLElement, Widget], {
@@ -136,18 +168,18 @@
 		}
 
 		/* Container KeyNav subclass */
-		my-list {
+		my-list, my-list-cust {
 			display: table;
 			border: gray dotted medium;
 		}
 
-		my-list > * {
+		my-list > *, my-list-cust > * {
 			margin: 3px;
 			border: solid #ccc;
 		}
 
 		/* focused cells in each of my KeyNav subclasses */
-		my-cell:focus, my-list > *:focus {
+		my-cell:focus, my-list > *:focus, my-list-cust > *:focus {
 			background-color: yellow;
 		}
 
@@ -213,6 +245,22 @@
 		<my-list-item value="NY">New York</my-list-item>
 	</my-list>
 	clicks: <span id="clicks">0</span>
+
+	<h3>Test for keyboard search with spaces and setting for keyHandlers[keys.SPACE]</h3>
+	<input id="keyboardInputCust" type="text" tabindex="9" value="input before keyboard">
+	<my-list-cust id="keyboardCust" spaceCountNodeId="spaces" tabIndex="9">
+		<input>
+		<my-list-item value="AL">Alabama</my-list-item>
+		<my-list-item value="AK">Alaska</my-list-item>
+		<my-list-item value="AZ">Arizona</my-list-item>
+		<my-list-item value="AR">Arkansas</my-list-item>
+		<my-list-item value="CA">California</my-list-item>
+		<my-list-item value="NH">New Hampshire</my-list-item>
+		<my-list-item value="NJ">New Jersey</my-list-item>
+		<my-list-item value="NM">New Mexico</my-list-item>
+		<my-list-item value="NY">New York</my-list-item>
+	</my-list-cust>
+	callbacks to keyHandlers[keys.SPACE] handler: <span id="spaces">0</span>
 
 </body>
 </html>
