@@ -29,6 +29,17 @@ descendants added later, by for example `addChild()`.
 
 Also, child widgets must implement a `.focus()` method.
 
+## keyHandlers
+
+If a subclass wants to take action on other keystrokes, such as F2, it can augment/redefine the `keyHandlers`
+hash, for example:
+
+```js
+postRender: function () {
+   this.keyHandlers[keys.F2] = this._f2HandlerFunc;
+}
+```
+
 ## Example
 
 <iframe width="100%" height="300" src="http://jsfiddle.net/ibmjs/Lbvu2/embedded/" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
