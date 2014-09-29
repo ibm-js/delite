@@ -4,7 +4,7 @@ define([
 	"delite/keys", // keys.END keys.HOME, keys.LEFT_ARROW etc.
 	"./features",
 	"./Widget",
-	"./activationTracker"	// delite-deactivate event when focus removed from KeyNav and logical descendants
+	"./activationTracker"	// delite-deactivated event when focus removed from KeyNav and logical descendants
 ], function (dcl, keys, has, Widget) {
 	/**
 	 * Return true if node is an `<input>` or similar that responds to keyboard input.
@@ -125,7 +125,7 @@ define([
 
 			this.on("keypress", this._keynavKeyPressHandler.bind(this)),
 			this.on("keydown", this._keynavKeyDownHandler.bind(this)),
-			this.on("delite-deactivate", this._keynavDeactivateHandler.bind(this)),
+			this.on("delite-deactivated", this._keynavDeactivatedHandler.bind(this)),
 			this.on("focusin", function (evt) {
 				var target = self._getTargetElement(evt);
 				if (target === self) {
@@ -241,7 +241,7 @@ define([
 			this.focus();
 		},
 
-		_keynavDeactivateHandler: function () {
+		_keynavDeactivatedHandler: function () {
 			// When focus is moved away the container, and its descendant (popup) widgets,
 			// then restore the container's tabIndex so that user can tab to it again.
 			// Note that using _onBlur() so that this doesn't happen when focus is shifted
