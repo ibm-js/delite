@@ -303,8 +303,8 @@ define([
 				return;
 			}
 			var dropDown = this._currentDropDown, target = e.target;
-			if (dropDown && this.opened && dropDown.handleKey) {
-				if (dropDown.handleKey(e) === false) {
+			if (dropDown && this.opened) {
+				if (dropDown.emit("keydown", e) === false) {
 					/* false return code means that the drop down handled the key */
 					e.stopPropagation();
 					e.preventDefault();
