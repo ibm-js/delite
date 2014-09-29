@@ -128,11 +128,11 @@ define([
 				return this.skip("click() doesn't generate mousedown/mouseup, so popup won't open");
 			}
 			var browserName = this.remote.environmentType.browserName;
-			return this.remote.findById("rdd")
+			return this.remote.findByCssSelector("button[is=delayed-drop-down-button]")
 					.click()
 					.end()
 				.setFindTimeout(intern.config.WAIT_TIMEOUT)	// takes 500ms for dropdown to appear first time
-				.findById("rdd_popup")
+				.findByTagName("simple-tooltip-dialog")
 					.isDisplayed().then(function (visible) {
 						assert(visible, "visible");
 					})
@@ -146,14 +146,31 @@ define([
 						assert.strictEqual(tag, "input", "focus moved to tooltip's <input>");
 					})
 					.execute(function () {
+						var anchor = document.querySelector("button[is=delayed-drop-down-button]");
+						var dropDown = document.querySelector("simple-tooltip-dialog");
 						return {
-							anchor: document.getElementById("rdd").getBoundingClientRect(),
-							dropDown: document.getElementById("rdd_popup").getBoundingClientRect()
+							anchorId: anchor.id,
+							anchorRect: anchor.getBoundingClientRect(),
+							anchorAriaOwns: anchor.getAttribute("aria-owns"),
+							dropDownId: dropDown.id,
+							dropDownRect: dropDown.getBoundingClientRect(),
+							dropDownLabelledBy: dropDown.getAttribute("aria-labelledby")
 						};
-					}).then(function (pos) {
+					}).then(function (ret) {
 						// dropdown is RTL, but should align the same due to the autoWidth: true default setting
-						assert(Math.abs(pos.anchor.left - pos.dropDown.left) < 1, "drop down and anchor left aligned");
-						assert(Math.abs(pos.anchor.width - pos.dropDown.width) < 1, "drop down same width as anchor");
+						assert(Math.abs(ret.anchorRect.left - ret.dropDownRect.left) < 1,
+							"drop down and anchor left aligned");
+						assert(Math.abs(ret.anchorRect.width - ret.dropDownRect.width) < 1,
+							"drop down same width as anchor");
+
+						// check tha aria-owns points from button to dropdown, even though there was no id
+						// specified for the button or the drop down
+						assert(ret.anchorId, "anchor has generated id");
+						assert(ret.dropDownId, "dropdown has generated id");
+						assert.strictEqual(ret.anchorAriaOwns, ret.dropDownId, "aria-owns points to dropdown id");
+						assert.strictEqual(ret.dropDownLabelledBy, ret.anchorId, "aria-labelledby --> anchor id");
+
+						// TODO: check that dropDown.aria-labeled-by = anchro.id
 					})
 					// test close by clicking submit button
 					.findByCssSelector("button[type=submit]")
@@ -163,10 +180,10 @@ define([
 						assert(!visible, "hidden");
 					})
 					.end()
-				.findById("rdd")
+				.findByCssSelector("button[is=delayed-drop-down-button]")
 					.click()		// reopen drop down by clicking DropDownButton again
 					.end()
-				.findById("rdd_popup")
+				.findByTagName("simple-tooltip-dialog")
 					.isDisplayed().then(function (visible) {
 						assert(visible, "visible again");
 					})

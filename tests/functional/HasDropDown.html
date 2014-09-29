@@ -184,14 +184,13 @@
 			});
 
 			// A button that shows a popup, but spends 1000ms the first time pretending to load the popup.
+			// Also used for testing that things work even when id's not specified.
 			var DelayedDropDownButton = register("delayed-drop-down-button", [SimpleDropDownButton], {
 				loadDropDown: function () {
 					if (!this._dropDownPromise) {
 						this._dropDownPromise = new Deferred();
 						setTimeout(function () {
-							this._dropDownPromise.resolve(new this.dropDownConstructor({
-								id: this.id + "_popup"
-							}));
+							this._dropDownPromise.resolve(new this.dropDownConstructor({}));
 						}.bind(this), 500);
 					}
 					return this._dropDownPromise;
@@ -222,9 +221,9 @@
 				label: "show menu dropdown - ltr"
 			}).placeAt(document.body);
 
-			// rtl dropdown with tooltip dialog, delayed open first time
+			// Rtl dropdown with tooltip dialog, delayed open first time.
+			// Also used for testing that it works even if HasDropDown and popup don't have id's.
 			new DelayedDropDownButton({
-				id: "rdd",
 				dir: "rtl",
 				label: "show tooltip dropdown after 500ms - rtl",
 				dropDownConstructor: SimpleTooltipDialog
