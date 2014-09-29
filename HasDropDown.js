@@ -254,7 +254,7 @@ define([
 				evt.stopPropagation();
 			}, this.buttonNode);
 
-			this.on("delite-deactivated", this._deactivateHandler.bind(this));
+			this.on("delite-deactivated", this._deactivatedHandler.bind(this));
 
 			// trigger initial setting of d-down-arrow class
 			this.notifyCurrentValue("dropDownPosition");
@@ -345,7 +345,7 @@ define([
 			}
 		},
 
-		_deactivateHandler: function () {
+		_deactivatedHandler: function () {
 			// Called when focus has shifted away from this widget and it's dropdown
 
 			// Close dropdown but don't focus my <input>.  User may have focused somewhere else (ex: clicked another

@@ -197,7 +197,7 @@ define([
 		 * Popup the widget at the specified position.
 		 *
 		 * Note that whatever widget called delite/popup.open() should also require activationTracker and listen for
-		 * delite-deactivate event to know that focus has moved somewhere
+		 * delite-deactivated event to know that focus has moved somewhere
 		 * else and thus the popup should be closed.
 		 *
 		 * @param {module:delite/popup.OpenArgs} args
