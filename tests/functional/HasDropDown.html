@@ -138,7 +138,11 @@
 					child.className = "selected";
 				},
 
-				handleKey: function (evt) {
+				postRender: function () {
+					this.on("keydown", this._keydownHandler.bind(this));
+				},
+
+				_keydownHandler: function (evt) {
 					if(evt.keyCode == keys.ENTER || evt.keyCode == keys.SPACE) {
 						this.emit("change");
 						this.selected.className = "";
