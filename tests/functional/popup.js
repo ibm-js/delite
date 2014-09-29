@@ -35,7 +35,7 @@ define([
 						assert.isTrue(displayed, "choiceDropDown popup visible");
 					})
 					.end()
-				.findById("choiceDropDownButton_dropdown")	// parent of choiceDropDown
+				.findById("choiceDropDown_wrapper")	// parent of choiceDropDown
 				.getAttribute("role").then(function (role) {
 					assert.strictEqual(role, "region", "popup's wrapper node needs role=region");
 				})
@@ -93,14 +93,14 @@ define([
 						.click()
 						.end()
 					.sleep(500)
-					.findById("showNestedMenuButton_dropdown")
+					.findById("nestedChoice1")
 						.isDisplayed(function (err, displayed) {
-							assert.isFalse(displayed, "showNestedMenuButton_dropdown popup not visible");
+							assert.isFalse(displayed, "nestedChoice1 popup hidden");
 						})
 						.end()
-					.findById("nestedOpener_dropdown")
+					.findById("nestedOpener")
 						.isDisplayed(function (err, displayed) {
-							assert.isFalse(displayed, "nestedOpener_dropdown popup not visible");
+							assert.isFalse(displayed, "nestedOpener popup hidden");
 						})
 						.end();
 			}

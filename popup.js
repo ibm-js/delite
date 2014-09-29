@@ -216,8 +216,12 @@ define([
 				widget = args.popup,
 				orient = args.orient || ["below", "below-alt", "above", "above-alt"],
 				ltr = args.parent ? args.parent.isLeftToRight() : isDocLtr(widget.ownerDocument),
-				around = args.around,
-				id = args.around && args.around.id ? args.around.id + "_dropdown" : "popup_" + this._idGen++;
+				around = args.around;
+
+			// Generate id for popup if it doesn't already have one.
+			if (!widget.id) {
+				widget.id = args.around && args.around.id ? args.around.id + "_dropdown" : "popup_" + this._idGen++;
+			}
 
 			// If we are opening a new popup that isn't a child of a currently opened popup, then
 			// close currently opened popup(s).   This should happen automatically when the old popups
@@ -254,7 +258,7 @@ define([
 			}
 
 			dcl.mix(wrapper, {
-				id: id,
+				id: widget.id + "_wrapper",
 				className: "d-popup " + (widget.baseClass || widget["class"] || "").split(" ")[0] + "Popup"
 			});
 			wrapper.style.zIndex = this._beginZIndex + stack.length;

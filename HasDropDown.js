@@ -401,6 +401,11 @@ define([
 				var aroundNode = this.aroundNode || this,
 					self = this;
 
+				// Generate id for anchor if it's not already specified
+				if (!this.id) {
+					this.id = "HasDropDown_" + this.widgetId;
+				}
+
 				var retVal = popup.open({
 					parent: this,
 					popup: dropDown,
