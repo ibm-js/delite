@@ -150,6 +150,7 @@ define([
 						var dropDown = document.querySelector("simple-tooltip-dialog");
 						return {
 							anchorId: anchor.id,
+							anchorAriaHasPopup: anchor.getAttribute("aria-haspopup"),
 							anchorRect: anchor.getBoundingClientRect(),
 							anchorAriaOwns: anchor.getAttribute("aria-owns"),
 							dropDownId: dropDown.id,
@@ -170,7 +171,7 @@ define([
 						assert.strictEqual(ret.anchorAriaOwns, ret.dropDownId, "aria-owns points to dropdown id");
 						assert.strictEqual(ret.dropDownLabelledBy, ret.anchorId, "aria-labelledby --> anchor id");
 
-						// TODO: check that dropDown.aria-labeled-by = anchro.id
+						assert.strictEqual(ret.anchorAriaHasPopup, "true", "aria-haspopup");
 					})
 					// test close by clicking submit button
 					.findByCssSelector("button[type=submit]")

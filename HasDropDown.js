@@ -227,6 +227,8 @@ define([
 			this.buttonNode = this.buttonNode || this.focusNode || this;
 			this.popupStateNode = this.popupStateNode || this.focusNode || this.buttonNode;
 
+			this.setAttribute("aria-haspopup", "true");
+
 			// basic listeners
 			this.on("pointerdown", this._dropDownPointerDownHandler.bind(this), this.buttonNode);
 			this.on("keydown", this._dropDownKeyDownHandler.bind(this), this.focusNode || this);
