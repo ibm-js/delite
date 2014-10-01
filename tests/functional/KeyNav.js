@@ -267,6 +267,41 @@ define([
 				.then(function (value) {
 					assert.strictEqual(value, "four", "keyboard searched to 'four'");
 				});
+		},
+
+		"combobox": function () {
+			if (this.remote.environmentType.brokenSendKeys || !this.remote.environmentType.nativeEvents) {
+				return this.skip("no keyboard support");
+			}
+			return this.remote.execute("combobox.focus();")
+				.pressKeys(keys.ARROW_DOWN)
+				.execute("return document.activeElement.id")
+				.then(function (value) {
+					assert.strictEqual(value, "combobox", "down arrow leaves focus on combobox");
+				})
+				.findByCssSelector("#combobox_dropdown .d-active")
+					.getVisibleText().then(function (value) {
+						assert.strictEqual(value, "Alaska", "navigated to Alaska");
+					})
+					.end()
+				.findById("combobox_dropdown_previous_node")
+					.getVisibleText().then(function (value) {
+						assert.strictEqual(value, "Alabama", "got navigation event (prev)");
+					})
+					.end()
+				.findById("combobox_dropdown_current_node")
+					.getVisibleText().then(function (value) {
+						assert.strictEqual(value, "Alaska", "got navigation event (cur)");
+					})
+					.end()
+				.findByCssSelector("#combobox_dropdown > *:nth-child(5)")
+					.click()
+					.end()
+				.findById("combobox_dropdown_current_node")
+					.getVisibleText().then(function (value) {
+						assert.strictEqual(value, "California", "got navigation event from click");
+					})
+					.end();
 		}
 	});
 });
