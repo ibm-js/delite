@@ -146,6 +146,18 @@
 			});
 			p2.startup();
 
+			// Setup so keystrokes on the ComboBox get forwarded to the dropdown.
+			combobox.onfocus = function (evt) {
+				combobox_dropdown.focusFirstChild();
+			};
+			combobox.onkeydown = function (evt) {
+				combobox_dropdown.emit("keydown", evt);
+			};
+			combobox_dropdown.on("keynav-child-navigated", function (evt) {
+				combobox_dropdown_previous_node.textContent = (evt.oldValue ? evt.oldValue.textContent : "undefined");
+				combobox_dropdown_current_node.textContent = (evt.newValue ? evt.newValue.textContent : "undefined");
+			});
+
 			// Set global variable to signal that the test page is ready
 			ready = true;
 		})
@@ -176,6 +188,7 @@
 		my-list > *, my-list-cust > * {
 			margin: 3px;
 			border: solid #ccc;
+			display: block;
 		}
 
 		/* focused cells in each of my KeyNav subclasses */
@@ -183,6 +196,13 @@
 			background-color: yellow;
 		}
 
+		/* Styles for ComboBox dropdown where it doesn't get focus but we need to show which list item is
+		 * currently navigated to
+		 */
+		.d-active-descendant {
+			color: white;
+			background-color: blue;
+		}
 
 	</style>
 </head>
@@ -261,6 +281,23 @@
 		<my-list-item value="NY">New York</my-list-item>
 	</my-list-cust>
 	callbacks to keyHandlers[keys.SPACE] handler: <span id="spaces">0</span>
+
+	<h3>ComboBox</h3>
+	<input id="combobox" type="text" tabindex="9" value="">
+	<my-list id="combobox_dropdown" focusChildren="false">
+		<my-unfocusable-list-item value="AL" id="unfocusable_AL">Alabama</my-unfocusable-list-item>
+		<my-unfocusable-list-item value="AK" id="unfocusable_AK">Alaska</my-unfocusable-list-item>
+		<my-unfocusable-list-item value="AZ" id="unfocusable_AZ">Arizona</my-unfocusable-list-item>
+		<my-unfocusable-list-item value="AR" id="unfocusable_AR">Arkansas</my-unfocusable-list-item>
+		<my-unfocusable-list-item value="CA" id="unfocusable_CA">California</my-unfocusable-list-item>
+		<my-unfocusable-list-item value="NH" id="unfocusable_NH">New Hampshire</my-unfocusable-list-item>
+		<my-unfocusable-list-item value="NJ" id="unfocusable_NJ">New Jersey</my-unfocusable-list-item>
+		<my-unfocusable-list-item value="NM" id="unfocusable_NM">New Mexico</my-unfocusable-list-item>
+		<my-unfocusable-list-item value="NY" id="unfocusable_NY">New York</my-unfocusable-list-item>
+	</my-list>
+	previous navigated node: <span id="combobox_dropdown_previous_node"></span>
+	<br>
+	current navigated node: <span id="combobox_dropdown_current_node"></span>
 
 </body>
 </html>
