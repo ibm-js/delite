@@ -279,7 +279,7 @@ define([
 				.then(function (value) {
 					assert.strictEqual(value, "combobox", "down arrow leaves focus on combobox");
 				})
-				.findByCssSelector("#combobox_dropdown .d-active")
+				.findByCssSelector("#combobox_dropdown .d-active-descendant")
 					.getVisibleText().then(function (value) {
 						assert.strictEqual(value, "Alaska", "navigated to Alaska");
 					})

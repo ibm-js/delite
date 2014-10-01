@@ -201,8 +201,8 @@ define([
 
 		/**
 		 * Default focus() implementation: navigate to the first navigable descendant.
-		 * Note that if `focusChildren` is false, this will merely set the `d-active` class rather than actually
-		 * focusing the descendant.
+		 * Note that if `focusChildren` is false, this will merely set the `d-active-descendant` class
+		 * rather than actually focusing the descendant.
 		 */
 		focus: function () {
 			this.focusFirstChild();
@@ -210,8 +210,8 @@ define([
 
 		/**
 		 * Navigate to the first navigable descendant.
-		 * Note that if `focusChildren` is false, this will merely set the `d-active` class rather than actually
-		 * focusing the descendant.
+		 * Note that if `focusChildren` is false, this will merely set the `d-active-descendant` class
+		 * rather than actually focusing the descendant.
 		 * @protected
 		 */
 		focusFirstChild: function () {
@@ -220,8 +220,8 @@ define([
 
 		/**
 		 * Navigate to the last navigable descendant.
-		 * Note that if `focusChildren` is false, this will merely set the `d-active` class rather than actually
-		 * focusing the descendant.
+		 * Note that if `focusChildren` is false, this will merely set the `d-active-descendant` class
+		 * rather than actually focusing the descendant.
 		 * @protected
 		 */
 		focusLastChild: function () {
@@ -230,8 +230,8 @@ define([
 
 		/**
 		 * Navigate to the specified descendant.
-		 * Note that if `focusChildren` is false, this will merely set the `d-active` class rather than actually
-		 * focusing the descendant.
+		 * Note that if `focusChildren` is false, this will merely set the `d-active-descendant` class
+		 * rather than actually focusing the descendant.
 		 * @param {Element} child - Reference to the descendant.
 		 * @param {boolean} last - If true and if descendant has multiple focusable nodes, focus the
 		 *     last one instead of the first one.  This assumes that the child's `focus()` method takes a boolean
@@ -325,7 +325,7 @@ define([
 				}
 
 				if (this.focusedChild) {
-					domClass.remove(this.focusedChild, "d-active");
+					domClass.remove(this.focusedChild, "d-active-descendant");
 				}
 
 				/**
@@ -348,7 +348,7 @@ define([
 				// mark that the new node is the currently navigated one
 				this.focusedChild = child;
 				if (child) {
-					domClass.add(child, "d-active");
+					domClass.add(child, "d-active-descendant");
 				}
 			}
 		},
