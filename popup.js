@@ -259,7 +259,7 @@ define([
 
 			dcl.mix(wrapper, {
 				id: widget.id + "_wrapper",
-				className: "d-popup " + (widget.baseClass || widget["class"] || "").split(" ")[0] + "Popup"
+				className: "d-popup " + (widget.baseClass || widget["class"] || "").split(" ")[0] + "-popup"
 			});
 			wrapper.style.zIndex = this._beginZIndex + stack.length;
 			wrapper._popupParent = args.parent ? args.parent : null;
