@@ -1,11 +1,13 @@
 /** @module delite/KeyNav */
 define([
 	"dcl/dcl",
+	"dojo/dom-class",
 	"delite/keys", // keys.END keys.HOME, keys.LEFT_ARROW etc.
 	"./features",
 	"./Widget",
+	"dpointer/events",		// so can just monitor for "pointerdown"
 	"./activationTracker"	// delite-deactivated event when focus removed from KeyNav and logical descendants
-], function (dcl, keys, has, Widget) {
+], function (dcl, domClass, keys, has, Widget) {
 	/**
 	 * Return true if node is an `<input>` or similar that responds to keyboard input.
 	 * @param {Element} node
@@ -40,10 +42,21 @@ define([
 	  */
 	return dcl(Widget, /** @lends module:delite/KeyNav# */ {
 
-		// TODO: due to apparent bugs in jsdoc3, these aren't getting shown.
+		/**
+		 * When true, focus the descendant widgets as the user navigates to them via arrow keys or keyboard letter
+		 * search.  When false, rather than focusing the widgets, it merely sets `focusedChild`,
+		 * and sets the `d-active-descendant` class on the descendant widget the user has navigated to.
+		 *
+		 * False mode is intended for widgets like ComboBox where the focus is somewhere else and
+		 * keystrokes are merely being forwarded to the KeyNav widget.
+		 * @member {boolean}
+		 * @default true
+		 * @protected
+		 */
+		focusChildren: true,
 
 		/**
-		 * The currently focused descendant, or null if there isn't one
+		 * The currently navigated descendant, or null if there isn't one.
 		 * @member {Element}
 		 * @readonly
 		 * @protected
@@ -77,7 +90,7 @@ define([
 		 * Figure out effective target of this event, either a navigable node (a.k.a. a child),
 		 * or this widget itself.
 		 * The meaning of "child" here is complicated because this could be a Tree with nested children.
-		 * @param evt
+		 * @param {Event} evt
 		 * @private
 		 */
 		_getTargetElement: function (evt) {
@@ -90,11 +103,6 @@ define([
 		},
 
 		postRender: function () {
-			// If the user hasn't specified a tabindex declaratively, then set to default value.
-			if (!this.hasAttribute("tabindex")) {
-				this.tabIndex = "0";
-			}
-
 			var self = this;
 
 			// Setup function to check which child nodes are navigable.
@@ -123,17 +131,36 @@ define([
 				keyCodes[keys.DOWN_ARROW] = this.onDownArrow.bind(this);
 			}
 
-			this.on("keypress", this._keynavKeyPressHandler.bind(this)),
-			this.on("keydown", this._keynavKeyDownHandler.bind(this)),
-			this.on("delite-deactivated", this._keynavDeactivatedHandler.bind(this)),
-			this.on("focusin", function (evt) {
+			this.on("keypress", this._keynavKeyPressHandler.bind(this));
+			this.on("keydown", this._keynavKeyDownHandler.bind(this));
+			this.on("pointerdown", function (evt) {
 				var target = self._getTargetElement(evt);
-				if (target === self) {
-					self._keynavFocusHandler(evt);
-				} else {
-					self._childFocusHandler(target, evt);
+				if (target !== self) {
+					self._childNavigateHandler(target, evt);
 				}
 			});
+
+			if (this.focusChildren) {
+				this.on("delite-deactivated", this._keynavDeactivatedHandler.bind(this));
+
+				// TODO: this looks wrong, focusin shouldn't bubble so we shouldn't get any notification
+				// from descendant focus events.
+				this.on("focusin", function (evt) {
+					var target = self._getTargetElement(evt);
+					if (target === self) {
+						self._keynavFocusHandler(evt);
+					} else {
+						self._childNavigateHandler(target, evt);
+					}
+				});
+			}
+		},
+
+		attachedCallback: function () {
+			// If the user hasn't specified a tabindex declaratively, then set to default value.
+			if (this.focusChildren && !this.hasAttribute("tabindex")) {
+				this.tabIndex = "0";
+			}
 		},
 
 		/**
@@ -171,14 +198,18 @@ define([
 		},
 
 		/**
-		 * Default focus() implementation: focus the first child.
+		 * Default focus() implementation: navigate to the first navigable descendant.
+		 * Note that if `focusChildren` is false, this will merely set the `d-active-descendant` class
+		 * rather than actually focusing the descendant.
 		 */
 		focus: function () {
 			this.focusFirstChild();
 		},
 
 		/**
-		 * Focus the first focusable child in the container.
+		 * Navigate to the first navigable descendant.
+		 * Note that if `focusChildren` is false, this will merely set the `d-active-descendant` class
+		 * rather than actually focusing the descendant.
 		 * @protected
 		 */
 		focusFirstChild: function () {
@@ -186,7 +217,9 @@ define([
 		},
 
 		/**
-		 * Focus the last focusable child in the container.
+		 * Navigate to the last navigable descendant.
+		 * Note that if `focusChildren` is false, this will merely set the `d-active-descendant` class
+		 * rather than actually focusing the descendant.
 		 * @protected
 		 */
 		focusLastChild: function () {
@@ -194,27 +227,32 @@ define([
 		},
 
 		/**
-		 * Focus specified child Element.
-		 * @param {Element} child - Reference to container's child.
-		 * @param {boolean} last - If true and if child has multiple focusable nodes, focus the
-		 *     last one instead of the first one.
+		 * Navigate to the specified descendant.
+		 * Note that if `focusChildren` is false, this will merely set the `d-active-descendant` class
+		 * rather than actually focusing the descendant.
+		 * @param {Element} child - Reference to the descendant.
+		 * @param {boolean} last - If true and if descendant has multiple focusable nodes, focus the
+		 *     last one instead of the first one.  This assumes that the child's `focus()` method takes a boolean
+		 *     parameter where `true` means to focus the last child.
 		 * @protected
 		 */
 		focusChild: function (child, last) {
-			// For IE focus outline to appear, must set tabIndex before focus.
-			// If this._savedTabIndex is set, use it instead of this.tabIndex, because it means
-			// the container's tabIndex has already been changed to -1.
-			child.tabIndex = "_savedTabIndex" in this ? this._savedTabIndex : this.tabIndex;
-			child.focus(last ? "end" : "start");
+			if (this.focusChildren) {
+				// For IE focus outline to appear, must set tabIndex before focus.
+				// If this._savedTabIndex is set, use it instead of this.tabIndex, because it means
+				// the container's tabIndex has already been changed to -1.
+				child.tabIndex = "_savedTabIndex" in this ? this._savedTabIndex : this.tabIndex;
+				child.focus(last ? "end" : "start");
 
-			// Don't set focusedChild here, because the focus event should trigger a call to _childFocusHandler(), which
-			// will set it.  More importantly, _childFocusHandler(), which may be executed asynchronously (after this
-			// function returns) needs to know the old focusedChild to set its tabIndex to -1.
+				// _childNavigateHandler() will be called automatically from child's focus event.
+			} else {
+				this._childNavigateHandler(child);
+			}
 		},
 
 		/**
 		 * Handler for when the container itself gets focus.
-		 * 
+		 * Called only when `this.focusChildren` is true.
 		 * Initially the container itself has a tabIndex, but when it gets focus, switch focus to first child.
 		 * 
 		 * @param {Event} evt
@@ -241,8 +279,12 @@ define([
 			this.focus();
 		},
 
+		/**
+		 * Handler for when focus is moved away the container, and its descendant (popup) widgets.
+		 * Called only when `this.focusChildren` is true.
+		 * @private
+		 */
 		_keynavDeactivatedHandler: function () {
-			// When focus is moved away the container, and its descendant (popup) widgets,
 			// then restore the container's tabIndex so that user can tab to it again.
 			// Note that using _onBlur() so that this doesn't happen when focus is shifted
 			// to one of my child widgets (typically a popup)
@@ -258,27 +300,60 @@ define([
 		},
 
 		/**
-		 * Called when a child gets focus, either by user clicking it, or programatically by arrow key handling code.
-		 * It marks that the current node is the selected one, and the previously selected node no longer is.
+		 * Called when a child is navigated to, either by user clicking it, or programatically by arrow key handling
+		 * code.  It marks that the specified child is the navigated one.
 		 * @param {Element} child
 		 * @private
 		 */
-		_childFocusHandler: function (child) {
+		_childNavigateHandler: function (child) {
 			if (child && child !== this.focusedChild) {
-				if (this.focusedChild && !this.focusedChild._destroyed) {
-					// mark that the previously focusable node is no longer focusable
-					this.focusedChild.tabIndex = "-1";
+				if (this.focusChildren) {
+					if (this.focusedChild && !this.focusedChild._destroyed) {
+						// mark that the previously focusable node is no longer focusable
+						this.focusedChild.tabIndex = "-1";
+					}
+
+					// If container still has tabIndex setting then remove it; instead we'll set tabIndex on child
+					if (!("_savedTabIndex" in this)) {
+						this._savedTabIndex = this.tabIndex;
+						this.removeAttribute("tabindex");
+					}
+
+					child.tabIndex = this._savedTabIndex;
+				} else {
+					if (child) {
+						this.setAttribute("aria-activedescendant", child.id);
+					} else {
+						this.removeAttribute("aria-activedescendant");
+					}
 				}
 
-				// If container still has tabIndex setting then remove it; instead we'll set tabIndex on child
-				if (!("_savedTabIndex" in this)) {
-					this._savedTabIndex = this.tabIndex;
-					this.removeAttribute("tabindex");
+				if (this.focusedChild) {
+					domClass.remove(this.focusedChild, "d-active-descendant");
 				}
 
-				// mark that the new node is the currently selected one
-				child.tabIndex = this._savedTabIndex;
+				/**
+				 * Dispatched after the user has selected a different descendant, by clicking, arrow keys,
+				 * or keyboard search.
+				 * @example
+				 * widget.on("keynav-child-navigated", function (evt) {
+				 *	console.log("old value: " + evt.oldValue);
+				 *	console.log("new value: " + evt.newValue);
+				 * }
+				 * @event module:delite/KeyNav#keynav-child-navigated
+				 * @property {number} oldValue - The previously selected item.
+				 * @property {number} newValue - The new selected item.
+				 */
+				this.emit("keynav-child-navigated", {
+					oldValue: this.focusedChild,
+					newValue: child
+				});
+
+				// mark that the new node is the currently navigated one
 				this.focusedChild = child;
+				if (child) {
+					domClass.add(child, "d-active-descendant");
+				}
 			}
 		},
 
