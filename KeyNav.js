@@ -42,8 +42,6 @@ define([
 	  */
 	return dcl(Widget, /** @lends module:delite/KeyNav# */ {
 
-		// TODO: due to apparent bugs in jsdoc3, these aren't getting shown.
-
 		/**
 		 * When true, focus the descendant widgets as the user navigates to them via arrow keys or keyboard letter
 		 * search.  When false, rather than focusing the widgets, it merely sets `focusedChild`,
