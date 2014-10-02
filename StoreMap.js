@@ -174,14 +174,20 @@ define(["dcl/dcl", "./Store"], function (dcl, Store) {
 			var mappedKeys = this._mappedKeys;
 			var store = this.store;
 
-			if (this.allowRemap) {
-				// if we allow remap we need to store the initial item
-				// we need this to be enumerable for dealing with update case (where only enumerable
-				// properties are copied)
-				renderItem.__item = item;
-			}
+			// if we allow remap we need to store the initial item
+			// we need this to be enumerable for dealing with update case (where only enumerable
+			// properties are copied)
+			// we might need it in other context as well
+			renderItem.__item = item;
 
 			// special id case
+			var id = store.getIdentity(item);
+			// Warning: we are using private API from dstore/Store here so let's do that conditionally
+			// the purpose is to workaround the fact in some cases the store might miss the ID and we don't
+			// want to bother people about that.
+			if (id == null && store._setIdentity) {
+				store._setIdentity(item, Math.random());
+			}
 			renderItem.id = store.getIdentity(item);
 			// general mapping case
 			for (var i = 0; i < mappedKeys.length; i++) {
