@@ -222,7 +222,7 @@ define(["dcl/dcl", "dojo/when", "decor/Invalidating"], function (dcl, when, Inva
 		 * When the store is observed and an item is removed in the store this method is called to remove the
 		 * corresponding render item. This can be redefined but must not be called directly.
 		 * @param {Event} event - The "remove" `dstore/Trackable` event.
-		 * @protected
+		 * @private
 		 */
 		_itemRemoved: function (event) {
 			if (event.previousIndex !== undefined) {
