@@ -320,6 +320,12 @@ define([
 					}
 
 					child.tabIndex = this._savedTabIndex;
+				} else {
+					if (child) {
+						this.setAttribute("aria-activedescendant", child.id);
+					} else {
+						this.removeAttribute("aria-activedescendant");
+					}
 				}
 
 				if (this.focusedChild) {
