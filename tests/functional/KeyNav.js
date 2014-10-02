@@ -273,7 +273,7 @@ define([
 			if (this.remote.environmentType.brokenSendKeys || !this.remote.environmentType.nativeEvents) {
 				return this.skip("no keyboard support");
 			}
-			return this.remote.execute("combobox.focus();")
+			var chain = this.remote.execute("document.body.scrollTop = 10000; combobox.focus();")
 				.pressKeys(keys.ARROW_DOWN)
 				.execute("return document.activeElement.id")
 				.then(function (value) {
@@ -293,15 +293,23 @@ define([
 					.getVisibleText().then(function (value) {
 						assert.strictEqual(value, "Alaska", "got navigation event (cur)");
 					})
-					.end()
-				.findByCssSelector("#combobox_dropdown > *:nth-child(5)")
-					.click()
-					.end()
-				.findById("combobox_dropdown_current_node")
-					.getVisibleText().then(function (value) {
-						assert.strictEqual(value, "California", "got navigation event from click");
-					})
 					.end();
+
+			if (this.remote.environmentType.browserName !== "internet explorer") {
+				// click() doesn't generate pointerdown event on IE10+ and neither does
+				// moveMouseTo().pressMouseButton(1).releaseMouseButton(1).
+				// see https://github.com/theintern/leadfoot/issues/17.
+				chain = chain.findByCssSelector("#combobox_dropdown > *:nth-child(5)")
+						.click()
+						.end()
+					.findById("combobox_dropdown_current_node")
+						.getVisibleText().then(function (value) {
+							assert.strictEqual(value, "California", "got navigation event from click");
+						})
+						.end();
+			}
+
+			return chain;
 		}
 	});
 });
