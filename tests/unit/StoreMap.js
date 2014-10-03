@@ -30,22 +30,31 @@ define([
 			store.on("query-success", d.callback(function () {
 				assert(store.renderItems instanceof Array);
 				assert.strictEqual(store.renderItems.length, 2);
-				assert.deepEqual(store.renderItems[0], { id: "foo", foo: "Foo", bar: "1" });
-				assert.deepEqual(store.renderItems[1], { id: "bar", foo: "Bar", bar: "2" });
+				assert.deepEqual(store.renderItems[0], { id: "foo", foo: "Foo", bar: "1",
+					__item: myStore.getSync("foo") });
+				assert.deepEqual(store.renderItems[1], { id: "bar", foo: "Bar", bar: "2",
+					__item: myStore.getSync("bar") });
 				myStore.putSync({ id: "foo", name: "Foo2", firstname: "3" });
 				// this works because put is synchronous & same for add etc...
 				assert.strictEqual(store.renderItems.length, 2);
-				assert.deepEqual(store.renderItems[0], { id: "foo", foo: "Foo2", bar: "3" });
-				assert.deepEqual(store.renderItems[1], { id: "bar", foo: "Bar", bar: "2" });
+				assert.deepEqual(store.renderItems[0], { id: "foo", foo: "Foo2", bar: "3",
+					__item: myStore.getSync("foo") });
+				assert.deepEqual(store.renderItems[1], { id: "bar", foo: "Bar", bar: "2",
+					__item: myStore.getSync("bar") });
 				myStore.addSync({ id: "fb", name: "FB", firstname: "4" });
 				assert.strictEqual(store.renderItems.length, 3);
-				assert.deepEqual(store.renderItems[0], { id: "foo", foo: "Foo2", bar: "3" });
-				assert.deepEqual(store.renderItems[1], { id: "bar", foo: "Bar", bar: "2" });
-				assert.deepEqual(store.renderItems[2], { id: "fb", foo: "FB", bar: "4" });
+				assert.deepEqual(store.renderItems[0], { id: "foo", foo: "Foo2", bar: "3",
+					__item: myStore.getSync("foo") });
+				assert.deepEqual(store.renderItems[1], { id: "bar", foo: "Bar", bar: "2",
+					__item: myStore.getSync("bar") });
+				assert.deepEqual(store.renderItems[2], { id: "fb", foo: "FB", bar: "4",
+					__item: myStore.getSync("fb") });
 				myStore.removeSync("bar");
 				assert.strictEqual(store.renderItems.length, 2);
-				assert.deepEqual(store.renderItems[0], { id: "foo", foo: "Foo2", bar: "3" });
-				assert.deepEqual(store.renderItems[1], { id: "fb", foo: "FB", bar: "4" });
+				assert.deepEqual(store.renderItems[0], { id: "foo", foo: "Foo2", bar: "3",
+					__item: myStore.getSync("foo") });
+				assert.deepEqual(store.renderItems[1], { id: "fb", foo: "FB", bar: "4",
+					__item: myStore.getSync("fb") });
 			}));
 			store.startup();
 			var myStore = new M({ data: myData });
@@ -93,22 +102,31 @@ define([
 			store.on("query-success", d.callback(function () {
 				assert(store.renderItems instanceof Array);
 				assert.strictEqual(store.renderItems.length, 2);
-				assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo", firstname: "1" });
-				assert.deepEqual(store.renderItems[1], { id: "bar", name: "Bar", firstname: "2" });
+				assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo", firstname: "1",
+					__item: myStore.getSync("foo") });
+				assert.deepEqual(store.renderItems[1], { id: "bar", name: "Bar", firstname: "2",
+					__item: myStore.getSync("bar") });
 				myStore.putSync({ id: "foo", name: "Foo2", firstname: "3" });
 				// this works because put is synchronous & same for add etc...
 				assert.strictEqual(store.renderItems.length, 2);
-				assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo2", firstname: "3" });
-				assert.deepEqual(store.renderItems[1], { id: "bar", name: "Bar", firstname: "2" });
+				assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo2", firstname: "3",
+					__item: myStore.getSync("foo") });
+				assert.deepEqual(store.renderItems[1], { id: "bar", name: "Bar", firstname: "2",
+					__item: myStore.getSync("bar") });
 				myStore.addSync({ id: "fb", name: "FB", firstname: "4" });
 				assert.strictEqual(store.renderItems.length, 3);
-				assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo2", firstname: "3" });
-				assert.deepEqual(store.renderItems[1], { id: "bar", name: "Bar", firstname: "2" });
-				assert.deepEqual(store.renderItems[2], { id: "fb", name: "FB", firstname: "4" });
+				assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo2", firstname: "3",
+					__item: myStore.getSync("foo") });
+				assert.deepEqual(store.renderItems[1], { id: "bar", name: "Bar", firstname: "2",
+					__item: myStore.getSync("bar") });
+				assert.deepEqual(store.renderItems[2], { id: "fb", name: "FB", firstname: "4",
+					__item: myStore.getSync("fb") });
 				myStore.removeSync("bar");
 				assert.strictEqual(store.renderItems.length, 2);
-				assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo2", firstname: "3" });
-				assert.deepEqual(store.renderItems[1], { id: "fb", name: "FB", firstname: "4" });
+				assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo2", firstname: "3",
+					__item: myStore.getSync("foo") });
+				assert.deepEqual(store.renderItems[1], { id: "fb", name: "FB", firstname: "4",
+					__item: myStore.getSync("fb") });
 			}));
 			store.startup();
 			// use empty model to ease comparison
@@ -129,22 +147,31 @@ define([
 			store.on("query-success", d.callback(function () {
 				assert(store.renderItems instanceof Array);
 				assert.strictEqual(store.renderItems.length, 2);
-				assert.deepEqual(store.renderItems[0], { id: "foo", foo: "Foo" });
-				assert.deepEqual(store.renderItems[1], { id: "bar", foo: "Bar" });
+				assert.deepEqual(store.renderItems[0], { id: "foo", foo: "Foo",
+					__item: myStore.getSync("foo") });
+				assert.deepEqual(store.renderItems[1], { id: "bar", foo: "Bar",
+					__item: myStore.getSync("bar") });
 				myStore.putSync({ id: "foo", name: "Foo2" });
 				// this works because put is synchronous & same for add etc...
 				assert.strictEqual(store.renderItems.length, 2);
-				assert.deepEqual(store.renderItems[0], { id: "foo", foo: "Foo2" });
-				assert.deepEqual(store.renderItems[1], { id: "bar", foo: "Bar" });
+				assert.deepEqual(store.renderItems[0], { id: "foo", foo: "Foo2",
+					__item: myStore.getSync("foo") });
+				assert.deepEqual(store.renderItems[1], { id: "bar", foo: "Bar",
+					__item: myStore.getSync("bar") });
 				myStore.addSync({ id: "fb", name: "FB" });
 				assert.strictEqual(store.renderItems.length, 3);
-				assert.deepEqual(store.renderItems[0], { id: "foo", foo: "Foo2" });
-				assert.deepEqual(store.renderItems[1], { id: "bar", foo: "Bar" });
-				assert.deepEqual(store.renderItems[2], { id: "fb", foo: "FB" });
+				assert.deepEqual(store.renderItems[0], { id: "foo", foo: "Foo2",
+					__item: myStore.getSync("foo") });
+				assert.deepEqual(store.renderItems[1], { id: "bar", foo: "Bar",
+					__item: myStore.getSync("bar") });
+				assert.deepEqual(store.renderItems[2], { id: "fb", foo: "FB",
+					__item: myStore.getSync("fb") });
 				myStore.removeSync("bar");
 				assert.strictEqual(store.renderItems.length, 2);
-				assert.deepEqual(store.renderItems[0], { id: "foo", foo: "Foo2" });
-				assert.deepEqual(store.renderItems[1], { id: "fb", foo: "FB" });
+				assert.deepEqual(store.renderItems[0], { id: "foo", foo: "Foo2",
+					__item: myStore.getSync("foo") });
+				assert.deepEqual(store.renderItems[1], { id: "fb", foo: "FB",
+					__item: myStore.getSync("fb") });
 			}));
 			store.startup();
 			var myStore = new M({ data: myData });
@@ -209,22 +236,31 @@ define([
 			store.on("query-success", d.callback(function () {
 				assert(store.renderItems instanceof Array);
 				assert.strictEqual(store.renderItems.length, 2);
-				assert.deepEqual(store.renderItems[0], { id: "foo", foo: "Foo", bar: "1", m: "fct", n: "Foo1" });
-				assert.deepEqual(store.renderItems[1], { id: "bar", foo: "Bar", bar: "2", m: "fct", n: "Bar2" });
+				assert.deepEqual(store.renderItems[0], { id: "foo", foo: "Foo", bar: "1", m: "fct", n: "Foo1",
+					__item: myStore.getSync("foo") });
+				assert.deepEqual(store.renderItems[1], { id: "bar", foo: "Bar", bar: "2", m: "fct", n: "Bar2",
+					__item: myStore.getSync("bar") });
 				myStore.putSync({ id: "foo", name: "Foo2", firstname: "3" });
 				// this works because put is synchronous & same for add etc...
 				assert.strictEqual(store.renderItems.length, 2);
-				assert.deepEqual(store.renderItems[0], { id: "foo", foo: "Foo2", bar: "3", m: "fct", n: "Foo23" });
-				assert.deepEqual(store.renderItems[1], { id: "bar", foo: "Bar", bar: "2", m: "fct", n: "Bar2" });
+				assert.deepEqual(store.renderItems[0], { id: "foo", foo: "Foo2", bar: "3", m: "fct", n: "Foo23",
+					__item: myStore.getSync("foo") });
+				assert.deepEqual(store.renderItems[1], { id: "bar", foo: "Bar", bar: "2", m: "fct", n: "Bar2",
+					__item: myStore.getSync("bar") });
 				myStore.addSync({ id: "fb", name: "FB", firstname: "4" });
 				assert.strictEqual(store.renderItems.length, 3);
-				assert.deepEqual(store.renderItems[0], { id: "foo", foo: "Foo2", bar: "3", m: "fct", n: "Foo23" });
-				assert.deepEqual(store.renderItems[1], { id: "bar", foo: "Bar", bar: "2", m: "fct", n: "Bar2" });
-				assert.deepEqual(store.renderItems[2], { id: "fb", foo: "FB", bar: "4", m: "fct", n: "FB4" });
+				assert.deepEqual(store.renderItems[0], { id: "foo", foo: "Foo2", bar: "3", m: "fct", n: "Foo23",
+					__item: myStore.getSync("foo") });
+				assert.deepEqual(store.renderItems[1], { id: "bar", foo: "Bar", bar: "2", m: "fct", n: "Bar2",
+					__item: myStore.getSync("bar") });
+				assert.deepEqual(store.renderItems[2], { id: "fb", foo: "FB", bar: "4", m: "fct", n: "FB4",
+					__item: myStore.getSync("fb") });
 				myStore.removeSync("bar");
 				assert.strictEqual(store.renderItems.length, 2);
-				assert.deepEqual(store.renderItems[0], { id: "foo", foo: "Foo2", bar: "3", m: "fct", n: "Foo23" });
-				assert.deepEqual(store.renderItems[1], { id: "fb", foo: "FB", bar: "4", m: "fct", n: "FB4" });
+				assert.deepEqual(store.renderItems[0], { id: "foo", foo: "Foo2", bar: "3", m: "fct", n: "Foo23",
+					__item: myStore.getSync("foo") });
+				assert.deepEqual(store.renderItems[1], { id: "fb", foo: "FB", bar: "4", m: "fct", n: "FB4",
+					__item: myStore.getSync("fb") });
 			}));
 			var myStore = new M({ data: myData });
 			store.store = myStore;
@@ -248,12 +284,15 @@ define([
 			store.on("query-success", d.rejectOnError(function () {
 				assert(store.renderItems instanceof Array);
 				assert.strictEqual(store.renderItems.length, 2);
-				assert.deepEqual(store.renderItems[0], { id: "foo", foo: "Foo", bar: "1" });
-				assert.deepEqual(store.renderItems[1], { id: "bar", foo: "Bar", bar: "2" });
+				assert.deepEqual(store.renderItems[0], { id: "foo", foo: "Foo", bar: "1",
+					__item: myStore.getSync("foo") });
+				assert.deepEqual(store.renderItems[1], { id: "bar", foo: "Bar", bar: "2",
+					__item: myStore.getSync("bar") });
 				store.renderItemToItem(store.renderItems[0]).then(d.callback(function (item) {
 					assert.deepEqual(item, myData[0]);
 					var renderItem = store.itemToRenderItem(item);
-					assert.deepEqual(renderItem, { id: "foo", foo: "Foo", bar: "1" });
+					assert.deepEqual(renderItem, { id: "foo", foo: "Foo", bar: "1",
+						__item: myStore.getSync("foo") });
 				}));
 			}));
 			store.startup();
