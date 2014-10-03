@@ -174,6 +174,16 @@
 				}
 			});
 
+			// A button that emits the delite-display-load event to get a reference to the dropdown
+			var EventsDropDownButton = register("events-drop-down-button", [HTMLButtonElement, HasDropDown], {
+				label: "",
+				_setLabelAttr: function (val) {
+					this.textContent = val;
+					this._set("label", val);
+				},
+				orient: ["below"]
+			});
+
 			// A button that shows a popup
 			var ComboBox = register("combo-box", [HTMLInputElement, HasDropDown], {
 				orient: ["below"],
@@ -258,6 +268,34 @@
 			new ComboBox({
 				id: "combobox"
 			}).placeAt(document.body);
+
+			// this HasDropDown will emit events to load the drop down and as its shown/hidden
+			var eddb = new EventsDropDownButton({
+				label: "events drop down button",
+				id: "eventsButton"
+			}).placeAt(document.body);
+			var el = document.createElement("span");
+			el.id = "eventsLog";
+			el.innerHTML = "<br><br>Events on \"events drop down button\": ";
+			document.body.appendChild(el);
+			document.addEventListener("delite-display-load", function (evt) {
+				evt.loadDeferred.resolve({
+					child: new SimpleTooltipDialog({
+						id: "eventsTooltipDialog"
+					})
+				});
+			});
+			[
+				"delite-display-load",
+				"delite-before-show",
+				"delite-after-show",
+				"delite-before-hide",
+				"delite-after-hide"
+			].forEach(function (type) {
+				eddb.on(type, function (evt) {
+					el.textContent += evt.type + " ";
+				});
+			});
 
 			// Set global variable to signal that the test page is ready
 			ready = true;

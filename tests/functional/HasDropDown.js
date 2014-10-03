@@ -298,6 +298,30 @@ define([
 			}
 		},
 
+		events: function () {
+			if (this.remote.environmentType.browserName === "internet explorer") {
+				return this.skip("click() doesn't generate mousedown/mouseup, so popup won't open");
+			}
+			return this.remote
+				.findById("eventsButton")
+					.click()
+					.end()
+				.findById("eventsTooltipDialog")
+					.isDisplayed().then(function (visible) {
+						assert(visible, "visible");
+					})
+					.end()
+				.findById("eventsButton")	// click again to close
+					.click()
+					.end()
+				.findById("eventsLog")
+					.getVisibleText().then(function (text) {
+						assert.strictEqual(text.trim(), "Events on \"events drop down button\": delite-display-load " +
+							"delite-before-show delite-after-show delite-before-hide delite-after-hide");
+					})
+					.end();
+		},
+
 		// Make sure that destroying a HasDropDown closes the popup
 		destroy: function () {
 			if (this.remote.environmentType.browserName === "internet explorer") {
