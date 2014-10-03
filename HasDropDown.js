@@ -1,6 +1,7 @@
 /** @module delite/HasDropDown */
 define([
 	"dcl/dcl",
+	"dojo/Deferred",
 	"dojo/dom-class", // domClass.add domClass.contains domClass.remove
 	"dojo/when",
 	"requirejs-dplugins/has", // has("touch")
@@ -10,7 +11,7 @@ define([
 	"./Widget",
 	"./activationTracker",		// for delite-deactivated event
 	"dpointer/events"		// so can just monitor for "pointerdown"
-], function (dcl, domClass, when, has, keys, place, popup, Widget) {
+], function (dcl, Deferred, domClass, when, has, keys, place, popup, Widget) {
 	/**
 	 * Base class for widgets that need drop down ability.
 	 * @mixin module:delite/HasDropDown
@@ -55,8 +56,12 @@ define([
 		aroundNode: null,
 
 		/**
-		 * The widget to display as a popup.  Applications/subwidgets should *either* define this
-		 * property *or* override `loadDropDown()` to return a dropdown widget or Promise for one.
+		 * The widget to display as a popup.  Applications/subwidgets should *either*:
+		 *
+		 * 1. define this property
+		 * 2. override `loadDropDown()` to return a dropdown widget or Promise for one
+		 * 3. setup a listener for the delite-display-load event that [asynchronously] resolves the event's
+		 *   `loadDeferred` Promise to the dropdown
 		 * @member {Element}
 		 */
 		dropDown: null,
@@ -357,18 +362,47 @@ define([
 		},
 
 		/**
-		 * Creates the drop down if it doesn't exist, loads the data
-		 * if there's an href and it hasn't been loaded yet.
+		 * Creates/loads the drop down.
 		 * Returns a Promise for the dropdown, or if loaded synchronously, the dropdown itself.
 		 *
-		 * Subclasses should override this method to create custom drop downs on the fly.
-		 * However, they are then responsible for destroying the dropdown when this widget is destroyed.
+		 * Applications must either:
+		 *
+		 * 1. set the`dropDown` property to point to the dropdown (as an initialisation parameter)
+		 * 2. override this method to create custom drop downs on the fly, returning a reference or promise
+		 *    for the dropdown
+		 * 3. listen for a "delite-display-load" event, and then [asynchronously] resolve the event's `evt.loadDeferred`
+		 *    Promise property with the dropdown
+		 *
+		 * With option (2) or (3) the application is responsible for destroying the dropdown
+		 * when this widget is destroyed.
 		 *
 		 * @returns {Element|Promise} Element or Promise for the dropdown
 		 * @protected
 		 */
 		loadDropDown: function () {
-			return this.dropDown;
+			if (this.dropDown) {
+				return this.dropDown;
+			} else {
+				// tell app controller we are going to show the dropdown; it must return a pointer to the dropdown
+				/**
+				 * Dispatched if `HasDropDown#dropDown` is undefined, to let an application level listener create the
+				 * dropdown node.
+				 * @example
+				 * document.addEventListener("delite-display-load", function (evt) {
+				 *   if (evt.target.id === "dropdown_button_1") {
+				 *      evt.loadDeferred.resolve(new MyDropDown1({...}));
+				 *   }
+				 *   ...
+				 * }
+				 * @event module:delite/HasDropDown#delite-display-load
+				 * @property {Promise} loadDeferred - promise to resolve with the dropdown element
+				 */
+				var def = new Deferred();
+				this.emit("delite-display-load", {
+					loadDeferred: def
+				});
+				return def;
+			}
 		},
 
 		/**
@@ -402,6 +436,19 @@ define([
 				this._currentDropDown = dropDown;
 				var aroundNode = this.aroundNode || this,
 					self = this;
+
+				/**
+				 * Dispatched before popup widget is shown.
+				 * @example
+				 * document.addEventListener("delite-before-show", function (evt) {
+				 *      console.log("about to show popup", evt.child);
+				 * });
+				 * @event module:delite/HasDropDown#delite-before-show
+				 * @property {Element} child - reference to popup
+				 */
+				this.emit("delite-before-show", {
+					child: dropDown
+				});
 
 				// Generate id for anchor if it's not already specified
 				if (!this.id) {
@@ -451,6 +498,19 @@ define([
 					dropDown.setAttribute("aria-labelledby", this.id);
 				}
 
+				/**
+				 * Dispatched after popup widget is shown.
+				 * @example
+				 * document.addEventListener("delite-after-show", function (evt) {
+				 *      console.log("just displayed popup", evt.child);
+				 * });
+				 * @event module:delite/HasDropDown#delite-after-show
+				 * @property {Element} child - reference to popup
+				 */
+				this.emit("delite-after-show", {
+					child: dropDown
+				});
+
 				return {
 					dropDown: dropDown,
 					position: retVal
@@ -481,9 +541,37 @@ define([
 				if (focus && this.focus) {
 					this.focus();
 				}
+
+				/**
+				 * Dispatched before popup widget is hidden.
+				 * @example
+				 * document.addEventListener("delite-before-hide", function (evt) {
+				 *      console.log("about to hide popup", evt.child);
+				 * });
+				 * @event module:delite/HasDropDown#delite-before-hide
+				 * @property {Element} child - reference to popup
+				 */
+				this.emit("delite-before-hide", {
+					child: this._currentDropDown
+				});
+
 				popup.close(this._currentDropDown);
 				this.opened = false;
+
+				/**
+				 * Dispatched after popup widget is hidden.
+				 * @example
+				 * document.addEventListener("delite-after-hide", function (evt) {
+				 *      console.log("just hid popup", evt.child);
+				 * });
+				 * @event module:delite/HasDropDown#delite-after-hide
+				 * @property {Element} child - reference to popup
+				 */
+				this.emit("delite-after-hide", {
+					child: this._currentDropDown
+				});
 			}
+
 			delete this._currentDropDown;
 		}
 	});

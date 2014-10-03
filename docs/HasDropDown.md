@@ -138,3 +138,17 @@ handleKey: function(/*Event*/ evt){
 	}
 }
 ```
+
+## Events
+
+The `delite/HasDropDown` class provides the following events:
+
+|event name|dispatched|cancelable|bubbles|properties|
+|----------|----------|----------|-------|----------|
+|delite-display-load|on any show or hide action|True|True|<ul><li>`loadDeferred`: the deferred to resolve once the child will be loaded</li></ul>|
+|delite-before-show|just before a child is shown|No|True|<ul><li>`child`: the child to show</li></ul>|
+|delite-after-show|after a child has been shown|No|True|<ul><li>`child`: the child that has been shown</li></ul>|
+|delite-before-hide|just before a child is hidden|No|True|<ul><li>`child`: the child to hide</li></ul>|
+|delite-after-hide|after a child has been hidden|No|True|<ul><li>`child`: the child that has been hidden</li></ul>|
+
+
