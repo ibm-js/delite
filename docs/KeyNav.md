@@ -1,6 +1,6 @@
 ---
 layout: default
-title: delite/HasDropDown
+title: delite/KeyNav
 ---
 
 # delite/KeyNav
@@ -18,13 +18,14 @@ navigation, implement:
 * onUpArrow()
 
 These methods are meant to navigate relative to the current node,
-so they should operate based on `this.focusedChild`.
+so they should operate based on `this.navigatedDescendant`.
 
 In addition, the subclass must:
 
 - Set all descendants' initial tabIndex to "-1"; both initial descendants and any
-descendants added later, by for example `addChild()`.
-- Define `childSelector` to a function or string that identifies focusable child widgets.
+  descendants added later, by for example `addChild()`.  Exception: if `focusDescendants` is false then the
+  descendants shouldn't have any tabIndex at all.
+- Define `descendantSelector` to a function or string that identifies focusable child widgets.
 - Define `this.containerNode`.
 
 Also, child widgets must implement a `.focus()` method.

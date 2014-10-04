@@ -18,56 +18,56 @@
 			"delite/KeyNav",
 			"requirejs-domready/domReady!"
 		], function (a11yclick, keys, register, Widget, Container, KeyNav) {
-			// Complex KeyNav subclass with string childSelector
+			// Complex KeyNav subclass with string descendantSelector
 			register("my-grid", [HTMLElement, KeyNav], {
 				// Specifies which descendants can be navigated to
-				childSelector: "my-cell",
+				descendantSelector: "my-cell",
 
 				// Reduce from default of 1000 to speed up testing
 				multiCharSearchDuration: 100,
 
 				// Simple arrow key support.
 				onLeftArrow: function () {
-					var listItem = this.focusedChild.parentNode;
-					this.focusChild(this.focusedChild.previousElementSibling || listItem.lastElementChild);
+					var listItem = this.navigatedDescendant.parentNode;
+					this.navigateTo(this.navigatedDescendant.previousElementSibling || listItem.lastElementChild);
 				},
 				onRightArrow: function () {
-					var listItem = this.focusedChild.parentNode;
-					this.focusChild(this.focusedChild.nextElementSibling || listItem.firstElementChild);
+					var listItem = this.navigatedDescendant.parentNode;
+					this.navigateTo(this.navigatedDescendant.nextElementSibling || listItem.firstElementChild);
 				},
 				onDownArrow: function () {
 					// For simplicity I'll just go to the first field in the next row
-					var listItem = this.focusedChild.parentNode;
-					this.focusChild((listItem.nextElementSibling || this.firstElementChild).firstElementChild);
+					var listItem = this.navigatedDescendant.parentNode;
+					this.navigateTo((listItem.nextElementSibling || this.firstElementChild).firstElementChild);
 				},
 				onUpArrow: function () {
 					// For simplicity I'll just go to the first field in the previous row
-					var listItem = this.focusedChild.parentNode;
-					this.focusChild((listItem.previousElementSibling || this.lastElementChild).firstElementChild);
+					var listItem = this.navigatedDescendant.parentNode;
+					this.navigateTo((listItem.previousElementSibling || this.lastElementChild).firstElementChild);
 				}
 			});
 
 			// Child of my-grid
 			register("my-row", [HTMLElement], { });
 
-			// Simple KeyNav widget that extends Container. childSelector is function.
+			// Simple KeyNav widget that extends Container. descendantSelector is function.
 			var TestContainer = register("my-list", [HTMLElement, Container, KeyNav], {
 				// Id of node to update when there's an click event
 				clickCountNodeId: "",
 
-				childSelector: function (child) {
+				descendantSelector: function (child) {
 					return child !== this;
 				},
 				onDownArrow: function () {
-					var nextChild = this.getNext(this.focusedChild, 1);
+					var nextChild = this.getNext(this.navigatedDescendant, 1);
 					if (nextChild) {
-						this.focusChild(nextChild);
+						this.navigateTo(nextChild);
 					}
 				},
 				onUpArrow: function () {
-					var previousChild = this.getNext(this.focusedChild, -1);
+					var previousChild = this.getNext(this.navigatedDescendant, -1);
 					if (previousChild) {
-						this.focusChild(previousChild);
+						this.navigateTo(previousChild);
 					}
 				},
 				postRender: function () {
@@ -85,19 +85,19 @@
 				// Id of node to update when there's an space event
 				spaceCountNodeId: "",
 
-				childSelector: function (child) {
+				descendantSelector: function (child) {
 					return child !== this;
 				},
 				onDownArrow: function () {
-					var nextChild = this.getNext(this.focusedChild, 1);
+					var nextChild = this.getNext(this.navigatedDescendant, 1);
 					if (nextChild) {
-						this.focusChild(nextChild);
+						this.navigateTo(nextChild);
 					}
 				},
 				onUpArrow: function () {
-					var previousChild = this.getNext(this.focusedChild, -1);
+					var previousChild = this.getNext(this.navigatedDescendant, -1);
 					if (previousChild) {
-						this.focusChild(previousChild);
+						this.navigateTo(previousChild);
 					}
 				},
 				postRender: function () {
@@ -148,7 +148,7 @@
 
 			// Setup so keystrokes on the ComboBox get forwarded to the dropdown.
 			combobox.onfocus = function (evt) {
-				combobox_dropdown.focusFirstChild();
+				combobox_dropdown.navigateToFirst();
 			};
 			combobox.onkeydown = function (evt) {
 				combobox_dropdown.emit("keydown", evt);
@@ -284,7 +284,7 @@
 
 	<h3>ComboBox</h3>
 	<input id="combobox" type="text" tabindex="9" value="">
-	<my-list id="combobox_dropdown" focusChildren="false">
+	<my-list id="combobox_dropdown" focusDescendants="false">
 		<my-unfocusable-list-item value="AL" id="unfocusable_AL">Alabama</my-unfocusable-list-item>
 		<my-unfocusable-list-item value="AK" id="unfocusable_AK">Alaska</my-unfocusable-list-item>
 		<my-unfocusable-list-item value="AZ" id="unfocusable_AZ">Arizona</my-unfocusable-list-item>
