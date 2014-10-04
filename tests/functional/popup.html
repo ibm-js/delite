@@ -235,12 +235,26 @@ require([
 	// Create a button that displays a dialog that displays a choice widget
 	new SimpleDropDownButton({
 		id: "showSimpleDialogButton",
-		label: "show dialog",
+		label: "show dropdown dialog",
 		popup: new DialogWithPopupWidget({
 			id: "simpleDialog",
 			label: 'show simple choice drop down',
 			popup: new SimpleChoiceWidget({
 				id: "choiceFromDialog"
+			})
+		})
+	}).placeAt("widgets");
+
+	// Create a button that displays a dialog centered (intended for phones)
+	new SimpleDropDownButton({
+		id: "showCenteredDialogButton",
+		label: "show centered dialog",
+		orient: ["center"],
+		popup: new DialogWithPopupWidget({
+			id: "centeredDialog",
+			label: 'show simple choice drop down',
+			popup: new SimpleChoiceWidget({
+				id: "choiceFromDialog2"
 			})
 		})
 	}).placeAt("widgets");

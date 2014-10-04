@@ -81,7 +81,7 @@ define([
 	 * @returns {module:delite/place.ChosenPosition} Best position to place node.
 	 * @private
 	 */
-	function _place(node, choices, layoutNode, aroundNodeCoords) {
+	function _placeAt(node, choices, layoutNode, aroundNodeCoords) {
 		// get {l: 10, t: 10, w: 100, h:100} type obj representing position of
 		// viewport over document
 		var view = Viewport.getEffectiveBox(node.ownerDocument);
@@ -258,7 +258,7 @@ define([
 				return c;
 			});
 
-			return _place(node, choices, layoutNode);
+			return _placeAt(node, choices, layoutNode);
 		},
 
 		/**
@@ -363,7 +363,7 @@ define([
 				width = aroundNodePos.w,
 				height = aroundNodePos.h;
 
-			// Convert positions arguments into choices argument for _place()
+			// Convert positions arguments into choices argument for _placeAt()
 			var choices = [];
 
 			function push(aroundCorner, corner) {
@@ -427,10 +427,26 @@ define([
 				}
 			});
 
-			var position = _place(node, choices, layoutNode, {w: width, h: height});
+			var position = _placeAt(node, choices, layoutNode, {w: width, h: height});
 			position.aroundNodePos = aroundNodePos;
 
 			return position;
+		},
+
+		/**
+		 * Centers the specified node, like a Dialog.
+		 * Node must fit within viewport.
+		 *
+		 * Node is assumed to be absolutely or relatively positioned.
+		 *
+		 * @param {Element} node - The popup node to be positioned.
+		 */
+		center: function (node) {
+			var view = Viewport.getEffectiveBox(node.ownerDocument),
+				bb = node.getBoundingClientRect();
+			node.style.position = "fixed";
+			node.style.top = (view.h - bb.height) / 2 + "px";
+			node.style.left = (view.w - bb.width) / 2 + "px";
 		},
 
 		/**

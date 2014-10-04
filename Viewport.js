@@ -17,19 +17,28 @@ define([
 	var Viewport = new Evented();
 
 	/**
+	 * Get the size of the viewport.
+	 * @function module:delite/Viewport.getBox
+	 * @param {Document} doc - The document, typically the global variable `document`.
+	 */
+	Viewport.getBox = function (doc) {
+		var html = doc.documentElement;
+		return {
+			w: html.clientWidth,
+			h: html.clientHeight,
+			t: doc.body.scrollTop,
+			l: doc.body.scrollLeft
+		};
+	};
+
+	/**
 	 * Get the size of the viewport, or on mobile devices, the part of the viewport not obscured by the
 	 * virtual keyboard.
 	 * @function module:delite/Viewport.getEffectiveBox
 	 * @param {Document} doc - The document, typically the global variable `document`.
 	 */
 	Viewport.getEffectiveBox = function (doc) {
-		var html = doc.documentElement,
-			box = {
-				w: html.clientWidth,
-				h: html.clientHeight,
-				t: doc.body.scrollTop,
-				l: doc.body.scrollLeft
-			};
+		var box = Viewport.getBox(doc);
 
 		// Account for iOS virtual keyboard, if it's being shown.  Unfortunately no direct way to check or measure.
 		var focusedNode = doc.activeElement,

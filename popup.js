@@ -37,6 +37,11 @@ define([
 	 * specifically positioning the popup's top-right corner at the mouse position, and if that doesn't
 	 * fit in the viewport, then it tries, in order, the bottom-right corner, the top left corner,
 	 * and the top-right corner.
+	 *
+	 * Alternately, orient can be an array `["center"]`, which pops up the specified node in the center of
+	 * the viewport, like a dialog.  It will shrink the size of the node if necessary, in which case the node
+	 * must be designed so that scrolling occurs in the right place.
+	 *
 	 * @property {Function} onCancel - Callback when user has canceled the popup by:
 	 * 1. hitting ESC or
 	 * 2. by using the popup widget's proprietary cancel mechanism (like a cancel button in a dialog);
@@ -239,22 +244,32 @@ define([
 				widget.startup(); // this has to be done after being added to the DOM
 			}
 
-			// Limit height to space available in viewport either above or below aroundNode (whichever side has more
-			// room).  This may make the popup widget display a scrollbar (or multiple scrollbars).
-			var maxHeight;
-			if ("maxHeight" in args && args.maxHeight !== -1) {
-				maxHeight = args.maxHeight || Infinity;
+			var viewport = Viewport.getEffectiveBox(widget.ownerDocument);
+			if (orient[0] === "center") {
+				// Limit height and width so dialog fits within viewport.
+				if (widget.offsetHeight > viewport.h * 0.9) {
+					wrapper.style.height = Math.floor(viewport.h * 0.9) + "px";
+				}
+				if (widget.offsetWidth > viewport.w * 0.9) {
+					wrapper.style.height = Math.floor(viewport.w * 0.9) + "px";
+				}
 			} else {
-				var viewport = Viewport.getEffectiveBox(widget.ownerDocument),
-					aroundPos = around ? around.getBoundingClientRect() : {
-						top: args.y - (args.padding || 0),
-						height: (args.padding || 0) * 2
-					};
-				maxHeight = Math.floor(Math.max(aroundPos.top, viewport.h - (aroundPos.top + aroundPos.height)));
-			}
+				// Limit height to space available in viewport either above or below aroundNode (whichever side has more
+				// room).  This may make the popup widget display a scrollbar (or multiple scrollbars).
+				var maxHeight;
+				if ("maxHeight" in args && args.maxHeight !== -1) {
+					maxHeight = args.maxHeight || Infinity;
+				} else {
+					var aroundPos = around ? around.getBoundingClientRect() : {
+							top: args.y - (args.padding || 0),
+							height: (args.padding || 0) * 2
+						};
+					maxHeight = Math.floor(Math.max(aroundPos.top, viewport.h - (aroundPos.top + aroundPos.height)));
+				}
 
-			if (widget.offsetHeight > maxHeight) {
-				wrapper.style.height = maxHeight + "px";
+				if (widget.offsetHeight > maxHeight) {
+					wrapper.style.height = maxHeight + "px";
+				}
 			}
 
 			dcl.mix(wrapper, {
@@ -277,11 +292,15 @@ define([
 			}
 
 			// position the wrapper node and make it visible
-			var layoutFunc = widget.orient ? widget.orient.bind(widget) : null,
-				best = around ?
-					place.around(wrapper, around, orient, ltr, layoutFunc) :
-					place.at(wrapper, args, orient === "R" ? ["TR", "BR", "TL", "BL"] : ["TL", "BL", "TR", "BR"],
-						args.padding, layoutFunc);
+			if (orient[0] === "center") {
+				place.center(wrapper);
+			} else {
+				var layoutFunc = widget.orient ? widget.orient.bind(widget) : null,
+					best = around ?
+						place.around(wrapper, around, orient, ltr, layoutFunc) :
+						place.at(wrapper, args, orient === "R" ? ["TR", "BR", "TL", "BL"] : ["TL", "BL", "TR", "BR"],
+							args.padding, layoutFunc);
+			}
 
 			wrapper.style.visibility = "visible";
 			widget.style.visibility = "visible";	// counteract effects from HasDropDown
