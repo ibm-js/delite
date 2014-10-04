@@ -140,6 +140,11 @@
 
 				postRender: function () {
 					this.on("keydown", this._keydownHandler.bind(this));
+					this.ownerDocument.addEventListener("delite-before-show", function (evt) {
+						if (evt.child === this) {
+							this._select(this.firstChild);
+						}
+					}.bind(this));
 				},
 
 				_keydownHandler: function (evt) {
