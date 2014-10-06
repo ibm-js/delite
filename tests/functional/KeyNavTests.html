@@ -27,20 +27,20 @@
 				multiCharSearchDuration: 100,
 
 				// Simple arrow key support.
-				onLeftArrow: function () {
+				previousArrowKeyHandler: function () {
 					var listItem = this.navigatedDescendant.parentNode;
 					this.navigateTo(this.navigatedDescendant.previousElementSibling || listItem.lastElementChild);
 				},
-				onRightArrow: function () {
+				nextArrowKeyHandler: function () {
 					var listItem = this.navigatedDescendant.parentNode;
 					this.navigateTo(this.navigatedDescendant.nextElementSibling || listItem.firstElementChild);
 				},
-				onDownArrow: function () {
+				downArrowKeyHandler: function () {
 					// For simplicity I'll just go to the first field in the next row
 					var listItem = this.navigatedDescendant.parentNode;
 					this.navigateTo((listItem.nextElementSibling || this.firstElementChild).firstElementChild);
 				},
-				onUpArrow: function () {
+				upArrowKeyHandler: function () {
 					// For simplicity I'll just go to the first field in the previous row
 					var listItem = this.navigatedDescendant.parentNode;
 					this.navigateTo((listItem.previousElementSibling || this.lastElementChild).firstElementChild);
@@ -58,13 +58,13 @@
 				descendantSelector: function (child) {
 					return child !== this;
 				},
-				onDownArrow: function () {
+				downArrowKeyHandler: function () {
 					var nextChild = this.getNext(this.navigatedDescendant, 1);
 					if (nextChild) {
 						this.navigateTo(nextChild);
 					}
 				},
-				onUpArrow: function () {
+				upArrowKeyHandler: function () {
 					var previousChild = this.getNext(this.navigatedDescendant, -1);
 					if (previousChild) {
 						this.navigateTo(previousChild);
@@ -80,7 +80,7 @@
 				}
 			});
 
-			// Register keyHandlers[keys.SPACE] handler
+			// Register handler for the space key
 			var MyCustKeyNavCode = register("my-list-cust", [HTMLElement, Container, KeyNav], {
 				// Id of node to update when there's an space event
 				spaceCountNodeId: "",
@@ -88,26 +88,22 @@
 				descendantSelector: function (child) {
 					return child !== this;
 				},
-				onDownArrow: function () {
+				downArrowKeyHandler: function () {
 					var nextChild = this.getNext(this.navigatedDescendant, 1);
 					if (nextChild) {
 						this.navigateTo(nextChild);
 					}
 				},
-				onUpArrow: function () {
+				upArrowKeyHandler: function () {
 					var previousChild = this.getNext(this.navigatedDescendant, -1);
 					if (previousChild) {
 						this.navigateTo(previousChild);
 					}
 				},
-				postRender: function () {
-					// If the caller has specified a counter node, increment it whenever there's a space key.
-					// Except if the space is on an <input> or is part of a search, ex: "new york".
-					this.keyHandlers[keys.SPACE] = function () {
-						if (this.spaceCountNodeId) {
-							window[this.spaceCountNodeId].innerHTML = window[this.spaceCountNodeId].innerHTML - -1;
-						}
-					}.bind(this);
+				spaceKeyHandler: function () {
+					if (this.spaceCountNodeId) {
+						window[this.spaceCountNodeId].innerHTML = window[this.spaceCountNodeId].innerHTML - -1;
+					}
 				}
 			});
 
@@ -266,7 +262,7 @@
 	</my-list>
 	clicks: <span id="clicks">0</span>
 
-	<h3>Test for keyboard search with spaces and setting for keyHandlers[keys.SPACE]</h3>
+	<h3>Test for keyboard search with spaces and setting for handler for SPACE key</h3>
 	<input id="keyboardInputCust" type="text" tabindex="9" value="input before keyboard">
 	<my-list-cust id="keyboardCust" spaceCountNodeId="spaces" tabIndex="9">
 		<input>
@@ -280,7 +276,7 @@
 		<my-list-item value="NM">New Mexico</my-list-item>
 		<my-list-item value="NY">New York</my-list-item>
 	</my-list-cust>
-	callbacks to keyHandlers[keys.SPACE] handler: <span id="spaces">0</span>
+	callbacks to spaceKeyHandler(): <span id="spaces">0</span>
 
 	<h3>ComboBox</h3>
 	<input id="combobox" type="text" tabindex="9" value="">
