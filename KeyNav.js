@@ -55,18 +55,36 @@ define([
 	  */
 	return dcl(Widget, /** @lends module:delite/KeyNav# */ {
 
+		/*jshint -W101*/
 		/**
 		 * When true, focus the descendant widgets as the user navigates to them via arrow keys or keyboard letter
 		 * search.  When false, rather than focusing the widgets, it merely sets `navigatedDescendant`,
 		 * and sets the `d-active-descendant` class on the descendant widget the user has navigated to.
 		 *
-		 * False mode is intended for widgets like ComboBox where the focus is somewhere else and
-		 * keystrokes are merely being forwarded to the KeyNav widget.
+		 * False mode is intended for widgets like ComboBox where the focus is somewhere outside this widget
+		 * (typically on an `<input>`) and keystrokes are merely being forwarded to the KeyNav widget.
+		 *
+		 * When set to false:
+		 *
+		 * - All navigable descendants must specify an id.
+		 * - Navigable descendants shouldn't have any tabIndex (as opposed to having tabIndex=-1).
+		 * - The focused element should specify `aria-owns` to point to this KeyNav Element.
+		 * - The focused Element must be kept synced so that `aria-activedescendant` points to the currently
+		 *   navigated descendant.  Do this responding to the `keynav-child-navigated` event emitted by this widget,
+		 *   or by calling `observe()` and monitoring changed to `navigatedDescendant`.
+		 * - The focused Element must forward keystrokes by calling `emit("keydown", ...)` and/or
+		 *   `emit("keypress", ...)` on this widget.
+		 * - You must somehow set the initial navigated descendant, typically by calling `navigateToFirst()` either
+		 *   when the the dropdown is opened, or on the first call to `downArrowKeyHandler()`.
+		 *
+		 * See http://www.w3.org/WAI/GL/wiki/Using_aria-activedescendant_to_allow_changes_in_focus_within_widgets_to_be_communicated_to_Assistive_Technology#Example_1:_Combobox
+		 * for details.
 		 * @member {boolean}
 		 * @default true
 		 * @protected
 		 */
 		focusDescendants: true,
+		/*jshint +W101*/
 
 		/**
 		 * The currently navigated descendant, or null if there isn't one.
@@ -77,7 +95,7 @@ define([
 		navigatedDescendant: null,
 
 		/**
-		 * Selector to identify which descendants Elements are navigable via arrow keys or
+		 * Selector to identify which descendant Elements are navigable via arrow keys or
 		 * keyboard search.  Note that for subclasses like a Tree, one navigable node could be a descendant of another.
 		 *
 		 * By default, the direct DOM children of this widget are considered as the children.
@@ -91,9 +109,8 @@ define([
 		descendantSelector: null,
 
 		/**
-		 * Figure out effective target of this event, either a navigable node (a.k.a. a child),
-		 * or this widget itself.
-		 * The meaning of "child" here is complicated because this could be a Tree with nested children.
+		 * Figure out effective target of this event, either a navigable node, or this widget itself.
+		 * Note that for subclasses like a Tree, one navigable node could be a descendant of another.
 		 * @param {Event} evt
 		 * @private
 		 */
@@ -231,7 +248,7 @@ define([
 		/**
 		 * Handler for when the container itself gets focus.
 		 * Called only when `this.focusDescendants` is true.
-		 * Initially the container itself has a tabIndex, but when it gets focus, switch focus to first child.
+		 * Initially the container itself has a tabIndex, but when it gets focus, switches focus to first child.
 		 * 
 		 * @param {Event} evt
 		 * @private
