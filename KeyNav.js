@@ -8,6 +8,15 @@ define([
 	"dpointer/events",		// so can just monitor for "pointerdown"
 	"./activationTracker"	// delite-deactivated event when focus removed from KeyNav and logical descendants
 ], function (dcl, domClass, keys, has, Widget) {
+
+	// Generate map from keyCode to handler name
+	var keycodeToMethod = {};
+	for (var key in keys) {
+		keycodeToMethod[keys[key]] = key.replace(/[^_]+|_./g, function (c) {
+			return c.charAt(0) === "_" ? c.charAt(1) : c.toLowerCase();
+		}) + "KeyHandler";
+	}
+
 	/**
 	 * Return true if node is an `<input>` or similar that responds to keyboard input.
 	 * @param {Element} node
@@ -26,9 +35,14 @@ define([
 	  * or more complex widgets like a Tree.
 	  * 
 	  * To use this mixin, the subclass must:
-	  * 
-	  * - Implement `onLeftArrow()`, `onRightArrow()``onDownArrow()`, `onUpArrow()` methods to handle
-	  *   left/right/up/down keystrokes.
+	  *
+	  * - Implement one method for each keystroke that subclass wants to handle, with names based on the keys
+	  *   defined in delite/keys.  For example, `DOWN_ARROW` --> `downArrowKeyHandler()`.
+	  *   The method takes two parameters: the events, and the currently navigated node.
+	  *   For BIDI support, the left and right arrows are handled specially, mapped to the `previousArrowKeyHandler()`
+	  *   and `nextArrowKeyHandler()` methods in LTR mode, or reversed in RTL mode.
+	  *   Most subclasses will want to implement either `previousArrowKeyHandler()`
+	  *   and `nextArrowKeyHandler()`, or `downArrowKeyHandler()` and `upArrowKeyHandler()`.
 	  * - Set all navigable descendants' initial tabIndex to "-1"; both initial descendants and any
 	  *   descendants added later, by for example `addChild()`.  Exception: if `focusDescendants` is false then the
 	  *   descendants shouldn't have any tabIndex at all.
@@ -61,15 +75,6 @@ define([
 		 * @protected
 		 */
 		navigatedDescendant: null,
-
-		/**
-		 * Hash mapping key code (arrow keys and home/end key) to functions to handle those keys.
-		 * Usually not used directly, as subclasses can instead override onLeftArrow() etc.
-		 * Must be set before postRender().
-		 * @member {Object}
-		 * @protected
-		 */
-		keyHandlers: null,
 
 		/**
 		 * Selector to identify which descendants Elements are navigable via arrow keys or
@@ -116,20 +121,6 @@ define([
 				this._selectorFunc = function (child) { return child.parentNode === self.containerNode; };
 			}
 
-			if (!this.keyHandlers) {
-				var keyCodes = this.keyHandlers = {};
-				keyCodes[keys.HOME] = function () {
-					self.navigateToFirst();
-				};
-				keyCodes[keys.END] = function () {
-					self.navigateToLast();
-				};
-				keyCodes[this.isLeftToRight() ? keys.LEFT_ARROW : keys.RIGHT_ARROW] = this.onLeftArrow.bind(this);
-				keyCodes[this.isLeftToRight() ? keys.RIGHT_ARROW : keys.LEFT_ARROW] = this.onRightArrow.bind(this);
-				keyCodes[keys.UP_ARROW] = this.onUpArrow.bind(this);
-				keyCodes[keys.DOWN_ARROW] = this.onDownArrow.bind(this);
-			}
-
 			this.on("keypress", this._keynavKeyPressHandler.bind(this));
 			this.on("keydown", this._keynavKeyDownHandler.bind(this));
 			this.on("pointerdown", function (evt) {
@@ -163,38 +154,26 @@ define([
 		},
 
 		/**
-		 * Called on left arrow key, or right arrow key if widget is in RTL mode.
-		 * Should go back to the previous child in horizontal container widgets like Toolbar.
+		 * Called on home key.
+		 * @param {Event} evt
+		 * @param {Element} navigatedDescendant
 		 * @protected
-		 * @abstract
 		 */
-		onLeftArrow: function () {
+		homeKeyHandler: function () {
+			this.navigateToFirst();
 		},
 
 		/**
-		 * Called on right arrow key, or left arrow key if widget is in RTL mode.
-		 * Should go to the next child in horizontal container widgets like Toolbar.
+		 * Called on end key.
+		 * @param {Event} evt
+		 * @param {Element} navigatedDescendant
 		 * @protected
-		 * @abstract
 		 */
-		onRightArrow: function () {
+		endKeyHandler: function () {
+			this.navigateToLast();
 		},
 
 		/**
-		 * Called on up arrow key.  Should go to the previous child in vertical container widgets like Menu.
-		 * @protected
-		 * @abstract
-		 */
-		onUpArrow: function () {
-		},
-
-		/**
-		 * Called on down arrow key.  Should go to the next child in vertical container widgets like Menu.
-		 * @protected
-		 * @abstract
-		 */
-		onDownArrow: function () {
-		},
 
 		/**
 		 * Default focus() implementation: navigate to the first navigable descendant.
@@ -423,7 +402,7 @@ define([
 
 			if (evt.keyCode === keys.SPACE && this._searchTimer && !(evt.ctrlKey || evt.altKey || evt.metaKey)) {
 				// If the user types some string like "new york", interpret the space as part of the search rather
-				// than to perform some action, even if this.keyHandlers[evt.keyCode] is set).
+				// than to perform some action, even if there is a key handler method defined.
 
 				// Stop a11yclick from interpreting key as a click event.
 				// Also stop IE from scrolling, and most browsers (except FF) from emitting keypress event.
@@ -437,16 +416,28 @@ define([
 		},
 
 		/**
-		 * Call handler specified in this.keyHandlers[] for the current keystroke.
-		 * @param evt
+		 * If the class has defined a method to handle the specified key, then call it.
+		 * See the description of `KeyNav` for details on how to define methods.
+		 * @param {Event} evt
 		 * @private
 		 */
 		_applyKeyHandler: function (evt) {
-			var func = this.keyHandlers[evt.keyCode];
+			// Get name of method to call
+			var methodName;
+			switch (evt.keyCode) {
+			case keys.LEFT_ARROW:
+				methodName = this.isLeftToRight() ? "previousArrowKeyHandler" : "nextArrowKeyHandler";
+				break;
+			case keys.RIGHT_ARROW:
+				methodName = this.isLeftToRight() ? "nextArrowKeyHandler" : "previousArrowKeyHandler";
+				break;
+			default:
+				methodName = keycodeToMethod[evt.keyCode];
+			}
+
+			// Call it
+			var func = this[methodName];
 			if (func) {
-				if (typeof func === "string") {
-					func = this[func];
-				}
 				func.call(this, evt, this.navigatedDescendant);
 				evt.stopPropagation();
 				evt.preventDefault();

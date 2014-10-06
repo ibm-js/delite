@@ -186,7 +186,7 @@ define([
 				});
 		},
 
-		"set keyHandlers[keys.SPACE]": function () {
+		"setup key handler for space": function () {
 			if (this.remote.environmentType.brokenSendKeys || !this.remote.environmentType.nativeEvents) {
 				return this.skip("no keyboard support");
 			}
@@ -211,7 +211,7 @@ define([
 				})
 				.sleep(1000)
 				// Now that 1000ms have elapsed, the search should be canceled, and each space typed
-				// should call the handler registered in this.keyHandlers[keys.SPACE]
+				// should call the handler registered for the space key.
 				.pressKeys("   ")
 				.execute("return spaces.textContent")
 				.then(function (value) {
