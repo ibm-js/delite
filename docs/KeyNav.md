@@ -9,18 +9,24 @@ This is a base class to enable keyboard navigation between the widget's descenda
 Navigation can be performed via arrow keys and HOME/END keys, and also a letter key search.
 A List, Tree, or Grid widget could all be subclasses of KeyNav.
 
-To use this base class, the subclass must implement a number of abstract methods.  For LEFT/RIGHT/UP/DOWN arrow key
-navigation, implement:
+## Keystroke Handlers
 
-* onLeftArrow()
-* onRightArrow()
-* onDownArrow()
-* onUpArrow()
+To use this base class, the subclass should implement methods for the keystrokes that it wants to handle.
+For LEFT/RIGHT/UP/DOWN arrow key navigation, implement:
 
-These methods are meant to navigate relative to the current node,
-so they should operate based on `this.navigatedDescendant`.
+* previousArrowKeyHandler(event, currentDescendant)
+* nextArrowKeyHandler(event, currentDescendant)
+* downArrowKeyHandler(event, currentDescendant)
+* upArrowKeyHandler(event, currentDescendant)
 
-In addition, the subclass must:
+The subclass can implement methods for other keys too, following the naming pattern above, for example
+spaceKeyHandler(), f2KeyHandler(), etc.
+
+If a handler is defined, then `KeyNav` automatically calls `evt.preventDefault()` and `evt.stopPropagation()`.
+
+## Other Requirements
+
+In addition to setting up keystroke handler methods, the subclass must:
 
 - Set all descendants' initial tabIndex to "-1"; both initial descendants and any
   descendants added later, by for example `addChild()`.  Exception: if `focusDescendants` is false then the
@@ -29,17 +35,6 @@ In addition, the subclass must:
 - Define `this.containerNode`.
 
 Also, child widgets must implement a `.focus()` method.
-
-## keyHandlers
-
-If a subclass wants to take action on other keystrokes, such as F2, it can augment/redefine the `keyHandlers`
-hash, for example:
-
-```js
-postRender: function () {
-   this.keyHandlers[keys.F2] = this._f2HandlerFunc;
-}
-```
 
 ## Example
 
