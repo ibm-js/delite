@@ -63,7 +63,7 @@ require([
 		_openPopup: function () {
 			var self = this;
 
-			popupUtil.open({
+			this._openRet = popupUtil.open({
 				popup: this.popup,
 				parent: this,
 				around: this,
@@ -126,11 +126,6 @@ require([
 				spaceAvailable: spaceAvailable,
 				aroundNodeCoords: aroundNodeCoords
 			});
-		},
-
-		onOpen: function (pos) {
-			// should be called with pos.corner and pos.aroundCorner set
-			this.onOpenArg = pos;
 		}
 	});
 
@@ -270,7 +265,7 @@ require([
 		},
 
 		_openPopup: function (popup) {
-			popupUtil.open({
+			this._openRet = popupUtil.open({
 				popup: popup,
 				parent: this,
 				around: this,
@@ -348,7 +343,7 @@ require([
 	// Functions for testing opening at x/y position
 	var xyPopup = new SimpleChoiceWidget({id: 'xyPopup'});
 	openAt1015 = function () {
-		popupUtil.open({
+		openRet = popupUtil.open({
 			popup: xyPopup,
 			orient: 'R',
 			x: 10,
@@ -367,7 +362,7 @@ require([
 		popup: tooltip
 	})).placeAt(document.getElementById("widgets"));
 	openTooltipAt1015 = function () {
-		popupUtil.open({
+		openRet = popupUtil.open({
 			popup: tooltip,
 			orient: 'R',
 			x: 10,
@@ -381,7 +376,7 @@ require([
 	// Functions for testing scrolling
 	openLotsOfChoicesPopup = function () {
 		lotsOfChoicesPopup = new LotsOfChoicesWidget({id: 'tallPopup1'});
-		popupUtil.open({
+		openRet = popupUtil.open({
 			popup: lotsOfChoicesPopup,
 			orient: 'R',
 			x: 10,

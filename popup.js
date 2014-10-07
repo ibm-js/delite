@@ -339,12 +339,6 @@ define([
 				handlers: handlers
 			});
 
-			if (widget.onOpen) {
-				// TODO: standardize onShow() (used by StackContainer) and onOpen() (used here).
-				// Also, probably the method is not called on***() anymore??
-				widget.onOpen(best);
-			}
-
 			return best;
 		},
 

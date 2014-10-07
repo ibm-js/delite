@@ -157,8 +157,7 @@ define([
 						assert.strictEqual(final.corner, "TL", "popup corner");
 						assert.strictEqual(final.aroundCorner, "BL", "aroundNode corner");
 					})
-					.execute("return tooltip.onOpenArg").then(function (value) {
-						assert.ok(value, "tooltip.onOpenArg");
+					.execute("return tooltipDropDownButton._openRet").then(function (value) {
 						assert.strictEqual(value.corner, "TL", "popup corner");
 						assert.strictEqual(value.aroundCorner, "BL", "popup aroundCorner");
 					});
@@ -167,7 +166,7 @@ define([
 			at: function () {
 				this.timeout = intern.config.TEST_TIMEOUT;
 				return this.remote
-					.execute("tooltip.orientCalls = []; delete tooltip.onOpenArg;")
+					.execute("tooltip.orientCalls = [];")
 					.findById("openTooltipAt1015Button")
 						.click()
 						.end()
@@ -180,8 +179,7 @@ define([
 						assert.strictEqual(value.corner, "TL", "popup corner");
 						assert.strictEqual(value.aroundCorner, "BR", "aroundNode corner");
 					})
-					.execute("return tooltip.onOpenArg").then(function (value) {
-						assert.ok(value, "onOpen called");
+					.execute("return openRet;").then(function (value) {
 						assert.strictEqual(value.corner, "TL", "popup corner");
 						assert.strictEqual(value.aroundCorner, "BR", "aroundNode corner");
 					})
