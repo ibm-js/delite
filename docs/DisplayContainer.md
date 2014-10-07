@@ -83,11 +83,11 @@ The `delite/DisplayContainer` class provides the following events:
 
 |event name|dispatched|cancelable|bubbles|properties|
 |----------|----------|----------|-------|----------|
-|delite-display-load|on any show or hide action|True|True|<ul><li>`dest`: the reference of the child to load</li><li>`loadDeferred`: the deferred to resolve once the child will be loaded</li><li>`hide`: set to true if in a hide action</li><li>any other param passed to the show or hide function</li></ul>|
-|delite-before-show|just before a child is shown|No|True|<ul><li>`dest`: the reference of the loaded child</li><li>`child`: the child to show</li><li>any other param passed to the show function</li></ul>|
-|delite-after-show|after a child has been shown|No|True|<ul><li>`dest`: the reference of the loaded child</li><li>`child`: the child that has been shown</li><li>any other param passed to the show function</li></ul>|
-|delite-before-hide|just before a child is hidden|No|True|<ul><li>`dest`: the reference of the loaded child</li><li>`child`: the child to hide</li><li>any other param passed to the hide function</li></ul>|
-|delite-after-hide|after a child has been hidden|No|True|<ul><li>`dest`: the reference of the loaded child</li><li>`child`: the child that has been hidden</li><li>any other param passed to the hide function</li></ul>|
+|delite-display-load|on any show or hide action|True|True|<ul><li>`dest`: the reference of the child to load</li><li>`loadDeferred`: the deferred to resolve once the child will be loaded; resolve with value like `{child: Element}`</li><li>`hide`: set to true if in a hide action</li><li>any other param passed to the show or hide function</li></ul>|
+|delite-before-show|just before a child is shown|False|True|<ul><li>`dest`: the reference of the loaded child</li><li>`child`: the child to show</li><li>any other param passed to the show function</li></ul>|
+|delite-after-show|after a child has been shown|False|True|<ul><li>`dest`: the reference of the loaded child</li><li>`child`: the child that has been shown</li><li>any other param passed to the show function</li></ul>|
+|delite-before-hide|just before a child is hidden|False|True|<ul><li>`dest`: the reference of the loaded child</li><li>`child`: the child to hide</li><li>any other param passed to the hide function</li></ul>|
+|delite-after-hide|after a child has been hidden|False|True|<ul><li>`dest`: the reference of the loaded child</li><li>`child`: the child that has been hidden</li><li>any other param passed to the hide function</li></ul>|
 
 
 <a name="controller"></a>

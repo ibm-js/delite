@@ -47,9 +47,31 @@ define(["dcl/dcl", "dojo/Deferred", "dojo/when", "delite/Container"],
 				};
 				dcl.mix(event, params);
 				dcl.mix(event, value);
+
+				/**
+				 * Dispatched before child is shown.
+				 * @example
+				 * document.addEventListener("delite-before-show", function (evt) {
+				 *      console.log("about to show child", evt.child);
+				 * });
+				 * @event module:delite/DisplayContainer#delite-before-show
+				 * @property {Element} child - reference to child element
+				 */
 				self.emit("delite-before-show", event);
+
 				when(self.changeDisplay(value.child, event), function () {
+
+					/**
+					 * Dispatched after child is shown.
+					 * @example
+					 * document.addEventListener("delite-after-show", function (evt) {
+					 *      console.log("just displayed child", evt.child);
+					 * });
+					 * @event module:delite/DisplayContainer#delite-after-show
+					 * @property {Element} child - reference to child element
+					 */
 					self.emit("delite-after-show", event);
+
 					displayDeferred.resolve(value);
 				});
 			});
@@ -81,7 +103,27 @@ define(["dcl/dcl", "dojo/Deferred", "dojo/when", "delite/Container"],
 			// when the controller told us it will handle child loading use the deferred from the event
 			// otherwise call the container load method
 			// note: emit() does not return the native event when it has been prevented but false value instead.
+
+			/**
+			 * Dispatched to let an application level listener create/load the child node.
+			 * @example
+			 * document.addEventListener("delite-display-load", function (evt) {
+			 *   if (evt.target.id === "displaycontainer_1") {
+			 *   	var def = evt.loadDeferred;
+			 *   	fetchData(...).then(function(data) {
+			 *   		var child = document.createElement("div");
+			 *   		child.innerHTML = data;
+			 *      	def.resolve({child: child});
+			 *      });
+			 *      evt.preventDefault();
+			 *   }
+			 *   ...
+			 * }
+			 * @event module:delite/DisplayContainer#delite-display-load
+			 * @property {Promise} loadDeferred - promise to resolve with the child element
+			 */
 			var loadDeferred = this.emit("delite-display-load", event) ? this.load(dest) : event.loadDeferred;
+
 			when(loadDeferred, function (value) {
 				// the child is here, actually perform the display
 				// notify everyone we are going to proceed
@@ -93,13 +135,35 @@ define(["dcl/dcl", "dojo/Deferred", "dojo/when", "delite/Container"],
 				};
 				dcl.mix(event, params);
 				dcl.mix(event, value);
+
+				/**
+				 * Dispatched before child is hidden.
+				 * @example
+				 * document.addEventListener("delite-before-hide", function (evt) {
+				 *      console.log("about to hide child", evt.child);
+				 * });
+				 * @event module:delite/DisplayContainer#delite-before-hide
+				 * @property {Element} child - reference to child element
+				 */
 				self.emit("delite-before-hide", event);
+
 				when(self.changeDisplay(value.child, event), function () {
 					// if view is not already removed, remove it
 					if (self.getIndexOfChild(value.child) !== -1) {
 						self.removeChild(value.child);
 					}
+
+					/**
+					 * Dispatched after child is hidden.
+					 * @example
+					 * document.addEventListener("delite-after-hide", function (evt) {
+					 *      console.log("just hid child", evt.child);
+					 * });
+					 * @event module:delite/DisplayContainer#delite-after-hide
+					 * @property {Element} child - reference to child element
+					 */
 					self.emit("delite-after-hide", event);
+
 					displayDeferred.resolve(value);
 				});
 			});
