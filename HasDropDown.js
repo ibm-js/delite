@@ -447,7 +447,8 @@ define([
 				 * @property {Element} child - reference to popup
 				 */
 				this.emit("delite-before-show", {
-					child: dropDown
+					child: dropDown,
+					cancelable: false
 				});
 
 				// Generate id for anchor if it's not already specified
@@ -508,7 +509,8 @@ define([
 				 * @property {Element} child - reference to popup
 				 */
 				this.emit("delite-after-show", {
-					child: dropDown
+					child: dropDown,
+					cancelable: false
 				});
 
 				return {
