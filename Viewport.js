@@ -16,21 +16,6 @@ define([
 ], function (Evented, has) {
 	var Viewport = new Evented();
 
-	var html = document.documentElement,
-		oldWidth = html.clientWidth,
-		oldHeight = html.clientHeight;
-
-	window.addEventListener("resize", function () {
-		var width = html.clientWidth,
-			height = html.clientHeight;
-		if (height === oldHeight && width === oldWidth) {
-			return;
-		}
-		oldWidth = width;
-		oldHeight = height;
-		Viewport.emit("resize");
-	});
-
 	/**
 	 * Get the size of the viewport, or on mobile devices, the part of the viewport not obscured by the
 	 * virtual keyboard.
@@ -66,6 +51,24 @@ define([
 
 		return box;
 	};
+
+	var oldEffectiveBox = Viewport.getEffectiveBox(document);
+
+	function checkForResize(evt) {
+		var newBox = Viewport.getEffectiveBox(document);
+		if (newBox.h !== oldEffectiveBox.h || newBox.w === oldEffectiveBox.w) {
+			oldEffectiveBox = newBox;
+			Viewport.emit("resize", newBox);
+		}
+	}
+
+	// Catch viewport size change due to rotation (mobile devices) or browser window
+	window.addEventListener("resize", checkForResize);
+
+	// A change of focus from a <button> etc. to an <input> can change the size of the effective viewport
+	// on mobile devices w/virtual keyboards.
+	window.addEventListener("focus", checkForResize, true);
+	window.addEventListener("blur", checkForResize, true);
 
 	return Viewport;
 });
