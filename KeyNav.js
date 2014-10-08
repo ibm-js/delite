@@ -76,6 +76,7 @@ define([
 		 *   `emit("keypress", ...)` on this widget.
 		 * - You must somehow set the initial navigated descendant, typically by calling `navigateToFirst()` either
 		 *   when the the dropdown is opened, or on the first call to `downArrowKeyHandler()`.
+		 * - You must have some CSS styling so that the currently navigated node is apparent.
 		 *
 		 * See http://www.w3.org/WAI/GL/wiki/Using_aria-activedescendant_to_allow_changes_in_focus_within_widgets_to_be_communicated_to_Assistive_Technology#Example_1:_Combobox
 		 * for details.
@@ -315,12 +316,6 @@ define([
 					}
 
 					child.tabIndex = this._savedTabIndex;
-				} else {
-					if (child) {
-						this.setAttribute("aria-activedescendant", child.id);
-					} else {
-						this.removeAttribute("aria-activedescendant");
-					}
 				}
 
 				if (this.navigatedDescendant) {

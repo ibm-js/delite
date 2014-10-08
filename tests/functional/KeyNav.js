@@ -293,11 +293,7 @@ define([
 					.getVisibleText().then(function (value) {
 						assert.strictEqual(value, "Alaska", "got navigation event (cur)");
 					})
-					.end()
-				.execute("return combobox_dropdown.getAttribute('aria-activedescendant');")
-				.then(function (value) {
-					assert.strictEqual(value, "unfocusable_AK", "aria-activedescendant set on root node");
-				});
+					.end();
 
 			if (this.remote.environmentType.browserName !== "internet explorer") {
 				// click() doesn't generate pointerdown event on IE10+ and neither does
