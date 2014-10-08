@@ -109,35 +109,10 @@ A typical example is a TimeTextBox widget, where the focus remains on the `<inpu
 arrow keys can navigate between the characters, but the up/down arrow keys will switch between choices
 in the drop down.
 
-HasDropDown supports this usage pattern.  The dropdown should have a `handleKey(evt)` method, which
-HasDropDown will call with the `keydown` event.  The `handleKey()` method should return
-false (not undefined, but false) if the dropdown handled the key event, or don't return anything to let the HasDropDown
-widget itself handle the keystroke.
+HasDropDown supports this usage pattern by calling `dropdown.emit("keydown", ...)` on the dropdown widget.
+If the dropdown widget handles the keystroke, then it should call `evt.preventDefault()` so that the
+HasDropDown widget ignores the keystroke.
 
-For example, the `hasDropDown()` method of a TimePicker dropdown widget might look like:
-
-```js
-handleKey: function(/*Event*/ evt){
-	if (evt.keyCode == keys.DOWN_ARROW) {
-		this.selectNextNode();
-		evt.stopPropagation();
-		evt.preventDefault();
-		return false;
-	}else if (evt.keyCode == keys.UP_ARROW) {
-		this.selectPreviousNode();
-		evt.stopPropagation();
-		evt.preventDefault();
-		return false;
-	}else if (evt.keyCode == keys.ENTER) {
-		if (this._keyboardSelectedChoice) {
-			this.selectChoice(this._keyboardSelectedChoice);
-		}
-		evt.stopPropagation();
-		evt.preventDefault();
-		return false;
-	}
-}
-```
 
 ## Events
 
