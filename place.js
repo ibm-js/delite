@@ -444,13 +444,14 @@ define([
 		center: function (node) {
 			var view = Viewport.getEffectiveBox(node.ownerDocument),
 				bb = node.getBoundingClientRect();
+			console.log("center node", node, ", viewport is " + view.h);
 			node.style.position = "fixed";
 			node.style.top = (view.h - bb.height) / 2 + "px";
 			node.style.left = (view.w - bb.width) / 2 + "px";
 		},
 
 		/**
-		 * Return node position relative to document (rather than to viewport)
+		 * Return node position relative to document (rather than to viewport).
 		 * @param node
 		 */
 		position: function (node) {
