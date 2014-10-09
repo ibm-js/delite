@@ -444,10 +444,10 @@ define([
 		center: function (node) {
 			var view = Viewport.getEffectiveBox(node.ownerDocument),
 				bb = node.getBoundingClientRect();
-			console.log("center node", node, ", viewport is " + view.h);
-			node.style.position = "fixed";
-			node.style.top = (view.h - bb.height) / 2 + "px";
-			node.style.left = (view.w - bb.width) / 2 + "px";
+			console.log("center node", node, ", viewport is " + view.h +
+				", pageYOffset = " + view.t);
+			node.style.top = view.t + (view.h - bb.height) / 2 + "px";
+			node.style.left = view.l + (view.w - bb.width) / 2 + "px";
 		},
 
 		/**
