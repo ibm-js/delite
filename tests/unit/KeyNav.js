@@ -7,7 +7,7 @@ define([
 	var container;
 
 	var SimpleKeyNav = register("simple-key-nav", [HTMLElement, KeyNav], {
-		childSelector: ".child"
+		descendantSelector: ".child"
 	});
 
 	registerSuite({

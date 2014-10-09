@@ -1,11 +1,22 @@
 /** @module delite/KeyNav */
 define([
 	"dcl/dcl",
+	"dojo/dom-class",
 	"delite/keys", // keys.END keys.HOME, keys.LEFT_ARROW etc.
 	"./features",
 	"./Widget",
+	"dpointer/events",		// so can just monitor for "pointerdown"
 	"./activationTracker"	// delite-deactivated event when focus removed from KeyNav and logical descendants
-], function (dcl, keys, has, Widget) {
+], function (dcl, domClass, keys, has, Widget) {
+
+	// Generate map from keyCode to handler name
+	var keycodeToMethod = {};
+	for (var key in keys) {
+		keycodeToMethod[keys[key]] = key.replace(/[^_]+|_./g, function (c) {
+			return c.charAt(0) === "_" ? c.charAt(1) : c.toLowerCase();
+		}) + "KeyHandler";
+	}
+
 	/**
 	 * Return true if node is an `<input>` or similar that responds to keyboard input.
 	 * @param {Element} node
@@ -24,43 +35,68 @@ define([
 	  * or more complex widgets like a Tree.
 	  * 
 	  * To use this mixin, the subclass must:
-	  * 
-	  * - Implement `onLeftArrow()`, `onRightArrow()``onDownArrow()`, `onUpArrow()` methods to handle
-	  *   left/right/up/down keystrokes.
+	  *
+	  * - Implement one method for each keystroke that subclass wants to handle, with names based on the keys
+	  *   defined in delite/keys.  For example, `DOWN_ARROW` --> `downArrowKeyHandler()`.
+	  *   The method takes two parameters: the events, and the currently navigated node.
+	  *   For BIDI support, the left and right arrows are handled specially, mapped to the `previousArrowKeyHandler()`
+	  *   and `nextArrowKeyHandler()` methods in LTR mode, or reversed in RTL mode.
+	  *   Most subclasses will want to implement either `previousArrowKeyHandler()`
+	  *   and `nextArrowKeyHandler()`, or `downArrowKeyHandler()` and `upArrowKeyHandler()`.
 	  * - Set all navigable descendants' initial tabIndex to "-1"; both initial descendants and any
-	  * descendants added later, by for example `addChild()`.
-	  * - Define `childSelector` as a function or string that identifies focusable child Elements.
-	  * 
-	  * Note the word "child" in this class is used loosely, to refer to any descendant Element.
-	  * If the child elements contain text though, they should have a label attribute.  KeyNav uses the label
-	  * attribute for letter key navigation.
+	  *   descendants added later, by for example `addChild()`.  Exception: if `focusDescendants` is false then the
+	  *   descendants shouldn't have any tabIndex at all.
+	  * - Define `descendantSelector` as a function or string that identifies navigable child Elements.
+	  * - If the descendant elements contain text, they should have a label attribute.  KeyNav uses the label
+	  *   attribute for letter key navigation.
 	  *
 	  * @mixin module:delite/KeyNav
 	  * @augments module:delite/Widget
 	  */
 	return dcl(Widget, /** @lends module:delite/KeyNav# */ {
 
-		// TODO: due to apparent bugs in jsdoc3, these aren't getting shown.
+		/*jshint -W101*/
+		/**
+		 * When true, focus the descendant widgets as the user navigates to them via arrow keys or keyboard letter
+		 * search.  When false, rather than focusing the widgets, it merely sets `navigatedDescendant`,
+		 * and sets the `d-active-descendant` class on the descendant widget the user has navigated to.
+		 *
+		 * False mode is intended for widgets like ComboBox where the focus is somewhere outside this widget
+		 * (typically on an `<input>`) and keystrokes are merely being forwarded to the KeyNav widget.
+		 *
+		 * When set to false:
+		 *
+		 * - All navigable descendants must specify an id.
+		 * - Navigable descendants shouldn't have any tabIndex (as opposed to having tabIndex=-1).
+		 * - The focused element should specify `aria-owns` to point to this KeyNav Element.
+		 * - The focused Element must be kept synced so that `aria-activedescendant` points to the currently
+		 *   navigated descendant.  Do this responding to the `keynav-child-navigated` event emitted by this widget,
+		 *   or by calling `observe()` and monitoring changed to `navigatedDescendant`.
+		 * - The focused Element must forward keystrokes by calling `emit("keydown", ...)` and/or
+		 *   `emit("keypress", ...)` on this widget.
+		 * - You must somehow set the initial navigated descendant, typically by calling `navigateToFirst()` either
+		 *   when the the dropdown is opened, or on the first call to `downArrowKeyHandler()`.
+		 * - You must have some CSS styling so that the currently navigated node is apparent.
+		 *
+		 * See http://www.w3.org/WAI/GL/wiki/Using_aria-activedescendant_to_allow_changes_in_focus_within_widgets_to_be_communicated_to_Assistive_Technology#Example_1:_Combobox
+		 * for details.
+		 * @member {boolean}
+		 * @default true
+		 * @protected
+		 */
+		focusDescendants: true,
+		/*jshint +W101*/
 
 		/**
-		 * The currently focused descendant, or null if there isn't one
+		 * The currently navigated descendant, or null if there isn't one.
 		 * @member {Element}
 		 * @readonly
 		 * @protected
 		 */
-		focusedChild: null,
+		navigatedDescendant: null,
 
 		/**
-		 * Hash mapping key code (arrow keys and home/end key) to functions to handle those keys.
-		 * Usually not used directly, as subclasses can instead override onLeftArrow() etc.
-		 * Must be set before postRender().
-		 * @member {Object}
-		 * @protected
-		 */
-		keyHandlers: null,
-
-		/**
-		 * Selector to identify which descendants Elements are navigable via arrow keys or
+		 * Selector to identify which descendant Elements are navigable via arrow keys or
 		 * keyboard search.  Note that for subclasses like a Tree, one navigable node could be a descendant of another.
 		 *
 		 * By default, the direct DOM children of this widget are considered as the children.
@@ -71,13 +107,12 @@ define([
 		 * @protected
 		 * @constant
 		 */
-		childSelector: null,
+		descendantSelector: null,
 
 		/**
-		 * Figure out effective target of this event, either a navigable node (a.k.a. a child),
-		 * or this widget itself.
-		 * The meaning of "child" here is complicated because this could be a Tree with nested children.
-		 * @param evt
+		 * Figure out effective target of this event, either a navigable node, or this widget itself.
+		 * Note that for subclasses like a Tree, one navigable node could be a descendant of another.
+		 * @param {Event} evt
 		 * @private
 		 */
 		_getTargetElement: function (evt) {
@@ -90,132 +125,131 @@ define([
 		},
 
 		postRender: function () {
-			// If the user hasn't specified a tabindex declaratively, then set to default value.
-			if (!this.hasAttribute("tabindex")) {
-				this.tabIndex = "0";
-			}
-
 			var self = this;
 
 			// Setup function to check which child nodes are navigable.
-			if (typeof this.childSelector === "string") {
+			if (typeof this.descendantSelector === "string") {
 				var matchesFuncName = has("dom-matches");
 				this._selectorFunc = function (elem) {
-					return elem[matchesFuncName](this.childSelector);
+					return elem[matchesFuncName](this.descendantSelector);
 				};
-			} else if (this.childSelector) {
-				this._selectorFunc = this.childSelector;
+			} else if (this.descendantSelector) {
+				this._selectorFunc = this.descendantSelector;
 			} else {
 				this._selectorFunc = function (child) { return child.parentNode === self.containerNode; };
 			}
 
-			if (!this.keyHandlers) {
-				var keyCodes = this.keyHandlers = {};
-				keyCodes[keys.HOME] = function () {
-					self.focusFirstChild();
-				};
-				keyCodes[keys.END] = function () {
-					self.focusLastChild();
-				};
-				keyCodes[this.isLeftToRight() ? keys.LEFT_ARROW : keys.RIGHT_ARROW] = this.onLeftArrow.bind(this);
-				keyCodes[this.isLeftToRight() ? keys.RIGHT_ARROW : keys.LEFT_ARROW] = this.onRightArrow.bind(this);
-				keyCodes[keys.UP_ARROW] = this.onUpArrow.bind(this);
-				keyCodes[keys.DOWN_ARROW] = this.onDownArrow.bind(this);
-			}
-
-			this.on("keypress", this._keynavKeyPressHandler.bind(this)),
-			this.on("keydown", this._keynavKeyDownHandler.bind(this)),
-			this.on("delite-deactivated", this._keynavDeactivatedHandler.bind(this)),
-			this.on("focusin", function (evt) {
+			this.on("keypress", this._keynavKeyPressHandler.bind(this));
+			this.on("keydown", this._keynavKeyDownHandler.bind(this));
+			this.on("pointerdown", function (evt) {
 				var target = self._getTargetElement(evt);
-				if (target === self) {
-					self._keynavFocusHandler(evt);
-				} else {
-					self._childFocusHandler(target, evt);
+				if (target !== self) {
+					self._descendantNavigateHandler(target, evt);
 				}
 			});
+
+			if (this.focusDescendants) {
+				this.on("delite-deactivated", this._keynavDeactivatedHandler.bind(this));
+
+				// TODO: this looks wrong, focusin shouldn't bubble so we shouldn't get any notification
+				// from descendant focus events.
+				this.on("focusin", function (evt) {
+					var target = self._getTargetElement(evt);
+					if (target === self) {
+						self._keynavFocusHandler(evt);
+					} else {
+						self._descendantNavigateHandler(target, evt);
+					}
+				});
+			}
+		},
+
+		attachedCallback: function () {
+			// If the user hasn't specified a tabindex declaratively, then set to default value.
+			if (this.focusDescendants && !this.hasAttribute("tabindex")) {
+				this.tabIndex = "0";
+			}
 		},
 
 		/**
-		 * Called on left arrow key, or right arrow key if widget is in RTL mode.
-		 * Should go back to the previous child in horizontal container widgets like Toolbar.
+		 * Called on home key.
+		 * @param {Event} evt
+		 * @param {Element} navigatedDescendant
 		 * @protected
-		 * @abstract
 		 */
-		onLeftArrow: function () {
+		homeKeyHandler: function () {
+			this.navigateToFirst();
 		},
 
 		/**
-		 * Called on right arrow key, or left arrow key if widget is in RTL mode.
-		 * Should go to the next child in horizontal container widgets like Toolbar.
+		 * Called on end key.
+		 * @param {Event} evt
+		 * @param {Element} navigatedDescendant
 		 * @protected
-		 * @abstract
 		 */
-		onRightArrow: function () {
+		endKeyHandler: function () {
+			this.navigateToLast();
 		},
 
 		/**
-		 * Called on up arrow key.  Should go to the previous child in vertical container widgets like Menu.
-		 * @protected
-		 * @abstract
-		 */
-		onUpArrow: function () {
-		},
 
 		/**
-		 * Called on down arrow key.  Should go to the next child in vertical container widgets like Menu.
-		 * @protected
-		 * @abstract
-		 */
-		onDownArrow: function () {
-		},
-
-		/**
-		 * Default focus() implementation: focus the first child.
+		 * Default focus() implementation: navigate to the first navigable descendant.
+		 * Note that if `focusDescendants` is false, this will merely set the `d-active-descendant` class
+		 * rather than actually focusing the descendant.
 		 */
 		focus: function () {
-			this.focusFirstChild();
+			this.navigateToFirst();
 		},
 
 		/**
-		 * Focus the first focusable child in the container.
+		 * Navigate to the first navigable descendant.
+		 * Note that if `focusDescendants` is false, this will merely set the `d-active-descendant` class
+		 * rather than actually focusing the descendant.
 		 * @protected
 		 */
-		focusFirstChild: function () {
-			this.focusChild(this.getNext(this, 1));
+		navigateToFirst: function () {
+			this.navigateTo(this.getNext(this, 1));
 		},
 
 		/**
-		 * Focus the last focusable child in the container.
+		 * Navigate to the last navigable descendant.
+		 * Note that if `focusDescendants` is false, this will merely set the `d-active-descendant` class
+		 * rather than actually focusing the descendant.
 		 * @protected
 		 */
-		focusLastChild: function () {
-			this.focusChild(this.getNext(this, -1));
+		navigateToLast: function () {
+			this.navigateTo(this.getNext(this, -1));
 		},
 
 		/**
-		 * Focus specified child Element.
-		 * @param {Element} child - Reference to container's child.
-		 * @param {boolean} last - If true and if child has multiple focusable nodes, focus the
-		 *     last one instead of the first one.
+		 * Navigate to the specified descendant.
+		 * Note that if `focusDescendants` is false, this will merely set the `d-active-descendant` class
+		 * rather than actually focusing the descendant.
+		 * @param {Element} child - Reference to the descendant.
+		 * @param {boolean} last - If true and if descendant has multiple focusable nodes, focus the
+		 *     last one instead of the first one.  This assumes that the child's `focus()` method takes a boolean
+		 *     parameter where `true` means to focus the last child.
 		 * @protected
 		 */
-		focusChild: function (child, last) {
-			// For IE focus outline to appear, must set tabIndex before focus.
-			// If this._savedTabIndex is set, use it instead of this.tabIndex, because it means
-			// the container's tabIndex has already been changed to -1.
-			child.tabIndex = "_savedTabIndex" in this ? this._savedTabIndex : this.tabIndex;
-			child.focus(last ? "end" : "start");
+		navigateTo: function (child, last) {
+			if (this.focusDescendants) {
+				// For IE focus outline to appear, must set tabIndex before focus.
+				// If this._savedTabIndex is set, use it instead of this.tabIndex, because it means
+				// the container's tabIndex has already been changed to -1.
+				child.tabIndex = "_savedTabIndex" in this ? this._savedTabIndex : this.tabIndex;
+				child.focus(last ? "end" : "start");
 
-			// Don't set focusedChild here, because the focus event should trigger a call to _childFocusHandler(), which
-			// will set it.  More importantly, _childFocusHandler(), which may be executed asynchronously (after this
-			// function returns) needs to know the old focusedChild to set its tabIndex to -1.
+				// _descendantNavigateHandler() will be called automatically from child's focus event.
+			} else {
+				this._descendantNavigateHandler(child);
+			}
 		},
 
 		/**
 		 * Handler for when the container itself gets focus.
-		 * 
-		 * Initially the container itself has a tabIndex, but when it gets focus, switch focus to first child.
+		 * Called only when `this.focusDescendants` is true.
+		 * Initially the container itself has a tabIndex, but when it gets focus, switches focus to first child.
 		 * 
 		 * @param {Event} evt
 		 * @private
@@ -228,7 +262,7 @@ define([
 
 			// Ignore spurious focus event:
 			// On IE, clicking the scrollbar of a select dropdown moves focus from the focused child item to me
-			if (this.focusedChild) {
+			if (this.navigatedDescendant) {
 				return;
 			}
 
@@ -241,8 +275,12 @@ define([
 			this.focus();
 		},
 
+		/**
+		 * Handler for when focus is moved away the container, and its descendant (popup) widgets.
+		 * Called only when `this.focusDescendants` is true.
+		 * @private
+		 */
 		_keynavDeactivatedHandler: function () {
-			// When focus is moved away the container, and its descendant (popup) widgets,
 			// then restore the container's tabIndex so that user can tab to it again.
 			// Note that using _onBlur() so that this doesn't happen when focus is shifted
 			// to one of my child widgets (typically a popup)
@@ -251,34 +289,61 @@ define([
 			// no focused child at that time.
 			this.setAttribute("tabindex", this._savedTabIndex);
 			delete this._savedTabIndex;
-			if (this.focusedChild) {
-				this.focusedChild.tabIndex = "-1";
-				this.focusedChild = null;
+			if (this.navigatedDescendant) {
+				this.navigatedDescendant.tabIndex = "-1";
+				this.navigatedDescendant = null;
 			}
 		},
 
 		/**
-		 * Called when a child gets focus, either by user clicking it, or programatically by arrow key handling code.
-		 * It marks that the current node is the selected one, and the previously selected node no longer is.
+		 * Called when a child is navigated to, either by user clicking it, or programatically by arrow key handling
+		 * code.  It marks that the specified child is the navigated one.
 		 * @param {Element} child
 		 * @private
 		 */
-		_childFocusHandler: function (child) {
-			if (child && child !== this.focusedChild) {
-				if (this.focusedChild && !this.focusedChild._destroyed) {
-					// mark that the previously focusable node is no longer focusable
-					this.focusedChild.tabIndex = "-1";
+		_descendantNavigateHandler: function (child) {
+			if (child && child !== this.navigatedDescendant) {
+				if (this.focusDescendants) {
+					if (this.navigatedDescendant && !this.navigatedDescendant._destroyed) {
+						// mark that the previously focusable node is no longer focusable
+						this.navigatedDescendant.tabIndex = "-1";
+					}
+
+					// If container still has tabIndex setting then remove it; instead we'll set tabIndex on child
+					if (!("_savedTabIndex" in this)) {
+						this._savedTabIndex = this.tabIndex;
+						this.removeAttribute("tabindex");
+					}
+
+					child.tabIndex = this._savedTabIndex;
 				}
 
-				// If container still has tabIndex setting then remove it; instead we'll set tabIndex on child
-				if (!("_savedTabIndex" in this)) {
-					this._savedTabIndex = this.tabIndex;
-					this.removeAttribute("tabindex");
+				if (this.navigatedDescendant) {
+					domClass.remove(this.navigatedDescendant, "d-active-descendant");
 				}
 
-				// mark that the new node is the currently selected one
-				child.tabIndex = this._savedTabIndex;
-				this.focusedChild = child;
+				/**
+				 * Dispatched after the user has selected a different descendant, by clicking, arrow keys,
+				 * or keyboard search.
+				 * @example
+				 * widget.on("keynav-child-navigated", function (evt) {
+				 *	console.log("old value: " + evt.oldValue);
+				 *	console.log("new value: " + evt.newValue);
+				 * }
+				 * @event module:delite/KeyNav#keynav-child-navigated
+				 * @property {number} oldValue - The previously selected item.
+				 * @property {number} newValue - The new selected item.
+				 */
+				this.emit("keynav-child-navigated", {
+					oldValue: this.navigatedDescendant,
+					newValue: child
+				});
+
+				// mark that the new node is the currently navigated one
+				this.navigatedDescendant = child;
+				if (child) {
+					domClass.add(child, "d-active-descendant");
+				}
 			}
 		},
 
@@ -307,9 +372,9 @@ define([
 		 * @param {number} numMatches
 		 * @private
 		 */
-		onKeyboardSearch: function (item, /*jshint unused: vars */ evt, searchString, numMatches) {
+		_keyboardSearchHandler: function (item, /*jshint unused: vars */ evt, searchString, numMatches) {
 			if (item) {
-				this.focusChild(item);
+				this.navigateTo(item);
 			}
 		},
 
@@ -349,7 +414,7 @@ define([
 
 			if (evt.keyCode === keys.SPACE && this._searchTimer && !(evt.ctrlKey || evt.altKey || evt.metaKey)) {
 				// If the user types some string like "new york", interpret the space as part of the search rather
-				// than to perform some action, even if this.keyHandlers[evt.keyCode] is set).
+				// than to perform some action, even if there is a key handler method defined.
 
 				// Stop a11yclick from interpreting key as a click event.
 				// Also stop IE from scrolling, and most browsers (except FF) from emitting keypress event.
@@ -363,17 +428,29 @@ define([
 		},
 
 		/**
-		 * Call handler specified in this.keyHandlers[] for the current keystroke.
-		 * @param evt
+		 * If the class has defined a method to handle the specified key, then call it.
+		 * See the description of `KeyNav` for details on how to define methods.
+		 * @param {Event} evt
 		 * @private
 		 */
 		_applyKeyHandler: function (evt) {
-			var func = this.keyHandlers[evt.keyCode];
+			// Get name of method to call
+			var methodName;
+			switch (evt.keyCode) {
+			case keys.LEFT_ARROW:
+				methodName = this.isLeftToRight() ? "previousArrowKeyHandler" : "nextArrowKeyHandler";
+				break;
+			case keys.RIGHT_ARROW:
+				methodName = this.isLeftToRight() ? "nextArrowKeyHandler" : "previousArrowKeyHandler";
+				break;
+			default:
+				methodName = keycodeToMethod[evt.keyCode];
+			}
+
+			// Call it
+			var func = this[methodName];
 			if (func) {
-				if (typeof func === "string") {
-					func = this[func];
-				}
-				func.call(this, evt, this.focusedChild);
+				func.call(this, evt, this.navigatedDescendant);
 				evt.stopPropagation();
 				evt.preventDefault();
 				this._searchString = ""; // so a DOWN_ARROW b doesn't search for ab
@@ -431,7 +508,7 @@ define([
 				this._searchTimer = null;
 				this._searchString = "";
 			}, this.multiCharSearchDuration);
-			var currentItem = this.focusedChild || null;
+			var currentItem = this.navigatedDescendant || null;
 			if (searchLen === 1 || !currentItem) {
 				currentItem = this.getNext(currentItem, 1); // skip current
 				if (!currentItem) {
@@ -451,13 +528,13 @@ define([
 				currentItem = this.getNext(currentItem, 1);
 			} while (currentItem !== stop);
 
-			this.onKeyboardSearch(matchedItem, evt, searchString, numMatches);
+			this._keyboardSearchHandler(matchedItem, evt, searchString, numMatches);
 		},
 
 		/**
-		 * Returns the next or previous navigable child, relative to "child".
-		 * If "child" is this, then it returns the first focusable child (when dir === 1)
-		 * or last focusable child (when dir === -1).
+		 * Returns the next or previous navigable descendant, relative to "child".
+		 * If "child" is this, then it returns the first focusable descendant (when dir === 1)
+		 * or last focusable descendant (when dir === -1).
 		 * @param {Element} child - The current child Element.
 		 * @param {number} dir - 1 = after, -1 = before
 		 * @returns {Element}

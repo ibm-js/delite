@@ -186,7 +186,7 @@ define([
 				});
 		},
 
-		"set keyHandlers[keys.SPACE]": function () {
+		"setup key handler for space": function () {
 			if (this.remote.environmentType.brokenSendKeys || !this.remote.environmentType.nativeEvents) {
 				return this.skip("no keyboard support");
 			}
@@ -211,7 +211,7 @@ define([
 				})
 				.sleep(1000)
 				// Now that 1000ms have elapsed, the search should be canceled, and each space typed
-				// should call the handler registered in this.keyHandlers[keys.SPACE]
+				// should call the handler registered for the space key.
 				.pressKeys("   ")
 				.execute("return spaces.textContent")
 				.then(function (value) {
@@ -267,6 +267,49 @@ define([
 				.then(function (value) {
 					assert.strictEqual(value, "four", "keyboard searched to 'four'");
 				});
+		},
+
+		"combobox": function () {
+			if (this.remote.environmentType.brokenSendKeys || !this.remote.environmentType.nativeEvents) {
+				return this.skip("no keyboard support");
+			}
+			var chain = this.remote.execute("document.body.scrollTop = 10000; combobox.focus();")
+				.pressKeys(keys.ARROW_DOWN)
+				.execute("return document.activeElement.id")
+				.then(function (value) {
+					assert.strictEqual(value, "combobox", "down arrow leaves focus on combobox");
+				})
+				.findByCssSelector("#combobox_dropdown .d-active-descendant")
+					.getVisibleText().then(function (value) {
+						assert.strictEqual(value, "Alaska", "navigated to Alaska");
+					})
+					.end()
+				.findById("combobox_dropdown_previous_node")
+					.getVisibleText().then(function (value) {
+						assert.strictEqual(value, "Alabama", "got navigation event (prev)");
+					})
+					.end()
+				.findById("combobox_dropdown_current_node")
+					.getVisibleText().then(function (value) {
+						assert.strictEqual(value, "Alaska", "got navigation event (cur)");
+					})
+					.end();
+
+			if (this.remote.environmentType.browserName !== "internet explorer") {
+				// click() doesn't generate pointerdown event on IE10+ and neither does
+				// moveMouseTo().pressMouseButton(1).releaseMouseButton(1).
+				// see https://github.com/theintern/leadfoot/issues/17.
+				chain = chain.findByCssSelector("#combobox_dropdown > *:nth-child(5)")
+						.click()
+						.end()
+					.findById("combobox_dropdown_current_node")
+						.getVisibleText().then(function (value) {
+							assert.strictEqual(value, "California", "got navigation event from click");
+						})
+						.end();
+			}
+
+			return chain;
 		}
 	});
 });
