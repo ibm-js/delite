@@ -99,7 +99,10 @@ define([
 		 * Selector to identify which descendant Elements are navigable via arrow keys or
 		 * keyboard search.  Note that for subclasses like a Tree, one navigable node could be a descendant of another.
 		 *
-		 * By default, the direct DOM children of this widget are considered as the children.
+		 * It's either a function that takes an Element parameter and returns true/false,
+		 * or a CSS selector string, for example ".list-item".
+		 *
+		 * By default, the direct DOM children of this widget are considered the selectable descendants.
 		 *
 		 * Must be set in the prototype rather than on the instance.
 		 *
@@ -136,7 +139,7 @@ define([
 			} else if (this.descendantSelector) {
 				this._selectorFunc = this.descendantSelector;
 			} else {
-				this._selectorFunc = function (child) { return child.parentNode === self.containerNode; };
+				this._selectorFunc = function (elem) { return elem.parentNode === self.containerNode; };
 			}
 
 			this.on("keypress", this._keynavKeyPressHandler.bind(this));
