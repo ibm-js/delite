@@ -25,7 +25,7 @@ define([
 		var html = doc.documentElement;
 		return {
 			w: html.clientWidth,
-			h: html.clientHeight,
+			h: html.clientHeight,	// this isn't quite what I want, if the text is short it's too low a number
 			t: doc.body.scrollTop,	// alternately window.pageYOffset
 			l: doc.body.scrollLeft	// alternately window.pageXOffset
 		};
@@ -50,12 +50,6 @@ define([
 			// Estimate height of visible viewport assuming viewport goes to bottom of screen,
 			// but is covered by keyboard.
 			box.h *= (window.orientation === 0 || window.orientation === 180 ? 0.66 : 0.40);
-
-			// Above measurement will be inaccurate if viewport was scrolled up so far that it ends before the bottom
-			// of the screen.   In this case, keyboard isn't covering as much of the viewport as we thought.
-			// We know the visible size is at least the distance from the top of the viewport to the focused node.
-			var rect = focusedNode.getBoundingClientRect();
-			box.h = Math.max(box.h, rect.top + rect.height);
 		}
 
 		return box;
