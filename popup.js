@@ -356,8 +356,8 @@ define([
 						wrapper.style.height = Math.floor(viewport.w * 0.9) + "px";
 					}
 				} else {
-					// Limit height to space available in viewport either above or below aroundNode (whichever side has more
-					// room).  This may make the popup widget display a scrollbar (or multiple scrollbars).
+					// Limit height to space available in viewport either above or below aroundNode (whichever side has
+					// more room).  This may make the popup widget display a scrollbar (or multiple scrollbars).
 					var maxHeight;
 					if ("maxHeight" in args && args.maxHeight !== -1) {
 						maxHeight = args.maxHeight || Infinity;
@@ -366,7 +366,8 @@ define([
 							top: args.y - (args.padding || 0),
 							height: (args.padding || 0) * 2
 						};
-						maxHeight = Math.floor(Math.max(aroundPos.top, viewport.h - (aroundPos.top + aroundPos.height)));
+						maxHeight = Math.floor(Math.max(aroundPos.top, viewport.h -
+							(aroundPos.top + aroundPos.height)));
 					}
 
 					if (widget.offsetHeight > maxHeight) {
