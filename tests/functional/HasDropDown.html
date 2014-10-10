@@ -168,7 +168,6 @@
 					this.textContent = val;
 					this._set("label", val);
 				},
-				orient: ["below"],
 
 				dropDownConstructor: FocusMenu,
 
@@ -185,14 +184,11 @@
 				_setLabelAttr: function (val) {
 					this.textContent = val;
 					this._set("label", val);
-				},
-				orient: ["below"]
+				}
 			});
 
 			// A button that shows a popup
 			var ComboBox = register("combo-box", [HTMLInputElement, HasDropDown], {
-				orient: ["below"],
-
 				dropDownConstructor: NonFocusMenu,
 
 				loadDropDown: function () {
@@ -224,8 +220,6 @@
 					this.textContent = val;
 					this._set("label", val);
 				},
-
-				orient: ["below"],
 
 				loadDropDown: function () {
 					return this._dropDown || (this._dropDown = new FocusMenu({
