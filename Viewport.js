@@ -66,7 +66,7 @@ define([
 	function checkForResize() {
 		var newBox = Viewport.getEffectiveBox(document);
 		if (newBox.h !== oldEffectiveBox.h || newBox.w !== oldEffectiveBox.w ||
-			newBox.t !== oldEffectiveBox.t || newBox.l !== oldEffectiveBox.l ) {
+			newBox.t !== oldEffectiveBox.t || newBox.l !== oldEffectiveBox.l) {
 			oldEffectiveBox = newBox;
 			Viewport.emit("resize", newBox);
 		}
