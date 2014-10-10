@@ -2,6 +2,8 @@
 <html>
 <head>
 <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+<meta name="viewport"
+	  content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no"/>
 <title>popup functional test</title>
 
 <script src="../boilerplate.js"></script>
@@ -416,11 +418,12 @@ require([
 <label for="inputAtStart">input at start:</label><input id="inputAtStart">
 
 <!-- button needs to be after inputAtStart and before inputAtEnd but not be overlaid by popups -->
-<button id="stub-for-blurring" style="float: right">
+<button id="stub-for-blurring" style="float: right;">
 	a stub node to execute blur events for wd.js
 </button>
 
-<div style="height: 200px; overflow: auto; margin: 10px 0px;">
+<div style="height: 200px; overflow: auto; margin: 10px 0px; clear: both;">
+	<p>Div containing buttons to open dialogs.  Scroll down if necessary.</p>
 	<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis cursus odio eu nisl ultrices dictum. Sed tincidunt
 		metus et magna placerat eget vehicula dolor faucibus. Nunc nec augue ac mi rutrum congue. Donec at augue felis.
 		Proin et lectus at mauris adipiscing pulvinar tempor vitae lacus. Aliquam erat volutpat. Sed eget sem eu turpis

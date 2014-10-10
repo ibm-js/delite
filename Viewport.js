@@ -64,12 +64,10 @@ define([
 	var oldEffectiveBox = Viewport.getEffectiveBox(document);
 
 	function checkForResize() {
-		console.log("check for resize");
 		var newBox = Viewport.getEffectiveBox(document);
 		if (newBox.h !== oldEffectiveBox.h || newBox.w !== oldEffectiveBox.w ||
 			newBox.t !== oldEffectiveBox.t || newBox.l !== oldEffectiveBox.l ) {
 			oldEffectiveBox = newBox;
-			console.log("resize");
 			Viewport.emit("resize", newBox);
 		}
 	}
@@ -78,14 +76,19 @@ define([
 	window.addEventListener("resize", checkForResize);
 
 	// A change of focus from a <button> etc. to an <input> can change the size of the effective viewport
-	// on mobile devices w/virtual keyboards.  Delay added to give time for virtual keyboard to pop up,
+	// on mobile devices w/virtual keyboards.  Keep checking for a while to give time for virtual keyboard to pop up,
 	// since that affects the document's scroll.
-	function waitThenCheckForResize() {
-		console.log("wait 500ms");
-		setTimeout(checkForResize, 500);
+	var checkInterval = 50;
+	function waitThenCheckForResize(timeToKeepChecking) {
+		setTimeout(function () {
+			checkForResize();
+			if (timeToKeepChecking >= 0) {
+				waitThenCheckForResize(timeToKeepChecking - checkInterval);
+			}
+		}, checkInterval);
 	}
-	window.addEventListener("focus", waitThenCheckForResize, true);
-	window.addEventListener("blur", waitThenCheckForResize, true);
+	window.addEventListener("focus", waitThenCheckForResize.bind(null, 1000), true);
+	window.addEventListener("blur", waitThenCheckForResize.bind(null, 1000), true);
 
 	return Viewport;
 });
