@@ -15,9 +15,7 @@ No official release yet.
 
 ## Migration
 
-This is a merge of the former dijit & dojox/mobile project.
-
-Migration will require manual steps listed [here](docs/migration.md).
+For developers migrating a widget from dijit, migration will require manual steps listed [here](docs/migration.md).
 
 ## Issues
 
@@ -37,8 +35,13 @@ All contributions require a [Dojo Foundation CLA](http://dojofoundation.org/abou
 This project requires the following other projects to run:
  * dojo
  * dcl    (git clone https://github.com/uhop/dcl.git)
+ * decor
  * requirejs (git clone https://github.com/jrburke/requirejs.git)
-
+ * dpointer
+ * requirejs-domReady
+ * requirejs-dplugins
+ * requirejs-test
+    
 ## Installation
 
 _Bower_ release installation:
@@ -56,4 +59,4 @@ Then install dependencies with bower (or manually from github if you prefer to):
 
 ## Documentation
 
-See the [docs directory](./docs).
+See the [here](http://ibm-js.github.io/delite/docs/master/index.html).
