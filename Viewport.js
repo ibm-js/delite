@@ -19,15 +19,13 @@ define([
 	/**
 	 * Get the size of the viewport.
 	 * @function module:delite/Viewport.getBox
-	 * @param {Document} doc - The document, typically the global variable `document`.
 	 */
-	Viewport.getBox = function (doc) {
-		var html = doc.documentElement;
+	Viewport.getBox = function () {
 		return {
-			w: html.clientWidth,
-			h: html.clientHeight,	// this isn't quite what I want, if the text is short it's too low a number
-			t: doc.body.scrollTop,	// alternately window.pageYOffset
-			l: doc.body.scrollLeft	// alternately window.pageXOffset
+			w: window.innerWidth,
+			h: window.innerHeight,
+			t: window.pageYOffset,
+			l: window.pageXOffset
 		};
 	};
 
@@ -35,13 +33,12 @@ define([
 	 * Get the size of the viewport, or on mobile devices, the part of the viewport not obscured by the
 	 * virtual keyboard.
 	 * @function module:delite/Viewport.getEffectiveBox
-	 * @param {Document} doc - The document, typically the global variable `document`.
 	 */
-	Viewport.getEffectiveBox = function (doc) {
-		var box = Viewport.getBox(doc);
+	Viewport.getEffectiveBox = function () {
+		var box = Viewport.getBox();
 
 		// Account for iOS virtual keyboard, if it's being shown.  Unfortunately no direct way to check or measure.
-		var focusedNode = doc.activeElement,
+		var focusedNode = document.activeElement,
 			tag = focusedNode && focusedNode.tagName && focusedNode.tagName.toLowerCase();
 		if (has("ios") && focusedNode && !focusedNode.readOnly && (tag === "textarea" || (tag === "input" &&
 			/^(color|email|number|password|search|tel|text|url)$/.test(focusedNode.type)))) {
