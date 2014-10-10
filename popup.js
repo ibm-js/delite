@@ -212,7 +212,7 @@ define([
 		 * else and thus the popup should be closed.
 		 *
 		 * @param {module:delite/popup.OpenArgs} args
-		 * @returns {*}
+		 * @returns {*} If orient !== center then returns the alignment of the popup relative to the anchor node.
 		 * @example
 		 * // Open at the mouse position
 		 * popup.open({popup: menuWidget, x: evt.pageX, y: evt.pageY});
@@ -222,7 +222,7 @@ define([
 		 */
 		open: function (args) {
 			this._prepareToOpen(args);
-			this._positionAndSize(args);
+			return this._positionAndSize(args);
 		},
 
 
@@ -334,7 +334,7 @@ define([
 		/**
 		 * Position and size, or reposition and resize, the popup specified by args.
 		 * @param args
-		 * @returns {*}
+		 * @returns {*} If orient !== center then returns the alignment of the popup relative to the anchor node.
 		 * @private
 		 */
 		_positionAndSize: function (args) {
