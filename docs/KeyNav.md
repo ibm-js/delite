@@ -31,7 +31,8 @@ In addition to setting up keystroke handler methods, the subclass must:
 - Set all descendants' initial tabIndex to "-1"; both initial descendants and any
   descendants added later, by for example `addChild()`.  Exception: if `focusDescendants` is false then the
   descendants shouldn't have any tabIndex at all.
-- Define `descendantSelector` to a function or string that identifies focusable child widgets.
+- Define `descendantSelector` as a function (`descendantSelector(Element)`) or CSS selector (ex: ".list-item")
+  that identifies navigable descendant widgets.
 - Define `this.containerNode`.
 
 Also, child widgets must implement a `.focus()` method.
