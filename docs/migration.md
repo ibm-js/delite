@@ -106,4 +106,46 @@ Widgets are declared via `register()` rather than `dojo.declare()`, and must ext
 Resources are loaded through `i18n!` plugin rather than a `loadResource()` type method.
 
 ### CSS
-A widget should use [delite/theme!](theme.md) or [requirejs-dplugins/css!](/requirejs-dplugins/docs/master/css.md) to load its own CSS.
+
+A widget should use [delite/theme!](theme.md) or
+[requirejs-dplugins/css!](/requirejs-dplugins/docs/master/css.md) to load its own CSS.
+
+Further, delite/CssState (previously called dijit/_CssStateMixin) no longer sets CSS classes for hover, focus or active,
+so the widget CSS should just use the `:focus`, `:hover`, and `:active` pseudo-classes.
+
+### popups / dropdowns
+
+HasDropDown now forwards keystrokes to popups by emitting the "keydown" event on the popup rather than calling
+a `handleKey()` method.
+
+Dropdowns should indicate they have executed/canceled by calling `this.emit("execute")`, `this.emit("change")`,
+or `this.emit("cancel")`, rather than calling `onExecute()`, `onChange()`, or `onCancel()`.
+
+Dropdowns don't automatically get `overflow: auto` CSS but they should take some measure,
+perhaps by extending [`delite/Scrollable`](Scrollable.md), to display a scrollbar when their size
+is reduced.
+
+### KeyNav
+
+_KeyNavMixin has been renamed to KeyNav.
+
+The `_keyNavCodes` property has been removed as KeyNav now figures out the method name to call automatically.
+However, the method names for arrows have been changed:
+
+- onLeftArrow --> previousArrowKeyHandler
+- onRightArrow --> nextArrowKeyHandler
+- onDownArrow --> downArrowKeyHandler
+- onUpArrow --> upArrowKeyHandler
+
+Methods for handling other keys (like SPACE or ENTER) are similarly named, ex: spaceKeyHandler() and enterKeyHandler().
+
+
+### onFocus() and onBlur()
+
+delite/activationTracker (previously called dijit/focus) no longer calls `onFocus()` and `onBlur()`
+(or `_onFocus()` and `_onBlur()`) methods on a widget.  Rather, it emits `delite-activated` and
+`delite-deactivated` events on the widget.
+
+Note that most widgets should probably just call `this.on("focusin", ...)` and `this.on("focusout", ...)`
+rather than depending on delite/activationTracker.  It's mainly for popups.
+
