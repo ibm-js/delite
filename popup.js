@@ -347,6 +347,10 @@ define([
 
 			// inner functions to reduce cyclomatic complexity
 			function size() {
+				// Remove any previous setting of size.  Important there's more space available than the
+				// last time we were called.
+				wrapper.style.cssText = "";
+
 				if (orient[0] === "center") {
 					// Limit height and width so dialog fits within viewport.
 					if (widget.offsetHeight > viewport.h * 0.9) {
