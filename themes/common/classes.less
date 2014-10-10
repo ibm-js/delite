@@ -53,15 +53,13 @@
 	.box-sizing(border-box);
 }
 
-// And then the popup itself gets this styling
+// And then the popup itself gets this styling.
+// Note that it needs to show a scrollbar if necessary, so it should set overflow:auto or extend Scrollable.
 .d-popup > * {
 	// we set the height and width on the wrapper, so the popup widget itself just needs to follow our lead
 	.box-sizing(border-box);
 	height: inherit;
 	width: inherit;
-
-	// and it needs to show a scrollbar if necessary
-	overflow: auto;
 }
 
 .d-tooltip-dialog-popup {

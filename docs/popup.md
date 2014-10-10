@@ -5,7 +5,6 @@ title: delite/popup
 
 # delite/popup
 
-
 delite/popup is the main mechanism within delite that enables the creation of pop-ups like dropdowns and tooltips.
 It is used by every widget that creates a pop-up around another element.
 
@@ -133,24 +132,17 @@ For example, a Calendar is a normal widget that can be displayed inline in the p
 but could be used as a pop-up by a DateTextBox widget.
 In other words, there’s no `PopupWidget` base class (and no need for one).
 
-However, there are two important methods that the pop-up widget can use to hint
+### Popup Widget Emitted Events
+
+However, there are three important events that the pop-up widget can emit to hint
 to the parent widget that it's ready to be closed:
 
-```js
-/**
- * Attach point for notification about when a menu item has been executed.
- */
-onExecute: function(){
-},
+* "execute" or "change" - Both events single that the dropdown has executed, for
+  example the user clicked a menu-item or clicked "OK" on a dialog.
+* "cancel" - Signals that the user canceled the dropdown; it's typically
+  from the "Cancel" button on a dialog.
 
-/**
- * Attach point for notification about when the user cancels the current menu.
- */
-onCancel: function(/*Boolean*/ closeAll){
-}
-```
-
-`delite/popup` will monitor calls to these two methods and inform the parent widget when either of them is executed.
+`delite/popup` will monitor for these two events and inform the parent widget when either of them is executed.
 
 Here’s an example from a pop-up widget that triggers onExecute when it’s been clicked:
 
@@ -159,13 +151,25 @@ onItemClick: function(/*Widget*/ item, /*Event*/ evt){
 	...
 	// before calling user defined handler, close hierarchy of menus
 	// and restore focus to place it was when menu was opened
-	this.onExecute();
+	this.emit("execute");
 
 	// user defined handler for click
 	item.onClick(evt);
 	...
 }
 ```
+
+### Popup Widget CSS
+
+Popup widgets should display a scroll bar if necessary if their height (or width) is reduced.
+The height/width may be reduced so that the popup fits within the viewport.
+
+Displaying a scroll bar can be handled by:
+
+* setting `overflow: auto` CSS on the root node
+* using flexbox styling and setting `overflow: auto` on a child node
+* extending [`delite/Scrollable`](Scrollable.md)
+
 
 ## Lifecycle
 

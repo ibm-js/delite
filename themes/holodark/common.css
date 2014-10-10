@@ -46,7 +46,6 @@
   box-sizing: border-box;
   height: inherit;
   width: inherit;
-  overflow: auto;
 }
 .d-tooltip-dialog-popup {
   -webkit-box-shadow: none;
