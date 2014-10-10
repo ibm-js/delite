@@ -141,8 +141,8 @@ define([
 				clearTimeout(this._clearActiveWidgetsTimer);
 			}
 
-			if (now < lastPointerDownOrFocusIn + 100) {
-				// This blur event is coming late (after the call to _pointerDownOrFocusHandler() rather than before.
+			if (now < lastPointerDownOrFocusIn + 1000) {
+				// This blur event is coming late, after the call to _pointerDownOrFocusHandler() rather than before.
 				// So let _pointerDownOrFocusHandler() handle setting the widget stack.
 				// See https://bugs.dojotoolkit.org/ticket/17668
 				return;
@@ -150,6 +150,7 @@ define([
 
 			// If the blur event isn't followed (or preceded) by a focus or pointerdown event,
 			// mark all widgets as inactive.
+			console.log("setting blur timer")
 			this._clearActiveWidgetsTimer = setTimeout(function () {
 				delete this._clearActiveWidgetsTimer;
 				this._setStack([]);
