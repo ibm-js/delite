@@ -12,7 +12,6 @@ define([
 	 * - `this.disabled` --> `d-disabled`
 	 * - `this.readOnly` --> `d-readonly`
 	 * - `this.selected` --> `d-selected` (ex: currently selected tab)
-	 * - `this.focused` --> `d-focused` (widget or a descendant node has focus, or was recently clicked)
 	 * - `this.checked == true` --> `d-checked` (ex: a checkbox or a ToggleButton in a checked state)
 	 * - `this.checked == "mixed"` --> `d-mixed` (half-checked aka indeterminate checkbox)
 	 * - `this.state == "Error"` --> `d-error` (ValidationTextBox value is invalid)
