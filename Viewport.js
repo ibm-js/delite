@@ -69,26 +69,19 @@ define([
 			newBox.t !== oldEffectiveBox.t || newBox.l !== oldEffectiveBox.l) {
 			oldEffectiveBox = newBox;
 			Viewport.emit("resize", newBox);
+			return true;
+		} else {
+			return false;
 		}
 	}
 
-	// Catch viewport size change due to rotation (mobile devices) or browser window
-	window.addEventListener("resize", checkForResize);
-
-	// A change of focus from a <button> etc. to an <input> can change the size of the effective viewport
-	// on mobile devices w/virtual keyboards.  Keep checking for a while to give time for virtual keyboard to pop up,
-	// since that affects the document's scroll.
-	var checkInterval = 50;
-	function waitThenCheckForResize(timeToKeepChecking) {
-		setTimeout(function () {
-			checkForResize();
-			if (timeToKeepChecking >= 0) {
-				waitThenCheckForResize(timeToKeepChecking - checkInterval);
-			}
-		}, checkInterval);
+	// Poll for viewport resizes due to rotation, browser window size change, or the virtual keyboard
+	// popping up/down.
+	function poll() {
+		var resized = checkForResize();
+		setTimeout(poll, resized ? 10 : 50);
 	}
-	window.addEventListener("focus", waitThenCheckForResize.bind(null, 1000), true);
-	window.addEventListener("blur", waitThenCheckForResize.bind(null, 1000), true);
+	poll();
 
 	return Viewport;
 });
