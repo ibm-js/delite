@@ -43,6 +43,16 @@
 <script language="JavaScript" type="text/javascript">
 var ready = false; // set to true when the test page is ready
 
+function addBoilerplateText() {
+	addBoilerplateTextButton.insertAdjacentHTML("afterEnd", "<p>Nunc sollicitudin nisl sed est porta vitae viverra" +
+			"nulla rutrum. Praesent erat tortor, scelerisque sit amet" +
+			"gravida a, sodales a libero. Pellentesque nec arcu nulla, id laoreet orci. Vivamus sit amet quam eu ante" +
+			"pulvinar rhoncus sit amet non ipsum. Sed mattis felis sed risus tincidunt in sagittis justo rhoncus. Praesent ut" +
+			"justo feugiat neque gravida convallis eget mattis felis. Vestibulum vitae velit ante, sed convallis sem." +
+			"Curabitur gravida volutpat odio eget tincidunt. Mauris pellentesque placerat massa ut venenatis. Mauris ultrices" +
+			"hendrerit dui vel fermentum.</p>");
+}
+
 require([
 	"delite/popup", "delite/register", "delite/Widget",
 	"delite/tests/helpers", "delite/activationTracker", "requirejs-domready/domReady!"
@@ -431,7 +441,7 @@ require([
 <body>
 <h1>popup functional tests</h1>
 <label for="inputAtStart">input at start:</label><input id="inputAtStart">
-
+<button id=addBoilerplateTextButton onclick="addBoilerplateText();">Add boilerplate text</button>
 <!-- button needs to be after inputAtStart and before inputAtEnd but not be overlaid by popups -->
 <button id="stub-for-blurring" style="float: right;">
 	a stub node to execute blur events for wd.js
