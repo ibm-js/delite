@@ -59,6 +59,7 @@ define([
 		if (newBox.h !== oldEffectiveBox.h || newBox.w !== oldEffectiveBox.w ||
 			newBox.t !== oldEffectiveBox.t || newBox.l !== oldEffectiveBox.l) {
 			oldEffectiveBox = newBox;
+			console.log("Viewport resize detected, h = " + newBox.h + ", top = " + newBox.t);
 			Viewport.emit("resize", newBox);
 			return true;
 		} else {

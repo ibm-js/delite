@@ -67,6 +67,7 @@ require([
 		},
 
 		_openPopup: function () {
+			console.log(this.id + " open popup");
 			var self = this;
 
 			this._openRet = popupUtil.open({
@@ -89,6 +90,7 @@ require([
 		},
 
 		closePopup: function () {
+			console.log(this.id + " close popup");
 			if (this.open) {
 				popupUtil.close(this.popup);
 				this.open = false;
@@ -229,7 +231,10 @@ require([
 
 			var button = this.ownerDocument.createElement("button");
 			button.innerHTML = "OK";
-			button.onclick = this.emit.bind(this, "execute");
+			button.onclick = function(){
+				console.log("click event on OK button");
+				this.emit("execute");
+			}.bind(this);
 			this.appendChild(button);
 		}
 	});
