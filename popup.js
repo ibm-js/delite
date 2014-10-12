@@ -17,6 +17,13 @@ define([
 		return !(/^rtl$/i).test(doc.body.dir || doc.documentElement.dir);
 	}
 
+	// Mysterious code to workaround iOS problem where clicking a button  below an input will just keep the input
+	// focused.  Button gets pointerdown event but not click event.  Test case: popup.html, press "show centered dialog"
+	// and first click the <input>, then click the <button> below it.
+	document.addEventListener("pointerdown", function () {
+		document.body.scrollTop = document.body.scrollTop;
+	}, true);
+
 	/**
 	 * Arguments to delite/popup#open() method.
 	 * @typedef {Object} module:delite/popup.OpenArgs
@@ -89,7 +96,9 @@ define([
 		},
 
 		/**
-		 * If screen has been scrolled, reposition all the popups in the stack. Then set timer to check again later.
+		 * We check for viewport scroll above, but this code checks for scrolling an inner `<div>`,
+		 * thus moving the anchor node.  Using the scrollbar on will close all the popups on the screen, but not
+		 * if you scroll via a mousepad double-finger gesture.
 		 * @private
 		 */
 		_checkScroll: function () {
