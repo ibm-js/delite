@@ -114,7 +114,8 @@ define([
 		 */
 		_repositionAll: function () {
 			this._stack.forEach(function (args) {
-				this._positionAndSize(args);
+				this._size(args);
+				this._position(args);
 			}, this);
 		},
 
@@ -222,9 +223,9 @@ define([
 		 */
 		open: function (args) {
 			this._prepareToOpen(args);
-			return this._positionAndSize(args);
+			this._size(args);
+			return this._position(args);
 		},
-
 
 		/**
 		 * Do the work to display a popup widget, except for positioning.
@@ -332,70 +333,77 @@ define([
 		},
 
 		/**
-		 * Position and size, or reposition and resize, the popup specified by args.
+		 * Size or resize the popup specified by args.
 		 * @param args
 		 * @returns {*} If orient !== center then returns the alignment of the popup relative to the anchor node.
 		 * @private
 		 */
-		_positionAndSize: function (args) {
+		_size: function (args) {
+			/* jshint maxcomplexity:12 */
+			console.log("_size");
 			var widget = args.popup,
 				wrapper = widget._popupWrapper,
 				around = args.around,
 				orient = args.orient || ["below", "below-alt", "above", "above-alt"],
-				ltr = args.parent ? args.parent.isLeftToRight() : isDocLtr(widget.ownerDocument),
 				viewport = Viewport.getEffectiveBox(widget.ownerDocument);
 
-			// inner functions to reduce cyclomatic complexity
-			function size() {
-				// Remove any previous setting of size.  Important there's more space available than the
-				// last time we were called.
-				wrapper.style.cssText = "";
+			// Remove any previous setting of size.  Important there's more space available than the
+			// last time we were called.
+			wrapper.style.height = wrapper.style.width = "auto";
 
-				if (orient[0] === "center") {
-					// Limit height and width so dialog fits within viewport.
-					if (widget.offsetHeight > viewport.h * 0.9) {
-						wrapper.style.height = Math.floor(viewport.h * 0.9) + "px";
-					}
-					if (widget.offsetWidth > viewport.w * 0.9) {
-						wrapper.style.height = Math.floor(viewport.w * 0.9) + "px";
-					}
+			if (orient[0] === "center") {
+				// Limit height and width so dialog fits within viewport.
+				if (widget.offsetHeight > viewport.h * 0.9) {
+					wrapper.style.height = Math.floor(viewport.h * 0.9) + "px";
+				}
+				if (widget.offsetWidth > viewport.w * 0.9) {
+					wrapper.style.height = Math.floor(viewport.w * 0.9) + "px";
+				}
+			} else {
+				// Limit height to space available in viewport either above or below aroundNode (whichever side has
+				// more room).  This may make the popup widget display a scrollbar (or multiple scrollbars).
+				var maxHeight;
+				if ("maxHeight" in args && args.maxHeight !== -1) {
+					maxHeight = args.maxHeight || Infinity;
 				} else {
-					// Limit height to space available in viewport either above or below aroundNode (whichever side has
-					// more room).  This may make the popup widget display a scrollbar (or multiple scrollbars).
-					var maxHeight;
-					if ("maxHeight" in args && args.maxHeight !== -1) {
-						maxHeight = args.maxHeight || Infinity;
-					} else {
-						var aroundPos = around ? around.getBoundingClientRect() : {
-							top: args.y - (args.padding || 0),
-							height: (args.padding || 0) * 2
-						};
-						maxHeight = Math.floor(Math.max(aroundPos.top, viewport.h -
-							(aroundPos.top + aroundPos.height)));
-					}
+					var aroundPos = around ? around.getBoundingClientRect() : {
+						top: args.y - (args.padding || 0),
+						height: (args.padding || 0) * 2
+					};
+					maxHeight = Math.floor(Math.max(aroundPos.top, viewport.h -
+						(aroundPos.top + aroundPos.height)));
+				}
 
-					if (widget.offsetHeight > maxHeight) {
-						wrapper.style.height = maxHeight + "px";
-					}
+				if (widget.offsetHeight > maxHeight) {
+					wrapper.style.height = maxHeight + "px";
 				}
 			}
+		},
 
-			function position() {
-				// position the wrapper node
-				if (orient[0] === "center") {
-					place.center(wrapper);
-				} else {
-					var layoutFunc = widget.orient ? widget.orient.bind(widget) : null;
-					return around ?
-						place.around(wrapper, around, orient, ltr, layoutFunc) :
-						place.at(wrapper, args, orient === "R" ? ["TR", "BR", "TL", "BL"] : ["TL", "BL", "TR", "BR"],
-							args.padding, layoutFunc);
-				}
+		/**
+		 * Position the popup specified by args.
+		 * @param args
+		 * @returns {*} If orient !== center then returns the alignment of the popup relative to the anchor node.
+		 * @private
+		 */
+		_position: function (args) {
+			console.log("_position");
+			var widget = args.popup,
+				wrapper = widget._popupWrapper,
+				around = args.around,
+				orient = args.orient || ["below", "below-alt", "above", "above-alt"],
+				ltr = args.parent ? args.parent.isLeftToRight() : isDocLtr(widget.ownerDocument);
+
+			// position the wrapper node
+			if (orient[0] === "center") {
+				place.center(wrapper);
+			} else {
+				var layoutFunc = widget.orient ? widget.orient.bind(widget) : null;
+				return around ?
+					place.around(wrapper, around, orient, ltr, layoutFunc) :
+					place.at(wrapper, args, orient === "R" ? ["TR", "BR", "TL", "BL"] : ["TL", "BL", "TR", "BR"],
+						args.padding, layoutFunc);
 			}
-
-
-			size();
-			return position();
 		},
 
 		/**
