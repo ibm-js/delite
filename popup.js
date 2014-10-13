@@ -366,7 +366,7 @@ define([
 					wrapper.style.height = Math.floor(viewport.h * 0.9) + "px";
 				}
 				if (widget.offsetWidth > viewport.w * 0.9) {
-					wrapper.style.height = Math.floor(viewport.w * 0.9) + "px";
+					wrapper.style.width = Math.floor(viewport.w * 0.9) + "px";
 				}
 			} else {
 				// Limit height to space available in viewport either above or below aroundNode (whichever side has
