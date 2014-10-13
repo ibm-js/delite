@@ -33,7 +33,7 @@
  *
  * @module delite/handlebars
  */
-define(["./Template"], function (Template) {
+define(["./Template", "require"], function (Template, require) {
 
 	// Text plugin to load the templates and do the build.
 	var textPlugin = "requirejs-text/text";
