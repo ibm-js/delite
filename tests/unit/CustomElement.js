@@ -51,6 +51,20 @@ define([
 					}
 				};
 
+				container.innerHTML +=
+					"<test-ce-declarative id='d' boolProp='boolProp' numProp='5' stringProp='hello' " +
+					"funcProp='global=123;' funcProp2='globalInstance.func' " +
+					"objProp1='foo:1,bar:2' objProp2='globalObj'/>";
+				var d = document.getElementById("d");
+				var def = this.async(1000);
+				var listenerCalled = false;
+				// in Chrome (native custom elements) this should happen as soon as the registration will occur,
+				// on other browser this should happen right after upgrade
+				d.addEventListener("customelement-attached", def.rejectOnError(function (evt) {
+					assert.strictEqual(evt.target, d, "customelement-attached target");
+					listenerCalled = true;
+				}));
+
 				register("test-ce-declarative", [HTMLElement, CustomElement], {
 					boolProp: false,
 					numProp: 0,
@@ -62,12 +76,10 @@ define([
 					objProp1: { },
 					objProp2: { }
 				});
-				container.innerHTML +=
-					"<test-ce-declarative id='d' boolProp='boolProp' numProp='5' stringProp='hello' " +
-					"funcProp='global=123;' funcProp2='globalInstance.func' " +
-					"objProp1='foo:1,bar:2' objProp2='globalObj'/>";
-				var d = document.getElementById("d");
+
+
 				register.upgrade(d);
+				assert.isTrue(listenerCalled, "listener called");
 				assert.isTrue(d.boolProp, "d.boolProp");
 
 				assert.strictEqual(d.numProp, 5, "d.numProp");
@@ -79,6 +91,8 @@ define([
 				assert.strictEqual(d.objProp1.foo, 1, "d.objProp1.foo");
 				assert.strictEqual(d.objProp1.bar, 2, "d.objProp1.bar");
 				assert.strictEqual(d.objProp2.text, "global var", "d.objProp2.text");
+				def.resolve();
+				return def;
 			},
 
 			"setter not called on creation": function () {
@@ -94,7 +108,7 @@ define([
 				var instance = new MyCustomElement();
 				assert(instance, "instance created");
 				assert.strictEqual(fooSetterCalled, false, "fooSetterCalled");
-			},
+			}
 		},
 
 		destruction: {
