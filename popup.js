@@ -5,13 +5,13 @@
 define([
 	"dcl/advise",
 	"dcl/dcl",
-	"requirejs-dplugins/has", // has("config-bgIframe")
-	"delite/keys",
-	"./place",
 	"./BackgroundIframe",
+	"./features", // has("config-bgIframe")
+	"./keys",
+	"./place",
 	"./Viewport",
 	"./theme!" // d-popup class
-], function (advise, dcl, has, keys, place, BackgroundIframe, Viewport) {
+], function (advise, dcl, BackgroundIframe, has, keys, place, Viewport) {
 
 	function isDocLtr(doc) {
 		return !(/^rtl$/i).test(doc.body.dir || doc.documentElement.dir);
