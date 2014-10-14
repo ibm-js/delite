@@ -108,16 +108,26 @@ define(["dcl/dcl", "dojo/when", "decor/Invalidating"], function (dcl, when, Inva
 		queryStoreAndInitItems: function (processQueryResult) {
 			this._untrack();
 			if (this.store != null) {
-				var collection = processQueryResult.call(this, this.store.filter(this.query));
-				if (collection.track) {
-					// user asked us to observe the store
-					collection = this._tracked = collection.track();
-					collection.on("add", this._itemAdded.bind(this));
-					collection.on("update", this._itemUpdated.bind(this));
-					collection.on("remove", this._itemRemoved.bind(this));
-					collection.on("refresh", this._refreshHandler.bind(this));
+				if (!this.store.filter && this.store instanceof HTMLElement && !this.store.attached) {
+					// this might a be a store custom element, wait for it
+					this.store.addEventListener("customelement-attached", this._attachedlistener = function () {
+						this.queryStoreAndInitItems(this.processQueryResult);
+					}.bind(this));
+				} else {
+					if (this._attachedlistener) {
+						this.store.removeEventListener("customelement-attached", this._attachedlistener);
+					}
+					var collection = processQueryResult.call(this, this.store.filter(this.query));
+					if (collection.track) {
+						// user asked us to observe the store
+						collection = this._tracked = collection.track();
+						collection.on("add", this._itemAdded.bind(this));
+						collection.on("update", this._itemUpdated.bind(this));
+						collection.on("remove", this._itemRemoved.bind(this));
+						collection.on("refresh", this._refreshHandler.bind(this));
+					}
+					return this.processCollection(collection);
 				}
-				return this.processCollection(collection);
 			} else {
 				this.initItems([]);
 			}

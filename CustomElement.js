@@ -122,6 +122,20 @@ define([
 		 */
 		attachedCallback: dcl.after(function () {
 			this.attached = true;
+			/**
+			 * Dispatched after the CustomElement has been attached.
+			 * This is useful to be notified when an HTMLElement has been upgraded to a
+			 * CustomElement and attached to the DOM, in particular on browsers supporting native Custom Element.
+			 * @example
+			 * element.addEventListener("customelement-attached", function (evt) {
+			 *      console.log("custom element has been attached");
+			 * });
+			 * @event module:delite/CustomElement#customelement-attached
+			 */
+			this.emit("customelement-attached", {
+				bubbles: false,
+				cancelable: false
+			});
 		}),
 
 		/**
