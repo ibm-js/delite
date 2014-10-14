@@ -4,14 +4,13 @@ define([
 	"dojo/Deferred",
 	"dojo/dom-class", // domClass.add domClass.contains domClass.remove
 	"dojo/when",
-	"requirejs-dplugins/has", // has("touch")
 	"./keys", // keys.DOWN_ARROW keys.ENTER keys.ESCAPE
 	"./place",
 	"./popup",
 	"./Widget",
 	"./activationTracker",		// for delite-deactivated event
 	"dpointer/events"		// so can just monitor for "pointerdown"
-], function (dcl, Deferred, domClass, when, has, keys, place, popup, Widget) {
+], function (dcl, Deferred, domClass, when, keys, place, popup, Widget) {
 	/**
 	 * Base class for widgets that need drop down ability.
 	 * @mixin module:delite/HasDropDown
