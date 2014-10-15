@@ -37,8 +37,8 @@
 require([
 	"doh/runner",
 	"dojo/dom", "dojo/dom-geometry", "dojo/window",
-	"delite/place", "requirejs-domready/domReady!"
-], function (doh, dom, domGeometry, winUtils, place) {
+	"delite/place", "delite/Viewport", "requirejs-domready/domReady!"
+], function (doh, dom, domGeometry, winUtils, place, Viewport) {
 
 	// The around nodes
 	var aroundTop = dom.byId("aroundTop"),
@@ -259,6 +259,19 @@ require([
 			var theRectangle = document.getElementById("theRectangle")
 			var ret = place.around(popup, theRectangle, ["before", "after"], true);
 			toTheLeftOrRight(theRectangle);
+		}
+	]);
+
+	doh.register("center", [
+		function center(t) {
+			place.center(popup);
+
+			// TODO: code and test for when virtual keyboard is shown
+			var viewport = Viewport.getBox(document),
+				popupCoords = popup.getBoundingClientRect();
+
+			doh.t(Math.abs(viewport.h/2 - popupCoords.top - popupCoords.height/2) < 1, "centered vertically");
+			doh.t(Math.abs(viewport.w/2 - popupCoords.left - popupCoords.width/2) < 1, "centered horizontally");
 		}
 	]);
 
