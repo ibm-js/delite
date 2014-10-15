@@ -50,7 +50,7 @@ define([
 							assert(Math.abs(pos.anchor.left - pos.dropDown.left) < 1,
 								"drop down and anchor left aligned");
 							assert(Math.abs(pos.anchor.width - pos.dropDown.width) < 1,
-								"drop down same width as anchor");
+								"drop down same width as anchor " + pos.anchor.width + " vs " + pos.dropDown.width);
 						})
 						.click()
 						.isDisplayed().then(function (visible) {
@@ -123,31 +123,24 @@ define([
 			}
 		},
 
-		"basic tooltip dialog": function () {
+		"dropdown dialog": function () {
 			if (this.remote.environmentType.browserName === "internet explorer") {
 				return this.skip("click() doesn't generate mousedown/mouseup, so popup won't open");
 			}
-			var browserName = this.remote.environmentType.browserName;
 			return this.remote.findByCssSelector("button[is=delayed-drop-down-button]")
 					.click()
 					.end()
 				.setFindTimeout(intern.config.WAIT_TIMEOUT)	// takes 500ms for dropdown to appear first time
-				.findByTagName("simple-tooltip-dialog")
+				.findByClassName("dropdown-dialog")
 					.isDisplayed().then(function (visible) {
 						assert(visible, "visible");
 					})
 					.execute("return document.activeElement.tagName.toLowerCase()").then(function (tag) {
-						// Test that focus worked even though the mouseup happened before the dialog appeared.
-						// Disable for saucelabs iphone because it reports focus as <body>; unclear why, since it
-						// works when I tested it locally. (TODO)
-						if (/iphone/.test(browserName)) {
-							return;
-						}
-						assert.strictEqual(tag, "input", "focus moved to tooltip's <input>");
+						assert.strictEqual(tag, "input", "focus moved to dialog's <input>");
 					})
 					.execute(function () {
 						var anchor = document.querySelector("button[is=delayed-drop-down-button]");
-						var dropDown = document.querySelector("simple-tooltip-dialog");
+						var dropDown = document.querySelector(".dropdown-dialog");
 						return {
 							anchorId: anchor.id,
 							anchorAriaHasPopup: anchor.getAttribute("aria-haspopup"),
@@ -184,7 +177,7 @@ define([
 				.findByCssSelector("button[is=delayed-drop-down-button]")
 					.click()		// reopen drop down by clicking DropDownButton again
 					.end()
-				.findByTagName("simple-tooltip-dialog")
+				.findByClassName("dropdown-dialog")
 					.isDisplayed().then(function (visible) {
 						assert(visible, "visible again");
 					})
@@ -298,6 +291,44 @@ define([
 			}
 		},
 
+		"centered dialog": function () {
+			if (this.remote.environmentType.browserName === "internet explorer") {
+				return this.skip("click() doesn't generate mousedown/mouseup, so popup won't open");
+			}
+			var browserName = this.remote.environmentType.browserName;
+			return this.remote.findById("show-dialog-button")
+				.click()
+				.end()
+				.findByClassName("centered-dialog")
+				.isDisplayed().then(function (visible) {
+					assert(visible, "visible");
+				})
+				.execute("return document.activeElement.tagName.toLowerCase()").then(function (tag) {
+					assert.strictEqual(tag, "input", "focus moved to dialog's <input>");
+				})
+				.execute(function () {
+					var dialog = document.querySelector(".centered-dialog");
+					return {
+						viewport: {
+							h: window.innerHeight,
+							w: window.innerWidth
+						},
+						dropDownRect: dialog.getBoundingClientRect()
+					};
+				}).then(function (ret) {
+					var viewport = ret.viewport,
+						popupCoords = ret.dropDownRect;
+
+					if (!/iphone|iOS/.test(browserName)) {
+						// not setup to test vertical centering when virtual keyboard displayed
+						assert(Math.abs(viewport.h / 2 - popupCoords.top - popupCoords.height / 2) < 1,
+							"centered vertically");
+					}
+					assert(Math.abs(viewport.w / 2 - popupCoords.left - popupCoords.width / 2) < 1,
+						"centered horizontally");
+				});
+		},
+
 		events: function () {
 			if (this.remote.environmentType.browserName === "internet explorer") {
 				return this.skip("click() doesn't generate mousedown/mouseup, so popup won't open");
@@ -306,7 +337,7 @@ define([
 				.findById("eventsButton")
 					.click()
 					.end()
-				.findById("eventsTooltipDialog")
+				.findById("eventsDialog")
 					.isDisplayed().then(function (visible) {
 						assert(visible, "visible");
 					})

@@ -2,6 +2,8 @@
 <html>
 <head>
 <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+<meta name="viewport"
+	  content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no"/>
 <title>popup functional test</title>
 
 <script src="../boilerplate.js"></script>
@@ -41,6 +43,16 @@
 <script language="JavaScript" type="text/javascript">
 var ready = false; // set to true when the test page is ready
 
+function addBoilerplateText() {
+	addBoilerplateTextButton.insertAdjacentHTML("afterEnd", "<p>Nunc sollicitudin nisl sed est porta vitae viverra" +
+			"nulla rutrum. Praesent erat tortor, scelerisque sit amet" +
+			"gravida a, sodales a libero. Pellentesque nec arcu nulla, id laoreet orci. Vivamus sit amet quam eu ante" +
+			"pulvinar rhoncus sit amet non ipsum. Sed mattis felis sed risus tincidunt in sagittis justo rhoncus. Praesent ut" +
+			"justo feugiat neque gravida convallis eget mattis felis. Vestibulum vitae velit ante, sed convallis sem." +
+			"Curabitur gravida volutpat odio eget tincidunt. Mauris pellentesque placerat massa ut venenatis. Mauris ultrices" +
+			"hendrerit dui vel fermentum.</p>");
+}
+
 require([
 	"delite/popup", "delite/register", "delite/Widget",
 	"delite/tests/helpers", "delite/activationTracker", "requirejs-domready/domReady!"
@@ -57,7 +69,7 @@ require([
 			this._set("label", label);
 		},
 
-		orient: ["below"],
+		orient: ["below", "above"],
 
 		postRender: function () {
 			this.on("click", this._openPopup.bind(this));
@@ -65,6 +77,7 @@ require([
 		},
 
 		_openPopup: function () {
+			console.log(this.id + " open popup");
 			var self = this;
 
 			this._openRet = popupUtil.open({
@@ -87,6 +100,7 @@ require([
 		},
 
 		closePopup: function () {
+			console.log(this.id + " close popup");
 			if (this.open) {
 				popupUtil.close(this.popup);
 				this.open = false;
@@ -235,13 +249,37 @@ require([
 	// Create a button that displays a dialog that displays a choice widget
 	new SimpleDropDownButton({
 		id: "showSimpleDialogButton",
-		label: "show dialog",
+		label: "show dropdown dialog",
 		popup: new DialogWithPopupWidget({
 			id: "simpleDialog",
 			label: 'show simple choice drop down',
 			popup: new SimpleChoiceWidget({
 				id: "choiceFromDialog"
 			})
+		})
+	}).placeAt("widgets");
+
+	// Create a button that displays a dialog centered (intended for phones)
+	new SimpleDropDownButton({
+		id: "showCenteredDialogButton",
+		label: "show centered dialog",
+		orient: ["center"],
+		popup: new DialogWithPopupWidget({
+			id: "centeredDialog",
+			label: 'show simple choice drop down',
+			popup: new SimpleChoiceWidget({
+				id: "choiceFromDialog2"
+			})
+		})
+	}).placeAt("widgets");
+
+	// Create a button that displays a dialog centered (intended for phones)
+	new SimpleDropDownButton({
+		id: "showGiantCenteredDialogButton",
+		label: "show giant centered dialog",
+		orient: ["center"],
+		popup: new LotsOfChoicesWidget({
+			id: "lotsOfChoicesMenuCentered"
 		})
 	}).placeAt("widgets");
 
@@ -400,13 +438,14 @@ require([
 <body>
 <h1>popup functional tests</h1>
 <label for="inputAtStart">input at start:</label><input id="inputAtStart">
-
+<button id=addBoilerplateTextButton onclick="addBoilerplateText();">Add boilerplate text</button>
 <!-- button needs to be after inputAtStart and before inputAtEnd but not be overlaid by popups -->
-<button id="stub-for-blurring" style="float: right">
+<button id="stub-for-blurring" style="float: right;">
 	a stub node to execute blur events for wd.js
 </button>
 
-<div style="height: 200px; overflow: auto; margin: 10px 0px;">
+<div style="height: 200px; overflow: auto; margin: 10px 0px; clear: both;">
+	<p>Div containing buttons to open dialogs.  Scroll down if necessary.</p>
 	<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis cursus odio eu nisl ultrices dictum. Sed tincidunt
 		metus et magna placerat eget vehicula dolor faucibus. Nunc nec augue ac mi rutrum congue. Donec at augue felis.
 		Proin et lectus at mauris adipiscing pulvinar tempor vitae lacus. Aliquam erat volutpat. Sed eget sem eu turpis

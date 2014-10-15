@@ -68,6 +68,7 @@ define([
 		/**
 		 * If true, make the drop down at least as wide as this widget.
 		 * If false, leave the drop down at its default width.
+		 * Has no effect when `dropDownPosition = ["center"]`.
 		 * @member {boolean}
 		 * @default true
 		 */
@@ -75,6 +76,7 @@ define([
 
 		/**
 		 * If true, make the drop down exactly as wide as this widget.  Overrides `autoWidth`.
+		 * Has no effect when `dropDownPosition = ["center"]`.
 		 * @member {boolean}
 		 * @default false
 		 */
@@ -99,6 +101,8 @@ define([
 		 * the case of RTL scripts like Hebrew and Arabic
 		 * - above: drop down goes above target node
 		 * - below: drop down goes below target node
+		 * - center: drop down is centered on the screen, like a dialog; when used, this should be
+		 *   the only choice in the array
 		 *
 		 * The positions are tried, in order, until a position is found where the drop down fits
 		 * within the viewport.
@@ -454,6 +458,8 @@ define([
 					this.id = "HasDropDown_" + this.widgetId;
 				}
 
+				dropDown._originalStyle = dropDown.style.cssText;
+
 				var retVal = popup.open({
 					parent: this,
 					popup: dropDown,
@@ -473,11 +479,15 @@ define([
 				});
 
 				// Set width of drop down if necessary, so that dropdown width + width of scrollbar (from popup wrapper)
-				// matches width of aroundNode
-				if (this.forceWidth ||
-						(this.autoWidth && aroundNode.offsetWidth > dropDown._popupWrapper.offsetWidth)) {
+				// matches width of aroundNode.  Don't do anything for when dropDownPosition=["center"] though,
+				// in which case popup.open() doesn't return a value.
+				if (retVal && (this.forceWidth ||
+						(this.autoWidth && aroundNode.offsetWidth > dropDown._popupWrapper.offsetWidth))) {
 					var widthAdjust = aroundNode.offsetWidth - dropDown._popupWrapper.offsetWidth;
 					dropDown._popupWrapper.style.width = aroundNode.offsetWidth + "px";
+
+					// Workaround apparent iOS bug where width: inherit on dropdown apparently not working.
+					dropDown.style.width = aroundNode.offsetWidth + "px";
 
 					// If dropdown is right-aligned then compensate for width change by changing horizontal position
 					if (retVal.corner[1] === "R") {
@@ -558,6 +568,8 @@ define([
 
 				popup.close(this._currentDropDown);
 				this.opened = false;
+
+				this._currentDropDown.style.cssText = this._currentDropDown._originalStyle;
 
 				/**
 				 * Dispatched after popup widget is hidden.

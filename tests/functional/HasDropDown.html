@@ -11,7 +11,7 @@
 		Perhaps this should be done in global.less but I didn't want to hard code the display type to "block"
 		when it could have other values like "table" etc.
 		*/
-		simple-tooltip-dialog, simple-menu {
+		simple-dialog, focus-menu, non-focus-menu {
 			display: block;
 			background: white;
 			border: 1px solid black;
@@ -41,7 +41,7 @@
 		], function (Deferred, keys, register, HasDropDown, Widget) {
 
 			// A trivial popup widget
-			var SimpleTooltipDialog = register("simple-tooltip-dialog", [HTMLElement, Widget], {
+			var SimpleDialog = register("simple-dialog", [HTMLElement, Widget], {
 				render: function () {
 					// enable fast click, so testing code doesn't to wait 300ms for submit/cancel buttons to take effect
 					this.setAttribute("touch-action", "none");
@@ -172,9 +172,16 @@
 				dropDownConstructor: FocusMenu,
 
 				loadDropDown: function () {
-					return this._dropDown || (this._dropDown = new this.dropDownConstructor({
-						id: this.id + "_popup"
-					}));
+					if (!this._dropDown) {
+						this._dropDown = new this.dropDownConstructor({
+							className: this.dropDownClass || "basic-dropdown"
+						});
+						if (this.id) {
+							this._dropDown.id = this.id + "_popup"
+						}
+					}
+
+					return this._dropDown;
 				}
 			});
 
@@ -205,7 +212,9 @@
 					if (!this._dropDownPromise) {
 						this._dropDownPromise = new Deferred();
 						setTimeout(function () {
-							this._dropDownPromise.resolve(new this.dropDownConstructor({}));
+							this._dropDownPromise.resolve(new this.dropDownConstructor({
+								class: this.dropDownClass
+							}));
 						}.bind(this), 500);
 					}
 					return this._dropDownPromise;
@@ -239,7 +248,8 @@
 			new DelayedDropDownButton({
 				dir: "rtl",
 				label: "show tooltip dropdown after 500ms - rtl",
-				dropDownConstructor: SimpleTooltipDialog
+				dropDownConstructor: SimpleDialog,
+				dropDownClass: "dropdown-dialog"
 			}).placeAt(document.body);
 
 			// non-focusable dropdown
@@ -268,6 +278,15 @@
 				id: "combobox"
 			}).placeAt(document.body);
 
+			// centered dialog
+			var x = new SimpleDropDownButton({
+				id: "show-dialog-button",
+				label: "show dialog",
+				dropDownPosition: ["center"],
+				dropDownConstructor: SimpleDialog,
+				dropDownClass: "centered-dialog"
+			}).placeAt(document.body);
+
 			// this HasDropDown will emit events to load the drop down and as its shown/hidden
 			var eddb = new EventsDropDownButton({
 				label: "events drop down button",
@@ -279,8 +298,8 @@
 			document.body.appendChild(el);
 			document.addEventListener("delite-display-load", function (evt) {
 				evt.loadDeferred.resolve({
-					child: new SimpleTooltipDialog({
-						id: "eventsTooltipDialog"
+					child: new SimpleDialog({
+						id: "eventsDialog"
 					})
 				});
 			});
