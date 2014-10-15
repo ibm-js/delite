@@ -16,38 +16,29 @@ define([
 ], function (Evented, has) {
 	var Viewport = new Evented();
 
-	var html = document.documentElement,
-		oldWidth = html.clientWidth,
-		oldHeight = html.clientHeight;
-
-	window.addEventListener("resize", function () {
-		var width = html.clientWidth,
-			height = html.clientHeight;
-		if (height === oldHeight && width === oldWidth) {
-			return;
-		}
-		oldWidth = width;
-		oldHeight = height;
-		Viewport.emit("resize");
-	});
+	/**
+	 * Get the size of the viewport.
+	 * @function module:delite/Viewport.getBox
+	 */
+	Viewport.getBox = function () {
+		return {
+			w: window.innerWidth,
+			h: window.innerHeight,
+			t: window.pageYOffset,
+			l: window.pageXOffset
+		};
+	};
 
 	/**
 	 * Get the size of the viewport, or on mobile devices, the part of the viewport not obscured by the
 	 * virtual keyboard.
 	 * @function module:delite/Viewport.getEffectiveBox
-	 * @param {Document} doc - The document, typically the global variable `document`.
 	 */
-	Viewport.getEffectiveBox = function (doc) {
-		var html = doc.documentElement,
-			box = {
-				w: html.clientWidth,
-				h: html.clientHeight,
-				t: doc.body.scrollTop,
-				l: doc.body.scrollLeft
-			};
+	Viewport.getEffectiveBox = function () {
+		var box = Viewport.getBox();
 
 		// Account for iOS virtual keyboard, if it's being shown.  Unfortunately no direct way to check or measure.
-		var focusedNode = doc.activeElement,
+		var focusedNode = document.activeElement,
 			tag = focusedNode && focusedNode.tagName && focusedNode.tagName.toLowerCase();
 		if (has("ios") && focusedNode && !focusedNode.readOnly && (tag === "textarea" || (tag === "input" &&
 			/^(color|email|number|password|search|tel|text|url)$/.test(focusedNode.type)))) {
@@ -56,16 +47,32 @@ define([
 			// Estimate height of visible viewport assuming viewport goes to bottom of screen,
 			// but is covered by keyboard.
 			box.h *= (window.orientation === 0 || window.orientation === 180 ? 0.66 : 0.40);
-
-			// Above measurement will be inaccurate if viewport was scrolled up so far that it ends before the bottom
-			// of the screen.   In this case, keyboard isn't covering as much of the viewport as we thought.
-			// We know the visible size is at least the distance from the top of the viewport to the focused node.
-			var rect = focusedNode.getBoundingClientRect();
-			box.h = Math.max(box.h, rect.top + rect.height);
 		}
 
 		return box;
 	};
+
+	var oldEffectiveBox = Viewport.getEffectiveBox();
+
+	function checkForResize() {
+		var newBox = Viewport.getEffectiveBox(document);
+		if (newBox.h !== oldEffectiveBox.h || newBox.w !== oldEffectiveBox.w ||
+			newBox.t !== oldEffectiveBox.t || newBox.l !== oldEffectiveBox.l) {
+			oldEffectiveBox = newBox;
+			Viewport.emit("resize", newBox);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	// Poll for viewport resizes due to rotation, browser window size change, or the virtual keyboard
+	// popping up/down.
+	function poll() {
+		var resized = checkForResize();
+		setTimeout(poll, resized ? 10 : 50);
+	}
+	poll();
 
 	return Viewport;
 });
