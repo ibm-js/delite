@@ -128,7 +128,7 @@ define([
 			 * CustomElement and attached to the DOM, in particular on browsers supporting native Custom Element.
 			 * @example
 			 * element.addEventListener("customelement-attached", function (evt) {
-			 *      console.log("custom element has been attached");
+			 *      console.log("custom element: "+evt.target.id+" has been attached");
 			 * });
 			 * @event module:delite/CustomElement#customelement-attached
 			 */

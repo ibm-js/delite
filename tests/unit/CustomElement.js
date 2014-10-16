@@ -56,7 +56,7 @@ define([
 					"funcProp='global=123;' funcProp2='globalInstance.func' " +
 					"objProp1='foo:1,bar:2' objProp2='globalObj'/>";
 				var d = document.getElementById("d");
-				var def =  this.async(1000);
+				var def = this.async(1000);
 				var listenerCalled = false;
 				// in Chrome (native custom elements) this should happen as soon as the registration will occur,
 				// on other browser this should happen right after upgrade
