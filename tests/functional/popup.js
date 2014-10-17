@@ -120,11 +120,11 @@ define([
 		"x/y placement": function () {
 			this.timeout = intern.config.TEST_TIMEOUT;
 			return this.remote
+				.execute("window.scrollTo(0, 0);")	// avoid spurious error due to scroll
 				.findById("openAt1015Button")
 					.click()
 					.end()
 				// note: "return xyPopup.getBoundingClientRect();" doesn't work on IE; webdriver bug.
-				// TODO: retest with Intern 2.0
 				.execute("var pos = xyPopup.getBoundingClientRect(); return {left: pos.left, top: pos.top};")
 						.then(function (pos) {
 					assert.strictEqual(pos.left, 10, "popup x coord " + JSON.stringify(pos));
