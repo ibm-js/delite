@@ -17,6 +17,13 @@ define([
 		return !(/^rtl$/i).test(doc.body.dir || doc.documentElement.dir);
 	}
 
+	// Mysterious code to workaround iOS problem where clicking a button  below an input will just keep the input
+	// focused.  Button gets pointerdown event but not click event.  Test case: popup.html, press "show centered dialog"
+	// and first click the <input>, then click the <button> below it.
+	document.addEventListener("pointerdown", function () {
+		document.body.scrollTop = document.body.scrollTop;
+	}, true);
+
 	/**
 	 * Arguments to delite/popup#open() method.
 	 * @typedef {Object} module:delite/popup.OpenArgs
@@ -37,6 +44,11 @@ define([
 	 * specifically positioning the popup's top-right corner at the mouse position, and if that doesn't
 	 * fit in the viewport, then it tries, in order, the bottom-right corner, the top left corner,
 	 * and the top-right corner.
+	 *
+	 * Alternately, orient can be an array `["center"]`, which pops up the specified node in the center of
+	 * the viewport, like a dialog.  It will shrink the size of the node if necessary, in which case the node
+	 * must be designed so that scrolling occurs in the right place.
+	 *
 	 * @property {Function} onCancel - Callback when user has canceled the popup by:
 	 * 1. hitting ESC or
 	 * 2. by using the popup widget's proprietary cancel mechanism (like a cancel button in a dialog);
@@ -79,11 +91,17 @@ define([
 
 		_idGen: 1,
 
+		constructor: function () {
+			Viewport.on("resize", this._repositionAll.bind(this));
+		},
+
 		/**
-		 * If screen has been scrolled, reposition all the popups in the stack. Then set timer to check again later.
+		 * We check for viewport scroll above, but this code checks for scrolling an inner `<div>`,
+		 * thus moving the anchor node.  Using the scrollbar on will close all the popups on the screen, but not
+		 * if you scroll via a mousepad double-finger gesture.
 		 * @private
 		 */
-		_repositionAll: function () {
+		_checkScroll: function () {
 			if (this._firstAroundNode) {	// guard for when clearTimeout() on IE doesn't work
 				var oldPos = this._firstAroundPosition,
 					newPos = place.position(this._firstAroundNode),
@@ -92,19 +110,22 @@ define([
 
 				if (dx || dy) {
 					this._firstAroundPosition = newPos;
-					for (var i = 0; i < this._stack.length; i++) {
-						var style = this._stack[i].wrapper.style;
-						style.top = (parseFloat(style.top) + dy) + "px";
-						if (style.right === "auto") {
-							style.left = (parseFloat(style.left) + dx) + "px";
-						} else {
-							style.right = (parseFloat(style.right) - dx) + "px";
-						}
-					}
+					this._repositionAll();
 				}
 
-				this._aroundMoveListener = setTimeout(this._repositionAll.bind(this), dx || dy ? 10 : 50);
+				this._aroundMoveListener = setTimeout(this._checkScroll.bind(this), dx || dy ? 10 : 50);
 			}
+		},
+
+		/**
+		 * Reposition all the popups due to screen scroll or viewport size change.
+		 * @private
+		 */
+		_repositionAll: function () {
+			this._stack.forEach(function (args) {
+				this._size(args);
+				this._position(args);
+			}, this);
 		},
 
 		/**
@@ -187,7 +208,7 @@ define([
 		 */
 		getTopPopup: function () {
 			var stack = this._stack;
-			for (var pi = stack.length - 1; pi > 0 && stack[pi].parent === stack[pi - 1].widget; pi--) {
+			for (var pi = stack.length - 1; pi > 0 && stack[pi].parent === stack[pi - 1].popup; pi--) {
 				/* do nothing, just trying to get right value for pi */
 			}
 			return stack[pi];
@@ -201,7 +222,7 @@ define([
 		 * else and thus the popup should be closed.
 		 *
 		 * @param {module:delite/popup.OpenArgs} args
-		 * @returns {*}
+		 * @returns {*} If orient !== center then returns the alignment of the popup relative to the anchor node.
 		 * @example
 		 * // Open at the mouse position
 		 * popup.open({popup: menuWidget, x: evt.pageX, y: evt.pageY});
@@ -210,12 +231,22 @@ define([
 		 * popup.open({parent: this, popup: menuWidget, around: this, onClose: function(){...}});
 		 */
 		open: function (args) {
-			/* jshint maxcomplexity:26 */
+			this._prepareToOpen(args);
+			this._size(args);
+			return this._position(args);
+		},
+
+		/**
+		 * Do the work to display a popup widget, except for positioning.
+		 * @param args - see open()
+		 * @returns {*}
+		 * @private
+		 */
+		_prepareToOpen: function (args) {
+			/* jshint maxcomplexity:12 */
 
 			var stack = this._stack,
 				widget = args.popup,
-				orient = args.orient || ["below", "below-alt", "above", "above-alt"],
-				ltr = args.parent ? args.parent.isLeftToRight() : isDocLtr(widget.ownerDocument),
 				around = args.around;
 
 			// Generate id for popup if it doesn't already have one.
@@ -227,8 +258,8 @@ define([
 			// close currently opened popup(s).   This should happen automatically when the old popups
 			// gets the delite-activated event, except that event isn't reliable on IE, see [22198].
 			// TODO: check if this code still needed for delite
-			while (stack.length && (!args.parent || !stack[stack.length - 1].widget.contains(args.parent))) {
-				this.close(stack[stack.length - 1].widget);
+			while (stack.length && (!args.parent || !stack[stack.length - 1].popup.contains(args.parent))) {
+				this.close(stack[stack.length - 1].popup);
 			}
 
 			// Get pointer to popup wrapper, and create wrapper if it doesn't exist.  Remove display:none (but keep
@@ -237,24 +268,6 @@ define([
 
 			if (widget.startup && !widget.started) {
 				widget.startup(); // this has to be done after being added to the DOM
-			}
-
-			// Limit height to space available in viewport either above or below aroundNode (whichever side has more
-			// room).  This may make the popup widget display a scrollbar (or multiple scrollbars).
-			var maxHeight;
-			if ("maxHeight" in args && args.maxHeight !== -1) {
-				maxHeight = args.maxHeight || Infinity;
-			} else {
-				var viewport = Viewport.getEffectiveBox(widget.ownerDocument),
-					aroundPos = around ? around.getBoundingClientRect() : {
-						top: args.y - (args.padding || 0),
-						height: (args.padding || 0) * 2
-					};
-				maxHeight = Math.floor(Math.max(aroundPos.top, viewport.h - (aroundPos.top + aroundPos.height)));
-			}
-
-			if (widget.offsetHeight > maxHeight) {
-				wrapper.style.height = maxHeight + "px";
 			}
 
 			dcl.mix(wrapper, {
@@ -268,20 +281,13 @@ define([
 				// First element on stack. Save position of aroundNode and setup listener for changes to that position.
 				this._firstAroundNode = around;
 				this._firstAroundPosition = place.position(around);
-				this._aroundMoveListener = setTimeout(this._repositionAll.bind(this), 50);
+				this._aroundMoveListener = setTimeout(this._checkScroll.bind(this), 50);
 			}
 
 			if (has("config-bgIframe") && !widget.bgIframe) {
 				// setting widget.bgIframe triggers cleanup in Widget.destroy()
 				widget.bgIframe = new BackgroundIframe(wrapper);
 			}
-
-			// position the wrapper node and make it visible
-			var layoutFunc = widget.orient ? widget.orient.bind(widget) : null,
-				best = around ?
-					place.around(wrapper, around, orient, ltr, layoutFunc) :
-					place.at(wrapper, args, orient === "R" ? ["TR", "BR", "TL", "BL"] : ["TL", "BL", "TR", "BR"],
-						args.padding, layoutFunc);
 
 			wrapper.style.visibility = "visible";
 			widget.style.visibility = "visible";	// counteract effects from HasDropDown
@@ -329,17 +335,84 @@ define([
 				widget.on("execute", executeHandler)
 			);
 
-			stack.push({
-				widget: widget,
-				wrapper: wrapper,
-				parent: args.parent,
-				onExecute: args.onExecute,
-				onCancel: args.onCancel,
-				onClose: args.onClose,
-				handlers: handlers
-			});
+			var stackEntry = Object.create(args);
+			stackEntry.wrapper = wrapper;
+			stackEntry.handlers = handlers;
+			stack.push(stackEntry);
+		},
 
-			return best;
+		/**
+		 * Size or resize the popup specified by args.
+		 * @param args
+		 * @returns {*} If orient !== center then returns the alignment of the popup relative to the anchor node.
+		 * @private
+		 */
+		_size: function (args) {
+			/* jshint maxcomplexity:12 */
+			console.log("_size");
+			var widget = args.popup,
+				wrapper = widget._popupWrapper,
+				around = args.around,
+				orient = args.orient || ["below", "below-alt", "above", "above-alt"],
+				viewport = Viewport.getEffectiveBox(widget.ownerDocument);
+
+			// Remove any previous setting of size.  Important there's more space available than the
+			// last time we were called.
+			wrapper.style.height = wrapper.style.width = "auto";
+
+			if (orient[0] === "center") {
+				// Limit height and width so dialog fits within viewport.
+				if (widget.offsetHeight > viewport.h * 0.9) {
+					wrapper.style.height = Math.floor(viewport.h * 0.9) + "px";
+				}
+				if (widget.offsetWidth > viewport.w * 0.9) {
+					wrapper.style.width = Math.floor(viewport.w * 0.9) + "px";
+				}
+			} else {
+				// Limit height to space available in viewport either above or below aroundNode (whichever side has
+				// more room).  This may make the popup widget display a scrollbar (or multiple scrollbars).
+				var maxHeight;
+				if ("maxHeight" in args && args.maxHeight !== -1) {
+					maxHeight = args.maxHeight || Infinity;
+				} else {
+					var aroundPos = around ? around.getBoundingClientRect() : {
+						top: args.y - (args.padding || 0),
+						height: (args.padding || 0) * 2
+					};
+					maxHeight = Math.floor(Math.max(aroundPos.top, viewport.h -
+						(aroundPos.top + aroundPos.height)));
+				}
+
+				if (widget.offsetHeight > maxHeight) {
+					wrapper.style.height = maxHeight + "px";
+				}
+			}
+		},
+
+		/**
+		 * Position the popup specified by args.
+		 * @param args
+		 * @returns {*} If orient !== center then returns the alignment of the popup relative to the anchor node.
+		 * @private
+		 */
+		_position: function (args) {
+			console.log("_position");
+			var widget = args.popup,
+				wrapper = widget._popupWrapper,
+				around = args.around,
+				orient = args.orient || ["below", "below-alt", "above", "above-alt"],
+				ltr = args.parent ? args.parent.isLeftToRight() : isDocLtr(widget.ownerDocument);
+
+			// position the wrapper node
+			if (orient[0] === "center") {
+				place.center(wrapper);
+			} else {
+				var layoutFunc = widget.orient ? widget.orient.bind(widget) : null;
+				return around ?
+					place.around(wrapper, around, orient, ltr, layoutFunc) :
+					place.at(wrapper, args, orient === "R" ? ["TR", "BR", "TL", "BL"] : ["TL", "BL", "TR", "BR"],
+						args.padding, layoutFunc);
+			}
 		},
 
 		/**
@@ -355,11 +428,11 @@ define([
 			// closing C might close B indirectly and then the while() condition will run where stack===[A]...
 			// so the while condition is constructed defensively.
 			while ((popup && stack.some(function (elem) {
-				return elem.widget === popup;
+				return elem.popup === popup;
 			})) ||
 				(!popup && stack.length)) {
 				var top = stack.pop(),
-					widget = top.widget,
+					widget = top.popup,
 					onClose = top.onClose;
 
 				if (widget.bgIframe) {
