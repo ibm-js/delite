@@ -30,6 +30,7 @@
 }
 .d-popup {
   position: absolute;
+  background-color: inherit;
   margin: 0;
   border: 0;
   padding: 0;
