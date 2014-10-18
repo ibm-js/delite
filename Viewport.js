@@ -46,7 +46,31 @@ define([
 			// Box represents the size of the viewport.  Some of the viewport is likely covered by the keyboard.
 			// Estimate height of visible viewport assuming viewport goes to bottom of screen,
 			// but is covered by keyboard.
-			box.h *= (window.orientation === 0 || window.orientation === 180 ? 0.66 : 0.40);
+			
+			// By my measurements the effective viewport is the following size (compared to full viewport:
+			// Portrait / landscape / window.screen.height:
+			// iPhone 6 / iOS 8: 54% / 26% / 667
+			// iPhone 5s / iOS 8: 53% / 27% / 568
+			// iPhone 5s / iOS 7: 53% / 19% / 568
+			// iPhone 5 / iOS 8: 52% / 27% / 568
+			// iPhone 4s / iOS 7: 41% / 19% / 480
+			// iPad 2 / iOS 7.1: 66% / 41%
+			// iPhone 3s / iOS6: 43% / 29% (but w/hidden address bar because it hides all the time)
+
+
+			if (has("ipad")) {
+				// Numbers for iPad 2, hopefully it works for other iPads (including iPad mini) too.
+				box.h *= (window.orientation === 0 || window.orientation === 180 ? 0.65 : 0.38);
+			} else {
+				// iPhone varies a lot by model, this should estimate the available space conservatively
+				if (window.orientation === 0 || window.orientation === 180) {
+					// portrait
+					box.h *= (window.screen.height > 500 ? 0.54 : 0.42);
+				} else {
+					// landscape
+					box.h *= (window.screen.height > 500 && has("ios") >= 8 ? 0.26 : 0.19);
+				}
+			}
 		}
 
 		return box;
