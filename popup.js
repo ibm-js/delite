@@ -17,11 +17,19 @@ define([
 		return !(/^rtl$/i).test(doc.body.dir || doc.documentElement.dir);
 	}
 
-	// Mysterious code to workaround iOS problem where clicking a button  below an input will just keep the input
-	// focused.  Button gets pointerdown event but not click event.  Test case: popup.html, press "show centered dialog"
-	// and first click the <input>, then click the <button> below it.
+	var touching = false;
+
 	document.addEventListener("pointerdown", function () {
+		touching = true;
+
+		// Mysterious code to workaround iOS problem where clicking a button  below an input will just keep the input
+		// focused.  Button gets pointerdown event but not click event.  Test case: popup.html, press "show centered dialog"
+		// and first click the <input>, then click the <button> below it.
 		document.body.scrollTop = document.body.scrollTop;
+	}, true);
+
+	document.addEventListener("pointerup", function () {
+		touching = false;
 	}, true);
 
 	/**
@@ -92,7 +100,14 @@ define([
 		_idGen: 1,
 
 		constructor: function () {
-			Viewport.on("resize", this._repositionAll.bind(this));
+			Viewport.on("resize", function () {
+				// If viewport resized or scrolled, then reposition all the popups, except if
+				// user is currently touching the screen, in which case he is possibly scrolling the
+				// popup, and we don't want to interfere.
+				if (!touching) {
+					this._repositionAll();
+				}
+			}.bind(this));
 		},
 
 		/**
