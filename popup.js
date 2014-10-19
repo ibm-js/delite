@@ -270,9 +270,15 @@ define([
 				widget.startup(); // this has to be done after being added to the DOM
 			}
 
+			var wrapperClasses = ["d-popup"];
+			((widget.baseClass || "") + " " + widget.className).split(/ +/).forEach(function (cls) {
+				if (cls) {
+					wrapperClasses.push(cls + "-popup");
+				}
+			});
 			dcl.mix(wrapper, {
 				id: widget.id + "_wrapper",
-				className: "d-popup " + (widget.baseClass || widget["class"] || "").split(" ")[0] + "-popup"
+				className: wrapperClasses.join(" ")
 			});
 			wrapper.style.zIndex = this._beginZIndex + stack.length;
 			wrapper._popupParent = args.parent ? args.parent : null;
