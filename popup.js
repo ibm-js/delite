@@ -311,7 +311,9 @@ define([
 					evt.stopPropagation();
 					evt.preventDefault();
 					var topPopup = this.getTopPopup();
-					topPopup.onCancel();
+					if (topPopup.onCancel) {
+						topPopup.onCancel();
+					}
 				}
 			}.bind(this);
 			wrapper.addEventListener("keydown", onKeyDown);
@@ -334,7 +336,9 @@ define([
 			// registered for the top menu should get the execute event.  At least, that's how it worked in dijit.
 			var executeHandler = function () {
 				var topPopup = this.getTopPopup();
-				topPopup.onExecute();
+				if (topPopup.onExecute) {
+					topPopup.onExecute();
+				}
 			}.bind(this);
 			handlers.push(
 				widget.on("change", executeHandler),
