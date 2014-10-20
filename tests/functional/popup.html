@@ -21,10 +21,8 @@
 
 	/* the menu type test widgets */
 	lots-of-choices-widget {
-		overflow: auto;
-
 		/* momentum scroll on ios / android */
-		overflow-y: scroll;
+		overflow-y: auto;
 		-webkit-overflow-scrolling: touch;
 	}
 
@@ -88,6 +86,7 @@ require([
 				parent: this,
 				around: this,
 				orient: this.orient,
+				maxHeight: -1,
 				onCancel: function () {
 					console.log(self.id + ": cancel of child");
 				},
