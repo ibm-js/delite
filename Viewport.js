@@ -16,18 +16,29 @@ define([
 ], function (Evented, has) {
 	var Viewport = new Evented();
 
-	/**
-	 * Get the size of the viewport.
-	 * @function module:delite/Viewport.getBox
-	 */
-	Viewport.getBox = function () {
-		return {
-			w: window.innerWidth,
-			h: window.innerHeight,
-			t: window.pageYOffset,
-			l: window.pageXOffset
-		};
-	};
+	// Get the size of the viewport without size adjustment needed for iOS soft keyboard.
+	// On android though, this returns the size of the visible area not including the keyboard.
+	function getBox() {
+		if (has("ios") < 8) {
+			// Workaround iOS < 8 problem where window.innerHeight is too low when the document is scrolled so
+			// much that the document ends before the bottom of the keyboard.  Workaround not needed and doesn't work,
+			// on iOS 8.
+			var bcr = document.body.getBoundingClientRect();
+			return {
+				w: bcr.width,
+				h: bcr.height,
+				t: window.pageYOffset,
+				l: window.pageXOffset
+			};
+		} else {
+			return {
+				w: window.innerWidth,
+				h: window.innerHeight,
+				t: window.pageYOffset,
+				l: window.pageXOffset
+			};
+		}
+	}
 
 	/**
 	 * Get the size of the viewport, or on mobile devices, the part of the viewport not obscured by the
@@ -35,7 +46,7 @@ define([
 	 * @function module:delite/Viewport.getEffectiveBox
 	 */
 	Viewport.getEffectiveBox = function () {
-		var box = Viewport.getBox();
+		var box = getBox();
 
 		// Account for iOS virtual keyboard, if it's being shown.  Unfortunately no direct way to check or measure.
 		var focusedNode = document.activeElement,
