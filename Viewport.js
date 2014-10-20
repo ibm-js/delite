@@ -2,7 +2,11 @@
  * Utility singleton to watch for viewport resizes, avoiding duplicate notifications
  * which can lead to infinite loops.
  *
- * Usage: `Viewport.on("resize", myCallback)`.
+ * Usage:
+ * ```
+ * Viewport.on("resize", myCallback)
+ * Viewport.on("scroll", myOtherCallback)
+ * ```
  * 
  * myCallback() is called without arguments in case it's Widget.resize(),
  * which would interpret the argument as the size to make the widget.
@@ -95,14 +99,24 @@ define([
 		return box;
 	};
 
-	var oldEffectiveBox = Viewport.getEffectiveBox();
+	var oldEffectiveSize = Viewport.getEffectiveBox(),
+		oldEffectiveScroll = oldEffectiveSize;
 
 	function checkForResize() {
-		var newBox = Viewport.getEffectiveBox(document);
-		if (newBox.h !== oldEffectiveBox.h || newBox.w !== oldEffectiveBox.w ||
-			newBox.t !== oldEffectiveBox.t || newBox.l !== oldEffectiveBox.l) {
-			oldEffectiveBox = newBox;
+		var newBox = Viewport.getEffectiveBox();
+		if (newBox.h !== oldEffectiveSize.h || newBox.w !== oldEffectiveSize.w) {
+			oldEffectiveSize = newBox;
 			Viewport.emit("resize", newBox);
+			return true;
+		} else {
+			return false;
+		}
+	}
+	function checkForScroll() {
+		var newBox = Viewport.getEffectiveBox();
+		if (newBox.t !== oldEffectiveScroll.t || newBox.l !== oldEffectiveScroll.l) {
+			oldEffectiveScroll = newBox;
+			Viewport.emit("scroll", newBox);
 			return true;
 		} else {
 			return false;
@@ -112,8 +126,9 @@ define([
 	// Poll for viewport resizes due to rotation, browser window size change, or the virtual keyboard
 	// popping up/down.
 	function poll() {
-		var resized = checkForResize();
-		setTimeout(poll, resized ? 10 : 50);
+		var resized = checkForResize(),
+			scrolled = checkForScroll();
+		setTimeout(poll, resized || scrolled ? 10 : 50);
 	}
 	poll();
 
