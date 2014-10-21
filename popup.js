@@ -93,6 +93,7 @@ define([
 
 		constructor: function () {
 			Viewport.on("resize", this._repositionAll.bind(this));
+			Viewport.on("scroll", this._viewportScrollHandler.bind(this));
 		},
 
 		/**
@@ -118,12 +119,27 @@ define([
 		},
 
 		/**
-		 * Reposition all the popups due to screen scroll or viewport size change.
+		 * Reposition all the popups due to viewport size change.
 		 * @private
 		 */
 		_repositionAll: function () {
 			this._stack.forEach(function (args) {
 				this._size(args);
+				this._position(args);
+			}, this);
+		},
+
+		/**
+		 * Reposition all the popups due to viewport scroll.  The main purpose of the function is to handle
+		 * automatic scrolling on mobile from the keyboard popping up or when the browser tries to scroll the
+		 * focused element to the upper part of the screen.
+		 * @private
+		 */
+		_viewportScrollHandler: function () {
+			this._stack.forEach(function (args) {
+				if (args.orient[0] !== "center") {	// no need to resize dialogs just due to viewport scroll
+					this._size(args);
+				}
 				this._position(args);
 			}, this);
 		},
@@ -232,13 +248,13 @@ define([
 		 */
 		open: function (args) {
 			this._prepareToOpen(args);
-			this._size(args);
+			this._size(args, true);
 			return this._position(args);
 		},
 
 		/**
 		 * Do the work to display a popup widget, except for positioning.
-		 * @param args - see open()
+		 * @param {module:delite/popup.OpenArgs} args
 		 * @returns {*}
 		 * @private
 		 */
@@ -353,36 +369,42 @@ define([
 
 		/**
 		 * Size or resize the popup specified by args.
-		 * @param args
+		 * @param {module:delite/popup.OpenArgs} args
+		 * @param {boolean} measureSize
 		 * @returns {*} If orient !== center then returns the alignment of the popup relative to the anchor node.
 		 * @private
 		 */
-		_size: function (args) {
-			/* jshint maxcomplexity:11 */
+		_size: function (args, measureSize) {
+			/* jshint maxcomplexity:13 */
 			var widget = args.popup,
 				wrapper = widget._popupWrapper,
 				around = args.around,
 				orient = args.orient || ["below", "below-alt", "above", "above-alt"],
 				viewport = Viewport.getEffectiveBox(widget.ownerDocument);
 
-			if (orient[0] === "center") {
-				// Remove any previous setting of size.  Important when there's more space available than the
-				// last time we were called.
-				wrapper.style.height = wrapper.style.width = "auto";
-
-				// Limit height and width so dialog fits within viewport.
-				if (widget.offsetHeight > viewport.h * 0.9) {
-					wrapper.style.height = Math.floor(viewport.h * 0.9) + "px";
-				}
-				if (widget.offsetWidth > viewport.w * 0.9) {
-					wrapper.style.width = Math.floor(viewport.w * 0.9) + "px";
-				}
-			} else {
-				// Remove any previous setting of height.  Important when there's more space available than the
-				// last time we were called.  But don't set width to "auto" because that interferes with HasDropDown's
-				// autoWidth/forceWidth.
+			if (measureSize) {
+				// Get natural size of popup (i.e. when not squashed to fit within viewport).  First, remove any
+				// previous size restriction set on wrapper.  Note that setting wrapper's height and width to "auto"
+				// erases scroll position, so should only be done when popup is first shown, before user has scrolled.
 				wrapper.style.height = "auto";
+				if (orient[0] === "center") {
+					// Don't set width to "auto" when orient!=center because it interferes with HasDropDown's
+					// autoWidth/forceWidth.
+					// TODO: maybe this if() check is no longer necessary to due to parent if(measureSize)
+					wrapper.style.width = "auto";
+				}
 
+				args._naturalHeight = widget.offsetHeight;
+				args._naturalWidth = widget.offsetWidth;
+			}
+
+			if (orient[0] === "center") {
+				// Limit height and width so dialog fits within viewport.
+				wrapper.style.height = args._naturalHeight > viewport.h * 0.9 ? Math.floor(viewport.h * 0.9) + "px" :
+					"auto";
+				wrapper.style.width = args._naturalWidth > viewport.w * 0.9 ? Math.floor(viewport.w * 0.9) + "px" :
+					"auto";
+			} else {
 				// Limit height to space available in viewport either above or below aroundNode (whichever side has
 				// more room).  This may make the popup widget display a scrollbar (or multiple scrollbars).
 				var maxHeight;
@@ -397,9 +419,7 @@ define([
 						(aroundPos.top + aroundPos.height)));
 				}
 
-				if (widget.offsetHeight > maxHeight) {
-					wrapper.style.height = maxHeight + "px";
-				}
+				wrapper.style.height = args._naturalHeight > maxHeight ? maxHeight + "px" : "auto";
 			}
 		},
 
