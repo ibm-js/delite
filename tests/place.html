@@ -266,8 +266,7 @@ require([
 		function center(t) {
 			place.center(popup);
 
-			// TODO: code and test for when virtual keyboard is shown
-			var viewport = Viewport.getBox(document),
+			var viewport = Viewport.getEffectiveBox(),
 				popupCoords = popup.getBoundingClientRect();
 
 			doh.t(Math.abs(viewport.h/2 - popupCoords.top - popupCoords.height/2) < 1, "centered vertically");

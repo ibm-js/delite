@@ -309,10 +309,9 @@ define([
 				.execute(function () {
 					var dialog = document.querySelector(".centered-dialog");
 					return {
-						viewport: {
-							h: window.innerHeight,
-							w: window.innerWidth
-						},
+						// Use delite/Viewport to get size because window.innerWidth not quite right on iOS7.1.
+						// It returns 304 instead of 320.
+						viewport: require("delite/Viewport").getEffectiveBox(),
 						dropDownRect: dialog.getBoundingClientRect()
 					};
 				}).then(function (ret) {
@@ -325,7 +324,7 @@ define([
 							"centered vertically");
 					}
 					assert(Math.abs(viewport.w / 2 - popupCoords.left - popupCoords.width / 2) < 1,
-						"centered horizontally");
+						"centered horizontally, " + viewport.w + ", " + popupCoords.width + ", " + popupCoords.left);
 				});
 		},
 
