@@ -111,13 +111,12 @@ define([
 				/*jshint camelcase: false*/
 				element.__upgraded__ = true;
 				/*jshint camelcase: true*/
-				element._constructor = widget.constructor;	// _constructor b/c constructor is read-only on iOS
 				if (element.createdCallback) {
-					element.createdCallback.call(element, widget.prototype);
+					element.createdCallback();
 				}
 				if (element.attachedCallback && doc.documentElement.contains(element)) {
 					// Note: if app inserts an element manually it needs to call attachedCallback() manually
-					element.attachedCallback.call(element, widget.prototype);
+					element.attachedCallback();
 				}
 			}
 		}
