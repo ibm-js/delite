@@ -46,6 +46,8 @@ define([
 	 * @function module:delite/Viewport.getEffectiveBox
 	 */
 	Viewport.getEffectiveBox = function () {
+		/* jshint maxcomplexity:12 */
+
 		var box = getBox();
 
 		// Account for iOS virtual keyboard, if it's being shown.  Unfortunately no direct way to check or measure.
@@ -68,7 +70,6 @@ define([
 			// iPad 2 / iOS 7.1: 66% / 41%
 			// iPhone 3s / iOS6: 43% / 29% (but w/hidden address bar because it hides all the time)
 
-
 			if (has("ipad")) {
 				// Numbers for iPad 2, hopefully it works for other iPads (including iPad mini) too.
 				box.h *= (window.orientation === 0 || window.orientation === 180 ? 0.65 : 0.38);
@@ -81,6 +82,13 @@ define([
 					// landscape
 					box.h *= (window.screen.height > 500 && has("ios") >= 8 ? 0.26 : 0.19);
 				}
+			}
+
+			// Account for space taken by auto-completion suggestions.
+			if (has("ios") >= 8 &&
+				(!focusedNode.hasAttribute("autocorrect") || focusedNode.getAttribute("autocorrect") === "on") &&
+				/^(color|number|search|tel|text)$/.test(focusedNode.type)) {
+				box.h -= 40;
 			}
 		}
 

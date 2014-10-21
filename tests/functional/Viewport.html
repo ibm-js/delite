@@ -28,10 +28,21 @@
 	<h1>Viewport test</h1>
 	<p>
 		Test that effective viewport size changes reported on window resize, device rotate, and virtual
-	keyboard show/hide.
+		keyboard show/hide.
+	</p>
+	<p>
+		Also check that size changes based on whether or not iOS 8 is showing auto-completion suggestions.
 	</p>
 	<div id="size"></div>
-	<input value="input">
+	<input type="color" value="color">
+	<input type="email" value="email">
+	<input type="number" value="12345">
+	<input type="password" value="password">
+	<input type="search" value="search">
+	<input type="tel" value="tel">
+	<input type="text" value="text">
+	<input type="url" value="url">
+	<input autocorrect="off" value="autocorrect=off">
 	<button type="button">button</button>
 </body>
 </html>
