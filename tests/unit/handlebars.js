@@ -66,7 +66,7 @@ define([
 		},
 
 		"special props": {
-			one: function () {
+			general: function () {
 				var SpecialPropsWidget = register("handlebars-special-props", [HTMLElement, Widget], {
 					inputClass: "originalClass",	// attribute called "class" but property called "className"
 					inputValue: "original value",	// must be set as property
@@ -97,7 +97,7 @@ define([
 				assert.strictEqual(input.getAttribute("role"), "newRole", "role changed");
 			},
 
-			two: function () {
+			select: function () {
 				var MyWidget = register("handlebars-special-props-2", [HTMLElement, Widget], {
 					foo: 0,
 					size: 0,
@@ -124,6 +124,21 @@ define([
 				}), 100);
 
 				return d;
+			},
+
+			autocorrect: function () {
+				var MyWidget = register("handlebars-special-props-3", [HTMLElement, Widget], {
+					foo: 0,
+					size: 0,
+					multiple: false,
+					template: handlebars.compile(
+							"<template><input autocorrect='off'></template>"
+					)
+				});
+
+				var myWidget = new MyWidget({});
+
+				assert.strictEqual(myWidget.children[0].getAttribute("autocorrect"), "off");
 			}
 		},
 

@@ -125,8 +125,13 @@ define(["./Template", "require"], function (Template, require) {
 								!/{{/.test(item.value) && propName !== "style.cssText") {
 								// This attribute corresponds to a non-string property, and the value specified is a
 								// literal like vertical="false", so *don't* convert value to string.
+								var value = item.value;
+								if (typeof elem[propName] === "boolean" && (value === "off" || value === "on")) {
+									// conversion code needed on iOS for autocorrect property
+									value = value === "on" ? "true" : "false";
+								}
 								attributes[item.name] = {
-									expr: item.value,
+									expr: value,
 									dependsOn: []
 								};
 							} else {
