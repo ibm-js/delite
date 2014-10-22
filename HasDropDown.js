@@ -251,6 +251,18 @@ define([
 				this.hovering = false;
 			}.bind(this));
 
+			// Avoid phantom click on android [and maybe iOS] where touching the button opens a centered dialog, but
+			// then there's a phantom click event on the dialog itself, possibly closing it.
+			// Happens in deliteful/tests/functional/ComboBox-prog.html on a phone (portrait mode), when you click
+			// towards the right side of the second ComboBox.
+			this.on("touchstart", function (evt) {
+				// Note: need to be careful not to call evt.preventDefault() indiscriminately because that would
+				// prevent [non-disabled] <input> etc. controls from getting focus.
+				if (this.dropDownPosition[0] === "center") {
+					evt.preventDefault();
+				}
+			}, this.buttonNode);
+
 			// Stop click events and workaround problem on iOS where a blur event occurs ~300ms after
 			// the focus event, causing the dropdown to open then immediately close.
 			// Workaround iOS problem where clicking a Menu can focus an <input> (or click a button) behind it.
