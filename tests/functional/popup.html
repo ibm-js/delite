@@ -178,6 +178,7 @@ require([
 
 		render: function () {
 			this.className = "choice";
+			this.innerHTML = "<div><input value='popup keyboard'></div>";	// for testing popup keyboard
 			for (var i = 0; i < this.length; i++) {
 				this.innerHTML += "<div>choice #" + i + "</div>";
 			}
@@ -187,6 +188,9 @@ require([
 		},
 
 		_clickHandler: function (evt) {
+			if (evt.target.tagName.toLowerCase() === "input") {
+				return;
+			}
 			console.log("clicked " + evt.target.innerHTML);
 			this.emit("execute");
 		}
