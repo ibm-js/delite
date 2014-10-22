@@ -261,7 +261,7 @@ define([
 				if (this.dropDownPosition[0] === "center") {
 					evt.preventDefault();
 				}
-			}, this.buttonNode);
+			}.bind(this), this.buttonNode);
 
 			// Stop click events and workaround problem on iOS where a blur event occurs ~300ms after
 			// the focus event, causing the dropdown to open then immediately close.
