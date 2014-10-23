@@ -84,7 +84,8 @@ define([
 	function _placeAt(node, choices, layoutNode, aroundNodeCoords) {
 		// get {l: 10, t: 10, w: 100, h:100} type obj representing position of
 		// viewport over document
-		var view = Viewport.getEffectiveBox(node.ownerDocument);
+		var view = Viewport.getEffectiveBox(node.ownerDocument),
+			style = node.style;
 
 		// This won't work if the node is inside a <div style="position: relative">,
 		// so reattach it to <body>.	 (Otherwise, the positioning will be wrong
@@ -115,8 +116,7 @@ define([
 
 			// Clear left/right position settings set earlier so they don't interfere with calculations,
 			// specifically when layoutNode() (a.k.a. Tooltip.orient()) measures natural width of Tooltip
-			var s = node.style;
-			s.left = s.right = "auto";
+			style.left = style.right = "auto";
 
 			// configure node to be displayed in given position relative to button
 			// (need to do this in order to get an accurate size for the node, because
@@ -127,7 +127,6 @@ define([
 			}
 
 			// get node's size
-			var style = node.style;
 			var oldDisplay = style.display;
 			var oldVis = style.visibility;
 			if (style.display === "none") {
@@ -198,10 +197,9 @@ define([
 			side -= cs.marginLeft;
 		}
 
-		var s = node.style;
-		s.top = top + "px";
-		s.left = side + "px";
-		s.right = "auto";	// needed for FF or else tooltip goes to far left
+		style.top = top + "px";
+		style.left = side + "px";
+		style.right = "auto";	// needed for FF or else tooltip goes to far left
 
 		return best;
 	}
@@ -442,10 +440,20 @@ define([
 		 * @param {Element} node - The popup node to be positioned.
 		 */
 		center: function (node) {
-			var view = Viewport.getEffectiveBox(node.ownerDocument),
+			// First move node off screen so we can get accurate size.
+			// TODO: move this code [and RTL detect code) to separate methods, and leverage from popup.moveOffScreen()
+			var style = node.style,
+				rtl = (/^rtl$/i).test(node.dir || node.ownerDocument.body.dir ||
+					node.ownerDocument.documentElement.dir);
+			style.top = "-9999px";
+			style[rtl ? "right" : "left"] = "-9999px";
+
+			// Then set position so node is centered.
+			var view = Viewport.getEffectiveBox(),
 				bb = node.getBoundingClientRect();
-			node.style.top = view.t + (view.h - bb.height) / 2 + "px";
-			node.style.left = view.l + (view.w - bb.width) / 2 + "px";
+			style.top = view.t + (view.h - bb.height) / 2 + "px";
+			style.left = view.l + (view.w - bb.width) / 2 + "px";
+			style.right = "auto";
 		},
 
 		/**

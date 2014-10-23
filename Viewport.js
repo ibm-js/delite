@@ -29,8 +29,8 @@ define([
 			// on iOS 8.
 			var bcr = document.body.getBoundingClientRect();
 			return {
-				w: bcr.width,
-				h: bcr.height,
+				w: Math.max(bcr.width, window.innerWidth),
+				h: Math.max(bcr.height, window.innerHeight),
 				t: window.pageYOffset,
 				l: window.pageXOffset
 			};

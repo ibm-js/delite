@@ -9,6 +9,7 @@ define([
 	"./CssState",
 	"./Container",
 	"./a11y",
+	"./place",
 	"./uacss",
 	"./Selection",
 	"./StoreMap",
