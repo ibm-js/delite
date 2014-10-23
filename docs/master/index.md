@@ -29,10 +29,10 @@ Specifically, it's based on the following concepts:
 
 ## Utility modules
 
+* [activationTracker](activationTracker.html) - utility for tracking the stack of "active" widgets; used by [popup](popup.html)
 * [a11y](a11y.html) - accessibility utility functions
 * [a11yclick](a11yclick.html) - allow keyboard "click" (via ENTER or SPACE) on custom DOM nodes
 * [css!](css.html) - CSS file loading AMD plugin
-* [focus](focus.html) - utility for tracking the stack of "active" widgets; used by [popup](popup.html)
 * [handlebars!](handlebars.html) - plugin to compile reactive templates for use in widgets
 * [place](place.html) - low level module for placing a popup or dropdown at a certain position
 * [popup](popup.html) - popup manager

@@ -59,7 +59,7 @@ postCreate: function(){
 can (and should) be replaced by:
 
 ```js
-postCreate: function(){
+postRender: function(){
     ... do stuff ...
 }
 ```
@@ -84,14 +84,16 @@ Widgets are declared via `register()` rather than `dojo.declare()`, and must ext
 ### lifecycle methods
 
 1. `create()` renamed to `createdCallback()`
-2. `constructor()` and `postscript()` no longer run; move custom code from constructor
-	to `preCreate()`.
-3. The `buildRendering()` method must not try to create the root DOMNode.  It already exists.
-   It should just set attributes on the root node, and create sub nodes and/or text inside the root node.
-4. There's no `postMixInProperties()` method any more.   There is one called `preCreate()` that
+2. `constructor()` and `postscript()` no longer run; `preCreate()` was renamed to `preRender()`;
+    move custom code from constructor to `preRender()`.
+3. The `buildRendering()` method has been renamed to `render()`.  It must not try to create the root DOMNode; it already
+   exists.  It should just set attributes on the root node, and create sub nodes and/or text inside the root node.
+   However, usually widgets will not redefine `render()` at all, but rather just define the `template` property.
+4. There's no `postMixInProperties()` method any more.   There is one called `preRender()` that
    runs before rendering.
-5. The widget initialization parameters are not applied until after `buildRendering()` and `postCreate()` complete.
-6. Custom setters still exist, but often its preferable to recomput property values in `computeProperties()` and
+5. `postCreate()` renamed to `postRender()`
+6. The widget initialization parameters are not applied until after `render()` and `postRender()` complete.
+7. Custom setters still exist, but often its preferable to recompute property values in `computeProperties()` and
    to redraw the widget in `refreshRendering()`.  Both these methods are called asynchronously after a batch of
    property changes.
 
@@ -104,5 +106,46 @@ Widgets are declared via `register()` rather than `dojo.declare()`, and must ext
 Resources are loaded through `i18n!` plugin rather than a `loadResource()` type method.
 
 ### CSS
-A widget should use [delite/theme!](theme.html) or [delite/css!](css.html) to load its own CSS.
+
+A widget should use [delite/theme!](theme.html) or
+[requirejs-dplugins/css!](/requirejs-dplugins/docs/master/css.html) to load its own CSS.
+
+Further, delite/CssState (previously called dijit/_CssStateMixin) no longer sets CSS classes for hover, focus or active,
+so the widget CSS should just use the `:focus`, `:hover`, and `:active` pseudo-classes.
+
+### popups / dropdowns
+
+HasDropDown now forwards keystrokes to popups by emitting the "keydown" event on the popup rather than calling
+a `handleKey()` method.
+
+Dropdowns should indicate they have executed/canceled by calling `this.emit("execute")`, `this.emit("change")`,
+or `this.emit("cancel")`, rather than calling `onExecute()`, `onChange()`, or `onCancel()`.
+
+Dropdowns don't automatically get `overflow: auto` CSS but they should take some measure,
+perhaps by extending [`delite/Scrollable`](Scrollable.html), to display a scrollbar when their size
+is reduced.
+
+### KeyNav
+
+_KeyNavMixin has been renamed to KeyNav.
+
+The `_keyNavCodes` property has been removed as KeyNav now figures out the method name to call automatically.
+However, the method names for arrows have been changed:
+
+- onLeftArrow --> previousArrowKeyHandler
+- onRightArrow --> nextArrowKeyHandler
+- onDownArrow --> downArrowKeyHandler
+- onUpArrow --> upArrowKeyHandler
+
+Methods for handling other keys (like SPACE or ENTER) are similarly named, ex: spaceKeyHandler() and enterKeyHandler().
+
+
+### onFocus() and onBlur()
+
+delite/activationTracker (previously called dijit/focus) no longer calls `onFocus()` and `onBlur()`
+(or `_onFocus()` and `_onBlur()`) methods on a widget.  Rather, it emits `delite-activated` and
+`delite-deactivated` events on the widget.
+
+Note that most widgets should probably just call `this.on("focusin", ...)` and `this.on("focusout", ...)`
+rather than depending on delite/activationTracker.  It's mainly for popups.
 

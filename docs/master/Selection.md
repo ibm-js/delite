@@ -8,8 +8,8 @@ title: delite/Selection
 `delite/Selection` is a [`delite/Widget`](Widget.html) subclass which adds the ability for a widget to manage the
 selection state of its internal items.
 
-This is typically used in conjunction with [`delite/StoreMap`](StoreMap.html) to manage the selection of the render items 
-created by the store mixin.
+This is typically used in conjunction with [`delite/StoreMap`](StoreMap.html) to manage the selection of the data
+ or render items created by the store mixin.
 
 ##### Table of Contents
 [Using Selection](#using)  
@@ -54,7 +54,7 @@ require(["delite/register", "delite/Selection", "delite/StoreMap"/*, ...*/],
   function (register, Widget, Selection, StoreMap/*, ...*/) {
   return register("my-widget", [HTMElement, Selection, StoreMap], {
     labelAttr: "label",
-    preCreate: function () {
+    preRender: function () {
       this._childHash = {};
     }
     refreshRendering: function (props) {
@@ -69,13 +69,13 @@ require(["delite/register", "delite/Selection", "delite/StoreMap"/*, ...*/],
         }
       }
     },
-    getIdentity: function (renderItem) {
-      return renderItem.id;
+    getIdentity: function (item) {
+      return this.store.getIdentity(item);
     },
-    updateRenderers: function (renderItems) {
-      for (var i = 0; i < renderItems.length; i++) {
-        var child = this._childHash[renderItems[i].id];
-        var selected = this.isSelected(renderItems[i]);
+    updateRenderers: function (items) {
+      for (var i = 0; i < items.length; i++) {
+        var child = this._childHash[this.getIdentity(items[i])];
+        var selected = this.isSelected(items[i]);
         if (selected) {
           child.setAttribute("class", "selected");
         } else {

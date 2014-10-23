@@ -116,18 +116,18 @@ Generally though, you will extend [`delite/Widget`](Widget.html) which provides 
 
 ## Rendering a widget
 
-Unlike Dijit, by the time `createdCallback()` is called (and in [`delite/Widget`](Widget.html) subclasses: `buildRendering()`),
+Unlike Dijit, by the time `createdCallback()` is called (and in [`delite/Widget`](Widget.html) subclasses: `render()`),
 the widget's root node already exists.  Either it's the original root node from the markup
 (ex: `<button is="d-button">`) or it was created via the internal `register.createElement()` call.
 
 You cannot change the root node, although you can set attributes on it and setup event listeners.
 In addition, you will often create sub-nodes underneath the root node.
 
-Also note that the root node is `this`.   So putting those concepts together, a trivial `buildRendering()` method
+Also note that the root node is `this`.   So putting those concepts together, a trivial `render()` method
 in a `delite/Widget` subclass would be:
 
 ```js
-buildRendering: function(){
+render: function(){
 	this.className = "d-button";
 }
 ```
