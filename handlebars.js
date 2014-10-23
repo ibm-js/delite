@@ -93,6 +93,7 @@ define(["./Template", "require"], function (Template, require) {
 		 * @private
 		 */
 		parse: function (templateNode, xmlns) {
+			/* jshint maxcomplexity:13 */
 			// Get tag name, reversing the tag renaming done in parse()
 			var tag = templateNode.hasAttribute("is") ? templateNode.getAttribute("is") :
 					templateNode.tagName.replace(/^template-/i, "").toLowerCase(),
