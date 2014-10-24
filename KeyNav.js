@@ -8,6 +8,18 @@ define([
 	"dpointer/events",		// so can just monitor for "pointerdown"
 	"./activationTracker"	// delite-deactivated event when focus removed from KeyNav and logical descendants
 ], function (dcl, domClass, keys, has, Widget) {
+	/**
+	 * Dispatched after the user has selected a different descendant, by clicking, arrow keys,
+	 * or keyboard search.
+	 * @example
+	 * widget.on("keynav-child-navigated", function (evt) {
+	 *	console.log("old value: " + evt.oldValue);
+	 *	console.log("new value: " + evt.newValue);
+	 * }
+	 * @event module:delite/KeyNav.keynav-child-navigated
+	 * @property {number} oldValue - The previously selected item.
+	 * @property {number} newValue - The new selected item.
+	 */
 
 	// Generate map from keyCode to handler name
 	var keycodeToMethod = {};
@@ -303,6 +315,7 @@ define([
 		 * code.  It marks that the specified child is the navigated one.
 		 * @param {Element} child
 		 * @private
+		 * @fires module:delite/KeyNav.keynav-child-navigated
 		 */
 		_descendantNavigateHandler: function (child) {
 			if (child && child !== this.navigatedDescendant) {
@@ -325,18 +338,6 @@ define([
 					domClass.remove(this.navigatedDescendant, "d-active-descendant");
 				}
 
-				/**
-				 * Dispatched after the user has selected a different descendant, by clicking, arrow keys,
-				 * or keyboard search.
-				 * @example
-				 * widget.on("keynav-child-navigated", function (evt) {
-				 *	console.log("old value: " + evt.oldValue);
-				 *	console.log("new value: " + evt.newValue);
-				 * }
-				 * @event module:delite/KeyNav.keynav-child-navigated
-				 * @property {number} oldValue - The previously selected item.
-				 * @property {number} newValue - The new selected item.
-				 */
 				this.emit("keynav-child-navigated", {
 					oldValue: this.navigatedDescendant,
 					newValue: child
