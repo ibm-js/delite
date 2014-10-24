@@ -266,7 +266,7 @@ define(["dcl/dcl", "decor/sniff", "./Widget"], function (dcl, has, Widget) {
 			 *	console.log("old value: " + evt.oldValue);
 			 *	console.log("new value: " + evt.newValue);
 			 * }
-			 * @event module:delite/Selection#selection-change
+			 * @event module:delite/Selection.selection-change
 			 * @property {number} oldValue - The previously selected item.
 			 * @property {number} newValue- The new selected item.
 			 * @property {Object} renderer - The visual renderer of the selected/deselected item.

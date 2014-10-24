@@ -333,7 +333,7 @@ define([
 				 *	console.log("old value: " + evt.oldValue);
 				 *	console.log("new value: " + evt.newValue);
 				 * }
-				 * @event module:delite/KeyNav#keynav-child-navigated
+				 * @event module:delite/KeyNav.keynav-child-navigated
 				 * @property {number} oldValue - The previously selected item.
 				 * @property {number} newValue - The new selected item.
 				 */
