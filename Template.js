@@ -1,75 +1,27 @@
 /** @module delite/Template */
 define(["./register"], function (register) {
-
-	var elementCache = {};
-
 	/**
-	 * Return cached reference to Element with given tag name.
-	 * @param {string} tag
-	 * @returns {Element}
-	 * @protected
-	 */
-	function getElement(tag) {
-		if (!(tag in elementCache)) {
-			elementCache[tag] = register.createElement(tag);
-		}
-		return elementCache[tag];
-	}
-
-	var attrMap = {};
-
-	/**
-	 * Given a tag and attribute name, return the associated property name,
-	 * or undefined if no such property exists, for example:
+	 * Given an AST representation of the template, generates a function that:
 	 *
-	 * - getProp("div", "tabindex") --> "tabIndex"
-	 * - getProp("div", "role") --> undefined
+	 * 1. generates DOM corresponding to the template
+	 * 2. returns an object including a function to be called to update that DOM
+	 *    when widget properties have changed.
 	 *
-	 * Note that in order to support SVG, getProp("svg", "class") returns null instead of className.
+	 * The function is available through `this.func`, i.e.:
 	 *
-	 * @param {string} tag - Tag name.
-	 * @param {string} attrName - Attribute name.
-	 * @returns {string}
-	 * @protected
-	 */
-	function getProp(tag, attrName) {
-		if (!(tag in attrMap)) {
-			var proto = getElement(tag),
-				map = attrMap[tag] = {};
-			for (var prop in proto) {
-				map[prop.toLowerCase()] = prop;
-			}
-			map.style = "style.cssText";
-		}
-		return attrMap[tag][attrName];
-	}
-
-	/**
-	 * Class to compile an AST representing a template into a function to generate that template's DOM,
-	 * and set up listeners to update the DOM as the widget properties change.
+	 * ```js
+	 * var template = new Template(ast);
+	 * template.func(document, register);
+	 * ```
 	 *
 	 * See the reference documentation for details on the AST format.
 	 *
-	 * @mixin module:delite/Template
+	 * @param {Object} tree - AST representing the template.
+	 * @param {string} rootNodeName - Name of variable for the root node of the tree, typically `this`.
+	 * @param {boolean} createRootNode - If true, create node; otherwise assume node exists in variable `nodeName`.
+	 * @class module:delite/Template
 	 */
 	var Template = register.dcl(null, /** @lends module:delite/Template# */ {
-		/**
-		 * Given an AST representation of the template, generates a function that:
-		 *
-		 * 1. generates DOM corresponding to the template
-		 * 2. returns an object including a function to be called to update that DOM
-		 *    when widget properties have changed.
-		 *
-		 * The function is available through this.func, i.e.:
-		 *
-		 *     var template = new Template(ast);
-		 *     template.func(document, register);
-		 *
-		 * @param {Object} tree - AST representing the template.
-		 * @param {string} rootNodeName - Name of variable for the root node of the tree, typically `this`.
-		 * @param {boolean} createRootNode - If true, create node; otherwise assume node exists in variable `nodeName`.
-		 * @private
-		 */
 		constructor: function (tree, rootNodeName, createRootNode) {
 			this.buildText = [];	// code to build the initial DOM
 			this.observeText = [];	// code to update the DOM when widget properties change
@@ -188,7 +140,7 @@ define(["./register"], function (register) {
 				var info = templateNode.attributes[attr];
 
 				// Generate code to set this property or attribute
-				var propName = getProp(templateNode.tag, attr),
+				var propName = Template.getProp(templateNode.tag, attr),
 					js = info.expr;		// code to compute property value
 
 				if (attr === "class" && !templateNode.xmlns) {
@@ -237,8 +189,47 @@ define(["./register"], function (register) {
 	});
 
 	// Export helper funcs so they can be used by handlebars.js
-	Template.getElement = getElement;
-	Template.getProp = getProp;
+
+	/**
+	 * Return cached reference to Element with given tag name.
+	 * @function module:delite/Template.getElement
+	 * @param {string} tag
+	 * @returns {Element}
+	 */
+	var elementCache = {};
+	Template.getElement = function (tag) {
+		if (!(tag in elementCache)) {
+			elementCache[tag] = register.createElement(tag);
+		}
+		return elementCache[tag];
+	};
+
+	/**
+	 * Given a tag and attribute name, return the associated property name,
+	 * or undefined if no such property exists, for example:
+	 *
+	 * - getProp("div", "tabindex") --> "tabIndex"
+	 * - getProp("div", "role") --> undefined
+	 *
+	 * Note that in order to support SVG, getProp("svg", "class") returns null instead of className.
+	 *
+	 * @function module:delite/Template.getProp
+	 * @param {string} tag - Tag name.
+	 * @param {string} attrName - Attribute name.
+	 * @returns {string}
+	 */
+	var attrMap = {};
+	Template.getProp = function (tag, attrName) {
+		if (!(tag in attrMap)) {
+			var proto = Template.getElement(tag),
+				map = attrMap[tag] = {};
+			for (var prop in proto) {
+				map[prop.toLowerCase()] = prop;
+			}
+			map.style = "style.cssText";
+		}
+		return attrMap[tag][attrName];
+	};
 
 	return Template;
 });
