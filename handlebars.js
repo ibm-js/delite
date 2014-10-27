@@ -68,7 +68,8 @@ define(["./Template", "require"], function (Template, require) {
 				} else {
 					// Property (ex: selectionMode) or path (ex: item.foo)
 					wp[prop.replace(/[^\w].*/, "")] = true; // If nested prop (item.foo), watch top level prop (item).
-					parts.push(convertUndefinedToBlank ? "(this." + prop + " || '')" : "this." + prop);
+					parts.push(convertUndefinedToBlank ? "(this." + prop + "== null ? '' : this." + prop + ")" :
+						"this." + prop);
 				}
 			} else if (str) {
 				// string literal, single quote it and escape special characters

@@ -21,7 +21,24 @@ define([
 			document.body.appendChild(container);
 		},
 
-		load: function () {
+		types: function () {
+			var MyWidget = register("handlebars-types", [HTMLElement, Widget], {
+				number: 0,
+				boolean: false,
+				string: "hi",
+				"null": null,
+				template: handlebars.compile(
+					"<template>number {{number}}, boolean {{boolean}}, string {{string}}, null {{null}}</template>"
+				)
+			});
+
+			var myWidget = new MyWidget({});
+			myWidget.deliver();
+
+			assert.strictEqual(myWidget.textContent.trim(), "number 0, boolean false, string hi, null");
+		},
+
+		"load from file": function () {
 			// Test that function returned from delite/handlebars! creates the template correctly
 			var TestButton = register("handlebars-button", [HTMLButtonElement, Widget], {
 				iconClass: "originalClass",
@@ -72,8 +89,9 @@ define([
 					inputValue: "original value",	// must be set as property
 					role: "originalRole",			// must be set as attribute
 					template: handlebars.compile(
-							"<template><input class='{{inputClass}}' value='{{inputValue}}' " +
-							"role='{{role}}'/></template>"
+						"<template>" +
+							"<input class='{{inputClass}}' value='{{inputValue}}' role='{{role}}'/>" +
+						"</template>"
 					)
 				});
 				var mySpecialPropsWidget = new SpecialPropsWidget();
