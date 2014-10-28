@@ -408,7 +408,7 @@ define([
 				 *   }
 				 *   ...
 				 * }
-				 * @event module:delite/HasDropDown.delite-display-load
+				 * @event module:delite/HasDropDown#delite-display-load
 				 * @property {Promise} loadDeferred - promise to resolve with the dropdown element
 				 */
 				var def = new Deferred();
@@ -457,7 +457,7 @@ define([
 				 * document.addEventListener("delite-before-show", function (evt) {
 				 *      console.log("about to show popup", evt.child);
 				 * });
-				 * @event module:delite/HasDropDown.delite-before-show
+				 * @event module:delite/HasDropDown#delite-before-show
 				 * @property {Element} child - reference to popup
 				 */
 				this.emit("delite-before-show", {
@@ -525,7 +525,7 @@ define([
 				 * document.addEventListener("delite-after-show", function (evt) {
 				 *      console.log("just displayed popup", evt.child);
 				 * });
-				 * @event module:delite/HasDropDown.delite-after-show
+				 * @event module:delite/HasDropDown#delite-after-show
 				 * @property {Element} child - reference to popup
 				 */
 				this.emit("delite-after-show", {
@@ -570,7 +570,7 @@ define([
 				 * document.addEventListener("delite-before-hide", function (evt) {
 				 *      console.log("about to hide popup", evt.child);
 				 * });
-				 * @event module:delite/HasDropDown.delite-before-hide
+				 * @event module:delite/HasDropDown#delite-before-hide
 				 * @property {Element} child - reference to popup
 				 */
 				this.emit("delite-before-hide", {
@@ -589,7 +589,7 @@ define([
 				 * document.addEventListener("delite-after-hide", function (evt) {
 				 *      console.log("just hid popup", evt.child);
 				 * });
-				 * @event module:delite/HasDropDown.delite-after-hide
+				 * @event module:delite/HasDropDown#delite-after-hide
 				 * @property {Element} child - reference to popup
 				 */
 				this.emit("delite-after-hide", {

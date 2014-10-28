@@ -54,7 +54,7 @@ define(["dcl/dcl", "dojo/Deferred", "dojo/when", "delite/Container"],
 				 * document.addEventListener("delite-before-show", function (evt) {
 				 *      console.log("about to show child", evt.child);
 				 * });
-				 * @event module:delite/DisplayContainer.delite-before-show
+				 * @event module:delite/DisplayContainer#delite-before-show
 				 * @property {Element} child - reference to child element
 				 */
 				self.emit("delite-before-show", event);
@@ -67,7 +67,7 @@ define(["dcl/dcl", "dojo/Deferred", "dojo/when", "delite/Container"],
 					 * document.addEventListener("delite-after-show", function (evt) {
 					 *      console.log("just displayed child", evt.child);
 					 * });
-					 * @event module:delite/DisplayContainer.delite-after-show
+					 * @event module:delite/DisplayContainer#delite-after-show
 					 * @property {Element} child - reference to child element
 					 */
 					self.emit("delite-after-show", event);
@@ -117,7 +117,7 @@ define(["dcl/dcl", "dojo/Deferred", "dojo/when", "delite/Container"],
 			 *     });
 			 *     evt.preventDefault();
 			 * });
-			 * @event module:delite/DisplayContainer.delite-display-load
+			 * @event module:delite/DisplayContainer#delite-display-load
 			 * @property {Promise} loadDeferred - promise to resolve with the child element
 			 */
 			var loadDeferred = this.emit("delite-display-load", event) ? this.load(dest) : event.loadDeferred;
@@ -140,7 +140,7 @@ define(["dcl/dcl", "dojo/Deferred", "dojo/when", "delite/Container"],
 				 * document.addEventListener("delite-before-hide", function (evt) {
 				 *      console.log("about to hide child", evt.child);
 				 * });
-				 * @event module:delite/DisplayContainer.delite-before-hide
+				 * @event module:delite/DisplayContainer#delite-before-hide
 				 * @property {Element} child - reference to child element
 				 */
 				self.emit("delite-before-hide", event);
@@ -157,7 +157,7 @@ define(["dcl/dcl", "dojo/Deferred", "dojo/when", "delite/Container"],
 					 * document.addEventListener("delite-after-hide", function (evt) {
 					 *      console.log("just hid child", evt.child);
 					 * });
-					 * @event module:delite/DisplayContainer.delite-after-hide
+					 * @event module:delite/DisplayContainer#delite-after-hide
 					 * @property {Element} child - reference to child element
 					 */
 					self.emit("delite-after-hide", event);

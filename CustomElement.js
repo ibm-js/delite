@@ -130,7 +130,7 @@ define([
 			 * element.addEventListener("customelement-attached", function (evt) {
 			 *      console.log("custom element: "+evt.target.id+" has been attached");
 			 * });
-			 * @event module:delite/CustomElement.customelement-attached
+			 * @event module:delite/CustomElement#customelement-attached
 			 */
 			this.emit("customelement-attached", {
 				bubbles: false,
