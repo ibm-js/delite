@@ -154,8 +154,6 @@ define([
 			if (this.focusDescendants) {
 				this.on("delite-deactivated", this._keynavDeactivatedHandler.bind(this));
 
-				// TODO: this looks wrong, focusin shouldn't bubble so we shouldn't get any notification
-				// from descendant focus events.
 				this.on("focusin", function (evt) {
 					var target = self._getTargetElement(evt);
 					if (target === self) {

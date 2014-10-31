@@ -1,0 +1,84 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+	<meta name="viewport"
+		  content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no"/>
+	<meta name="apple-mobile-web-app-capable" content="yes"/>
+	<title>Widget Functional Tests</title>
+	<script type="text/javascript" src="../boilerplate.js"></script>
+	<style>
+		my-content-pane {
+			display: block;
+			border: 2px dotted black;
+			padding: 10px;
+			background-color: gray;
+		}
+		my-content-pane > div {
+			background-color: white;
+		}
+
+		my-combobox {
+			border: 1px solid black;
+		}
+	</style>
+	<script language="JavaScript" type="text/javascript">
+		var ready = false; // set to true when the test page is ready
+		require([
+			"delite/register",
+			"delite/Widget",
+			"requirejs-domready/domReady!"
+		], function (register, Widget) {
+			register("my-content-pane", [HTMLElement, Widget], {
+				render: function (sup) {
+					var srcDom = this._srcDom = this.ownerDocument.createDocumentFragment();
+					while (this.firstChild) {
+						srcDom.appendChild(this.firstChild);
+					}
+
+					this.innerHTML = "<div attach-point=containerNode></div>";
+					this.containerNode = this.firstChild;
+
+					// Put original markup into this.containerNode.  Note that appendChild() on a DocumentFragment will
+					// loop through all the Elements in the document fragment, adding each one.
+					this.containerNode.appendChild(this._srcDom);
+				}
+			});
+
+			register("my-combobox", [HTMLElement, Widget], {
+				render: function () {
+					this.innerHTML = "<input>";
+				}
+			});
+
+			register.parse();
+
+			// Set global variable to signal that the test page is ready
+			ready = true;
+		});
+	</script>
+</head>
+<body>
+	<h1>Widget Functional Tests</h1>
+
+	<p>
+		This content pane should emit focusin and focusout events whenever focus inside the content pane changes.
+	</p>
+	<input id="before" value="before"><br>
+	<my-content-pane on-focusin="focusinEvents.textContent = +focusinEvents.textContent + 1;"
+			on-focusout="focusoutEvents.textContent = +focusoutEvents.textContent + 1;">
+		<input class=first><br>
+		<input class=second><br>
+		<span>Focusin events:</span> <span id="focusinEvents">0</span><br>
+		<span>Focusout events:</span> <span id="focusoutEvents">0</span><br>
+	</my-content-pane>
+	<input id="after" value="after">
+
+	<p>
+		ComboBox#on("focus", ...) should trigger even though focus is technically going
+		to the &lt;input&gt; inside of the &lt;my-combobox&gt; node:
+	</p>
+	<my-combobox on-focus="focusEvents.textContent = +focusEvents.textContent + 1;"></my-combobox><br>
+	<span>Focus events:</span> <span id="focusEvents">0</span><br>
+</body>
+</html>

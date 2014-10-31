@@ -333,9 +333,6 @@ define([
 			// TODO: would it be better if node was the first parameter (but optional)?
 			node = node || this;
 
-			// Use addEventListener() because jQuery's on() returns a wrapped event object that
-			// doesn't have custom properties we add to custom events.  The downside is that we don't
-			// get any event normalization like "focusin".
 			node.addEventListener(adjustedType, func, capture);
 			return this.own({
 				remove: function () {
