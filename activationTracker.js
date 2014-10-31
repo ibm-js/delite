@@ -23,11 +23,13 @@ define([
 	"requirejs-domready/domReady!"
 ], function (advise, dcl, domClass, Evented) {
 
-	// Time of the last focusin event
-	var lastFocusin;
+	// Time of the last touch/mouse and focusin events
+	var lastPointerDownTime;
+	var lastFocusinTime;
 
-	// Time of the last pointerdown or focusin event
-	var lastPointerDownOrFocusIn;
+	// Last node that got pointerdown or focusin event, and the time it happened.
+	var lastPointerDownOrFocusInNode;
+	var lastPointerDownOrFocusInTime;
 
 	var ActivationTracker = dcl(Evented, /** @lends module:delite/activationTracker */ {
 
@@ -79,6 +81,8 @@ define([
 					return;
 				}
 
+				lastPointerDownTime = (new Date()).getTime();
+
 				_this._pointerDownOrFocusHandler(effectiveNode || evt.target, "mouse");
 			}
 
@@ -104,13 +108,13 @@ define([
 
 			if (body) {
 				// Listen for touches or mousedowns.
-				doc.addEventListener("pointerdown", pointerDownHandler, true);
+				body.addEventListener("pointerdown", pointerDownHandler, true);
 				body.addEventListener("focus", focusHandler, true);	// need true since focus doesn't bubble
 				body.addEventListener("blur", blurHandler, true);	// need true since blur doesn't bubble
 
 				return {
 					remove: function () {
-						doc.removeEventListener("pointerdown", pointerDownHandler, true);
+						body.removeEventListener("pointerdown", pointerDownHandler, true);
 						body.removeEventListener("focus", focusHandler, true);
 						body.removeEventListener("blur", blurHandler, true);
 					}
@@ -132,7 +136,7 @@ define([
 			// IE9+ and chrome have a problem where focusout events come after the corresponding focusin event.
 			// For chrome problem see https://bugs.dojotoolkit.org/ticket/17668.
 			// IE problem happens when moving focus from the Editor's <iframe> to a normal DOMNode.
-			if (now < lastFocusin + 100) {
+			if (now < lastFocusinTime + 100) {
 				return;
 			}
 
@@ -141,7 +145,7 @@ define([
 				clearTimeout(this._clearActiveWidgetsTimer);
 			}
 
-			if (now < lastPointerDownOrFocusIn + 100) {
+			if (now < lastPointerDownOrFocusInTime + 100) {
 				// This blur event is coming late (after the call to _pointerDownOrFocusHandler() rather than before.
 				// So let _pointerDownOrFocusHandler() handle setting the widget stack.
 				// See https://bugs.dojotoolkit.org/ticket/17668
@@ -163,8 +167,9 @@ define([
 		 * @private
 		 */
 		_pointerDownOrFocusHandler: function (node, by) {
-			// Keep track of time of last focusin or pointerdown event.
-			lastPointerDownOrFocusIn = (new Date()).getTime();
+			// Keep track of most recent focusin or pointerdown event.
+			lastPointerDownOrFocusInTime = (new Date()).getTime();
+			lastPointerDownOrFocusInNode = node;
 
 			if (this._clearActiveWidgetsTimer) {
 				// forget the recent blur event
@@ -221,7 +226,15 @@ define([
 			}
 
 			// Keep track of time of last focusin event.
-			lastFocusin = (new Date()).getTime();
+			lastFocusinTime = (new Date()).getTime();
+
+			// Also, if clicking a node causes its ancestor to be focused, ignore the focus event.
+			// Example in the activationTracker.html functional test on IE, where clicking the spinner buttons
+			// focuses the <fieldset> holding the spinner.
+			if ((new Date()).getTime() < lastPointerDownTime + 100 &&
+					node.contains(lastPointerDownOrFocusInNode.parentNode)) {
+				return;
+			}
 
 			// There was probably a blur event right before this event, but since we have a new focus,
 			// forget about the blur
