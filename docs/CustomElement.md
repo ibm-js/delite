@@ -24,15 +24,14 @@ myWidget.numProp = 123;
 
 It also provides common methods like `on()` and `destroy()`.
 
-Note though that `delite/CustomElement` does not provide the delite specific lifecycle methods
+`delite/CustomElement` uses the function names from the Custom Elements specification,
+`createdCallback()` and `attachedCallback()`, but does not provide the delite specific lifecycle methods
 like `render()`, `postRender()`, and `startup()`.  These are from [`Widget`](Widget.md).
-
-`delite/CustomElement` instead uses the function names from the Custom Elements specification:
-`createdCallback()` and `attachedCallback()`.
 
 In addition to calling `attachedCallback()`, `delite/CustomElement` makes sure to fire a non-bubbling 
 `customelement-attached` event once the attached callback has been executed.
 
 Finally, note that for performance reasons, delite does not set up document level listeners for DOM nodes
-being attached / removed from the document.   Therefore, when creating `CustomElement` based elements programatically
-and attaching them to the document, you need to call `enteredViewCallback()` manually.
+being attached / removed from the document.  Therefore, when creating CustomElement based elements programatically
+and attaching them to the document, you need to call `attachedViewCallback()` manually, to ensure it's called even on 
+browsers that do not natively support Custom Elements.
