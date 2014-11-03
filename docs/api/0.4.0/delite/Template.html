@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Mixin: module:delite/Template</title>
+    <title>JSDoc: Module: delite/Template</title>
 
     <script src="../scripts/prettify/prettify.js"> </script>
     <script src="../scripts/prettify/lang-css.js"> </script>
@@ -56,7 +56,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Mixin: module:delite/Template</h1>
+    <h1 class="page-title">Module: delite/Template</h1>
 
     
 
@@ -66,7 +66,7 @@
 
 <header>
     <h2>
-    module:delite/Template
+    delite/Template
     </h2>
     
 </header>
@@ -74,15 +74,132 @@
 <article>
     <div class="container-overview">
     
+        
+        
+<dt>
+    
+    <h4 class="name" id="module:delite/Template">require(["delite/Template"], function (Template) { <br/>&nbsp;&nbsp;<span class="type-signature"></span>new Template<span class="signature">(tree, rootNodeName, createRootNode)</span><span class="type-signature"></span>;<br/> });</h4>
+    
 
     
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Given an AST representation of the template, generates a function that:</p>
+<ol>
+<li>generates DOM corresponding to the template</li>
+<li>returns an object including a function to be called to update that DOM
+when widget properties have changed.</li>
+</ol>
+<p>The function is available through <code>this.func</code>, i.e.:</p>
+<pre class="prettyprint source"><code>var template = new Template(ast);
+template.func(document, register);</code></pre><p>See the reference documentation for details on the AST format.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
         
-            <div class="description"><p>Class to compile an AST representing a template into a function to generate that template's DOM,
-and set up listeners to update the DOM as the widget properties change.</p>
-<p>See the reference documentation for details on the AST format.</p></div>
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
         
 
         
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>tree</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>AST representing the template.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>rootNodeName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Name of variable for the root node of the tree, typically <code>this</code>.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>createRootNode</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>If true, create node; otherwise assume node exists in variable <code>nodeName</code>.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
 <dl class="details">
     
 
@@ -105,8 +222,58 @@ and set up listeners to update the DOM as the widget properties change.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="../Template.js.html">delite/Template.js</a>, <a href="../Template.js.html#line47">line 47</a>
+        <a href="../Template.js.html">delite/Template.js</a>, <a href="../Template.js.html#line3">line 3</a>
     </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+    
+
+    
+        
+
+        
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
     
 
     
@@ -187,7 +354,7 @@ and set up listeners to update the DOM as the widget properties change.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="../Template.js.html">delite/Template.js</a>, <a href="../Template.js.html#line105">line 105</a>
+        <a href="../Template.js.html">delite/Template.js</a>, <a href="../Template.js.html#line57">line 57</a>
     </li></ul></dd>
     
 
@@ -254,7 +421,7 @@ and set up listeners to update the DOM as the widget properties change.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="../Template.js.html">delite/Template.js</a>, <a href="../Template.js.html#line98">line 98</a>
+        <a href="../Template.js.html">delite/Template.js</a>, <a href="../Template.js.html#line50">line 50</a>
     </li></ul></dd>
     
 
@@ -275,6 +442,319 @@ and set up listeners to update the DOM as the widget properties change.</p>
     
 
     
+        <h3 class="subsection-title">Methods</h3>
+
+        <dl>
+            
+            
+<dt>
+    
+    <h4 class="name" id="getElement"><span class="type-signature">&lt;static> </span>getElement<span class="signature">(tag)</span><span class="type-signature"> &rarr; {Element}</span></h4>
+    
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Return cached reference to Element with given tag name.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>tag</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="../Template.js.html">delite/Template.js</a>, <a href="../Template.js.html#line193">line 193</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Element</span>
+
+
+    </dd>
+</dl>
+
+        
+
+    
+</dd>
+
+        
+            
+            
+<dt>
+    
+    <h4 class="name" id="getProp"><span class="type-signature">&lt;static> </span>getProp<span class="signature">(tag, attrName)</span><span class="type-signature"> &rarr; {string}</span></h4>
+    
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Given a tag and attribute name, return the associated property name,
+or undefined if no such property exists, for example:</p>
+<ul>
+<li>getProp(&quot;div&quot;, &quot;tabindex&quot;) --&gt; &quot;tabIndex&quot;</li>
+<li>getProp(&quot;div&quot;, &quot;role&quot;) --&gt; undefined</li>
+</ul>
+<p>Note that in order to support SVG, getProp(&quot;svg&quot;, &quot;class&quot;) returns null instead of className.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>tag</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Tag name.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>attrName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Attribute name.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="../Template.js.html">delite/Template.js</a>, <a href="../Template.js.html#line207">line 207</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+
+
+    </dd>
+</dl>
+
+        
+
+    
+</dd>
+
+        </dl>
+    
 
     
 
@@ -289,13 +769,13 @@ and set up listeners to update the DOM as the widget properties change.</p>
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="../delite/a11y.html">delite/a11y</a></li><li><a href="../delite/a11yclick.html">delite/a11yclick</a></li><li><a href="../delite/activationTracker.html">delite/activationTracker</a></li><li><a href="../delite/BackgroundIframe.html">delite/BackgroundIframe</a></li><li><a href="../delite/Bidi.html">delite/Bidi</a></li><li><a href="../delite/Container.html">delite/Container</a></li><li><a href="../delite/CssState.html">delite/CssState</a></li><li><a href="../delite/CustomElement.html">delite/CustomElement</a></li><li><a href="../delite/Dialog.html">delite/Dialog</a></li><li><a href="../delite/DialogUnderlay.html">delite/DialogUnderlay</a></li><li><a href="../delite/DisplayContainer.html">delite/DisplayContainer</a></li><li><a href="../delite/FormValueWidget.html">delite/FormValueWidget</a></li><li><a href="../delite/FormWidget.html">delite/FormWidget</a></li><li><a href="../delite/handlebars.html">delite/handlebars</a></li><li><a href="../delite/HasDropDown.html">delite/HasDropDown</a></li><li><a href="../delite/KeyNav.html">delite/KeyNav</a></li><li><a href="../delite/keys.html">delite/keys</a></li><li><a href="../delite/place.html">delite/place</a></li><li><a href="../delite/popup.html">delite/popup</a></li><li><a href="../delite/register.html">delite/register</a></li><li><a href="../delite/Scrollable.html">delite/Scrollable</a></li><li><a href="../delite/Selection.html">delite/Selection</a></li><li><a href="../delite/Store.html">delite/Store</a></li><li><a href="../delite/StoreMap.html">delite/StoreMap</a></li><li><a href="../delite/Template.html">delite/Template</a></li><li><a href="../delite/theme.html">delite/theme</a></li><li><a href="../delite/typematic.html">delite/typematic</a></li><li><a href="../delite/uacss.html">delite/uacss</a></li><li><a href="../delite/Viewport.html">delite/Viewport</a></li><li><a href="../delite/Widget.html">delite/Widget</a></li></ul><h3>Events</h3><ul><li><a href="../delite/CustomElement.html#event:customelement-attached">customelement-attached</a></li><li><a href="../delite/DisplayContainer.html#event:delite-after-hide">delite-after-hide</a></li><li><a href="../delite/DisplayContainer.html#event:delite-after-show">delite-after-show</a></li><li><a href="../delite/DisplayContainer.html#event:delite-before-hide">delite-before-hide</a></li><li><a href="../delite/DisplayContainer.html#event:delite-before-show">delite-before-show</a></li><li><a href="../delite/DisplayContainer.html#event:delite-display-load">delite-display-load</a></li><li><a href="../delite/HasDropDown.html#event:delite-after-hide">delite-after-hide</a></li><li><a href="../delite/HasDropDown.html#event:delite-after-show">delite-after-show</a></li><li><a href="../delite/HasDropDown.html#event:delite-before-hide">delite-before-hide</a></li><li><a href="../delite/HasDropDown.html#event:delite-before-show">delite-before-show</a></li><li><a href="../delite/HasDropDown.html#event:delite-display-load">delite-display-load</a></li><li><a href="../delite/KeyNav.html#event:keynav-child-navigated">keynav-child-navigated</a></li><li><a href="../delite/Selection.html#event:selection-change">selection-change</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="../delite/a11y.html">delite/a11y</a></li><li><a href="../delite/a11yclick.html">delite/a11yclick</a></li><li><a href="../delite/activationTracker.html">delite/activationTracker</a></li><li><a href="../delite/BackgroundIframe.html">delite/BackgroundIframe</a></li><li><a href="../delite/Bidi.html">delite/Bidi</a></li><li><a href="../delite/Container.html">delite/Container</a></li><li><a href="../delite/CssState.html">delite/CssState</a></li><li><a href="../delite/CustomElement.html">delite/CustomElement</a></li><li><a href="../delite/Dialog.html">delite/Dialog</a></li><li><a href="../delite/DialogUnderlay.html">delite/DialogUnderlay</a></li><li><a href="../delite/DisplayContainer.html">delite/DisplayContainer</a></li><li><a href="../delite/FormValueWidget.html">delite/FormValueWidget</a></li><li><a href="../delite/FormWidget.html">delite/FormWidget</a></li><li><a href="../delite/handlebars.html">delite/handlebars</a></li><li><a href="../delite/HasDropDown.html">delite/HasDropDown</a></li><li><a href="../delite/KeyNav.html">delite/KeyNav</a></li><li><a href="../delite/keys.html">delite/keys</a></li><li><a href="../delite/place.html">delite/place</a></li><li><a href="../delite/popup.html">delite/popup</a></li><li><a href="../delite/register.html">delite/register</a></li><li><a href="../delite/Scrollable.html">delite/Scrollable</a></li><li><a href="../delite/Selection.html">delite/Selection</a></li><li><a href="../delite/Store.html">delite/Store</a></li><li><a href="../delite/StoreMap.html">delite/StoreMap</a></li><li><a href="../delite/Template.html">delite/Template</a></li><li><a href="../delite/theme.html">delite/theme</a></li><li><a href="../delite/typematic.html">delite/typematic</a></li><li><a href="../delite/uacss.html">delite/uacss</a></li><li><a href="../delite/Viewport.html">delite/Viewport</a></li><li><a href="../delite/Widget.html">delite/Widget</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha7</a> on Fri Oct 24 2014 17:02:44 GMT+0200 (Romance Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha7</a> on Mon Nov 03 2014 15:51:04 GMT+0100 (Romance Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

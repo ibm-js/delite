@@ -150,7 +150,8 @@ define([
 	function _placeAt(node, choices, layoutNode, aroundNodeCoords) {
 		// get {l: 10, t: 10, w: 100, h:100} type obj representing position of
 		// viewport over document
-		var view = Viewport.getEffectiveBox(node.ownerDocument);
+		var view = Viewport.getEffectiveBox(node.ownerDocument),
+			style = node.style;
 
 		// This won't work if the node is inside a &lt;div style="position: relative">,
 		// so reattach it to &lt;body>.	 (Otherwise, the positioning will be wrong
@@ -181,8 +182,7 @@ define([
 
 			// Clear left/right position settings set earlier so they don't interfere with calculations,
 			// specifically when layoutNode() (a.k.a. Tooltip.orient()) measures natural width of Tooltip
-			var s = node.style;
-			s.left = s.right = "auto";
+			style.left = style.right = "auto";
 
 			// configure node to be displayed in given position relative to button
 			// (need to do this in order to get an accurate size for the node, because
@@ -193,7 +193,6 @@ define([
 			}
 
 			// get node's size
-			var style = node.style;
 			var oldDisplay = style.display;
 			var oldVis = style.visibility;
 			if (style.display === "none") {
@@ -264,10 +263,9 @@ define([
 			side -= cs.marginLeft;
 		}
 
-		var s = node.style;
-		s.top = top + "px";
-		s.left = side + "px";
-		s.right = "auto";	// needed for FF or else tooltip goes to far left
+		style.top = top + "px";
+		style.left = side + "px";
+		style.right = "auto";	// needed for FF or else tooltip goes to far left
 
 		return best;
 	}
@@ -508,10 +506,20 @@ define([
 		 * @param {Element} node - The popup node to be positioned.
 		 */
 		center: function (node) {
-			var view = Viewport.getEffectiveBox(node.ownerDocument),
+			// First move node off screen so we can get accurate size.
+			// TODO: move this code [and RTL detect code) to separate methods, and leverage from popup.moveOffScreen()
+			var style = node.style,
+				rtl = (/^rtl$/i).test(node.dir || node.ownerDocument.body.dir ||
+					node.ownerDocument.documentElement.dir);
+			style.top = "-9999px";
+			style[rtl ? "right" : "left"] = "-9999px";
+
+			// Then set position so node is centered.
+			var view = Viewport.getEffectiveBox(),
 				bb = node.getBoundingClientRect();
-			node.style.top = view.t + (view.h - bb.height) / 2 + "px";
-			node.style.left = view.l + (view.w - bb.width) / 2 + "px";
+			style.top = view.t + (view.h - bb.height) / 2 + "px";
+			style.left = view.l + (view.w - bb.width) / 2 + "px";
+			style.right = "auto";
 		},
 
 		/**
@@ -543,13 +551,13 @@ define([
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="delite/a11y.html">delite/a11y</a></li><li><a href="delite/a11yclick.html">delite/a11yclick</a></li><li><a href="delite/activationTracker.html">delite/activationTracker</a></li><li><a href="delite/BackgroundIframe.html">delite/BackgroundIframe</a></li><li><a href="delite/Bidi.html">delite/Bidi</a></li><li><a href="delite/Container.html">delite/Container</a></li><li><a href="delite/CssState.html">delite/CssState</a></li><li><a href="delite/CustomElement.html">delite/CustomElement</a></li><li><a href="delite/Dialog.html">delite/Dialog</a></li><li><a href="delite/DialogUnderlay.html">delite/DialogUnderlay</a></li><li><a href="delite/DisplayContainer.html">delite/DisplayContainer</a></li><li><a href="delite/FormValueWidget.html">delite/FormValueWidget</a></li><li><a href="delite/FormWidget.html">delite/FormWidget</a></li><li><a href="delite/handlebars.html">delite/handlebars</a></li><li><a href="delite/HasDropDown.html">delite/HasDropDown</a></li><li><a href="delite/KeyNav.html">delite/KeyNav</a></li><li><a href="delite/keys.html">delite/keys</a></li><li><a href="delite/place.html">delite/place</a></li><li><a href="delite/popup.html">delite/popup</a></li><li><a href="delite/register.html">delite/register</a></li><li><a href="delite/Scrollable.html">delite/Scrollable</a></li><li><a href="delite/Selection.html">delite/Selection</a></li><li><a href="delite/Store.html">delite/Store</a></li><li><a href="delite/StoreMap.html">delite/StoreMap</a></li><li><a href="delite/Template.html">delite/Template</a></li><li><a href="delite/theme.html">delite/theme</a></li><li><a href="delite/typematic.html">delite/typematic</a></li><li><a href="delite/uacss.html">delite/uacss</a></li><li><a href="delite/Viewport.html">delite/Viewport</a></li><li><a href="delite/Widget.html">delite/Widget</a></li></ul><h3>Events</h3><ul><li><a href="delite/CustomElement.html#event:customelement-attached">customelement-attached</a></li><li><a href="delite/DisplayContainer.html#event:delite-after-hide">delite-after-hide</a></li><li><a href="delite/DisplayContainer.html#event:delite-after-show">delite-after-show</a></li><li><a href="delite/DisplayContainer.html#event:delite-before-hide">delite-before-hide</a></li><li><a href="delite/DisplayContainer.html#event:delite-before-show">delite-before-show</a></li><li><a href="delite/DisplayContainer.html#event:delite-display-load">delite-display-load</a></li><li><a href="delite/HasDropDown.html#event:delite-after-hide">delite-after-hide</a></li><li><a href="delite/HasDropDown.html#event:delite-after-show">delite-after-show</a></li><li><a href="delite/HasDropDown.html#event:delite-before-hide">delite-before-hide</a></li><li><a href="delite/HasDropDown.html#event:delite-before-show">delite-before-show</a></li><li><a href="delite/HasDropDown.html#event:delite-display-load">delite-display-load</a></li><li><a href="delite/KeyNav.html#event:keynav-child-navigated">keynav-child-navigated</a></li><li><a href="delite/Selection.html#event:selection-change">selection-change</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="delite/a11y.html">delite/a11y</a></li><li><a href="delite/a11yclick.html">delite/a11yclick</a></li><li><a href="delite/activationTracker.html">delite/activationTracker</a></li><li><a href="delite/BackgroundIframe.html">delite/BackgroundIframe</a></li><li><a href="delite/Bidi.html">delite/Bidi</a></li><li><a href="delite/Container.html">delite/Container</a></li><li><a href="delite/CssState.html">delite/CssState</a></li><li><a href="delite/CustomElement.html">delite/CustomElement</a></li><li><a href="delite/Dialog.html">delite/Dialog</a></li><li><a href="delite/DialogUnderlay.html">delite/DialogUnderlay</a></li><li><a href="delite/DisplayContainer.html">delite/DisplayContainer</a></li><li><a href="delite/FormValueWidget.html">delite/FormValueWidget</a></li><li><a href="delite/FormWidget.html">delite/FormWidget</a></li><li><a href="delite/handlebars.html">delite/handlebars</a></li><li><a href="delite/HasDropDown.html">delite/HasDropDown</a></li><li><a href="delite/KeyNav.html">delite/KeyNav</a></li><li><a href="delite/keys.html">delite/keys</a></li><li><a href="delite/place.html">delite/place</a></li><li><a href="delite/popup.html">delite/popup</a></li><li><a href="delite/register.html">delite/register</a></li><li><a href="delite/Scrollable.html">delite/Scrollable</a></li><li><a href="delite/Selection.html">delite/Selection</a></li><li><a href="delite/Store.html">delite/Store</a></li><li><a href="delite/StoreMap.html">delite/StoreMap</a></li><li><a href="delite/Template.html">delite/Template</a></li><li><a href="delite/theme.html">delite/theme</a></li><li><a href="delite/typematic.html">delite/typematic</a></li><li><a href="delite/uacss.html">delite/uacss</a></li><li><a href="delite/Viewport.html">delite/Viewport</a></li><li><a href="delite/Widget.html">delite/Widget</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha7</a> on Fri Oct 24 2014 17:02:43 GMT+0200 (Romance Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha7</a> on Mon Nov 03 2014 15:51:02 GMT+0100 (Romance Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

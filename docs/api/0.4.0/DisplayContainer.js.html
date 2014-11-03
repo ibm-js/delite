@@ -67,6 +67,64 @@
             <pre class="prettyprint source linenums"><code>/** @module delite/DisplayContainer */
 define(["dcl/dcl", "dojo/Deferred", "dojo/when", "delite/Container"],
 	function (dcl, Deferred, when, Container) {
+	
+	/**
+	 * Dispatched before child is shown.
+	 * @example
+	 * document.addEventListener("delite-before-show", function (evt) {
+	 *      console.log("about to show child", evt.child);
+	 * });
+	 * @event module:delite/DisplayContainer#delite-before-show
+	 * @property {Element} child - reference to child element
+	 */
+	
+	/**
+	 * Dispatched after child is shown.
+	 * @example
+	 * document.addEventListener("delite-after-show", function (evt) {
+	 *      console.log("just displayed child", evt.child);
+	 * });
+	 * @event module:delite/DisplayContainer#delite-after-show
+	 * @property {Element} child - reference to child element
+	 */
+	
+	/**
+	 * Dispatched to let an application level listener create/load the child node.
+	 * @example
+	 * document.addEventListener("delite-display-load", function (evt) {
+	 *     // fetch the data for the specified id, then create a node with that data
+	 *     var def = evt.loadDeferred;
+	 *     fetchData(evt.dest).then(function(data) {
+	 *         var child = document.createElement("div");
+	 *         child.innerHTML = data;
+	 *         def.resolve({child: child});
+	 *     });
+	 *     evt.preventDefault();
+	 * });
+	 * @event module:delite/DisplayContainer#delite-display-load
+	 * @property {Promise} loadDeferred - promise to resolve with the child element
+	 */
+	
+	/**
+	 * Dispatched before child is hidden.
+	 * @example
+	 * document.addEventListener("delite-before-hide", function (evt) {
+	 *      console.log("about to hide child", evt.child);
+	 * });
+	 * @event module:delite/DisplayContainer#delite-before-hide
+	 * @property {Element} child - reference to child element
+	 */
+	
+	/**
+	 * Dispatched after child is hidden.
+	 * @example
+	 * document.addEventListener("delite-after-hide", function (evt) {
+	 *      console.log("just hid child", evt.child);
+	 * });
+	 * @event module:delite/DisplayContainer#delite-after-hide
+	 * @property {Element} child - reference to child element
+	 */
+	
 	/**
 	 * Mixin for widget containers that need to show on or off a child.
 	 *
@@ -86,6 +144,9 @@ define(["dcl/dcl", "dojo/Deferred", "dojo/when", "delite/Container"],
 		 * This can be the type of visual transitions involved. This might vary from one DisplayContainer to another.
 		 * @returns {Promise} A promise that will be resolved when the display &amp; transition effect will have been
 		 * performed.
+		 * @fires module:delite/DisplayContainer#delite-before-show
+		 * @fires module:delite/DisplayContainer#delite-after-show
+		 * @fires module:delite/DisplayContainer#delite-display-load
 		 */
 		show: function (dest, params) {
 			// we need to warn potential app controller we are going to load a view &amp; transition
@@ -114,28 +175,9 @@ define(["dcl/dcl", "dojo/Deferred", "dojo/when", "delite/Container"],
 				dcl.mix(event, params);
 				dcl.mix(event, value);
 
-				/**
-				 * Dispatched before child is shown.
-				 * @example
-				 * document.addEventListener("delite-before-show", function (evt) {
-				 *      console.log("about to show child", evt.child);
-				 * });
-				 * @event module:delite/DisplayContainer.delite-before-show
-				 * @property {Element} child - reference to child element
-				 */
 				self.emit("delite-before-show", event);
 
 				when(self.changeDisplay(value.child, event), function () {
-
-					/**
-					 * Dispatched after child is shown.
-					 * @example
-					 * document.addEventListener("delite-after-show", function (evt) {
-					 *      console.log("just displayed child", evt.child);
-					 * });
-					 * @event module:delite/DisplayContainer.delite-after-show
-					 * @property {Element} child - reference to child element
-					 */
 					self.emit("delite-after-show", event);
 
 					displayDeferred.resolve(value);
@@ -152,6 +194,9 @@ define(["dcl/dcl", "dojo/Deferred", "dojo/when", "delite/Container"],
 		 * This can be the type of visual transitions involved.  This might vary from one DisplayContainer to another.
 		 * @returns {Promise} A promise that will be resolved when the display &amp; transition effect will have been
 		 * performed.
+		 * @fires module:delite/DisplayContainer#delite-display-load
+		 * @fires module:delite/DisplayContainer#delite-before-hide
+		 * @fires module:delite/DisplayContainer#delite-after-hide
 		 */
 		hide: function (dest, params) {
 			// we need to warn potential app controller we are going to load a view &amp; transition
@@ -170,22 +215,6 @@ define(["dcl/dcl", "dojo/Deferred", "dojo/when", "delite/Container"],
 			// otherwise call the container load method
 			// note: emit() does not return the native event when it has been prevented but false value instead.
 
-			/**
-			 * Dispatched to let an application level listener create/load the child node.
-			 * @example
-			 * document.addEventListener("delite-display-load", function (evt) {
-			 *     // fetch the data for the specified id, then create a node with that data
-			 *     var def = evt.loadDeferred;
-			 *     fetchData(evt.dest).then(function(data) {
-			 *         var child = document.createElement("div");
-			 *         child.innerHTML = data;
-			 *         def.resolve({child: child});
-			 *     });
-			 *     evt.preventDefault();
-			 * });
-			 * @event module:delite/DisplayContainer.delite-display-load
-			 * @property {Promise} loadDeferred - promise to resolve with the child element
-			 */
 			var loadDeferred = this.emit("delite-display-load", event) ? this.load(dest) : event.loadDeferred;
 
 			when(loadDeferred, function (value) {
@@ -200,15 +229,6 @@ define(["dcl/dcl", "dojo/Deferred", "dojo/when", "delite/Container"],
 				dcl.mix(event, params);
 				dcl.mix(event, value);
 
-				/**
-				 * Dispatched before child is hidden.
-				 * @example
-				 * document.addEventListener("delite-before-hide", function (evt) {
-				 *      console.log("about to hide child", evt.child);
-				 * });
-				 * @event module:delite/DisplayContainer.delite-before-hide
-				 * @property {Element} child - reference to child element
-				 */
 				self.emit("delite-before-hide", event);
 
 				when(self.changeDisplay(value.child, event), function () {
@@ -217,15 +237,6 @@ define(["dcl/dcl", "dojo/Deferred", "dojo/when", "delite/Container"],
 						self.removeChild(value.child);
 					}
 
-					/**
-					 * Dispatched after child is hidden.
-					 * @example
-					 * document.addEventListener("delite-after-hide", function (evt) {
-					 *      console.log("just hid child", evt.child);
-					 * });
-					 * @event module:delite/DisplayContainer.delite-after-hide
-					 * @property {Element} child - reference to child element
-					 */
 					self.emit("delite-after-hide", event);
 
 					displayDeferred.resolve(value);
@@ -281,13 +292,13 @@ define(["dcl/dcl", "dojo/Deferred", "dojo/when", "delite/Container"],
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="delite/a11y.html">delite/a11y</a></li><li><a href="delite/a11yclick.html">delite/a11yclick</a></li><li><a href="delite/activationTracker.html">delite/activationTracker</a></li><li><a href="delite/BackgroundIframe.html">delite/BackgroundIframe</a></li><li><a href="delite/Bidi.html">delite/Bidi</a></li><li><a href="delite/Container.html">delite/Container</a></li><li><a href="delite/CssState.html">delite/CssState</a></li><li><a href="delite/CustomElement.html">delite/CustomElement</a></li><li><a href="delite/Dialog.html">delite/Dialog</a></li><li><a href="delite/DialogUnderlay.html">delite/DialogUnderlay</a></li><li><a href="delite/DisplayContainer.html">delite/DisplayContainer</a></li><li><a href="delite/FormValueWidget.html">delite/FormValueWidget</a></li><li><a href="delite/FormWidget.html">delite/FormWidget</a></li><li><a href="delite/handlebars.html">delite/handlebars</a></li><li><a href="delite/HasDropDown.html">delite/HasDropDown</a></li><li><a href="delite/KeyNav.html">delite/KeyNav</a></li><li><a href="delite/keys.html">delite/keys</a></li><li><a href="delite/place.html">delite/place</a></li><li><a href="delite/popup.html">delite/popup</a></li><li><a href="delite/register.html">delite/register</a></li><li><a href="delite/Scrollable.html">delite/Scrollable</a></li><li><a href="delite/Selection.html">delite/Selection</a></li><li><a href="delite/Store.html">delite/Store</a></li><li><a href="delite/StoreMap.html">delite/StoreMap</a></li><li><a href="delite/Template.html">delite/Template</a></li><li><a href="delite/theme.html">delite/theme</a></li><li><a href="delite/typematic.html">delite/typematic</a></li><li><a href="delite/uacss.html">delite/uacss</a></li><li><a href="delite/Viewport.html">delite/Viewport</a></li><li><a href="delite/Widget.html">delite/Widget</a></li></ul><h3>Events</h3><ul><li><a href="delite/CustomElement.html#event:customelement-attached">customelement-attached</a></li><li><a href="delite/DisplayContainer.html#event:delite-after-hide">delite-after-hide</a></li><li><a href="delite/DisplayContainer.html#event:delite-after-show">delite-after-show</a></li><li><a href="delite/DisplayContainer.html#event:delite-before-hide">delite-before-hide</a></li><li><a href="delite/DisplayContainer.html#event:delite-before-show">delite-before-show</a></li><li><a href="delite/DisplayContainer.html#event:delite-display-load">delite-display-load</a></li><li><a href="delite/HasDropDown.html#event:delite-after-hide">delite-after-hide</a></li><li><a href="delite/HasDropDown.html#event:delite-after-show">delite-after-show</a></li><li><a href="delite/HasDropDown.html#event:delite-before-hide">delite-before-hide</a></li><li><a href="delite/HasDropDown.html#event:delite-before-show">delite-before-show</a></li><li><a href="delite/HasDropDown.html#event:delite-display-load">delite-display-load</a></li><li><a href="delite/KeyNav.html#event:keynav-child-navigated">keynav-child-navigated</a></li><li><a href="delite/Selection.html#event:selection-change">selection-change</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="delite/a11y.html">delite/a11y</a></li><li><a href="delite/a11yclick.html">delite/a11yclick</a></li><li><a href="delite/activationTracker.html">delite/activationTracker</a></li><li><a href="delite/BackgroundIframe.html">delite/BackgroundIframe</a></li><li><a href="delite/Bidi.html">delite/Bidi</a></li><li><a href="delite/Container.html">delite/Container</a></li><li><a href="delite/CssState.html">delite/CssState</a></li><li><a href="delite/CustomElement.html">delite/CustomElement</a></li><li><a href="delite/Dialog.html">delite/Dialog</a></li><li><a href="delite/DialogUnderlay.html">delite/DialogUnderlay</a></li><li><a href="delite/DisplayContainer.html">delite/DisplayContainer</a></li><li><a href="delite/FormValueWidget.html">delite/FormValueWidget</a></li><li><a href="delite/FormWidget.html">delite/FormWidget</a></li><li><a href="delite/handlebars.html">delite/handlebars</a></li><li><a href="delite/HasDropDown.html">delite/HasDropDown</a></li><li><a href="delite/KeyNav.html">delite/KeyNav</a></li><li><a href="delite/keys.html">delite/keys</a></li><li><a href="delite/place.html">delite/place</a></li><li><a href="delite/popup.html">delite/popup</a></li><li><a href="delite/register.html">delite/register</a></li><li><a href="delite/Scrollable.html">delite/Scrollable</a></li><li><a href="delite/Selection.html">delite/Selection</a></li><li><a href="delite/Store.html">delite/Store</a></li><li><a href="delite/StoreMap.html">delite/StoreMap</a></li><li><a href="delite/Template.html">delite/Template</a></li><li><a href="delite/theme.html">delite/theme</a></li><li><a href="delite/typematic.html">delite/typematic</a></li><li><a href="delite/uacss.html">delite/uacss</a></li><li><a href="delite/Viewport.html">delite/Viewport</a></li><li><a href="delite/Widget.html">delite/Widget</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha7</a> on Fri Oct 24 2014 17:02:43 GMT+0200 (Romance Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha7</a> on Mon Nov 03 2014 15:51:02 GMT+0100 (Romance Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>
