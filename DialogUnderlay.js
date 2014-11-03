@@ -22,19 +22,18 @@ define([
 	var DialogUnderlay = register("d-dialog-underlay", [HTMLElement, Widget],
 			/** @lends module:delite/DialogUnderlay# */ {
 
-		// This will get overwritten as soon as show() is call, but leave an empty array in case hide() or destroy()
-		// is called first.  The array is shared between instances but that's OK because we never write into it.
-		_modalConnects: [],
-
 		render: function () {
-			// Outer div is used for fade-in/fade-out, and also to hold background iframe.
-			// Inner div has opacity specified in CSS file.
 			this.className = "d-dialog-underlay";
 		},
 
 		postRender: function () {
 			// Append the underlay to the body
 			this.ownerDocument.body.appendChild(this);
+			this.own(Viewport.on("resize", function () {
+				if (this._open) {
+					this.layout();
+				}
+			}.bind(this)));
 		},
 
 		/**
@@ -69,10 +68,6 @@ define([
 				this._open = true;
 				this.layout();
 				this.bgIframe = new BackgroundIframe(this);
-
-				this._modalConnects = [
-					Viewport.on("resize", function () { this.layout(); }.bind(this))
-				];
 			}
 		},
 
@@ -84,16 +79,7 @@ define([
 				this.bgIframe.destroy();
 				delete this.bgIframe;
 				this.style.display = "none";
-				while (this._modalConnects.length) {
-					(this._modalConnects.pop()).remove();
-				}
 				this._open = false;
-			}
-		},
-
-		destroy: function () {
-			while (this._modalConnects.length) {
-				(this._modalConnects.pop()).remove();
 			}
 		}
 	});

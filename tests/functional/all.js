@@ -2,6 +2,7 @@
 define([
 	"./activationTracker",
 	"./Widget",
+	"./DialogUnderlay",
 	"./HasDropDown",
 	"./TabIndex",
 	"./KeyNav",

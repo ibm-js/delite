@@ -25,14 +25,11 @@
 	</script>
 </head>
 <body>
-	<h1>DialogUnderlay functional test</h1>
-
-	<button type=button onclick="this.innerHTML = 'clicked ' + ++clicks + ' times';">clicked 0 times</button>
-	<div style="position: fixed; z-index: 1000; border: 2px solid gray; background: #ddd;">
+	<div style="position: fixed; z-index: 1000; top: 30%; border: 2px solid gray; background: #ddd;">
 		<p>(This is a fixed div at z-index: 1000)</p>
 
-		<button onclick="DialogUnderlay.show({}, 950);">show underlay (z-index: 950)</button>
-		<button onclick="DialogUnderlay.hide();">hide underlay</button>
+		<button id=showUnderlay onclick="DialogUnderlay.show({}, 950);">show underlay (z-index: 950)</button>
+		<button id=hideUnderlay onclick="DialogUnderlay.hide();">hide underlay</button>
 		<br>
 
 		<label for="showLorem">Show Lorem text:</label>
@@ -40,103 +37,110 @@
 		(makes document longer than viewport)
 	</div>
 
-	<div id="lorem" style="display: none">
-		<p>Aliquam vitae enim. Duis scelerisque metus auctor est venenatis
-			imperdiet. Fusce dignissim porta augue. Nulla vestibulum. Integer lorem
-			nunc, ullamcorper a, commodo ac, malesuada sed, dolor. Aenean id mi in
-			massa bibendum suscipit. Integer eros. Nullam suscipit mauris. In
-			pellentesque. Mauris ipsum est, pharetra semper, pharetra in, viverra
-			quis, tellus. Etiam purus. Quisque egestas, tortor ac cursus lacinia,
-			felis leo adipiscing nisi, et rhoncus elit dolor eget eros. Fusce ut
-			quam. Suspendisse eleifend leo vitae ligula. Nulla facilisi. Nulla
-			rutrum, erat vitae lacinia dictum, pede purus imperdiet lacus, ut
-			semper velit ante id metus. Praesent massa dolor, porttitor sed,
-			pulvinar in, consequat ut, leo. Nullam nec est. Aenean id risus blandit
-			tortor pharetra congue. Suspendisse pulvinar.
-		</p>
-		<p>Vestibulum convallis eros ac justo. Proin dolor. Etiam aliquam. Nam
-			ornare elit vel augue. Suspendisse potenti. Etiam sed mauris eu neque
-			nonummy mollis. Vestibulum vel purus ac pede semper accumsan. Vivamus
-			lobortis, sem vitae nonummy lacinia, nisl est gravida magna, non cursus
-			est quam sed urna. Phasellus adipiscing justo in ipsum. Duis sagittis
-			dolor sit amet magna. Suspendisse suscipit, neque eu dictum auctor,
-			nisi augue tincidunt arcu, non lacinia magna purus nec magna. Praesent
-			pretium sollicitudin sapien. Suspendisse imperdiet. Class aptent taciti
-			sociosqu ad litora torquent per conubia nostra, per inceptos
-			hymenaeos.
-		</p>
-		<p>Aliquam vitae enim. Duis scelerisque metus auctor est venenatis
-			imperdiet. Fusce dignissim porta augue. Nulla vestibulum. Integer lorem
-			nunc, ullamcorper a, commodo ac, malesuada sed, dolor. Aenean id mi in
-			massa bibendum suscipit. Integer eros. Nullam suscipit mauris. In
-			pellentesque. Mauris ipsum est, pharetra semper, pharetra in, viverra
-			quis, tellus. Etiam purus. Quisque egestas, tortor ac cursus lacinia,
-			felis leo adipiscing nisi, et rhoncus elit dolor eget eros. Fusce ut
-			quam. Suspendisse eleifend leo vitae ligula. Nulla facilisi. Nulla
-			rutrum, erat vitae lacinia dictum, pede purus imperdiet lacus, ut
-			semper velit ante id metus. Praesent massa dolor, porttitor sed,
-			pulvinar in, consequat ut, leo. Nullam nec est. Aenean id risus blandit
-			tortor pharetra congue. Suspendisse pulvinar.
-		</p>
-		<p>Vestibulum convallis eros ac justo. Proin dolor. Etiam aliquam. Nam
-			ornare elit vel augue. Suspendisse potenti. Etiam sed mauris eu neque
-			nonummy mollis. Vestibulum vel purus ac pede semper accumsan. Vivamus
-			lobortis, sem vitae nonummy lacinia, nisl est gravida magna, non cursus
-			est quam sed urna. Phasellus adipiscing justo in ipsum. Duis sagittis
-			dolor sit amet magna. Suspendisse suscipit, neque eu dictum auctor,
-			nisi augue tincidunt arcu, non lacinia magna purus nec magna. Praesent
-			pretium sollicitudin sapien. Suspendisse imperdiet. Class aptent taciti
-			sociosqu ad litora torquent per conubia nostra, per inceptos
-			hymenaeos.
-		</p>
-		<p>Aliquam vitae enim. Duis scelerisque metus auctor est venenatis
-			imperdiet. Fusce dignissim porta augue. Nulla vestibulum. Integer lorem
-			nunc, ullamcorper a, commodo ac, malesuada sed, dolor. Aenean id mi in
-			massa bibendum suscipit. Integer eros. Nullam suscipit mauris. In
-			pellentesque. Mauris ipsum est, pharetra semper, pharetra in, viverra
-			quis, tellus. Etiam purus. Quisque egestas, tortor ac cursus lacinia,
-			felis leo adipiscing nisi, et rhoncus elit dolor eget eros. Fusce ut
-			quam. Suspendisse eleifend leo vitae ligula. Nulla facilisi. Nulla
-			rutrum, erat vitae lacinia dictum, pede purus imperdiet lacus, ut
-			semper velit ante id metus. Praesent massa dolor, porttitor sed,
-			pulvinar in, consequat ut, leo. Nullam nec est. Aenean id risus blandit
-			tortor pharetra congue. Suspendisse pulvinar.
-		</p>
-		<p>Vestibulum convallis eros ac justo. Proin dolor. Etiam aliquam. Nam
-			ornare elit vel augue. Suspendisse potenti. Etiam sed mauris eu neque
-			nonummy mollis. Vestibulum vel purus ac pede semper accumsan. Vivamus
-			lobortis, sem vitae nonummy lacinia, nisl est gravida magna, non cursus
-			est quam sed urna. Phasellus adipiscing justo in ipsum. Duis sagittis
-			dolor sit amet magna. Suspendisse suscipit, neque eu dictum auctor,
-			nisi augue tincidunt arcu, non lacinia magna purus nec magna. Praesent
-			pretium sollicitudin sapien. Suspendisse imperdiet. Class aptent taciti
-			sociosqu ad litora torquent per conubia nostra, per inceptos
-			hymenaeos.
-		</p>
-		<p>Aliquam vitae enim. Duis scelerisque metus auctor est venenatis
-			imperdiet. Fusce dignissim porta augue. Nulla vestibulum. Integer lorem
-			nunc, ullamcorper a, commodo ac, malesuada sed, dolor. Aenean id mi in
-			massa bibendum suscipit. Integer eros. Nullam suscipit mauris. In
-			pellentesque. Mauris ipsum est, pharetra semper, pharetra in, viverra
-			quis, tellus. Etiam purus. Quisque egestas, tortor ac cursus lacinia,
-			felis leo adipiscing nisi, et rhoncus elit dolor eget eros. Fusce ut
-			quam. Suspendisse eleifend leo vitae ligula. Nulla facilisi. Nulla
-			rutrum, erat vitae lacinia dictum, pede purus imperdiet lacus, ut
-			semper velit ante id metus. Praesent massa dolor, porttitor sed,
-			pulvinar in, consequat ut, leo. Nullam nec est. Aenean id risus blandit
-			tortor pharetra congue. Suspendisse pulvinar.
-		</p>
-		<p>Vestibulum convallis eros ac justo. Proin dolor. Etiam aliquam. Nam
-			ornare elit vel augue. Suspendisse potenti. Etiam sed mauris eu neque
-			nonummy mollis. Vestibulum vel purus ac pede semper accumsan. Vivamus
-			lobortis, sem vitae nonummy lacinia, nisl est gravida magna, non cursus
-			est quam sed urna. Phasellus adipiscing justo in ipsum. Duis sagittis
-			dolor sit amet magna. Suspendisse suscipit, neque eu dictum auctor,
-			nisi augue tincidunt arcu, non lacinia magna purus nec magna. Praesent
-			pretium sollicitudin sapien. Suspendisse imperdiet. Class aptent taciti
-			sociosqu ad litora torquent per conubia nostra, per inceptos
-			hymenaeos.
-		</p>
+	<div onclick="clicksOnMainPage.innerHTML = ++clicks;">
+		<h1>DialogUnderlay functional test</h1>
+
+		Main page clicked <span id=clicksOnMainPage>0</span> times.<br>
+
+		<div id="lorem" style="display: none">
+			<p>Aliquam vitae enim. Duis scelerisque metus auctor est venenatis
+				imperdiet. Fusce dignissim porta augue. Nulla vestibulum. Integer lorem
+				nunc, ullamcorper a, commodo ac, malesuada sed, dolor. Aenean id mi in
+				massa bibendum suscipit. Integer eros. Nullam suscipit mauris. In
+				pellentesque. Mauris ipsum est, pharetra semper, pharetra in, viverra
+				quis, tellus. Etiam purus. Quisque egestas, tortor ac cursus lacinia,
+				felis leo adipiscing nisi, et rhoncus elit dolor eget eros. Fusce ut
+				quam. Suspendisse eleifend leo vitae ligula. Nulla facilisi. Nulla
+				rutrum, erat vitae lacinia dictum, pede purus imperdiet lacus, ut
+				semper velit ante id metus. Praesent massa dolor, porttitor sed,
+				pulvinar in, consequat ut, leo. Nullam nec est. Aenean id risus blandit
+				tortor pharetra congue. Suspendisse pulvinar.
+			</p>
+			<p>Vestibulum convallis eros ac justo. Proin dolor. Etiam aliquam. Nam
+				ornare elit vel augue. Suspendisse potenti. Etiam sed mauris eu neque
+				nonummy mollis. Vestibulum vel purus ac pede semper accumsan. Vivamus
+				lobortis, sem vitae nonummy lacinia, nisl est gravida magna, non cursus
+				est quam sed urna. Phasellus adipiscing justo in ipsum. Duis sagittis
+				dolor sit amet magna. Suspendisse suscipit, neque eu dictum auctor,
+				nisi augue tincidunt arcu, non lacinia magna purus nec magna. Praesent
+				pretium sollicitudin sapien. Suspendisse imperdiet. Class aptent taciti
+				sociosqu ad litora torquent per conubia nostra, per inceptos
+				hymenaeos.
+			</p>
+			<p>Aliquam vitae enim. Duis scelerisque metus auctor est venenatis
+				imperdiet. Fusce dignissim porta augue. Nulla vestibulum. Integer lorem
+				nunc, ullamcorper a, commodo ac, malesuada sed, dolor. Aenean id mi in
+				massa bibendum suscipit. Integer eros. Nullam suscipit mauris. In
+				pellentesque. Mauris ipsum est, pharetra semper, pharetra in, viverra
+				quis, tellus. Etiam purus. Quisque egestas, tortor ac cursus lacinia,
+				felis leo adipiscing nisi, et rhoncus elit dolor eget eros. Fusce ut
+				quam. Suspendisse eleifend leo vitae ligula. Nulla facilisi. Nulla
+				rutrum, erat vitae lacinia dictum, pede purus imperdiet lacus, ut
+				semper velit ante id metus. Praesent massa dolor, porttitor sed,
+				pulvinar in, consequat ut, leo. Nullam nec est. Aenean id risus blandit
+				tortor pharetra congue. Suspendisse pulvinar.
+			</p>
+			<p>Vestibulum convallis eros ac justo. Proin dolor. Etiam aliquam. Nam
+				ornare elit vel augue. Suspendisse potenti. Etiam sed mauris eu neque
+				nonummy mollis. Vestibulum vel purus ac pede semper accumsan. Vivamus
+				lobortis, sem vitae nonummy lacinia, nisl est gravida magna, non cursus
+				est quam sed urna. Phasellus adipiscing justo in ipsum. Duis sagittis
+				dolor sit amet magna. Suspendisse suscipit, neque eu dictum auctor,
+				nisi augue tincidunt arcu, non lacinia magna purus nec magna. Praesent
+				pretium sollicitudin sapien. Suspendisse imperdiet. Class aptent taciti
+				sociosqu ad litora torquent per conubia nostra, per inceptos
+				hymenaeos.
+			</p>
+			<p>Aliquam vitae enim. Duis scelerisque metus auctor est venenatis
+				imperdiet. Fusce dignissim porta augue. Nulla vestibulum. Integer lorem
+				nunc, ullamcorper a, commodo ac, malesuada sed, dolor. Aenean id mi in
+				massa bibendum suscipit. Integer eros. Nullam suscipit mauris. In
+				pellentesque. Mauris ipsum est, pharetra semper, pharetra in, viverra
+				quis, tellus. Etiam purus. Quisque egestas, tortor ac cursus lacinia,
+				felis leo adipiscing nisi, et rhoncus elit dolor eget eros. Fusce ut
+				quam. Suspendisse eleifend leo vitae ligula. Nulla facilisi. Nulla
+				rutrum, erat vitae lacinia dictum, pede purus imperdiet lacus, ut
+				semper velit ante id metus. Praesent massa dolor, porttitor sed,
+				pulvinar in, consequat ut, leo. Nullam nec est. Aenean id risus blandit
+				tortor pharetra congue. Suspendisse pulvinar.
+			</p>
+			<p>Vestibulum convallis eros ac justo. Proin dolor. Etiam aliquam. Nam
+				ornare elit vel augue. Suspendisse potenti. Etiam sed mauris eu neque
+				nonummy mollis. Vestibulum vel purus ac pede semper accumsan. Vivamus
+				lobortis, sem vitae nonummy lacinia, nisl est gravida magna, non cursus
+				est quam sed urna. Phasellus adipiscing justo in ipsum. Duis sagittis
+				dolor sit amet magna. Suspendisse suscipit, neque eu dictum auctor,
+				nisi augue tincidunt arcu, non lacinia magna purus nec magna. Praesent
+				pretium sollicitudin sapien. Suspendisse imperdiet. Class aptent taciti
+				sociosqu ad litora torquent per conubia nostra, per inceptos
+				hymenaeos.
+			</p>
+			<p>Aliquam vitae enim. Duis scelerisque metus auctor est venenatis
+				imperdiet. Fusce dignissim porta augue. Nulla vestibulum. Integer lorem
+				nunc, ullamcorper a, commodo ac, malesuada sed, dolor. Aenean id mi in
+				massa bibendum suscipit. Integer eros. Nullam suscipit mauris. In
+				pellentesque. Mauris ipsum est, pharetra semper, pharetra in, viverra
+				quis, tellus. Etiam purus. Quisque egestas, tortor ac cursus lacinia,
+				felis leo adipiscing nisi, et rhoncus elit dolor eget eros. Fusce ut
+				quam. Suspendisse eleifend leo vitae ligula. Nulla facilisi. Nulla
+				rutrum, erat vitae lacinia dictum, pede purus imperdiet lacus, ut
+				semper velit ante id metus. Praesent massa dolor, porttitor sed,
+				pulvinar in, consequat ut, leo. Nullam nec est. Aenean id risus blandit
+				tortor pharetra congue. Suspendisse pulvinar.
+			</p>
+			<p>Vestibulum convallis eros ac justo. Proin dolor. Etiam aliquam. Nam
+				ornare elit vel augue. Suspendisse potenti. Etiam sed mauris eu neque
+				nonummy mollis. Vestibulum vel purus ac pede semper accumsan. Vivamus
+				lobortis, sem vitae nonummy lacinia, nisl est gravida magna, non cursus
+				est quam sed urna. Phasellus adipiscing justo in ipsum. Duis sagittis
+				dolor sit amet magna. Suspendisse suscipit, neque eu dictum auctor,
+				nisi augue tincidunt arcu, non lacinia magna purus nec magna. Praesent
+				pretium sollicitudin sapien. Suspendisse imperdiet. Class aptent taciti
+				sociosqu ad litora torquent per conubia nostra, per inceptos
+				hymenaeos.
+			</p>
+		</div>
 	</div>
+
 </body>
 </html>
