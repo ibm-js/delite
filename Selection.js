@@ -1,5 +1,21 @@
 /** @module delite/Selection */
 define(["dcl/dcl", "decor/sniff", "./Widget"], function (dcl, has, Widget) {
+	
+	/**
+	 * Selection change event. Dispatched after the selection has
+	 * been modified through user interaction.
+	 * @example
+	 * widget.on("selection-change", function (evt) {
+	 *	console.log("old value: " + evt.oldValue);
+	 *	console.log("new value: " + evt.newValue);
+	 * }
+	 * @event module:delite/Selection#selection-change
+	 * @property {number} oldValue - The previously selected item.
+	 * @property {number} newValue- The new selected item.
+	 * @property {Object} renderer - The visual renderer of the selected/deselected item.
+	 * @property {Event} triggerEvent - The event that lead to the selection of the item.
+	 */
+	
 	/**
 	 * Mixin for widgets that manage a list of selected data items.
 	 * @mixin module:delite/Selection
@@ -256,22 +272,9 @@ define(["dcl/dcl", "decor/sniff", "./Widget"], function (dcl, has, Widget) {
 		 * @param {Object} renderer - The visual renderer of the selected/deselected item.
 		 * @param {Event} triggerEvent - The event that lead to the selection of the item.
 		 * @protected
+		 * @fires module:delite/Selection#selection-change
 		 */
 		dispatchSelectionChange: function (oldSelectedItem, newSelectedItem, renderer, triggerEvent) {
-			/**
-			 * Selection change event. Dispatched after the selection has
-			 * been modified through user interaction.
-			 * @example
-			 * widget.on("selection-change", function (evt) {
-			 *	console.log("old value: " + evt.oldValue);
-			 *	console.log("new value: " + evt.newValue);
-			 * }
-			 * @event module:delite/Selection#selection-change
-			 * @property {number} oldValue - The previously selected item.
-			 * @property {number} newValue- The new selected item.
-			 * @property {Object} renderer - The visual renderer of the selected/deselected item.
-			 * @property {Event} triggerEvent - The event that lead to the selection of the item.
-			 */
 			this.emit("selection-change", {
 				oldValue: oldSelectedItem,
 				newValue: newSelectedItem,

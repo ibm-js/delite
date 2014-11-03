@@ -7,6 +7,17 @@ define([
 ], function (dcl, Observable, Destroyable, Stateful) {
 
 	/**
+	 * Dispatched after the CustomElement has been attached.
+	 * This is useful to be notified when an HTMLElement has been upgraded to a
+	 * CustomElement and attached to the DOM, in particular on browsers supporting native Custom Element.
+	 * @example
+	 * element.addEventListener("customelement-attached", function (evt) {
+	 *      console.log("custom element: "+evt.target.id+" has been attached");
+	 * });
+	 * @event module:delite/CustomElement#customelement-attached
+	 */
+	
+	/**
 	 * Get a property from a dot-separated string, such as "A.B.C".
 	 */
 	function getObject(name) {
@@ -119,19 +130,10 @@ define([
 		 * This method is automatically chained, so subclasses generally do not need to use `dcl.superCall()`,
 		 * `dcl.advise()`, etc.
 		 * @method
+		 * @fires module:delite/CustomElement#customelement-attached
 		 */
 		attachedCallback: dcl.after(function () {
 			this.attached = true;
-			/**
-			 * Dispatched after the CustomElement has been attached.
-			 * This is useful to be notified when an HTMLElement has been upgraded to a
-			 * CustomElement and attached to the DOM, in particular on browsers supporting native Custom Element.
-			 * @example
-			 * element.addEventListener("customelement-attached", function (evt) {
-			 *      console.log("custom element: "+evt.target.id+" has been attached");
-			 * });
-			 * @event module:delite/CustomElement#customelement-attached
-			 */
 			this.emit("customelement-attached", {
 				bubbles: false,
 				cancelable: false
