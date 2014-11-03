@@ -2,6 +2,19 @@
 define(["dcl/dcl", "dojo/when", "decor/Invalidating"], function (dcl, when, Invalidating) {
 
 	/**
+	 * Dispatched once the query has been executed and the `renderItems` array
+	 * has been initialized with the list of initial render items.
+	 * @example
+	 * widget.on("query-success", function (evt) {
+	 *      console.log("query done, initial renderItems: " + evt.renderItems);
+	 * });
+	 * @event module:delite/Store#query-success
+	 * @property {Object[]} renderItems - The array of initial render items.
+	 * @property {boolean} cancelable - Indicates whether the event is cancelable or not.
+	 * @property {boolean} bubbles - Indicates whether the given event bubbles up through the DOM or not.
+	 */
+	
+	/**
 	 * Mixin for store management that creates render items from store items after
 	 * querying the store. The receiving class must extend decor/Evented or delite/Widget.
 	 *
@@ -73,6 +86,7 @@ define(["dcl/dcl", "dojo/when", "decor/Invalidating"], function (dcl, when, Inva
 		 * @param {Object[]} renderItems - The array of initial render items to be set in the renderItems property.
 		 * @returns {Object[]} the renderItems array.
 		 * @protected
+		 * @fires module:delite/Store#query-success
 		 */
 		initItems: function (renderItems) {
 			this.renderItems = renderItems;
