@@ -7,7 +7,7 @@ define([
 	"intern/dojo/node!leadfoot/helpers/pollUntil"
 ], function (require, intern, registerSuite, assert, keys, pollUntil) {
 
-	function clickMainScreen (remote) {
+	function clickMainScreen(remote) {
 		return function () {
 			if (remote.environmentType.touchEnabled) {
 				// Not supported on iOS yet!
