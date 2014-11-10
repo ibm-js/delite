@@ -10,6 +10,5 @@ define([
 	doh.register("place-clip", require.toUrl("./place-clip.html"), 999999);
 
 	// comment out until converted to webdriver test
-	// doh.register("robot.typematic", require.toUrl("./robot/typematic.html"), 999999);
 	// doh.register("robot.BgIframe", require.toUrl("./robot/BgIframe.html"), 999999);
 });

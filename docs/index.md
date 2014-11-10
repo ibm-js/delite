@@ -39,8 +39,6 @@ Specifically, it's based on the following concepts:
 * [register](register.md) - utility module for declaring new custom element types
 * [template](template.md) - code generation library used by [handlebars!](handlebars.md) plugin
 * [theme!](theme.md) - CSS loading plugin, like [css!](css.md) but picks the CSS file based on the current theme
-* [typematic](typematic.md) - code to repetitively call a user specified callback
-  method when a specific key or mouse click over a specific DOM node is held down for a specific amount of time.
 * [uacss](uacss.md) - utility to set CSS classes on document root based on the current browser
 * [Viewport](Viewport.md) - utility to notify the application when the viewport size is changed, and
   also to get the effective viewport size on mobile devices when the virtual keyboard is displayed
