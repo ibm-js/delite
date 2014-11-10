@@ -16,22 +16,45 @@ define([
 		}).join("\n");
 	}
 
+	var container;
+
 	registerSuite({
 		name: "theme",
 
-		"load common_css": function () {
-			var d = new this.async(1000);
-			// Load one module that use delite/theme! to load common_css
-			localRequire([
-				"./resources/TestThemeWidget1"
-			], d.callback(function () {
-				// common_css should be automatically loaded. It defines class d-reset (themes/common/classes.less)
-				assert.strictEqual(getStyles().match(/d-reset/g).length, 1, "common is loaded");
-			}));
-			return d;
+		setup: function () {
+			container = document.createElement("div");
+			document.body.appendChild(container);
 		},
 
-		loadLayer: function () {
+		"common.css": {
+			"test common.css loaded": function () {
+				var d = new this.async(1000);
+				// Load one module that use delite/theme! to load common.css
+				localRequire([
+					"./resources/TestThemeWidget1"
+				], d.callback(function () {
+					// common_css should be automatically loaded. It defines class d-reset (themes/common/classes.less)
+					assert.strictEqual(getStyles().match(/d-reset/g).length, 1, "common is loaded");
+				}));
+				return d;
+			},
+
+			"d-hidden": function () {
+				// check that d-hidden=true works, and overrides any user defined style
+				container.insertAdjacentHTML("beforeEnd", "<div style='display:block' d-hidden=true></div>");
+				var node = container.lastChild;
+				assert.strictEqual(getComputedStyle(node).display, "none", "hidden");
+			},
+
+			"d-shown": function () {
+				// check that d-shown=false works, and overrides any user defined style
+				container.insertAdjacentHTML("beforeEnd", "<div style='display:block' d-shown=false></div>");
+				var node = container.lastChild;
+				assert.strictEqual(getComputedStyle(node).display, "none", "hidden");
+			}
+		},
+
+		layers: function () {
 			var d = this.async(10000);
 			var layer = "delite/tests/unit/themes/{{theme}}/layer.css";
 
@@ -54,6 +77,10 @@ define([
 			}));
 
 			return d;
+		},
+
+		teardown: function () {
+			container.parentNode.removeChild(container);
 		}
 	});
 });

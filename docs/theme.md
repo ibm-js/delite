@@ -51,9 +51,22 @@ require.config({
 });
 ```
 
+## Common CSS classes
+
+delite/theme also implicitly defines some CSS classes:
+
+- `d-readonly`, `d-disabled` - For form controls or other elements that are disabled / read only.
+- `d-reset` - Use this style to null out padding, margin, border in your template elements
+   so that page specific styles don't break them.
+- `d-inline` - To inline block elements.
+- `d-hidden`, `d-shown` - Hide a node via `class="d-hidden"`, or in templates,
+   via either {% raw %} `d-hidden="{{hideFlag}}"` or `d-shown="{{showFlag}}"`. {% endraw %}
+   These are set to `!important` to override any general styling on the node.
+- `d-popup` - Used internally by delite/popup for styling the wrapper around popup nodes.
+
 ## Example
 
-To load the css file {% raw %} `./a/b/{{theme}}/file1.css` you can use:
+To load the css file {% raw %} `./a/b/{{theme}}/file1.css` {% endraw %} you can use:
 
 {% raw %}
 ```js

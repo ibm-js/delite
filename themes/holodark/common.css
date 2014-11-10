@@ -21,12 +21,12 @@
 .d-hidden,
 [d-hidden=true],
 [d-shown=false] {
-  display: none;
+  display: none !important;
 }
 .d-invisible,
 [d-invisible=true],
 [d-visible=false] {
-  visibility: hidden;
+  visibility: hidden !important;
 }
 .d-popup {
   position: absolute;

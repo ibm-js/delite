@@ -37,10 +37,10 @@
 
 // Hide a node via class="d-hidden", or in templates, via either d-hidden="{{hideFlag}}" or d-shown="{{showFlag}}".
 .d-hidden, [d-hidden=true], [d-shown=false] {
-	display: none
+	display: none !important;
 }
 .d-invisible, [d-invisible=true], [d-visible=false] {
-	visibility: hidden
+	visibility: hidden !important;
 }
 
 // Popup items have a wrapper div (d-popup) with the real popup inside, and maybe an iframe too
