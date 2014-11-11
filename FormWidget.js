@@ -5,9 +5,12 @@ define([
 ], function (dcl, Widget) {
 
 	/**
-	 * Base class for widgets that extend `HTMLElement`, but conceptually correspond
-	 * to native HTML elements such as `<checkbox>` or `<button>`,
-	 * which can be children of a `<form>` node.
+	 * Base class for widgets that extend `HTMLElement`, but conceptually correspond to form elements.
+	 *
+	 * Most form widgets should extend FormValueWidget rather than extending FormWidget directly, but
+	 * FormWidget should be the base class for form widgets that *don't* have a end-user settable value,
+	 * for example checkboxes and buttons.  Note that clicking a checkbox changes its state (i.e. the value of
+	 * its `checked` property), but does not change its `value` property.
 	 *
 	 * Note that FormWidget requires that `this.focusNode` be a sub-node of the widget, rather than the
 	 * root node.  This is because of its processing of `tabIndex`.
@@ -30,6 +33,11 @@ define([
 
 		/**
 		 * Corresponds to the native HTML `<input>` element's attribute.
+		 *
+		 * For most widgets, `value` can be set by the end-user (via mouse, keyboard, or touch), but for widgets
+		 * like checkboxes, the value is set programatically when the widget is created, and the end-user
+		 * merely changes the widget's state, i.e. the checked property.
+		 *
 		 * @member {string}
 		 */
 		value: "",

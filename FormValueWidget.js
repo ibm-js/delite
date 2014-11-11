@@ -38,14 +38,21 @@ define([
 	}
 
 	/**
-	 * Mixin for widgets corresponding to native HTML elements such as `<input>` or `<select>`
-	 * that have user changeable values.
+	 * Base class intended for form widgets that have end-user changeable values,
+	 * i.e. widgets where the user can change the `value` property by using the mouse, keyboard, or touch.
 	 *
-	 * Each FormValueWidget represents a single input value, and has a (possibly hidden) `<input>` element,
+	 * FormValueWidget extends FormWidget to:
+	 *
+	 * 1. Provide helper functions to emit `change` and `input` events when the widget's value is changed by the
+	 *    end user.  Subclasses of FormValueWidget should call `handleOnChange()` and `handleOnInput()` to fire
+	 *    `change` and `input`events as the value changes.
+	 * 2. Provide handling for a readonly property.
+	 *
+	 * Each FormValueWidget has a (possibly hidden) `<input>` element,
 	 * to which it serializes its input value, so that form submission works as expected.
 	 *
-	 * The subclass should call `handleOnChange()` and `handleOnInput()` to make the widget fire `change` and
-	 * `input`events as the value changes.
+	 * FormValueWidget shouldn't be used for widgets that extend or embed native form elements (such as `<select>`),
+	 * because in that case the `change` and `input` events are already emitted naturally by the browser.
 	 *
 	 * @mixin module:delite/FormValueWidget
 	 * @augments module:delite/FormWidget
@@ -107,14 +114,27 @@ define([
 		},
 
 		/**
-		 * Set value and fire a change event if the value changed since the last call.
+		 * Set value and fire a "change" event if the value changed since the last call.
+		 *
+		 * This function should be called when the when the value is committed,
+		 * if that makes sense for the control, or else when the control loses focus.
+		 * For example, it should be called when the user releases a slider's handle after dragging it,
+		 * or when the user blurs a textbox.
+		 * See https://html.spec.whatwg.org/multipage/forms.html#common-input-element-events for details.
+		 *
 		 * @param {*} newValue - The new value.
 		 * @protected
 		 */
 		handleOnChange: genHandler("change", "_previousOnChangeValue", "_onChangeHandle"),
 
 		/**
-		 * Set value and fire an input event if the value changed since the last call.
+		 * Set value and fire an "input" event if the value changed since the last call.
+		 *
+		 * This should be called whenever the value is changed by the end user.
+		 * For example, it should be called repeatedly as the user drags the handle of a slider,
+		 * or on every keystroke for a textbox.
+		 * See https://html.spec.whatwg.org/multipage/forms.html#common-input-element-events for details.
+		 *
 		 * @param {*} newValue - The new value.
 		 * @protected
 		 */
