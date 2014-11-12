@@ -2,7 +2,7 @@
 define([
 	"dcl/dcl",
 	"dojo/dom-class",
-	"delite/keys", // keys.END keys.HOME, keys.LEFT_ARROW etc.
+	"./keys", // keys.END keys.HOME, keys.LEFT_ARROW etc.
 	"./features",
 	"./Widget",
 	"dpointer/events",		// so can just monitor for "pointerdown"

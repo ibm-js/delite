@@ -5,8 +5,8 @@ define([
 	"dojo/dom-class",
 	"dojo/_base/fx",
 	"dojo/fx/easing",
-	"delite/Widget",
-	"delite/theme!./Scrollable/themes/{{theme}}/Scrollable.css"
+	"./Widget",
+	"./theme!./Scrollable/themes/{{theme}}/Scrollable.css"
 ], function (dcl, dom, domClass, baseFx, easing, Widget) {
 
 	/**

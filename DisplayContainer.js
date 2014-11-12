@@ -1,5 +1,5 @@
 /** @module delite/DisplayContainer */
-define(["dcl/dcl", "dojo/Deferred", "dojo/when", "delite/Container"],
+define(["dcl/dcl", "dojo/Deferred", "dojo/when", "./Container"],
 	function (dcl, Deferred, when, Container) {
 	
 	/**
