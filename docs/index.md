@@ -26,6 +26,7 @@ Specifically, it's based on the following concepts:
 * [Delite internal architecture documentation](architecture.md)
 * [Migration notes for dijit based applications](migration.md)
 * [Notes on theme generation](themes.md)
+* [How to load delite modules](setup.md)
 
 ## Utility modules
 
