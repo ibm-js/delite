@@ -22,9 +22,14 @@ Similarly, for the source form:
 bower install delite
 ```
 
+Both commands will install delite and its dependencies in a `bower_components` directory.
+
 Using the source form is as simple as requiring the needed AMD modules using RequireJS:
 
 ```js
+require.config({
+   baseUrl: "bower_components"
+});
 require(["delite/register", "requirejs-domready/domReady!"], function (register) {
    register("my-element", [HTMLElement, Widget], {    
         //...
@@ -38,6 +43,9 @@ In order to consume the [built form](https://github.com/ibm-js/delite-build#how-
 corresponding layer and then the AMD modules as follows:
  
  ```js
+ require.config({
+    baseUrl: "bower_components"
+ });
  require(["delite/layer"], function() {
    require(["delite/register", "requirejs-domready/domReady!"], function (register) {
       //...
@@ -45,6 +53,8 @@ corresponding layer and then the AMD modules as follows:
  });
  ```
  
- When using the source form (or the built form if needed), you can build your resulting application using 
- the [grunt-amd-build](https://github.com/ibm-js/grunt-amd-build) project.
- 
+When using the source form (or the built form if needed), you can build your resulting application using
+the [grunt-amd-build](https://github.com/ibm-js/grunt-amd-build) project.
+
+Alternatively you can use the [delite Yeoman generator](https://www.npmjs.org/package/generator-delite-element) to
+setup the project structure.
