@@ -10,16 +10,7 @@
 	<script>
 		var ready = false; // set to true when the test page is ready
 		require.config({
-			baseUrl: "../../..",
-			packages: [
-				{name: "jquery", location: "jquery/src"}
-			],
-			map: {
-				jquery: {
-					"jquery/selector": "jquery/selector-native"	// don't pull in sizzle
-
-				}
-			}
+			baseUrl: "../../.."
 		});
 		require(["delite/samples/ExampleWidget", "delite/register", "requirejs-domready/domReady!"], function (ExampleWidget, register) {
 			register.parse();
