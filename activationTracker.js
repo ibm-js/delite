@@ -17,9 +17,8 @@
 define([
 	"dcl/advise",
 	"dcl/dcl",
-	"jquery/core",
+	"requirejs-dplugins/jquery!attributes/classes",	// hasClass()
 	"decor/Evented",
-	"jquery/attributes/classes",	// hasClass()
 	"dpointer/events",		// so can just monitor for "pointerdown"
 	"requirejs-domready/domReady!"
 ], function (advise, dcl, $, Evented) {

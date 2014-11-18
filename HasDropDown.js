@@ -3,13 +3,12 @@ define([
 	"dcl/dcl",
 	"dojo/Deferred",
 	"dojo/when",
-	"jquery/core",
+	"requirejs-dplugins/jquery!attributes/classes",	// addClass(), removeClass(), hasClass()
 	"./keys", // keys.DOWN_ARROW keys.ENTER keys.ESCAPE
 	"./place",
 	"./popup",
 	"./Widget",
 	"./activationTracker",		// for delite-deactivated event
-	"jquery/attributes/classes",		// addClass(), removeClass(), hasClass()
 	"dpointer/events"		// so can just monitor for "pointerdown"
 ], function (dcl, Deferred, when, $, keys, place, popup, Widget) {
 	

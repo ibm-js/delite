@@ -1,11 +1,8 @@
 /** @module delite/Scrollable */
 define([
 	"dcl/dcl",
-	"jquery/css",	// for .css()
+	"requirejs-dplugins/jquery!css,attributes/classes,effects,event",	// css(), toggleClass(), animate(), on()
 	"./Widget",
-	"jquery/attributes/classes",	// for toggleClass()
-	"jquery/effects",	// for .animate()
-	"jquery/event",		// for .on()
 	"./theme!./Scrollable/themes/{{theme}}/Scrollable.css"
 ], function (dcl, $, Widget) {
 

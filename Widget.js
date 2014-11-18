@@ -1,13 +1,12 @@
 /** @module delite/Widget */
 define([
 	"dcl/dcl",
-	"jquery/core",
+	"requirejs-dplugins/jquery!attributes/classes",	// addClass(), removeClass()
 	"./features",
 	"decor/Invalidating",
 	"./CustomElement",
 	"./register",
-	"./features!bidi?./Bidi",
-	"jquery/attributes/classes"	// addClass(), removeClass()
+	"./features!bidi?./Bidi"
 ], function (dcl, $, has, Invalidating, CustomElement, register, Bidi) {
 	// Used to generate unique id for each widget
 	var cnt = 0;

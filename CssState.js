@@ -1,9 +1,8 @@
 /** @module delite/CssState */
 define([
 	"dcl/dcl",
-	"jquery/core",
-	"./Widget",
-	"jquery/attributes/classes"	// addClass(), removeClass()
+	"requirejs-dplugins/jquery!attributes/classes",	// addClass(), removeClass()
+	"./Widget"
 ], function (dcl, $, Widget) {
 
 	/**

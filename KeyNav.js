@@ -1,12 +1,11 @@
 /** @module delite/KeyNav */
 define([
 	"dcl/dcl",
-	"jquery/core",
+	"requirejs-dplugins/jquery!attributes/classes",	// addClass(), removeClass()
 	"./keys", // keys.END keys.HOME, keys.LEFT_ARROW etc.
 	"./features",
 	"./Widget",
 	"dpointer/events",		// so can just monitor for "pointerdown"
-	"jquery/attributes/classes",	// addClass(), removeClass()
 	"./activationTracker"	// delite-deactivated event when focus removed from KeyNav and logical descendants
 ], function (dcl, $, keys, has, Widget) {
 	
