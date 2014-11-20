@@ -38,7 +38,7 @@ This project requires the following other projects to run:
  * decor
  * requirejs (git clone https://github.com/jrburke/requirejs.git)
  * dpointer
- * requirejs-domReady
+ * requirejs-domready
  * requirejs-dplugins
  * requirejs-test
     

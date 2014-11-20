@@ -95,7 +95,7 @@ In order for declarative custom elements to be instantiated on platforms without
 you must call the parser:
 
 ```js
-require(["delite/register", "requirejs-domReady/domReady!"], function (register) {
+require(["delite/register", "requirejs-domready/domReady!"], function (register) {
 	register.parse();
 });
 ```
@@ -108,7 +108,7 @@ the custom element is loaded.   Therefore, you may need code like this:
 ```js
 require(["dstore/Memory"], function (Memory) {
 	myGlobalVar = new Memory();
-	require(["delite/register", "requirejs-domReady/domReady!"], function (register) {
+	require(["delite/register", "requirejs-domready/domReady!"], function (register) {
 		register.parse();
 	});
 });
