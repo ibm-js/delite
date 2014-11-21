@@ -47,9 +47,6 @@ define([
 	 *    by the end user.  Subclasses of FormValueWidget should call `handleOnChange()` and
 	 *    `handleOnInput()` to fire `change` and `input` events as the value changes.  See
 	 *    https://html.spec.whatwg.org/multipage/forms.html#common-input-element-events for details.
-	 *    One exception could be widgets that extend or embed native form elements (such as `<select>`),
-	 *    where the widget leverages the `change` and `input` events emitted naturally by the native form element,
-	 *    rather than manually emitting synthetic events.
 	 * 2. Provide handling for the `readOnly` property.
 	 *
 	 * @mixin module:delite/FormValueWidget
