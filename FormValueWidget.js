@@ -38,21 +38,19 @@ define([
 	}
 
 	/**
-	 * Base class intended for form widgets that have end-user changeable values,
-	 * i.e. widgets where the user can change the `value` property by using the mouse, keyboard, or touch.
+	 * Base class intended for form widgets that have end user changeable values, i.e.
+	 * widgets where the user can interactively change the value property by using the mouse, keyboard, touch, etc.
 	 *
 	 * FormValueWidget extends FormWidget to:
 	 *
-	 * 1. Provide helper functions to emit `change` and `input` events when the widget's value is changed by the
-	 *    end user.  Subclasses of FormValueWidget should call `handleOnChange()` and `handleOnInput()` to fire
-	 *    `change` and `input`events as the value changes.
-	 * 2. Provide handling for a readonly property.
-	 *
-	 * Each FormValueWidget has a (possibly hidden) `<input>` element,
-	 * to which it serializes its input value, so that form submission works as expected.
-	 *
-	 * FormValueWidget shouldn't be used for widgets that extend or embed native form elements (such as `<select>`),
-	 * because in that case the `change` and `input` events are already emitted naturally by the browser.
+	 * 1. Provide helper functions to emit `change` and `input` events when the widget's value is interactively changed
+	 *    by the end user.  Subclasses of FormValueWidget should call `handleOnChange()` and
+	 *    `handleOnInput()` to fire `change` and `input` events as the value changes.  See
+	 *    https://html.spec.whatwg.org/multipage/forms.html#common-input-element-events for details.
+	 *    One exception could be widgets that extend or embed native form elements (such as `<select>`),
+	 *    where the widget leverages the `change` and `input` events emitted naturally by the native form element,
+	 *    rather than manually emitting synthetic events.
+	 * 2. Provide handling for the `readOnly` property.
 	 *
 	 * @mixin module:delite/FormValueWidget
 	 * @augments module:delite/FormWidget
@@ -60,7 +58,7 @@ define([
 	return dcl(FormWidget, /** @lends module:delite/FormValueWidget# */{
 		/**
 		 * If true, this widget won't respond to user input.
-		 * Similar to disabled except readOnly form values are submitted.
+		 * Similar to `disabled` except `readOnly` form values are submitted.
 		 * @member {boolean}
 		 * @default false
 		 */
@@ -114,28 +112,30 @@ define([
 		},
 
 		/**
-		 * Set value and fire a "change" event if the value changed since the last call.
+		 * Sets value and fires a "change" event if the value changed since the last call.
 		 *
-		 * This function should be called when the when the value is committed,
+		 * This method should be called when the value is committed,
 		 * if that makes sense for the control, or else when the control loses focus.
 		 * For example, it should be called when the user releases a slider's handle after dragging it,
 		 * or when the user blurs a textbox.
 		 * See https://html.spec.whatwg.org/multipage/forms.html#common-input-element-events for details.
 		 *
 		 * @param {*} newValue - The new value.
+		 * @function
 		 * @protected
 		 */
 		handleOnChange: genHandler("change", "_previousOnChangeValue", "_onChangeHandle"),
 
 		/**
-		 * Set value and fire an "input" event if the value changed since the last call.
+		 * Sets value and fires an "input" event if the value changed since the last call.
 		 *
-		 * This should be called whenever the value is changed by the end user.
+		 * This method should be called whenever the value is changed interactively by the end user.
 		 * For example, it should be called repeatedly as the user drags the handle of a slider,
 		 * or on every keystroke for a textbox.
 		 * See https://html.spec.whatwg.org/multipage/forms.html#common-input-element-events for details.
 		 *
 		 * @param {*} newValue - The new value.
+		 * @function
 		 * @protected
 		 */
 		handleOnInput: genHandler("input", "_previousOnInputValue", "_onInputHandle")
