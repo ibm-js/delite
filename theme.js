@@ -146,18 +146,21 @@ define([
 			}
 
 			if (data.name && data.path) {
-				load.themeMap.forEach(function (theme) {
+				var success = load.themeMap.map(function (theme) {
 					var themeDir = theme[1];
 					var dest = getLayerPath(themeDir);
 					var themedLoadList = loadList.map(function (path) {
 						return path.replace(/{{theme}}/g, themeDir);
 					});
-					css.buildFunctions.writeLayer(writePluginFiles, dest, themedLoadList);
+					return css.buildFunctions.writeLayer(writePluginFiles, dest, themedLoadList);
+				}).every(function (bool) {
+					return bool;
 				});
 
-				// Write generic css config with {{theme}} on the layer.
+				// Write generic css config with {{theme}} on the layer (only if the layers were successfully
+				// written).
 				var destMid = data.name.replace(/^(([^\/]*\/)*)[^\/]*$/, "$1themes/layer_{{theme}}.css");
-				css.buildFunctions.writeConfig(write, module.id, destMid, loadList);
+				success && css.buildFunctions.writeConfig(write, module.id, destMid, loadList);
 
 				// Reset loadList
 				loadList = [];
