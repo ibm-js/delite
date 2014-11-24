@@ -137,7 +137,7 @@ define(["dcl/dcl", "dojo/when", "decor/Invalidating"], function (dcl, when, Inva
 						collection = this._tracked = collection.track();
 						collection.on("add", this._itemAdded.bind(this));
 						collection.on("update", this._itemUpdated.bind(this));
-						collection.on("remove", this._itemRemoved.bind(this));
+						collection.on("delete", this._itemRemoved.bind(this));
 						collection.on("refresh", this._refreshHandler.bind(this));
 					}
 					return this.processCollection(collection);

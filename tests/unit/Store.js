@@ -218,6 +218,9 @@ define([
 			return d;
 		},
 
+		// TODO: re-enable when dstore will have re-introduced refresh event?
+		
+		/**
 		SetData: function () {
 			var d = this.async(1500);
 			var store = new C();
@@ -248,41 +251,7 @@ define([
 			var myStore = new M({ data: myData, model: null });
 			store.store = myStore;
 			return d;
-		},
-
-		// TODO not sure if that test makes sense with the new implementation
-		/*
-		"Fetch parameter can be cached": function () {
-			var d = this.async(1500);
-			var store = new C();
-			var myData = [
-				{ id: "foo", name: "Foo" },
-				{ id: "bar", name: "Bar" }
-			];
-			var myStore = new M({ data: myData.slice(0), model: null});
-			var liveCollection = null;
-			var initialFetch = store.fetch;
-			store.fetch = function (collection) {
-					liveCollection = collection;
-					initialFetch.apply(this, arguments);
-				};
-			store.on("query-success", d.callback(function () {
-				assert.strictEqual(liveCollection.data.length, 2);
-				assert.deepEqual(liveCollection.data[0], myData[0]);
-				assert.deepEqual(liveCollection.data[1], myData[1]);
-				myStore.removeSync("foo");
-				// this works because remove is synchronous & same for add etc...
-				assert.strictEqual(liveCollection.data.length, 1);
-				assert.deepEqual(liveCollection.data[0], myData[1]);
-				myStore.addSync(myData[0]);
-				assert.strictEqual(liveCollection.data.length, 2);
-				assert.deepEqual(liveCollection.data[0], myData[1]);
-				assert.deepEqual(liveCollection.data[1], myData[0]);
-			}));
-			store.startup();
-			store.store = myStore;
-			return d;
-		},*/
+		},**/
 
 		teardown: function () {
 			//container.parentNode.removeChild(container);

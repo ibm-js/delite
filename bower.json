@@ -12,7 +12,7 @@
 		"requirejs-text": "2.0.x"
 	},
 	"devDependencies": {
-		"dstore" : "0.2.0",
+		"dstore" : "1.0.x",
 		"platform": "Polymer/platform#~0.1.4",
 		"dijit": ">=1.9.1"
 	},
