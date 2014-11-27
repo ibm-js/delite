@@ -12,11 +12,15 @@
 		"jsdoc-amddcl": "git://github.com/ibm-js/jsdoc-amddcl#master",
 		"clean-css": "~2.2.6"
 	},
+	"jsdocDependencies": [
+		"decor"
+	],
 	"licenses": [
 		{
 			"type": "BSD",
 			"url": "https://github.com/ibm-js/delite/blob/master/LICENSE"
 		}
 	],
-	"bugs": "https://github.com/ibm-js/delite/issues"
+	"bugs": "https://github.com/ibm-js/delite/issues",
+	"private": true
 }
