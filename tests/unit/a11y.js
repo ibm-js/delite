@@ -2,7 +2,7 @@ define([
 	"intern!object",
 	"intern/chai!assert",
 	"delite/a11y",
-	"dojo/sniff",
+	"decor/sniff",
 	"requirejs-text/text!../resources/a11y.html"
 ], function (registerSuite, assert, a11y, has, html) {
 	var container;
