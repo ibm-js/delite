@@ -2,15 +2,15 @@
 define([
 	"dcl/dcl",
 	"dojo/Deferred",
-	"dojo/dom-class", // domClass.add domClass.contains domClass.remove
 	"dojo/when",
+	"requirejs-dplugins/jquery!attributes/classes",	// addClass(), removeClass(), hasClass()
 	"./keys", // keys.DOWN_ARROW keys.ENTER keys.ESCAPE
 	"./place",
 	"./popup",
 	"./Widget",
 	"./activationTracker",		// for delite-deactivated event
 	"dpointer/events"		// so can just monitor for "pointerdown"
-], function (dcl, Deferred, domClass, when, keys, place, popup, Widget) {
+], function (dcl, Deferred, when, $, keys, place, popup, Widget) {
 	
 	/**
 	 * Dispatched before popup widget is shown.
@@ -31,7 +31,7 @@ define([
 	 * @event module:delite/HasDropDown#delite-after-show
 	 * @property {Element} child - reference to popup
 	 */
-	
+
 	/**
 	 * Dispatched before popup widget is hidden.
 	 * @example
@@ -219,7 +219,7 @@ define([
 				if (!(e.pageX >= c.x && e.pageX <= c.x + c.w) || !(e.pageY >= c.y && e.pageY <= c.y + c.h)) {
 					var t = e.target, overMenu;
 					while (t && !overMenu) {
-						if (domClass.contains(t, "d-popup")) {
+						if ($(t).hasClass("d-popup")) {
 							overMenu = true;
 							break;
 						} else {
@@ -507,7 +507,7 @@ define([
 						self.closeDropDown(true);
 					},
 					onClose: function () {
-						domClass.remove(self.popupStateNode, "d-drop-down-open");
+						$(self._popupStateNode).removeClass("d-drop-down-open");
 						this.opened = false;
 					}
 				});
@@ -530,7 +530,7 @@ define([
 					}
 				}
 
-				domClass.add(this.popupStateNode, "d-drop-down-open");
+				$(this._popupStateNode).addClass("d-drop-down-open");
 				this.opened = true;
 
 				this.popupStateNode.setAttribute("aria-expanded", "true");

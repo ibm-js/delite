@@ -1,13 +1,10 @@
 /** @module delite/Scrollable */
 define([
 	"dcl/dcl",
-	"dojo/dom",
-	"dojo/dom-class",
-	"dojo/_base/fx",
-	"dojo/fx/easing",
+	"requirejs-dplugins/jquery!css,attributes/classes,effects,event",	// css(), toggleClass(), animate(), on()
 	"./Widget",
 	"./theme!./Scrollable/themes/{{theme}}/Scrollable.css"
-], function (dcl, dom, domClass, baseFx, easing, Widget) {
+], function (dcl, $, Widget) {
 
 	/**
 	 * A mixin which adds scrolling capabilities to a widget.
@@ -84,16 +81,21 @@ define([
 			if (!this.scrollableNode) {
 				this.scrollableNode = this; // If unspecified, defaults to 'this'.
 			}
-			dom.setSelectable(this.scrollableNode, false);
+
+			// Disable text selection in scrollable node as per
+			// http://stackoverflow.com/questions/2700000/how-to-disable-text-selection-using-jquery
+			this.scrollableNode.setAttribute("unselectable", "on");
+			$(this.scrollableNode)
+				.css("user-select", "none") // maps to WebkitUserSelect, etc.
+				.on("selectstart", false);
 		}),
 
 		refreshRendering: function (props) {
 			if (props.scrollDirection) {
-				domClass.toggle(this.scrollableNode, "d-scrollable", this.scrollDirection !== "none");
-				domClass.toggle(this.scrollableNode, "d-scrollable-h",
-					/^(both|horizontal)$/.test(this.scrollDirection));
-				domClass.toggle(this.scrollableNode, "d-scrollable-v",
-					/^(both|vertical)$/.test(this.scrollDirection));
+				$(this.scrollableNode)
+					.toggleClass("d-scrollable", this.scrollDirection !== "none")
+					.toggleClass("d-scrollable-h", /^(both|horizontal)$/.test(this.scrollDirection))
+					.toggleClass("d-scrollable-v", /^(both|vertical)$/.test(this.scrollDirection));
 			}
 		},
 
@@ -219,44 +221,29 @@ define([
 					x: to.x !== undefined ? scrollableNode.scrollLeft : undefined,
 					y: to.y !== undefined ? scrollableNode.scrollTop : undefined
 				};
+				// See http://james.padolsey.com/javascript/fun-with-jquerys-animate/
 				var self = this;
-				var anim = function () {
-					// dojo/_base/fx._Line cannot be used for animating several
-					// properties at once (scrollTop and scrollLeft in our case). 
-					// Hence, using instead a custom function:
-					var Curve = function (/*int*/ start, /*int*/ end) {
-						this.start = start;
-						this.end = end;
-					};
-					Curve.prototype.getValue = function (/*float*/ n) {
-						return {
-							x: ((to.x - from.x) * n) + from.x,
-							y: ((to.y - from.y) * n) + from.y
-						};
-					};
-					var animation = new baseFx.Animation({
-						beforeBegin: function () {
-							if (this.curve) {
-								delete this.curve;
-							}
-							animation.curve = new Curve(from, to);
-						},
-						onAnimate: function (val) {
-							if (val.x !== undefined) {
-								scrollableNode.scrollLeft = val.x;
-							}
-							if (val.y !== undefined) {
-								scrollableNode.scrollTop = val.y;
-							}
-						},
-						easing: easing.expoInOut, // TODO: IMPROVEME
-						duration: duration,
-						rate: 20 // TODO: IMPROVEME
-					});
-					self._animation = animation;
-					return animation;
-				};
-				anim().play();
+				return self._animation = $(from).animate(to, {
+					duration: duration,
+					rate: 20, // TODO: IMPROVEME
+					step: function(val) {
+						if (this.x !== undefined) {
+							scrollableNode.scrollLeft = this.x;
+						}
+						if (this.y !== undefined) {
+							scrollableNode.scrollTop = this.y;
+						}
+					},
+					complete: function () {
+						if (this.x !== undefined) {
+							scrollableNode.scrollLeft = this.x;
+						}
+						if (this.y !== undefined) {
+							scrollableNode.scrollTop = this.y;
+						}
+						delete self._animation;
+					}
+				});
 			}
 		},
 
@@ -265,7 +252,7 @@ define([
 		 * Does nothing otherwise.
 		 */
 		_stopAnimation: function () {
-			if (this._animation && this._animation.status() === "playing") {
+			if (this._animation) {
 				this._animation.stop();
 			}
 		}

@@ -1,14 +1,13 @@
 /** @module delite/Widget */
 define([
 	"dcl/dcl",
-	"dojo/dom", // dom.byId
-	"dojo/dom-class", // domClass.add domClass.replace
+	"requirejs-dplugins/jquery!attributes/classes",	// addClass(), removeClass()
 	"./features",
 	"decor/Invalidating",
 	"./CustomElement",
 	"./register",
 	"./features!bidi?./Bidi"
-], function (dcl, dom, domClass, has, Invalidating, CustomElement, register, Bidi) {
+], function (dcl, $, has, Invalidating, CustomElement, register, Bidi) {
 	// Used to generate unique id for each widget
 	var cnt = 0;
 
@@ -82,10 +81,10 @@ define([
 			}
 
 			if ("baseClass" in oldVals) {
-				domClass.replace(this, this.baseClass, oldVals.baseClass);
+				$(this).removeClass(oldVals.baseClass).addClass(this.baseClass);
 			}
 			if ("dir" in oldVals) {
-				domClass.toggle(this, "d-rtl", !this.isLeftToRight());
+				$(this).toggleClass("d-rtl", !this.isLeftToRight());
 			}
 		},
 
@@ -172,7 +171,7 @@ define([
 		setClassComponent: function (component, value, node) {
 			if (!node) { node = this; }
 			var oldValProp = "_" + component + "Class";
-			domClass.replace(node, value, node[oldValProp] || "");
+			$(node).removeClass(node[oldValProp] || "").addClass(value);
 			node[oldValProp] = value;
 		},
 
