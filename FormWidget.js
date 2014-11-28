@@ -5,12 +5,12 @@ define([
 ], function (dcl, Widget) {
 
 	/**
-	 * Base class for widgets that extend `HTMLElement`, but conceptually correspond
-	 * to native HTML elements such as `<checkbox>` or `<button>`,
-	 * which can be children of a `<form>` node.
+	 * Base class for widgets that extend `HTMLElement`, but conceptually correspond to form elements.
 	 *
-	 * Note that FormWidget requires that `this.focusNode` be a sub-node of the widget, rather than the
-	 * root node.  This is because of its processing of `tabIndex`.
+	 * Most form widgets should extend FormValueWidget rather than extending FormWidget directly, but
+	 * FormWidget should be the base class for form widgets that *don't* have an end user settable value,
+	 * for example checkboxes and buttons.  Note that clicking a checkbox changes its state (i.e. the value of
+	 * its `checked` property), but does not change its `value` property.
 	 *
 	 * @mixin module:delite/FormWidget
 	 * @augments module:delite/Widget
@@ -30,12 +30,19 @@ define([
 
 		/**
 		 * Corresponds to the native HTML `<input>` element's attribute.
+		 *
+		 * For widgets that directly extend FormWidget (ex: checkboxes), the value is set programatically when the
+		 * widget is created, and the end user merely changes the widget's state, i.e. the `checked` property.
+		 *
+		 * For widgets that extend FormValueWidget, the end user can interactively change the `value` property via
+		 * mouse, keyboard, touch, etc.
+		 *
 		 * @member {string}
 		 */
 		value: "",
 
 		/**
-		 * The order in which fields are traversed when user hits the tab key.
+		 * The order in which fields are traversed when user presses the tab key.
 		 * @member {number}
 		 * @default 0
 		 */
@@ -55,6 +62,30 @@ define([
 		 * @default false
 		 */
 		disabled: false,
+
+		/**
+		 * The Element within the widget, often an `<input>`, that gets the focus.
+		 * Aria roles are applied to this node rather than the widget root node.
+		 *
+		 * Note that FormWidget requires that `focusNode` is a sub-node of the widget, rather than the
+		 * root node.  This is because of its processing of `tabIndex`.
+		 *
+		 * @member {HTMLElement} module:delite/FormWidget#focusNode
+		 * @protected
+		 */
+
+		/**
+		 * A form element, typically an `<input>`, embedded within the widget, and likely hidden.
+		 * It is used to represent the widget's state/value during form submission.
+		 *
+		 * FormWidget updates `valueNode`'s `disabled` property to match the widget's disabled property.
+		 * FormValueWidget additionally updates `valueNodes`'s `value` and `readOnly` properties to match the
+		 * widget's equivalent properties.
+		 * Subclasses of FormWidget like checkboxes and radios should update `valueNode`'s `checked` property.
+		 *
+		 * @member {HTMLElement} module:delite/FormWidget#valueNode
+		 * @protected
+		 */
 
 		refreshRendering: function (oldValues) {
 			// Handle disabled and tabIndex, across the tabStops and root node.
