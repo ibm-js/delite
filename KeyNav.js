@@ -1,13 +1,13 @@
 /** @module delite/KeyNav */
 define([
 	"dcl/dcl",
-	"dojo/dom-class",
+	"requirejs-dplugins/jquery!attributes/classes",	// addClass(), removeClass()
 	"./keys", // keys.END keys.HOME, keys.LEFT_ARROW etc.
 	"./features",
 	"./Widget",
 	"dpointer/events",		// so can just monitor for "pointerdown"
 	"./activationTracker"	// delite-deactivated event when focus removed from KeyNav and logical descendants
-], function (dcl, domClass, keys, has, Widget) {
+], function (dcl, $, keys, has, Widget) {
 	
 	/**
 	 * Dispatched after the user has selected a different descendant, by clicking, arrow keys,
@@ -334,7 +334,7 @@ define([
 				}
 
 				if (this.navigatedDescendant) {
-					domClass.remove(this.navigatedDescendant, "d-active-descendant");
+					$(this.navigatedDescendant).removeClass("d-active-descendant");
 				}
 
 				this.emit("keynav-child-navigated", {
@@ -345,7 +345,7 @@ define([
 				// mark that the new node is the currently navigated one
 				this.navigatedDescendant = child;
 				if (child) {
-					domClass.add(child, "d-active-descendant");
+					$(child).addClass("d-active-descendant");
 				}
 			}
 		},
