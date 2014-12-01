@@ -76,6 +76,22 @@ define([], function () {
 		},
 
 		/**
+		 * Enforce base direction of the given text according to this.textDir.
+		 *
+		 * @param {string} text
+		 * @returns {string}
+		 * @protected
+		 */		
+		applyTextDirection: function (text) {
+			if (this.textDir) {
+				return this.wrapWithUcc(this.removeUcc(text));
+			}
+			else {
+				return this.removeUcc(text);
+			}
+		},
+		
+		/**
 		 * Returns specified text with UCC added to enforce widget's textDir setting.
 		 *
 		 * @param {string} text
@@ -83,10 +99,23 @@ define([], function () {
 		 * @protected
 		 */
 		wrapWithUcc: function (text) {
-			var dir = this.textDir === "auto" ? this._checkContextual(text) : this.textDir;
+			var dir = this.textDir === "auto" ? this._checkContextual(text) : (/^(rtl|ltr)$/i).test(this.textDir)? this.textDir : this.isLeftToRight()? "ltr" : "rtl";
 			return (dir === "ltr" ? LRE : RLE) + text + PDF;
 		},
 
+		/**
+		 * Remomes UCC from specified text.
+		 *
+		 * @param {string} text
+		 * @returns {string}
+		 * @protected
+		 */		
+		removeUcc: function (text) {
+			if (text) {
+				return text.replace(/[\u200E\u200F\u202A-\u202C]/g, "");
+			}
+			return text;
+		},
 		/**
 		 * Wraps by UCC (Unicode control characters) option's text according to this.textDir.
 		 *
