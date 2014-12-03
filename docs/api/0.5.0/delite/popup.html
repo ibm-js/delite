@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Module: delite/popup</title>
+
+    <script src="../scripts/prettify/prettify.js"> </script>
+    <script src="../scripts/prettify/lang-css.js"> </script>
+    <style>
+        [inherited] {
+            display: none;
+        }
+
+        [inherited-show] {
+            display: block;
+        }
+    </style>
+    <script>
+        function toggleInherited(event) {
+            var shouldShow = event.type !== "DOMContentLoaded" && !document.querySelector("[inherited][inherited-show]");
+            Array.prototype.forEach.call(document.querySelectorAll("dl"), function (elem) {
+                var inherited = elem.querySelectorAll("[inherited]");
+                Array.prototype.forEach.call(inherited, function (elem) {
+                    if (shouldShow) {
+                        elem.setAttribute("inherited-show", "");
+                    } else {
+                        elem.removeAttribute("inherited-show");
+                    }
+                });
+                if (inherited.length > 0) {
+                    var header = elem.previousElementSibling;
+                    if (header.tagName === "H3") {
+                        header.style.display = parseInt(document.defaultView.getComputedStyle(elem).height) > 0 ? "" : "none";
+                    }
+                }
+            });
+            if (event.type !== "DOMContentLoaded") {
+                event.target.innerHTML = (shouldShow ? "Hide" : "Show") + " inherited";
+            } else if (!document.querySelector("[inherited]")) {
+                var toggleLink = document.getElementById("toggleinherited");
+                if (toggleLink) {
+                    toggleLink.style.display = "none";
+                }
+            }
+        }
+        window.addEventListener("DOMContentLoaded", toggleInherited);
+    </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="../styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="../styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Module: delite/popup</h1>
+
+    
+
+
+
+<section>
+
+<header>
+    <h2>
+    delite/popup
+    </h2>
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+
+    
+        
+            <div class="description"><p>Show drop downs (ex: the select list of a ComboBox) or popups (ex: right-click context menus).</p></div>
+        
+
+        
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+
+    <a id="toggleinherited" href="#" onclick="toggleInherited(event)">Show inherited</a>
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        <dl>
+            
+            
+<dt>
+    
+    <h4 class="name" id="close"><span class="type-signature">&lt;static> </span>close<span class="signature">(<span class="optional">popup</span>)</span><span class="type-signature"></span></h4>
+    
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Close specified popup and any popups that it parented.  If no popup is specified, closes all popups.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Argument</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>popup</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="delite/Widget.html">module:delite/Widget</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="../popup.js.html">delite/popup.js</a>, <a href="../popup.js.html#line459">line 459</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+            
+<dt>
+    
+    <h4 class="name" id="getTopPopup"><span class="type-signature">&lt;static> </span>getTopPopup<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="delite/Widget.html">module:delite/Widget</a>}</span></h4>
+    
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Compute the closest ancestor popup that's <em>not</em> a child of another popup.
+Ex: For a TooltipDialog with a button that spawns a tree of menus, find the popup of the button.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="../popup.js.html">delite/popup.js</a>, <a href="../popup.js.html#line225">line 225</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="delite/Widget.html">module:delite/Widget</a></span>
+
+
+    </dd>
+</dl>
+
+        
+
+    
+</dd>
+
+        
+            
+            
+<dt>
+    
+    <h4 class="name" id="hide"><span class="type-signature">&lt;static> </span>hide<span class="signature">(widget)</span><span class="type-signature"></span></h4>
+    
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Hide this popup widget (until it is ready to be shown).
+Initialization for widgets that will be used as popups.</p>
+<p>Also puts widget inside a wrapper DIV (if not already in one).</p>
+<p>If popup widget needs to layout it should do so when it is made visible,
+and popup._onShow() is called.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>widget</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="delite/Widget.html">module:delite/Widget</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="../popup.js.html">delite/popup.js</a>, <a href="../popup.js.html#line210">line 210</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+            
+<dt>
+    
+    <h4 class="name" id="moveOffScreen"><span class="type-signature">&lt;static> </span>moveOffScreen<span class="signature">(widget)</span><span class="type-signature"> &rarr; {HTMLElement}</span></h4>
+    
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Moves the popup widget off-screen.  Do not use this method to hide popups when not in use, because
+that will create an accessibility issue: the offscreen popup will still be in the tabbing order.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>widget</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="delite/Widget.html">module:delite/Widget</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="../popup.js.html">delite/popup.js</a>, <a href="../popup.js.html#line181">line 181</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">HTMLElement</span>
+
+
+    </dd>
+</dl>
+
+        
+
+    
+</dd>
+
+        
+            
+            
+<dt>
+    
+    <h4 class="name" id="open"><span class="type-signature">&lt;static> </span>open<span class="signature">(args)</span><span class="type-signature"> &rarr; {*}</span></h4>
+    
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Popup the widget at the specified position.</p>
+<p>Note that whatever widget called delite/popup.open() should also require activationTracker and listen for
+delite-deactivated event to know that focus has moved somewhere
+else and thus the popup should be closed.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>args</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="delite/popup.html#OpenArgs">module:delite/popup.OpenArgs</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="../popup.js.html">delite/popup.js</a>, <a href="../popup.js.html#line249">line 249</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>If orient !== center then returns the alignment of the popup relative to the anchor node.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">*</span>
+
+
+    </dd>
+</dl>
+
+        
+
+    
+        <h5>Examples</h5>
+        
+    <pre class="prettyprint"><code>// Open at the mouse position
+popup.open({popup: menuWidget, x: evt.pageX, y: evt.pageY});</code></pre>
+
+    <pre class="prettyprint"><code>// Open the widget as a dropdown
+popup.open({parent: this, popup: menuWidget, around: this, onClose: function(){...}});</code></pre>
+
+    
+</dd>
+
+        </dl>
+    
+
+    
+        <h3 class="subsection-title">Type Definitions</h3>
+
+        <dl>
+                
+<dt>
+    <h4 class="name" id="OpenArgs">OpenArgs</h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>Arguments to delite/popup#open() method.</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">Object</span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+        <h5 class="subsection-title">Properties:</h5>
+
+        <dl>
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>popup</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="delite/Widget.html">module:delite/Widget</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The Widget to display.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>parent</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="delite/Widget.html">module:delite/Widget</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The button etc. that is displaying this popup.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>around</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Element</span>
+|
+
+<span class="param-type">Rectangle</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>DOM node (typically a button);
+place popup relative to this node.  (Specify this <em>or</em> <code>x</code> and <code>y</code> properties.)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>x</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Absolute horizontal position (in pixels) to place node at.
+(Specify this <em>or</em> <code>around</code> parameter.)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>y</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Absolute vertical position (in pixels) to place node at.
+(Specify this <em>or</em> <code>around</code> parameter.)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>orient</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;string></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>When the <code>around</code> parameter is specified, <code>orient</code> should be a
+list of positions to try, ex. <code>[ &quot;below&quot;, &quot;above&quot; ]</code>
+delite/popup.open() tries to position the popup according to each specified position, in order,
+until the popup appears fully within the viewport.  The default value is <code>[&quot;below&quot;, &quot;above&quot;]</code>.
+When an (x,y) position is specified rather than an around node, orient is either
+&quot;R&quot; or &quot;L&quot;.  R (for right) means that it tries to put the popup to the right of the mouse,
+specifically positioning the popup's top-right corner at the mouse position, and if that doesn't
+fit in the viewport, then it tries, in order, the bottom-right corner, the top left corner,
+and the top-right corner.</p>
+<p>Alternately, orient can be an array <code>[&quot;center&quot;]</code>, which pops up the specified node in the center of
+the viewport, like a dialog.  It will shrink the size of the node if necessary, in which case the node
+must be designed so that scrolling occurs in the right place.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>onCancel</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Callback when user has canceled the popup by:</p>
+<ol>
+<li>hitting ESC or</li>
+<li>by using the popup widget's proprietary cancel mechanism (like a cancel button in a dialog);
+i.e. whenever popupWidget.onCancel() is called, args.onCancel is called</li>
+</ol></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>onClose</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Callback whenever this popup is closed.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>padding</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Position</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Adding a buffer around the opening position.
+This is only used when <code>around</code> is not set.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>maxHeight</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The max height for the popup.  Any popup taller than this will have scrollbars.
+Set to Infinity for no max height.  Default is to limit height to available space in viewport,
+above or below the aroundNode or specified x/y position.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table></dl>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="../popup.js.html">delite/popup.js</a>, <a href="../popup.js.html#line27">line 27</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+</dd>
+
+            </dl>
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="../delite/a11y.html">delite/a11y</a></li><li><a href="../delite/a11yclick.html">delite/a11yclick</a></li><li><a href="../delite/activationTracker.html">delite/activationTracker</a></li><li><a href="../delite/BackgroundIframe.html">delite/BackgroundIframe</a></li><li><a href="../delite/Bidi.html">delite/Bidi</a></li><li><a href="../delite/Container.html">delite/Container</a></li><li><a href="../delite/CssState.html">delite/CssState</a></li><li><a href="../delite/CustomElement.html">delite/CustomElement</a></li><li><a href="../delite/Dialog.html">delite/Dialog</a></li><li><a href="../delite/DialogUnderlay.html">delite/DialogUnderlay</a></li><li><a href="../delite/DisplayContainer.html">delite/DisplayContainer</a></li><li><a href="../delite/FormValueWidget.html">delite/FormValueWidget</a></li><li><a href="../delite/FormWidget.html">delite/FormWidget</a></li><li><a href="../delite/handlebars.html">delite/handlebars</a></li><li><a href="../delite/HasDropDown.html">delite/HasDropDown</a></li><li><a href="../delite/KeyNav.html">delite/KeyNav</a></li><li><a href="../delite/keys.html">delite/keys</a></li><li><a href="../delite/place.html">delite/place</a></li><li><a href="../delite/popup.html">delite/popup</a></li><li><a href="../delite/register.html">delite/register</a></li><li><a href="../delite/Scrollable.html">delite/Scrollable</a></li><li><a href="../delite/Selection.html">delite/Selection</a></li><li><a href="../delite/Store.html">delite/Store</a></li><li><a href="../delite/StoreMap.html">delite/StoreMap</a></li><li><a href="../delite/Template.html">delite/Template</a></li><li><a href="../delite/theme.html">delite/theme</a></li><li><a href="../delite/uacss.html">delite/uacss</a></li><li><a href="../delite/Viewport.html">delite/Viewport</a></li><li><a href="../delite/Widget.html">delite/Widget</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha7</a> on Wed Dec 03 2014 16:14:50 GMT+0100 (Romance Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="../scripts/linenumber.js"> </script>
+</body>
+</html>

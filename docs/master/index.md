@@ -26,6 +26,7 @@ Specifically, it's based on the following concepts:
 * [Delite internal architecture documentation](architecture.html)
 * [Migration notes for dijit based applications](migration.html)
 * [Notes on theme generation](themes.html)
+* [How to load delite modules](setup.html)
 
 ## Utility modules
 
@@ -39,8 +40,6 @@ Specifically, it's based on the following concepts:
 * [register](register.html) - utility module for declaring new custom element types
 * [template](template.html) - code generation library used by [handlebars!](handlebars.html) plugin
 * [theme!](theme.html) - CSS loading plugin, like [css!](css.html) but picks the CSS file based on the current theme
-* [typematic](typematic.html) - code to repetitively call a user specified callback
-  method when a specific key or mouse click over a specific DOM node is held down for a specific amount of time.
 * [uacss](uacss.html) - utility to set CSS classes on document root based on the current browser
 * [Viewport](Viewport.html) - utility to notify the application when the viewport size is changed, and
   also to get the effective viewport size on mobile devices when the virtual keyboard is displayed
