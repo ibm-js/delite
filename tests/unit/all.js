@@ -17,5 +17,6 @@ define([
 	"./Scrollable",
 	"./KeyNav",
 	"./FormWidget",
-	"./FormValueWidget"
+	"./FormValueWidget",
+	"./Bidi"
 ]);
