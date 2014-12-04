@@ -1,6 +1,6 @@
 {
 	"name": "delite",
-	"version": "0.5.0-beta",
+	"version": "0.5.0",
 	"dependencies": {
 		"dcl": "1.1.x",
 		"decor": "0.4.x",
@@ -13,7 +13,7 @@
 		"requirejs-text": "2.0.x"
 	},
 	"devDependencies": {
-		"dstore" : "1.0.x",
+		"dstore": "1.0.x",
 		"platform": "Polymer/platform#~0.1.4",
 		"dijit": ">=1.9.1"
 	},
