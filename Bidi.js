@@ -39,8 +39,13 @@ define([], function () {
 		 * @protected
 		 */
 		getTextDir: function (text) {
+<<<<<<< HEAD
 			return this.textDir === "auto" ? this._checkContextual(text) :
 				(/^(rtl|ltr)$/i).test(this.textDir) ? this.textDir :
+=======
+			return this.textDir === "auto" ? this._checkContextual(text) : 
+				(/^(rtl|ltr)$/i).test(this.textDir)? this.textDir : 
+>>>>>>> Adding some changes and tests
 				this.isLeftToRight() ? "ltr" : "rtl";
 		},
 
@@ -104,9 +109,15 @@ define([], function () {
 		 * @protected
 		 */
 		wrapWithUcc: function (text) {
+<<<<<<< HEAD
 			var dir = this.textDir === "auto" ? this._checkContextual(text) :
 				(/^(rtl|ltr)$/i).test(this.textDir) ? this.textDir :
 				this.isLeftToRight() ? "ltr" : "rtl";
+=======
+			var dir = this.textDir === "auto" ? this._checkContextual(text) : 
+				(/^(rtl|ltr)$/i).test(this.textDir)? this.textDir : 
+				this.isLeftToRight()? "ltr" : "rtl";
+>>>>>>> Adding some changes and tests
 			return (dir === "ltr" ? LRE : RLE) + text + PDF;
 		},
 
