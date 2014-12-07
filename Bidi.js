@@ -39,8 +39,8 @@ define([], function () {
 		 * @protected
 		 */
 		getTextDir: function (text) {
-			return this.textDir === "auto" ? this._checkContextual(text) : 
-				(/^(rtl|ltr)$/i).test(this.textDir)? this.textDir : 
+			return this.textDir === "auto" ? this._checkContextual(text) :
+				(/^(rtl|ltr)$/i).test(this.textDir) ? this.textDir :
 				this.isLeftToRight() ? "ltr" : "rtl";
 		},
 
@@ -86,7 +86,7 @@ define([], function () {
 		 * @param {string} text
 		 * @returns {string}
 		 * @protected
-		 */		
+		 */
 		applyTextDirection: function (text) {
 			if (this.textDir) {
 				return this.wrapWithUcc(this.removeUcc(text));
@@ -104,9 +104,9 @@ define([], function () {
 		 * @protected
 		 */
 		wrapWithUcc: function (text) {
-			var dir = this.textDir === "auto" ? this._checkContextual(text) : 
-				(/^(rtl|ltr)$/i).test(this.textDir)? this.textDir : 
-				this.isLeftToRight()? "ltr" : "rtl";
+			var dir = this.textDir === "auto" ? this._checkContextual(text) :
+				(/^(rtl|ltr)$/i).test(this.textDir) ? this.textDir :
+				this.isLeftToRight() ? "ltr" : "rtl";
 			return (dir === "ltr" ? LRE : RLE) + text + PDF;
 		},
 
@@ -116,7 +116,7 @@ define([], function () {
 		 * @param {string} text
 		 * @returns {string}
 		 * @protected
-		 */		
+		 */
 		removeUcc: function (text) {
 			if (text) {
 				return text.replace(/[\u200E\u200F\u202A-\u202C]/g, "");

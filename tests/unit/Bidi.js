@@ -26,14 +26,14 @@ define([
 			container.appendChild(div);
 			input = document.createElement("input");
 			input.type = "text";
-			var BidiWidget = dcl(Widget,Bidi);
+			var BidiWidget = dcl(Widget, Bidi);
 			SimpleWidget = register("check-bidi", [HTMLElement, BidiWidget], { });
 			widget = new SimpleWidget();
 			container.appendChild(widget);
-			widget.startup();			
+			widget.startup();
 		},
 
-		"getTextDir": function() {
+		"getTextDir": function () {
 			assert.strictEqual(widget.getTextDir(ltrText), defaultDir, "latin, default");
 			widget.textDir = "auto";
 			assert.strictEqual(widget.getTextDir(ltrText), "ltr", "latin, auto");
@@ -47,7 +47,7 @@ define([
 			assert.strictEqual(widget.getTextDir(neutralText), defaultDir, "neutral, auto");
 		},
 		
-		"applyTextDirection": function() {
+		"applyTextDirection": function () {
 			widget.textDir = "ltr";
 			assert.strictEqual(widget.applyTextDirection(rtlText), "\u202a" + rtlText + "\u202c", "bidi, ltr");
 			widget.textDir = "rtl";
@@ -55,13 +55,13 @@ define([
 			widget.textDir = "auto";
 			assert.strictEqual(widget.applyTextDirection(rtlText), "\u202b" + rtlText + "\u202c", "bidi, auto");
 			assert.strictEqual(widget.applyTextDirection(ltrText), "\u202a" + ltrText + "\u202c", "latin, auto");
-			assert.strictEqual(widget.applyTextDirection(neutralText), 
-					(defaultDir === "rtl"? "\u202b" : "\u202a") + neutralText + "\u202c", "neutral, auto");
+			assert.strictEqual(widget.applyTextDirection(neutralText),
+					(defaultDir === "rtl" ? "\u202b" : "\u202a") + neutralText + "\u202c", "neutral, auto");
 			widget.textDir = "";
 			assert.strictEqual(widget.applyTextDirection(wrappedWithUccText), ltrText, "wrapped, default");
 		},
 		
-		"applyTextDir": function() {
+		"applyTextDir": function () {
 			div.innerHTML = rtlText;
 			input.value = rtlText;
 			widget.textDir = "ltr";
@@ -81,7 +81,7 @@ define([
 			assert.strictEqual(input.dir, defaultDir, "input, textDir: default");
 		},
 		
-		"enforceTextDirWithUcc": function() {
+		"enforceTextDirWithUcc": function () {
 			div.innerHTML = rtlText;
 			widget.textDir = "ltr";
 			widget.enforceTextDirWithUcc(div);
@@ -99,13 +99,13 @@ define([
 			div.innerHTML = neutralText;
 			widget.textDir = "auto";
 			widget.enforceTextDirWithUcc(div);
-			assert.strictEqual(div.textContent, 
-					(defaultDir === "rtl"? "\u202b" : "\u202a") + neutralText + "\u202c", "neutral, auto");
+			assert.strictEqual(div.textContent,
+					(defaultDir === "rtl" ? "\u202b" : "\u202a") + neutralText + "\u202c", "neutral, auto");
 			div.innerHTML = wrappedWithUccText;
 			widget.textDir = "";
 			widget.enforceTextDirWithUcc(div);
 			assert.strictEqual(div.textContent, ltrText, "wrapped, default");
-		}		
+		}
 	});
 
 });
