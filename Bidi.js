@@ -39,7 +39,9 @@ define([], function () {
 		 * @protected
 		 */
 		getTextDir: function (text) {
-			return this.textDir === "auto" ? this._checkContextual(text) : this.textDir;
+			return this.textDir === "auto" ? this._checkContextual(text) :
+				(/^(rtl|ltr)$/i).test(this.textDir) ? this.textDir :
+				this.isLeftToRight() ? "ltr" : "rtl";
 		},
 
 		/**
@@ -53,11 +55,11 @@ define([], function () {
 			// look for strong (directional) characters
 			var fdc = /[A-Za-z\u05d0-\u065f\u066a-\u06ef\u06fa-\u07ff\ufb1d-\ufdff\ufe70-\ufefc]/.exec(text);
 			// if found return the direction that defined by the character, else return widgets dir as default.
-			return fdc ? (fdc[0] <= "z" ? "ltr" : "rtl") : this.dir ? this.dir : this.isLeftToRight() ? "ltr" : "rtl";
+			return fdc ? (fdc[0] <= "z" ? "ltr" : "rtl") : this.isLeftToRight() ? "ltr" : "rtl";
 		},
 
 		/**
-		 * Set element.dir according to this.textDir, assuming this.textDir has a value.
+		 * Set element.dir according to this.textDir.
 		 *
 		 * @param {HTMLElement} element - The text element to be set. Should have dir property.
 		 * @protected
@@ -73,8 +75,27 @@ define([], function () {
 				}
 				element.dir = textDir;
 			}
+			else {
+				element.dir = this.isLeftToRight() ? "ltr" : "rtl";
+			}
 		},
 
+		/**
+		 * Enforce base direction of the given text according to this.textDir.
+		 *
+		 * @param {string} text
+		 * @returns {string}
+		 * @protected
+		 */
+		applyTextDirection: function (text) {
+			if (this.textDir) {
+				return this.wrapWithUcc(this.removeUcc(text));
+			}
+			else {
+				return this.removeUcc(text);
+			}
+		},
+		
 		/**
 		 * Returns specified text with UCC added to enforce widget's textDir setting.
 		 *
@@ -83,10 +104,25 @@ define([], function () {
 		 * @protected
 		 */
 		wrapWithUcc: function (text) {
-			var dir = this.textDir === "auto" ? this._checkContextual(text) : this.textDir;
+			var dir = this.textDir === "auto" ? this._checkContextual(text) :
+				(/^(rtl|ltr)$/i).test(this.textDir) ? this.textDir :
+				this.isLeftToRight() ? "ltr" : "rtl";
 			return (dir === "ltr" ? LRE : RLE) + text + PDF;
 		},
 
+		/**
+		 * Removes UCC from specified text.
+		 *
+		 * @param {string} text
+		 * @returns {string}
+		 * @protected
+		 */
+		removeUcc: function (text) {
+			if (text) {
+				return text.replace(/[\u200E\u200F\u202A-\u202C]/g, "");
+			}
+			return text;
+		},
 		/**
 		 * Wraps by UCC (Unicode control characters) option's text according to this.textDir.
 		 *
@@ -98,7 +134,7 @@ define([], function () {
 		 */
 		enforceTextDirWithUcc: function (node) {
 			node.originalText = node.text;
-			node.innerHTML = this.wrapWithUcc(node.innerHTML);
+			node.innerHTML = this.applyTextDirection(node.innerHTML);
 		},
 
 		/**
