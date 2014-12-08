@@ -31,9 +31,15 @@ define([
 
 	registerSuite({
 		name: "CustomElement",
-		setup: function () {
+
+		beforeEach: function () {
 			container = document.createElement("div");
 			document.body.appendChild(container);
+		},
+
+
+		afterEach: function () {
+			container.parentNode.removeChild(container);
 		},
 
 		instantiation: {
@@ -111,42 +117,40 @@ define([
 			}
 		},
 
-		destruction: {
-			"#own": function () {
-				register("test-ce-lifecycle-custom-element", [HTMLElement, CustomElement], {
-					createdCallback: function () {
-						// Rather odd call to this.own() for testing the connections are dropped on destroy()
-						this.own(advise.after(obj, "foo", function () {
-							calls++;
-						}, true));
-					}
-				});
-				container = document.createElement("div");
-				document.body.appendChild(container);
-				container.innerHTML +=
-					"<test-ce-lifecycle-custom-element id='w1'></test-ce-lifecycle-custom-element>" +
-					"<test-ce-lifecycle-custom-element id='w2'></test-ce-lifecycle-custom-element>";
-				register.parse(container);
+		"own and destroy": function () {
+			// Setup ownership
+			register("test-ce-lifecycle-custom-element", [HTMLElement, CustomElement], {
+				createdCallback: function () {
+					// Rather odd call to this.own() for testing the connections are dropped on destroy()
+					this.own(advise.after(obj, "foo", function () {
+						calls++;
+					}, true));
+				}
+			});
 
-				// test the connection
-				assert.strictEqual(calls, 0, "foo() not called yet");
-				obj.foo();
-				assert.strictEqual(calls, 2, "foo() called from each custom element");
-			},
+			container.innerHTML +=
+				"<test-ce-lifecycle-custom-element id='w1'></test-ce-lifecycle-custom-element>" +
+				"<test-ce-lifecycle-custom-element id='w2'></test-ce-lifecycle-custom-element>";
+			register.parse(container);
 
-			"#destroy": function () {
-				var w = document.getElementById("w1");
-				w.destroy();
-				assert.ok(!document.getElementById("w1"), "custom element no longer exists");
+			// test the connection
+			assert.strictEqual(calls, 0, "foo() not called yet");
+			obj.foo();
+			assert.strictEqual(calls, 2, "foo() called from each custom element");
 
-				// test the connection from w1 was destroyed (w2 still there)
-				calls = 0;
-				obj.foo();
-				assert.strictEqual(calls, 1, "connection was deleted");
 
-				// test the DOM node was removed
-				assert.ok(!document.getElementById("w1"), "DOM Node removed");
-			}
+			// Then destroy
+			var w = document.getElementById("w1");
+			w.destroy();
+			assert.ok(!document.getElementById("w1"), "custom element no longer exists");
+
+			// test the connection from w1 was destroyed (w2 still there)
+			calls = 0;
+			obj.foo();
+			assert.strictEqual(calls, 1, "connection was deleted");
+
+			// test the DOM node was removed
+			assert.ok(!document.getElementById("w1"), "DOM Node removed");
 		},
 
 		"#on": {
@@ -251,9 +255,7 @@ define([
 		},
 
 		"misc methods": {
-			setup: function () {
-				container = document.createElement("div");
-				document.body.appendChild(container);
+			"#findCustomElements": function () {
 				register("test-ce-foo", [HTMLElement, CustomElement], {
 					name: "",
 					attr1: 0,
@@ -271,14 +273,10 @@ define([
 				});
 				container.innerHTML = html;
 				register.parse(container);
-			},
-			"#findCustomElements": function () {
+
 				assert.strictEqual(CustomElement.prototype.findCustomElements(container).length, 3);
 				assert.strictEqual(
 					CustomElement.prototype.findCustomElements(document.getElementById("threeWrapper")).length, 1);
-			},
-			teardown: function () {
-				container.parentNode.removeChild(container);
 			}
 		}
 	});
