@@ -17,6 +17,10 @@
 		"platform": "Polymer/platform#~0.1.4",
 		"dijit": ">=1.9.1"
 	},
+	"keywords": [
+		"web-components",
+		"custom-elements"
+	],
 	"ignore": [
 		".jshintrc",
 		".gitattributes",
