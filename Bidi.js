@@ -39,8 +39,18 @@ define([], function () {
 		 * @protected
 		 */
 		getTextDir: function (text) {
+<<<<<<< HEAD
+<<<<<<< HEAD
 			return this.textDir === "auto" ? this._checkContextual(text) :
 				(/^(rtl|ltr)$/i).test(this.textDir) ? this.textDir :
+=======
+			return this.textDir === "auto" ? this._checkContextual(text) : 
+				(/^(rtl|ltr)$/i).test(this.textDir)? this.textDir : 
+>>>>>>> Adding some changes and tests
+=======
+			return this.textDir === "auto" ? this._checkContextual(text) :
+				(/^(rtl|ltr)$/i).test(this.textDir) ? this.textDir :
+>>>>>>> Remove jshint errors
 				this.isLeftToRight() ? "ltr" : "rtl";
 		},
 
@@ -104,9 +114,21 @@ define([], function () {
 		 * @protected
 		 */
 		wrapWithUcc: function (text) {
+<<<<<<< HEAD
+<<<<<<< HEAD
 			var dir = this.textDir === "auto" ? this._checkContextual(text) :
 				(/^(rtl|ltr)$/i).test(this.textDir) ? this.textDir :
 				this.isLeftToRight() ? "ltr" : "rtl";
+=======
+			var dir = this.textDir === "auto" ? this._checkContextual(text) : 
+				(/^(rtl|ltr)$/i).test(this.textDir)? this.textDir : 
+				this.isLeftToRight()? "ltr" : "rtl";
+>>>>>>> Adding some changes and tests
+=======
+			var dir = this.textDir === "auto" ? this._checkContextual(text) :
+				(/^(rtl|ltr)$/i).test(this.textDir) ? this.textDir :
+				this.isLeftToRight() ? "ltr" : "rtl";
+>>>>>>> Remove jshint errors
 			return (dir === "ltr" ? LRE : RLE) + text + PDF;
 		},
 
