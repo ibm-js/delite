@@ -56,6 +56,14 @@ define([
 		 */
 		widgetId: 0,
 
+		/**
+		 * Holds actual value of widget's direction.
+		 * Useful when DOMSubtreeModified event is used to analyze the changes of the property dir.
+		 * @member {string}
+		 * @protected
+		 */
+		actualDir: "",
+		
 		//////////// INITIALIZATION METHODS ///////////////////////////////////////
 
 		/**
@@ -126,8 +134,27 @@ define([
 					break;
 				}
 			}
-		},
 
+			var obj = this;
+			if ("WebKitMutationObserver" in window || "MutationObserver" in window) {
+				var MObserver = window.MutationObserver || window.WebKitMutationObserver;
+				var dirObserver = new MObserver (function () {
+					obj.refreshRendering({dir: obj.getAttribute("dir")});
+				});
+				dirObserver.observe(this, {
+					subtree: false,
+					attributeFilter: ["dir"],
+					attributes: true
+				});
+			}
+			else if (this.checkAttrModified()) {   //ie < 11
+				this.on("DOMAttrModified", this._domAttrModidfiedHandler.bind(this));
+			}
+			else {
+				this.on("DOMSubtreeModified", this._domSubtreeModifiedHandler.bind(this));
+			}
+		},
+		
 		/**
 		 * Processing before `render()`.
 		 *
@@ -273,7 +300,7 @@ define([
 		 */
 		isLeftToRight: function () {
 			var doc = this.ownerDocument;
-			return !(/^rtl$/i).test(this.dir || doc.body.dir || doc.documentElement.dir);
+			return !(/^rtl$/i).test(this.dir || this.actualDir || doc.body.dir || doc.documentElement.dir);
 		},
 
 		/**
@@ -349,7 +376,38 @@ define([
 				}
 			} while ((node = node.parentNode));
 			return null;
+		},
+		
+		_domAttrModidfiedHandler: function (evt) {
+			if (evt.attrName === "dir") {
+				this.refreshRendering({dir: evt.prevValue});
+			}
+		},
+
+		_domSubtreeModifiedHandler: function (evt) {
+			if (this.dir) {
+				if (this.dir !== this.actualDir) {
+					this.actualDir = this.dir;
+					this.style.direction = !this.isLeftToRight()? "rtl" : "ltr";
+					$(this).toggleClass("d-rtl", !this.isLeftToRight());
+					this.refreshRendering({dir: this.dir});
+				}
+				this.removeAttribute("dir");
+			}
+		},
+
+		checkAttrModified: function () {
+			var result = false;
+			var listener = function (evt) {
+				result = true;
+			};
+			document.documentElement.addEventListener("DOMAttrModified", listener, false);
+			document.documentElement.setAttribute("checkAttrModified", true);
+			document.documentElement.removeAttribute("checkAttrModified");
+			document.documentElement.removeEventListener("DOMAttrModified", listener, false);
+			return result;
 		}
+
 	});
 
 	if (has("bidi")) {
