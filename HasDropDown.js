@@ -68,16 +68,6 @@ define([
 		buttonNode: null,
 
 		/**
-		 * Will set CSS class `d-up-arrow-button`, `d-down-arrow-button`, `d-right-arrow-button` etc. on this node
-		 * depending on where the drop down is set to be positioned.
-		 * Can be set in a template via a `attach-point` assignment.
-		 * If missing, then `this.buttonNode` will be used.
-		 * @member {Element}
-		 * @protected
-		 */
-		arrowWrapperNode: null,
-
-		/**
 		 * The node to set the `aria-expanded` class on.
 		 * Can be set in a template via a `attach-point` assignment.
 		 * If missing, then `this.focusNode` or `this.buttonNode` (if `focusNode` is missing) will be used.
@@ -321,20 +311,6 @@ define([
 
 			// trigger initial setting of d-down-arrow class
 			this.notifyCurrentValue("dropDownPosition");
-		},
-
-		refreshRendering: function (props) {
-			if ("dropDownPosition" in props) {
-				// Add a "d-down-arrow" type class to buttonNode so theme can set direction of arrow
-				// based on where drop down will normally appear
-				var defaultPos = {
-					"after": this.isLeftToRight() ? "right" : "left",
-					"before": this.isLeftToRight() ? "left" : "right"
-				}[this.dropDownPosition[0]] || this.dropDownPosition[0] || "down";
-
-				this.setClassComponent("arrowDirectionIcon", "d-" + defaultPos + "-arrow",
-						this.arrowWrapperNode || this.buttonNode);
-			}
 		},
 
 		destroy: function () {

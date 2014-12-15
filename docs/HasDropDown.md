@@ -46,14 +46,6 @@ Note: All of these properties can only be set *before* `Widget#render()` is call
 By default, `delite/HasDropDown` will use either `focusNode` or `domNode` as the element to click to display the drop-down.
 If you want to use a specific element to click to display the drop-down instead, attach that element to `buttonNode`.
 
-### arrowWrapperNode
-
-When `delite/HasDropDown` is instantiated, a CSS class
-`d-up-arrow-button`, `d-down-arrow-button`, `d-right-arrow-button` etc. is added to specify
-which direction the pop-up appears by default relative to the widget.
-By default, these classes are set on `buttonNode`.
-Attaching an element to `arrowWrapperNode` will cause these classes to be applied to that element instead.
-
 ### popupStateNode
 
 When a drop-down is opened, a CSS class `d-drop-down-open` attribute is added to indicate that the drop-down is open.
