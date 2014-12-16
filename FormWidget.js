@@ -79,8 +79,8 @@ define([
 		 * It is used to represent the widget's state/value during form submission.
 		 *
 		 * FormWidget updates `valueNode`'s `disabled` property to match the widget's disabled property.
-		 * FormValueWidget additionally updates `valueNodes`'s `value` and `readOnly` properties to match the
-		 * widget's equivalent properties.
+		 * FormValueWidget additionally updates `valueNodes`'s `value` and `readOnly` properties,
+		 * and `inputNode`'s `readOnly` property, to match the widget's equivalent properties.
 		 * Subclasses of FormWidget like checkboxes and radios should update `valueNode`'s `checked` property.
 		 *
 		 * @member {HTMLElement} module:delite/FormWidget#valueNode
