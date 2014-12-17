@@ -67,11 +67,11 @@ define([
 			if ("readOnly" in oldValues) {
 				var isReadOnly = this.readOnly;
 				if (this.valueNode && this.valueNode !== this) {
-					this.valueNode.readOnly = isReadOnly; // inform screen reader
+					this.valueNode.readOnly = isReadOnly; // prevent value submission
 				}
 				if (this.inputNode !== this.valueNode && // avoid setting readOnly twice
 					this.inputNode && this.inputNode !== this) {
-					this.inputNode.readOnly = isReadOnly; // inform screen reader
+					this.inputNode.readOnly = isReadOnly; // prevent interaction
 				}
 				if (!isReadOnly) {
 					this.removeAttribute("readonly");

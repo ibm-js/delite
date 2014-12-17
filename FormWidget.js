@@ -58,6 +58,8 @@ define([
 
 		/**
 		 * If set to true, the widget will not respond to user input and will not be included in form submission.
+		 * FormWidget automatically updates `valueNode`'s and `inputNode`'s `disabled` property to match the widget's
+		 * `disabled` property.
 		 * @member {boolean}
 		 * @default false
 		 */
@@ -80,11 +82,26 @@ define([
 		 *
 		 * FormWidget updates `valueNode`'s `disabled` property to match the widget's disabled property.
 		 * FormValueWidget additionally updates `valueNodes`'s `value` and `readOnly` properties,
-		 * and `inputNode`'s `readOnly` property, to match the widget's equivalent properties.
+		 * to match the widget's equivalent properties.
 		 * Subclasses of FormWidget like checkboxes and radios should update `valueNode`'s `checked` property.
 		 *
 		 * @member {HTMLElement} module:delite/FormWidget#valueNode
 		 * @protected
+		 * @default undefined
+		 */
+		
+		/**
+		 * An element embedded within the widget, typically an `<input>`, used for end user
+		 * interaction. This property should be set only by widgets that use for end user interaction
+		 * a different element than `valueNode`.
+		 *
+		 * FormWidget updates `inputNode`'s `disabled` property to match the widget's disabled property.
+		 * FormValueWidget additionally updates `inputNodes`'s `readOnly` propertiy, to match the widget's
+		 * equivalent properties.
+		 *
+		 * @member {HTMLElement} module:delite/FormWidget#inputNode
+		 * @protected
+		 * @default undefined
 		 */
 
 		refreshRendering: function (oldValues) {
@@ -96,6 +113,10 @@ define([
 				var isDisabled = this.disabled;
 				if (this.valueNode && this.valueNode !== this) {
 					this.valueNode.disabled = isDisabled; // prevent submit
+				}
+				if (this.inputNode !== this.valueNode && // avoid setting disabled twice
+					this.inputNode && this.inputNode !== this) {
+					this.inputNode.disabled = isDisabled; // prevent interaction
 				}
 				tabStops.forEach(
 					function (nodeName) {
