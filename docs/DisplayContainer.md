@@ -41,12 +41,12 @@ to the `show()` or `hide()` function in order to perform a visual transition whe
 particular it performs a fading in or out transition based on the value of the `fade` parameter.
 
 ```js
-require(["delite/register", "delite/DisplayContainer", "dojo/Deferred"/*, ...*/], 
-  function (register, DisplayContainer, Deferred/*, ...*/) {
+require(["delite/register", "delite/DisplayContainer", "requirejs-dplugins/jquery!deferred"/*, ...*/], 
+  function (register, DisplayContainer, $/*, ...*/) {
   return register("my-container", [HTMElement, DisplayContainer], {
     changeDisplay: dcl.superCall(function(sup) {
       return function (widget, params) {
-        var deferred = new Deferred();
+        var deferred = new $.Deferred();
         if (params.fade === "in") {
           // if there is a parameter telling us to do a fade in let's do it
           $(widget).fadeIn(1000, function() {
@@ -60,7 +60,7 @@ require(["delite/register", "delite/DisplayContainer", "dojo/Deferred"/*, ...*/]
             deferred.resolve();
           });
         }
-        return deferred.promise;
+        return deferred.promise();
       };    
     })
   });
@@ -100,12 +100,12 @@ In the following example the controller is listening to `delite-display-load` ev
 to load child defined in external HTML files:
 
 ```js
-require(["delite/register", "delite/DisplayContainer", "dojo/request"/*, ...*/], 
+require(["delite/register", "delite/DisplayContainer", "requirejs-dplugins/jquery!ajax"/*, ...*/], 
   function (register, DisplayContainer, request/*, ...*/) {
   document.addEventListener("delite-display-load", function(event) {
     event.preventDefault();
     // build a file name from the destination
-    request(event.dest+".html", function (data) {
+    $.ajax(event.dest+".html").done(function (data) {
        // build a child from the data in the file
        var child = a_parse_function(data);
        // resolve with the child 

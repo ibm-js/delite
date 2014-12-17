@@ -4,7 +4,6 @@
 	"dependencies": {
 		"dcl": "1.1.x",
 		"decor": "0.4.x",
-		"dojo": ">=1.9.1",
 		"dpointer": "0.4.x",
 		"jquery": ">=2.1",
 		"requirejs": "2.1.x",
@@ -15,6 +14,7 @@
 	"devDependencies": {
 		"dstore": "1.0.x",
 		"platform": "Polymer/platform#~0.1.4",
+		"dojo": ">=1.9.1",
 		"dijit": ">=1.9.1"
 	},
 	"keywords": [

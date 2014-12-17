@@ -1,6 +1,6 @@
 /** @module delite/DisplayContainer */
-define(["dcl/dcl", "dojo/Deferred", "dojo/when", "./Container"],
-	function (dcl, Deferred, when, Container) {
+define(["dcl/dcl", "requirejs-dplugins/jquery!deferred", "./Container"],
+	function (dcl, $, Container) {
 	
 	/**
 	 * Dispatched before child is shown.
@@ -86,16 +86,16 @@ define(["dcl/dcl", "dojo/Deferred", "dojo/when", "./Container"],
 			// we need to warn potential app controller we are going to load a view & transition
 			var event = {
 				dest: dest,
-				loadDeferred: new Deferred()
+				loadDeferred: new $.Deferred()
 			};
-			var self = this, displayDeferred = new Deferred();
+			var self = this, displayDeferred = new $.Deferred();
 			dcl.mix(event, params);
 			// we now need to warn potential app controller we need to load a new child
 			// when the controller told us it will handle child loading use the deferred from the event
 			// otherwise call the container load method
 			// note: emit() does not return the native event when it has been prevented but false value instead...
 			var loadDeferred = this.emit("delite-display-load", event) ? this.load(dest) : event.loadDeferred;
-			when(loadDeferred, function (value) {
+			$.when(loadDeferred).then(function (value) {
 				// if view is not already a child this means we loaded a new view (div), add it
 				if (self.getIndexOfChild(value.child) === -1) {
 					self.addChild(value.child, value.index);
@@ -111,13 +111,13 @@ define(["dcl/dcl", "dojo/Deferred", "dojo/when", "./Container"],
 
 				self.emit("delite-before-show", event);
 
-				when(self.changeDisplay(value.child, event), function () {
+				$.when(self.changeDisplay(value.child, event)).then(function () {
 					self.emit("delite-after-show", event);
 
 					displayDeferred.resolve(value);
 				});
 			});
-			return displayDeferred.promise;
+			return displayDeferred.promise();
 		},
 
 		/**
@@ -136,12 +136,12 @@ define(["dcl/dcl", "dojo/Deferred", "dojo/when", "./Container"],
 			// we need to warn potential app controller we are going to load a view & transition
 			var event = {
 				dest: dest,
-				loadDeferred: new Deferred(),
+				loadDeferred: new $.Deferred(),
 				bubbles: true,
 				cancelable: true,
 				hide: true
 			};
-			var self = this, displayDeferred = new Deferred();
+			var self = this, displayDeferred = new $.Deferred();
 			dcl.mix(event, params);
 			// we now need to warn potential app controller we need to load a child (this is needed to be able to 
 			// get a hand on it)
@@ -151,7 +151,7 @@ define(["dcl/dcl", "dojo/Deferred", "dojo/when", "./Container"],
 
 			var loadDeferred = this.emit("delite-display-load", event) ? this.load(dest) : event.loadDeferred;
 
-			when(loadDeferred, function (value) {
+			$.when(loadDeferred).then(function (value) {
 				// the child is here, actually perform the display
 				// notify everyone we are going to proceed
 				event = {
@@ -165,7 +165,7 @@ define(["dcl/dcl", "dojo/Deferred", "dojo/when", "./Container"],
 
 				self.emit("delite-before-hide", event);
 
-				when(self.changeDisplay(value.child, event), function () {
+				$.when(self.changeDisplay(value.child, event)).then(function () {
 					// if view is not already removed, remove it
 					if (self.getIndexOfChild(value.child) !== -1) {
 						self.removeChild(value.child);
@@ -176,7 +176,7 @@ define(["dcl/dcl", "dojo/Deferred", "dojo/when", "./Container"],
 					displayDeferred.resolve(value);
 				});
 			});
-			return displayDeferred.promise;
+			return displayDeferred.promise();
 		},
 
 		/**

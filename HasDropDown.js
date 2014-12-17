@@ -1,16 +1,14 @@
 /** @module delite/HasDropDown */
 define([
 	"dcl/dcl",
-	"dojo/Deferred",
-	"dojo/when",
-	"requirejs-dplugins/jquery!attributes/classes",	// addClass(), removeClass(), hasClass()
+	"requirejs-dplugins/jquery!deferred,attributes/classes",	// addClass(), removeClass(), hasClass()
 	"./keys", // keys.DOWN_ARROW keys.ENTER keys.ESCAPE
 	"./place",
 	"./popup",
 	"./Widget",
 	"./activationTracker",		// for delite-deactivated event
 	"dpointer/events"		// so can just monitor for "pointerdown"
-], function (dcl, Deferred, when, $, keys, place, popup, Widget) {
+], function (dcl, $, keys, place, popup, Widget) {
 	
 	/**
 	 * Dispatched before popup widget is shown.
@@ -416,7 +414,7 @@ define([
 				return this.dropDown;
 			} else {
 				// tell app controller we are going to show the dropdown; it must return a pointer to the dropdown
-				var def = new Deferred();
+				var def = new $.Deferred();
 				this.emit("delite-display-load", {
 					loadDeferred: def
 				});
@@ -453,7 +451,7 @@ define([
 		 */
 		openDropDown: function () {
 			return this._openDropDownPromise ||
-				(this._openDropDownPromise = when(this.loadDropDown()).then(function (dropDown) {
+				(this._openDropDownPromise = $.when(this.loadDropDown()).then(function (dropDown) {
 				this._currentDropDown = dropDown;
 				var aroundNode = this.aroundNode || this,
 					self = this;
@@ -538,8 +536,9 @@ define([
 		 */
 		closeDropDown: function (focus) {
 			if (this._openDropDownPromise) {
-				if (!this._openDropDownPromise.isFulfilled()) {
-					this._openDropDownPromise.cancel();
+				if (this._openDropDownPromise.state() !== "resolved" ||
+					this._openDropDownPromise.state() !== "rejected") {
+					this._openDropDownPromise.reject();
 				}
 				delete this._openDropDownPromise;
 			}
