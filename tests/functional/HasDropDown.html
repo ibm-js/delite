@@ -30,14 +30,14 @@
 		var ready = false; // set to true when the test page is ready
 
 		require([
-			"dojo/Deferred",
+			"requirejs-dplugins/jquery!deferred",
 			"delite/keys",
 			"delite/register",
 			"delite/HasDropDown",
 			"delite/Widget",
 			"dpointer/events",	// since I'm using touch-action
 			"requirejs-domready/domReady!"
-		], function (Deferred, keys, register, HasDropDown, Widget) {
+		], function ($, keys, register, HasDropDown, Widget) {
 
 			// A trivial popup widget
 			var SimpleDialog = register("simple-dialog", [HTMLElement, Widget], {
@@ -209,7 +209,7 @@
 			var DelayedDropDownButton = register("delayed-drop-down-button", [SimpleDropDownButton], {
 				loadDropDown: function () {
 					if (!this._dropDownPromise) {
-						this._dropDownPromise = new Deferred();
+						this._dropDownPromise = new $.Deferred();
 						setTimeout(function () {
 							this._dropDownPromise.resolve(new this.dropDownConstructor({
 								class: this.dropDownClass
