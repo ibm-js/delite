@@ -88,9 +88,9 @@ define([
 				}
 			}
 
-			// Account for space taken by auto-completion suggestions.
+			// Account for space taken by auto-correction suggestions.
 			if (has("ios") >= 8 &&
-				(!focusedNode.hasAttribute("autocorrect") || focusedNode.getAttribute("autocorrect") === "on") &&
+				(focusedNode.hasAttribute("autocorrect") || focusedNode.getAttribute("autocorrect") === "on") &&
 				/^(color|number|search|tel|text)$/.test(focusedNode.type)) {
 				box.h -= 40;
 			}
