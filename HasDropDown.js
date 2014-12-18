@@ -450,81 +450,85 @@ define([
 		 * @fires module:delite/HasDropDown#delite-after-show
 		 */
 		openDropDown: function () {
-			return this._openDropDownPromise ||
-				(this._openDropDownPromise = $.when(this.loadDropDown()).then(function (dropDown) {
-				this._currentDropDown = dropDown;
-				var aroundNode = this.aroundNode || this,
-					self = this;
+			if (this._openDropDownPromise) {
+				return this._openDropDownPromise;
+			} else {
+				this._openDropDownDeferred = this.loadDropDown();
+				this._openDropDownPromise = $.when(this._openDropDownDeferred).then(function (dropDown) {
+					this._currentDropDown = dropDown;
+					var aroundNode = this.aroundNode || this,
+						self = this;
 
-				this.emit("delite-before-show", {
-					child: dropDown,
-					cancelable: false
-				});
+					this.emit("delite-before-show", {
+						child: dropDown,
+						cancelable: false
+					});
 
-				// Generate id for anchor if it's not already specified
-				if (!this.id) {
-					this.id = "HasDropDown_" + this.widgetId;
-				}
-
-				dropDown._originalStyle = dropDown.style.cssText;
-
-				var retVal = popup.open({
-					parent: this,
-					popup: dropDown,
-					around: aroundNode,
-					orient: this.dropDownPosition,
-					maxHeight: this.maxHeight,
-					onExecute: function () {
-						self.closeDropDown(true);
-					},
-					onCancel: function () {
-						self.closeDropDown(true);
-					},
-					onClose: function () {
-						$(self._popupStateNode).removeClass("d-drop-down-open");
-						this.opened = false;
+					// Generate id for anchor if it's not already specified
+					if (!this.id) {
+						this.id = "HasDropDown_" + this.widgetId;
 					}
-				});
 
-				// Set width of drop down if necessary, so that dropdown width + width of scrollbar (from popup wrapper)
-				// matches width of aroundNode.  Don't do anything for when dropDownPosition=["center"] though,
-				// in which case popup.open() doesn't return a value.
-				if (retVal && (this.forceWidth ||
-						(this.autoWidth && aroundNode.offsetWidth > dropDown._popupWrapper.offsetWidth))) {
-					var widthAdjust = aroundNode.offsetWidth - dropDown._popupWrapper.offsetWidth;
-					dropDown._popupWrapper.style.width = aroundNode.offsetWidth + "px";
+					dropDown._originalStyle = dropDown.style.cssText;
 
-					// Workaround apparent iOS bug where width: inherit on dropdown apparently not working.
-					dropDown.style.width = aroundNode.offsetWidth + "px";
+					var retVal = popup.open({
+						parent: this,
+						popup: dropDown,
+						around: aroundNode,
+						orient: this.dropDownPosition,
+						maxHeight: this.maxHeight,
+						onExecute: function () {
+							self.closeDropDown(true);
+						},
+						onCancel: function () {
+							self.closeDropDown(true);
+						},
+						onClose: function () {
+							$(self._popupStateNode).removeClass("d-drop-down-open");
+							this.opened = false;
+						}
+					});
 
-					// If dropdown is right-aligned then compensate for width change by changing horizontal position
-					if (retVal.corner[1] === "R") {
-						dropDown._popupWrapper.style.left =
-							(dropDown._popupWrapper.style.left.replace("px", "") - widthAdjust) + "px";
+					// Set width of drop down if necessary, so that dropdown width + width of scrollbar (from popup wrapper)
+					// matches width of aroundNode.  Don't do anything for when dropDownPosition=["center"] though,
+					// in which case popup.open() doesn't return a value.
+					if (retVal && (this.forceWidth ||
+							(this.autoWidth && aroundNode.offsetWidth > dropDown._popupWrapper.offsetWidth))) {
+						var widthAdjust = aroundNode.offsetWidth - dropDown._popupWrapper.offsetWidth;
+						dropDown._popupWrapper.style.width = aroundNode.offsetWidth + "px";
+
+						// Workaround apparent iOS bug where width: inherit on dropdown apparently not working.
+						dropDown.style.width = aroundNode.offsetWidth + "px";
+
+						// If dropdown is right-aligned then compensate for width change by changing horizontal position
+						if (retVal.corner[1] === "R") {
+							dropDown._popupWrapper.style.left =
+								(dropDown._popupWrapper.style.left.replace("px", "") - widthAdjust) + "px";
+						}
 					}
-				}
 
-				$(this._popupStateNode).addClass("d-drop-down-open");
-				this.opened = true;
+					$(this._popupStateNode).addClass("d-drop-down-open");
+					this.opened = true;
 
-				this.popupStateNode.setAttribute("aria-expanded", "true");
-				this.popupStateNode.setAttribute("aria-owns", dropDown.id);
+					this.popupStateNode.setAttribute("aria-expanded", "true");
+					this.popupStateNode.setAttribute("aria-owns", dropDown.id);
 
-				// Set aria-labelledby on dropdown if it's not already set to something more meaningful
-				if (dropDown.getAttribute("role") !== "presentation" && !dropDown.getAttribute("aria-labelledby")) {
-					dropDown.setAttribute("aria-labelledby", this.id);
-				}
+					// Set aria-labelledby on dropdown if it's not already set to something more meaningful
+					if (dropDown.getAttribute("role") !== "presentation" && !dropDown.getAttribute("aria-labelledby")) {
+						dropDown.setAttribute("aria-labelledby", this.id);
+					}
 
-				this.emit("delite-after-show", {
-					child: dropDown,
-					cancelable: false
-				});
+					this.emit("delite-after-show", {
+						child: dropDown,
+						cancelable: false
+					});
 
-				return {
-					dropDown: dropDown,
-					position: retVal
-				};
-			}.bind(this)));
+					return {
+						dropDown: dropDown,
+						position: retVal
+					};
+				}.bind(this));
+			}
 		},
 
 		/**
@@ -536,10 +540,14 @@ define([
 		 */
 		closeDropDown: function (focus) {
 			if (this._openDropDownPromise) {
-				if (this._openDropDownPromise.state() !== "resolved" ||
-					this._openDropDownPromise.state() !== "rejected") {
-					this._openDropDownPromise.reject();
+				// if there is a promise reject it so that then() are not performed,
+				// if already fullfilled it will be ignored
+				if (this._openDropDownDeferred.reject) {
+					// if thhis was not a deferred but an object this has been executed right away
+					// so we don't care about rejecting anyway
+					this._openDropDownDeferred.reject();
 				}
+				delete this._openDropDownDeferred;
 				delete this._openDropDownPromise;
 			}
 
