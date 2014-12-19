@@ -1,8 +1,7 @@
 /** @module delite/HasDropDown */
 define([
 	"dcl/dcl",
-	"dojo/Deferred",
-	"dojo/when",
+	"lie/dist/lie",
 	"requirejs-dplugins/jquery!attributes/classes",	// addClass(), removeClass(), hasClass()
 	"./keys", // keys.DOWN_ARROW keys.ENTER keys.ESCAPE
 	"./place",
@@ -10,7 +9,7 @@ define([
 	"./Widget",
 	"./activationTracker",		// for delite-deactivated event
 	"dpointer/events"		// so can just monitor for "pointerdown"
-], function (dcl, Deferred, when, $, keys, place, popup, Widget) {
+], function (dcl, Promise, $, keys, place, popup, Widget) {
 	
 	/**
 	 * Dispatched before popup widget is shown.
@@ -416,11 +415,11 @@ define([
 				return this.dropDown;
 			} else {
 				// tell app controller we are going to show the dropdown; it must return a pointer to the dropdown
-				var def = new Deferred();
+				var dropdown;
 				this.emit("delite-display-load", {
-					loadDeferred: def
+					setLoadDeferred: function (val) { dropdown = val; }
 				});
-				return def.then(function (value) { return value.child; });
+				return Promise.resolve(dropdown).then(function (value) { return value.child; });
 			}
 		},
 
@@ -452,8 +451,20 @@ define([
 		 * @fires module:delite/HasDropDown#delite-after-show
 		 */
 		openDropDown: function () {
-			return this._openDropDownPromise ||
-				(this._openDropDownPromise = when(this.loadDropDown()).then(function (dropDown) {
+			// If openDropDown() has already been called, don't do anything
+			if (this._openDropDownPromise) {
+				return this._openDropDownPromise;
+			}
+
+			// will be set to true if closeDropDown() is called before the loadDropDown() promise completes
+			var canceled;
+
+			var loadDropDownPromise = this.loadDropDown();
+
+			this._openDropDownPromise = Promise.resolve(loadDropDownPromise).then(function (dropDown) {
+				if (canceled) { return; }
+				delete this._cancelPendingDisplay;
+
 				this._currentDropDown = dropDown;
 				var aroundNode = this.aroundNode || this,
 					self = this;
@@ -526,7 +537,17 @@ define([
 					dropDown: dropDown,
 					position: retVal
 				};
-			}.bind(this)));
+			}.bind(this));
+
+			// Setup a hook for closeDropDown() to abort an in-progress showDropDown() operation.
+			this._cancelPendingDisplay = function () {
+				if (loadDropDownPromise.cancel) { loadDropDownPromise.cancel(); }
+				canceled = true;
+				delete this._cancelPendingDisplay;
+				delete this._openDropDownPromise;
+			}.bind(this);
+
+			return this._openDropDownPromise;
 		},
 
 		/**
@@ -537,10 +558,10 @@ define([
 		 * @fires module:delite/HasDropDown#delite-after-hide
 		 */
 		closeDropDown: function (focus) {
+			if (this._cancelPendingDisplay) {
+				this._cancelPendingDisplay();
+			}
 			if (this._openDropDownPromise) {
-				if (!this._openDropDownPromise.isFulfilled()) {
-					this._openDropDownPromise.cancel();
-				}
 				delete this._openDropDownPromise;
 			}
 

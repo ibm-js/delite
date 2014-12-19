@@ -3,12 +3,11 @@ define([
 	"intern!object",
 	"intern/chai!assert",
 	"dojo/on",
-	"dojo/Deferred",
 	"delite/DisplayContainer",
 	"delite/Widget",
 	"delite/register",
 	"requirejs-domready/domReady!"
-], function (require, registerSuite, assert, on, Deferred, DisplayContainer, Widget, register) {
+], function (require, registerSuite, assert, on, DisplayContainer, Widget, register) {
 	var container;
 	registerSuite({
 		name: "DisplayContainer",
@@ -108,7 +107,7 @@ define([
 				event.preventDefault();
 				var view = document.createElement("div");
 				initView(view, event.dest);
-				event.loadDeferred.resolve({
+				event.setLoadDeferred({
 					child: view
 				});
 			});
@@ -143,7 +142,7 @@ define([
 				event.preventDefault();
 				var view = document.createElement("div");
 				initView(view, event.dest);
-				event.loadDeferred.resolve({
+				event.setLoadDeferred({
 					child: view
 				});
 			});
