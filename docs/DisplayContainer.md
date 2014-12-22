@@ -94,17 +94,17 @@ The `delite/DisplayContainer` class provides the following events:
 
 ## Writing a Controller for DisplayContainer
 
-An application framework such as [dapp](https://github.com/ibm-js/dapp) can decide to listen to events from 
-`delite/DisplayContainer` in order to provide a controller that provides alternate/customized features.
+An application framework such as [dapp](https://github.com/ibm-js/dapp) can setup a controller to listen to events from
+`delite/DisplayContainer` and provide alternate/customized features.
 
-In the following example the controller is listening to `delite-display-load` event in order to provide the ability
-to load child defined in external HTML files:
+In the following example the controller is listening to `delite-display-load` event in order
+to load a child defined in an external HTML file:
 
 ```js
 require(["delite/register", "delite/DisplayContainer", "dojo/request"/*, ...*/], 
   function (register, DisplayContainer, request/*, ...*/) {
   document.addEventListener("delite-display-load", function(event) {
-     event.setLoadDeferred(function (resolve, reject) {
+     event.setChild(function (resolve, reject) {
       // build a file name from the destination
       request(event.dest+".html", function (data) {
          // build a child from the data in the file
@@ -116,7 +116,6 @@ require(["delite/register", "delite/DisplayContainer", "dojo/request"/*, ...*/],
 });
 ```
 
-In order to notify `delite/DisplayContainer` that the controller is handling child loading, the controller must:
-
-  * call `preventDefault()` on the `delite-display-load` event.
-  * resolve the event's `loadDeferred` deferred when it has finished loading the child
+In order to notify `delite/DisplayContainer` that the controller is handling child loading, the controller must
+call the event's `setChild()` method, passing in either a value or a promise for the value.  The value is
+of the form `{child: HTMLElement}`.

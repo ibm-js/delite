@@ -417,7 +417,7 @@ define([
 				// tell app controller we are going to show the dropdown; it must return a pointer to the dropdown
 				var dropdown;
 				this.emit("delite-display-load", {
-					setLoadDeferred: function (val) { dropdown = val; }
+					setChild: function (val) { dropdown = val; }
 				});
 				return Promise.resolve(dropdown).then(function (value) { return value.child; });
 			}

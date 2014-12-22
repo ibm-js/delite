@@ -107,7 +107,7 @@ define([
 				event.preventDefault();
 				var view = document.createElement("div");
 				initView(view, event.dest);
-				event.setLoadDeferred({
+				event.setChild({
 					child: view
 				});
 			});
@@ -142,7 +142,7 @@ define([
 				event.preventDefault();
 				var view = document.createElement("div");
 				initView(view, event.dest);
-				event.setLoadDeferred({
+				event.setChild({
 					child: view
 				});
 			});

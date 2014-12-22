@@ -86,7 +86,7 @@ define(["dcl/dcl", "lie/dist/lie", "./Container"],
 			// we need to warn potential app controller we are going to load a view & transition
 			var loadDeferred, event = {
 				dest: dest,
-				setLoadDeferred: function (val) {
+				setChild: function (val) {
 					loadDeferred = val;
 				}
 			};
@@ -145,7 +145,7 @@ define(["dcl/dcl", "lie/dist/lie", "./Container"],
 			// we need to warn potential app controller we are going to load a view & transition
 			var loadDeferred, event = {
 				dest: dest,
-				setLoadDeferred: function (val) {
+				setChild: function (val) {
 					loadDeferred = val;
 				},
 				bubbles: true,
