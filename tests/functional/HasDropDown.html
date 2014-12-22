@@ -296,7 +296,7 @@
 			el.innerHTML = "<br><br>Events on \"events drop down button\": ";
 			document.body.appendChild(el);
 			document.addEventListener("delite-display-load", function (evt) {
-				evt.loadDeferred.resolve({
+				evt.setChild({
 					child: new SimpleDialog({
 						id: "eventsDialog"
 					})

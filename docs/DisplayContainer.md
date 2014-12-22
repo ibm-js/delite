@@ -41,26 +41,26 @@ to the `show()` or `hide()` function in order to perform a visual transition whe
 particular it performs a fading in or out transition based on the value of the `fade` parameter.
 
 ```js
-require(["delite/register", "delite/DisplayContainer", "dojo/Deferred"/*, ...*/], 
-  function (register, DisplayContainer, Deferred/*, ...*/) {
+require(["delite/register", "delite/DisplayContainer", "lie/dist/lie"/*, ...*/],
+  function (register, DisplayContainer, Promise/*, ...*/) {
   return register("my-container", [HTMElement, DisplayContainer], {
     changeDisplay: dcl.superCall(function(sup) {
       return function (widget, params) {
-        var deferred = new Deferred();
-        if (params.fade === "in") {
-          // if there is a parameter telling us to do a fade in let's do it
-          $(widget).fadeIn(1000, function() {
-             deferred.resolve();
-          });
-        }
-        sup.apply(this, arguments);
-        if (params.fade === "out") {
-          // if there is a parameter telling us to do a fade in let's do it by setting corresponding CSS class
-          $(widget).fadeIn(1000, function() {
-            deferred.resolve();
-          });
-        }
-        return deferred.promise;
+        return new Promise(function (resolve, reject) {
+          if (params.fade === "in") {
+            // if there is a parameter telling us to do a fade in let's do it
+            $(widget).fadeIn(1000, function() {
+               resolve();
+            });
+          }
+          sup.apply(this, arguments);
+          if (params.fade === "out") {
+            // if there is a parameter telling us to do a fade in let's do it by setting corresponding CSS class
+            $(widget).fadeIn(1000, function() {
+              resolve();
+            });
+          }
+        };
       };    
     })
   });
@@ -91,31 +91,31 @@ The `delite/DisplayContainer` class provides the following events:
 
 
 <a name="controller"></a>
+
 ## Writing a Controller for DisplayContainer
 
-An application framework such as [dapp](https://github.com/ibm-js/dapp) can decide to listen to events from 
-`delite/DisplayContainer` in order to provide a controller that provides alternate/customized features.
+An application framework such as [dapp](https://github.com/ibm-js/dapp) can setup a controller to listen to events from
+`delite/DisplayContainer` and provide alternate/customized features.
 
-In the following example the controller is listening to `delite-display-load` event in order to provide the ability
-to load child defined in external HTML files:
+In the following example the controller is listening to `delite-display-load` event in order
+to load a child defined in an external HTML file:
 
 ```js
 require(["delite/register", "delite/DisplayContainer", "dojo/request"/*, ...*/], 
   function (register, DisplayContainer, request/*, ...*/) {
   document.addEventListener("delite-display-load", function(event) {
-    event.preventDefault();
-    // build a file name from the destination
-    request(event.dest+".html", function (data) {
-       // build a child from the data in the file
-       var child = a_parse_function(data);
-       // resolve with the child 
-       event.loadDeferred.resolve({ child: child });
-    });
+     event.setChild(function (resolve, reject) {
+      // build a file name from the destination
+      request(event.dest+".html", function (data) {
+         // build a child from the data in the file
+         var child = a_parse_function(data);
+         // resolve with the child
+         resolve({ child: child });
+      });
   });
 });
 ```
 
-In order to notify `delite/DisplayContainer` that the controller is handling child loading, the controller must:
-
-  * call `preventDefault()` on the `delite-display-load` event.
-  * resolve the event's `loadDeferred` deferred when it has finished loading the child
+In order to notify `delite/DisplayContainer` that the controller is handling child loading, the controller must
+call the event's `setChild()` method, passing in either a value or a promise for the value.  The value is
+of the form `{child: HTMLElement}`.

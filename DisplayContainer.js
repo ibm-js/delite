@@ -1,6 +1,6 @@
 /** @module delite/DisplayContainer */
-define(["dcl/dcl", "dojo/Deferred", "dojo/when", "./Container"],
-	function (dcl, Deferred, when, Container) {
+define(["dcl/dcl", "lie/dist/lie", "./Container"],
+	function (dcl, Promise, Container) {
 	
 	/**
 	 * Dispatched before child is shown.
@@ -84,18 +84,28 @@ define(["dcl/dcl", "dojo/Deferred", "dojo/when", "./Container"],
 		 */
 		show: function (dest, params) {
 			// we need to warn potential app controller we are going to load a view & transition
-			var event = {
+			var loadDeferred, event = {
 				dest: dest,
-				loadDeferred: new Deferred()
+				setChild: function (val) {
+					loadDeferred = val;
+				}
 			};
-			var self = this, displayDeferred = new Deferred();
+			var self = this;
 			dcl.mix(event, params);
+
 			// we now need to warn potential app controller we need to load a new child
 			// when the controller told us it will handle child loading use the deferred from the event
 			// otherwise call the container load method
 			// note: emit() does not return the native event when it has been prevented but false value instead...
-			var loadDeferred = this.emit("delite-display-load", event) ? this.load(dest) : event.loadDeferred;
-			when(loadDeferred, function (value) {
+			this.emit("delite-display-load", event);
+
+
+			// If an event listener didn't set loadDeferred, then load via this.load()
+			if (!loadDeferred) {
+				loadDeferred = this.load(dest);
+			}
+
+			return Promise.resolve(loadDeferred).then(function (value) {
 				// if view is not already a child this means we loaded a new view (div), add it
 				if (self.getIndexOfChild(value.child) === -1) {
 					self.addChild(value.child, value.index);
@@ -111,13 +121,12 @@ define(["dcl/dcl", "dojo/Deferred", "dojo/when", "./Container"],
 
 				self.emit("delite-before-show", event);
 
-				when(self.changeDisplay(value.child, event), function () {
+				return Promise.resolve(self.changeDisplay(value.child, event)).then(function () {
 					self.emit("delite-after-show", event);
 
-					displayDeferred.resolve(value);
+					return value;
 				});
 			});
-			return displayDeferred.promise;
 		},
 
 		/**
@@ -134,14 +143,16 @@ define(["dcl/dcl", "dojo/Deferred", "dojo/when", "./Container"],
 		 */
 		hide: function (dest, params) {
 			// we need to warn potential app controller we are going to load a view & transition
-			var event = {
+			var loadDeferred, event = {
 				dest: dest,
-				loadDeferred: new Deferred(),
+				setChild: function (val) {
+					loadDeferred = val;
+				},
 				bubbles: true,
 				cancelable: true,
 				hide: true
 			};
-			var self = this, displayDeferred = new Deferred();
+			var self = this;
 			dcl.mix(event, params);
 			// we now need to warn potential app controller we need to load a child (this is needed to be able to 
 			// get a hand on it)
@@ -149,9 +160,14 @@ define(["dcl/dcl", "dojo/Deferred", "dojo/when", "./Container"],
 			// otherwise call the container load method
 			// note: emit() does not return the native event when it has been prevented but false value instead.
 
-			var loadDeferred = this.emit("delite-display-load", event) ? this.load(dest) : event.loadDeferred;
+			this.emit("delite-display-load", event);
 
-			when(loadDeferred, function (value) {
+			// If an event listener didn't set loadDeferred, then load via this.load()
+			if (!loadDeferred) {
+				loadDeferred = this.load(dest);
+			}
+
+			return Promise.resolve(loadDeferred).then(function (value) {
 				// the child is here, actually perform the display
 				// notify everyone we are going to proceed
 				event = {
@@ -165,7 +181,7 @@ define(["dcl/dcl", "dojo/Deferred", "dojo/when", "./Container"],
 
 				self.emit("delite-before-hide", event);
 
-				when(self.changeDisplay(value.child, event), function () {
+				return Promise.resolve(self.changeDisplay(value.child, event)).then(function () {
 					// if view is not already removed, remove it
 					if (self.getIndexOfChild(value.child) !== -1) {
 						self.removeChild(value.child);
@@ -173,10 +189,9 @@ define(["dcl/dcl", "dojo/Deferred", "dojo/when", "./Container"],
 
 					self.emit("delite-after-hide", event);
 
-					displayDeferred.resolve(value);
+					return value;
 				});
 			});
-			return displayDeferred.promise;
 		},
 
 		/**
