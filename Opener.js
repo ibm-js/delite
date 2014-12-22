@@ -1,7 +1,6 @@
 // Copy of dojox/mobile/Opener, not refactored to work with delite [yet]
 define([
 	"dojo/_base/declare",
-	"dojo/Deferred",
 	"dojo/_base/lang",
 	"dojo/_base/window",
 	"dojo/dom-class",
@@ -11,7 +10,7 @@ define([
 	"./Tooltip",
 	"./Overlay",
 	"./lazyLoadUtils"
-], function (declare, Deferred, lang, win, domClass, domConstruct, domStyle, domGeometry, Tooltip, Overlay,
+], function (declare, lang, win, domClass, domConstruct, domStyle, domGeometry, Tooltip, Overlay,
 			 lazyLoadUtils) {
 
 	var isOverlay = domClass.contains(win.doc.documentElement, "dj_phone");

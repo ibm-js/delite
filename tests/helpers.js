@@ -1,14 +1,14 @@
 // Helper methods for automated testing
 
 define([
-	"dojo/Deferred", "dojo/promise/all",
+	"lie/dist/lie",
 	"dojo/dom-attr", "dojo/dom-class", "dojo/dom-geometry", "dojo/dom-style",
 	"dojo/_base/kernel", "dojo/on", "dojo/query",
 	"delite/a11y"	// isTabNavigable, _isElementShown
-], function (Deferred, all, domAttr, domClass, domGeometry, domStyle, kernel, on, query, a11y) {
+], function (Promise, domAttr, domClass, domGeometry, domStyle, kernel, on, query, a11y) {
 
 
-// Globals used by onFocus()
+	// Globals used by onFocus()
 	var curFocusNode, focusListener, focusCallback, focusCallbackDelay;
 
 	return {
@@ -109,25 +109,22 @@ define([
 			//		Returns Promise that fires when all widgets have finished initializing.
 			//		Call this after the parser has finished running.
 
-			var d = new Deferred();
-
-			// Deferred fires when all widgets with an onLoadDeferred have fired
+			// Promise fires when all widgets with an loadPromise have fired
 			var widgets = query("[widgetId]").filter(function (w) {
-					return w.onLoadDeferred;
+					return w.loadPromise;
 				}),
-				deferreds = widgets.map(function (w) {
-					return w.onLoadDeferred;
+				promises = widgets.map(function (w) {
+					return w.loadPromise;
 				});
-			console.log("Waiting for " + widgets.length + " widgets: " +
-				widgets.map(function (w) {
-					return w.id;
-				}).join(", "));
-			all(deferreds).then(function () {
-				console.log("All widgets loaded.");
-				d.resolve(widgets);
-			});
 
-			return d.promise;
+			console.log("Waiting for " + widgets.length + " widgets: " +
+			widgets.map(function (w) {
+				return w.id;
+			}).join(", "));
+
+			return Promise.all(promises).then(function () {
+				console.log("All widgets loaded.");
+			});
 		}
 
 	};

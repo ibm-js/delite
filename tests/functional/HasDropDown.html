@@ -30,14 +30,14 @@
 		var ready = false; // set to true when the test page is ready
 
 		require([
-			"dojo/Deferred",
+			"lie/dist/lie",
 			"delite/keys",
 			"delite/register",
 			"delite/HasDropDown",
 			"delite/Widget",
 			"dpointer/events",	// since I'm using touch-action
 			"requirejs-domready/domReady!"
-		], function (Deferred, keys, register, HasDropDown, Widget) {
+		], function (Promise, keys, register, HasDropDown, Widget) {
 
 			// A trivial popup widget
 			var SimpleDialog = register("simple-dialog", [HTMLElement, Widget], {
@@ -209,12 +209,13 @@
 			var DelayedDropDownButton = register("delayed-drop-down-button", [SimpleDropDownButton], {
 				loadDropDown: function () {
 					if (!this._dropDownPromise) {
-						this._dropDownPromise = new Deferred();
-						setTimeout(function () {
-							this._dropDownPromise.resolve(new this.dropDownConstructor({
-								class: this.dropDownClass
-							}));
-						}.bind(this), 500);
+						this._dropDownPromise = new Promise(function (resolve) {
+							setTimeout(function () {
+								resolve(new this.dropDownConstructor({
+									class: this.dropDownClass
+								}));
+							}.bind(this), 500);
+						}.bind(this));
 					}
 					return this._dropDownPromise;
 				}
@@ -296,7 +297,7 @@
 			el.innerHTML = "<br><br>Events on \"events drop down button\": ";
 			document.body.appendChild(el);
 			document.addEventListener("delite-display-load", function (evt) {
-				evt.loadDeferred.resolve({
+				evt.setChild({
 					child: new SimpleDialog({
 						id: "eventsDialog"
 					})
