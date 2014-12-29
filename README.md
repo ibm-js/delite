@@ -33,15 +33,19 @@ All contributions require a [Dojo Foundation CLA](http://dojofoundation.org/abou
 ## Dependencies
 
 This project requires the following other projects to run:
- * dojo
- * dcl    (git clone https://github.com/uhop/dcl.git)
+
+ * dcl
  * decor
- * requirejs (git clone https://github.com/jrburke/requirejs.git)
  * dpointer
+ * jquery
+ * lie
+ * requirejs
  * requirejs-domready
  * requirejs-dplugins
- * requirejs-test
-    
+ * requirejs-text
+
+All of these dependencies can be automatically installed by bower, as documented below.
+
 ## Installation
 
 _Bower_ release installation:
