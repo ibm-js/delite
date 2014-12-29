@@ -417,14 +417,32 @@ define([
 			assert.strictEqual(wsp.innerHTML, "<pre>\thello\n\tworld </pre>", "pre whitespace preserved");
 		},
 
-		"self closing tags": function () {
-			var SelfClosing = register("handlebars-self-closing", [HTMLElement, Widget], {
-				template: handlebars.compile(
-					"<template>Hello <br/><input>world</template>"
-				)
-			});
-			var sc = new SelfClosing();
-			assert.strictEqual(sc.childNodes.length, 4, "# of child nodes");
+		"self closing tags":  {
+			html: function () {
+				var SelfClosing = register("handlebars-self-closing", [HTMLElement, Widget], {
+					template: handlebars.compile(
+						"<template>Hello <br/><input>world</template>"
+					)
+				});
+				var sc = new SelfClosing();
+				assert.strictEqual(sc.childNodes.length, 4, "# of child nodes");
+			},
+
+			mixed: function () {
+				var TestSvg = register("handlebars-self-closing-mixed", [HTMLElement, Widget], {
+					template: handlebars.compile("<template>\n" +
+					"<svg version='1.1' xmlns='http://www.w3.org/2000/svg' " +
+					"xmlns:xlink='http://www.w3.org/1999/xlink' width='32' height='32' viewBox='0 0 32 32'>\n" +
+					"<path d='M27 4l-15 15-7-7-5 5 12 12 20-20z' fill='#000000'></path>\n" +
+					"</svg>\n" +
+					"<input type='checkbox' />\n" +
+					"</template>")
+				});
+
+				var node = new TestSvg();
+				assert.strictEqual(node.tagName.toLowerCase(), "handlebars-self-closing-mixed", "root node exists");
+				assert.strictEqual(node.children.length, 2, "# of children");
+			}
 		},
 
 		"undefined replacement vars": function () {
