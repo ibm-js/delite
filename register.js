@@ -49,6 +49,12 @@ define([
 	 * @returns {Element} The DOMNode
 	 */
 	function createElement(tag) {
+		if (/-/.test(tag) && !(tag in registry)) {
+			// Try to help people that have templates with custom elements but they forgot to do require="..."
+			console.warn("register.createElement(): undefined tag '" + tag +
+				"', did you forget require='...' in your template?");
+		}
+
 		var base = registry[tag] ? registry[tag].extends : null;
 		if (has("document-register-element")) {
 			return base ? doc.createElement(base, tag) : doc.createElement(tag);
