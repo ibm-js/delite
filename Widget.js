@@ -102,26 +102,7 @@ define([
 					if (this.hasAttribute("tabindex")) { // initial value was specified
 						this.removeAttribute("tabindex");
 						desc.set.call(this, tabIndex); // call custom setter
-					}
-					var self = this;
-					// begin watching for changes to the tabindex DOM attribute
-					/* global WebKitMutationObserver */
-					if ("WebKitMutationObserver" in window) {
-						// If Polymer is loaded, use MutationObserver rather than WebKitMutationObserver
-						// to avoid error about "referencing a Node in a context where it does not exist".
-						var MO = window.MutationObserver || WebKitMutationObserver;	// for jshint
-						var observer = new MO(function () {
-							var newValue = self.getAttribute("tabindex");
-							if (newValue !== null) {
-								self.removeAttribute("tabindex");
-								desc.set.call(self, newValue);
-							}
-						});
-						observer.observe(this, {
-							subtree: false,
-							attributeFilter: ["tabindex"],
-							attributes: true
-						});
+						// TODO: change this to just notifyCurrentValue() ?
 					}
 					break;
 				}

@@ -89,9 +89,9 @@ define([
 				});
 
 				var extended = new SpecialExtendedWidget({ });
-				extended.tabIndex = "5";
 				document.body.appendChild(extended);
 				extended.startup();
+				extended.tabIndex = "5";
 
 				var d = this.async(1000);
 
