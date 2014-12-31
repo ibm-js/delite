@@ -209,9 +209,9 @@ define([
 		postRender: function () {
 			this.initializeInvalidating();
 			if (this._templateHandle) {
-				this._templateHandle.dependencies.forEach(this.notifyCurrentValue, this);
+				this.notifyCurrentValue.apply(this, this._templateHandle.dependencies);
 			}
-			["dir", "baseClass"].forEach(this.notifyCurrentValue, this);
+			this.notifyCurrentValue("dir", "baseClass");
 		},
 
 		/**
