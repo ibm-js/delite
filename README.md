@@ -30,22 +30,6 @@ This project is distributed by the Dojo Foundation and licensed under the ["New"
 
 All contributions require a [Dojo Foundation CLA](http://dojofoundation.org/about/claForm).
 
-## Dependencies
-
-This project requires the following other projects to run:
-
- * dcl
- * decor
- * dpointer
- * jquery
- * lie
- * requirejs
- * requirejs-domready
- * requirejs-dplugins
- * requirejs-text
-
-All of these dependencies can be automatically installed by bower, as documented below.
-
 ## Installation
 
 _Bower_ release installation:
