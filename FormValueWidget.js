@@ -54,8 +54,9 @@ define([
 	 */
 	return dcl(FormWidget, /** @lends module:delite/FormValueWidget# */{
 		/**
-		 * If true, this widget won't respond to user input.
-		 * Similar to `disabled` except `readOnly` form values are submitted.
+		 * If true, this widget won't respond to user input.  Similar to `disabled` except
+		 * `readOnly` form values are submitted.  FormValueWidget automatically updates
+		 * `focusNode`'s `readOnly` property to match the widget's `readOnly` property.
 		 * @member {boolean}
 		 * @default false
 		 */
@@ -64,11 +65,8 @@ define([
 		refreshRendering: function (oldValues) {
 			if ("readOnly" in oldValues) {
 				var isReadOnly = this.readOnly;
-				if (this.valueNode && this.valueNode !== this) {
-					this.valueNode.readOnly = isReadOnly; // inform screen reader
-				}
-				if (!isReadOnly) {
-					this.removeAttribute("readonly");
+				if (this.focusNode && this.focusNode !== this) {
+					this.focusNode.readOnly = isReadOnly; // prevent interaction
 				}
 			}
 		},

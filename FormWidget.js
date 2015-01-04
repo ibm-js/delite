@@ -58,6 +58,8 @@ define([
 
 		/**
 		 * If set to true, the widget will not respond to user input and will not be included in form submission.
+		 * FormWidget automatically updates `valueNode`'s and `focusNode`'s `disabled` property to match the widget's
+		 * `disabled` property.
 		 * @member {boolean}
 		 * @default false
 		 */
@@ -78,15 +80,13 @@ define([
 		 * A form element, typically an `<input>`, embedded within the widget, and likely hidden.
 		 * It is used to represent the widget's state/value during form submission.
 		 *
-		 * FormWidget updates `valueNode`'s `disabled` property to match the widget's disabled property.
-		 * FormValueWidget additionally updates `valueNodes`'s `value` and `readOnly` properties to match the
-		 * widget's equivalent properties.
 		 * Subclasses of FormWidget like checkboxes and radios should update `valueNode`'s `checked` property.
 		 *
 		 * @member {HTMLElement} module:delite/FormWidget#valueNode
 		 * @protected
+		 * @default undefined
 		 */
-
+		
 		refreshRendering: function (oldValues) {
 			// Handle disabled and tabIndex, across the tabStops and root node.
 			// No special processing is needed for tabStops other than just to refresh disable and tabIndex.
@@ -96,6 +96,10 @@ define([
 				var isDisabled = this.disabled;
 				if (this.valueNode && this.valueNode !== this) {
 					this.valueNode.disabled = isDisabled; // prevent submit
+				}
+				if (this.focusNode && this.focusNode !== this
+						&& this.focusNode !== this.valueNode) { // avoid setting disabled twice)
+					this.focusNode.disabled = isDisabled; // prevent interaction
 				}
 				tabStops.forEach(
 					function (nodeName) {
@@ -108,9 +112,6 @@ define([
 					},
 					this
 				);
-				if (!isDisabled) {
-					this.removeAttribute("disabled");
-				}
 			}
 			if ("tabStops" in oldValues || "tabIndex" in oldValues || "disabled" in oldValues) {
 				tabStops.forEach(

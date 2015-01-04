@@ -14,6 +14,9 @@ define([
 				render: function () {
 					this.focusNode = this.ownerDocument.createElement("input");
 					this.appendChild(this.focusNode);
+					this.valueNode = this.ownerDocument.createElement("input");
+					this.valueNode.type = "hidden";
+					this.appendChild(this.valueNode);
 				}
 			});
 		},
@@ -56,6 +59,21 @@ define([
 			assert.strictEqual(myWidget.attributes.length, 1, "root has foo but not aria-label");
 			assert.strictEqual(myWidget.focusNode.getAttribute("aria-label"), "label 2",
 				"aria-label added to focusNode");
+		},
+
+		disabled: function () {
+			var myWidget = new FormWidgetTest();
+
+			myWidget.disabled = true;
+			myWidget.deliver();
+			assert(myWidget.valueNode.disabled, "disabled set on valueNode");
+			assert(myWidget.focusNode.disabled, "disabled set on focusNode");
+
+
+			myWidget.disabled = false;
+			myWidget.deliver();
+			assert.isFalse(myWidget.valueNode.disabled, "disabled not set on valueNode");
+			assert.isFalse(myWidget.focusNode.disabled, "disabled not set on focusNode");
 		},
 
 		afterEach: function () {
