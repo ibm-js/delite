@@ -63,11 +63,10 @@ define([
 		readOnly: false,
 
 		refreshRendering: function (oldValues) {
-			if ("readOnly" in oldValues) {
-				var isReadOnly = this.readOnly;
-				if (this.focusNode && this.focusNode !== this) {
-					this.focusNode.readOnly = isReadOnly; // prevent interaction
-				}
+			if ("tabStops" in oldValues || "readOnly" in oldValues) {
+				this.forEachFocusNode(function (node) {
+					node.readOnly = this.readOnly;
+				});
 			}
 		},
 
