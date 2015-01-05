@@ -50,9 +50,9 @@ define([
 	 */
 	function createElement(tag) {
 		if (/-/.test(tag) && !(tag in registry)) {
-			// Try to help people that have templates with custom elements but they forgot to do require="..."
+			// Try to help people that have templates with custom elements but they forgot to do requires="..."
 			console.warn("register.createElement(): undefined tag '" + tag +
-				"', did you forget require='...' in your template?");
+				"', did you forget requires='...' in your template?");
 		}
 
 		var base = registry[tag] ? registry[tag].extends : null;
