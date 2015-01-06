@@ -33,7 +33,7 @@
  *
  * @module delite/handlebars
  */
-define(["./Template", "require"], function (Template, require) {
+define(["./Template", "require", "lie/dist/lie"], function (Template, require, Promise) {
 
 	// Text plugin to load the templates and do the build.
 	var textPlugin = "requirejs-text/text";
@@ -264,6 +264,29 @@ define(["./Template", "require"], function (Template, require) {
 		},
 
 		/**
+		 * Similar to compile() but before compile then template, loads the modules specified in the
+		 * template via the `requires=...` attribute.
+		 * @param {string} templateText - See module description for details on template format.
+		 * @param {Function} require - AMD's require() method.
+		 * @returns {Promise} Promise for the function that compile() would have returned.
+		 */
+		requireAndCompile: function (templateText, require) {
+			var templateDom = handlebars.toDom(templateText),
+				requires = templateDom.getAttribute("requires") ||
+					templateDom.getAttribute("data-requires") || "";
+			templateDom.removeAttribute("requires");
+			templateDom.removeAttribute("data-requires");
+
+			return new Promise(function (resolve) {
+				require(requires.split(/,\s*/), function () {
+					var tree = handlebars.parse(templateDom);
+					var template = new Template(tree);
+					resolve(template.func);
+				});
+			});
+		},
+
+		/**
 		 * Returns a function to generate the DOM specified by the template.
 		 * Also loads any AMD dependencies specified on the template's root node via the `requires` property.
 		 * This is the function run when you use this module as a plugin.
@@ -276,23 +299,14 @@ define(["./Template", "require"], function (Template, require) {
 		 */
 		load: function (mid, require, onload, loaderConfig) {
 			require([textPlugin + "!" + mid], function (templateText) {
-				// The build only need the call to requirejs-text/text to work.
+				// The build only needs the call to requirejs-text/text to work.
 				if (loaderConfig.isBuild) {
 					onload();
 					return;
 				}
 
-				var templateDom = handlebars.toDom(templateText),
-					requires = templateDom.getAttribute("requires") ||
-						templateDom.getAttribute("data-requires") || "";
-				templateDom.removeAttribute("requires");
-				templateDom.removeAttribute("data-requires");
-				require(requires.split(/,\s*/), function () {
-					var tree = handlebars.parse(templateDom);
-					var template = new Template(tree);
-					onload(template.func);
-				});
-			});
+				this.requireAndCompile(templateText, require).then(onload);
+			}.bind(this));
 		},
 
 		/**

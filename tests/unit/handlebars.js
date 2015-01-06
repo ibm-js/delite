@@ -2,15 +2,14 @@ define([
 	"require",
 	"intern!object",
 	"intern/chai!assert",
+	"lie/dist/lie",
 	"dojo/on",
 	"delite/handlebars",
 	"delite/register",
 	"delite/Widget",
 	"delite/handlebars!./templates/HandlebarsButton.html",
-	"delite/handlebars!./templates/SvgWidget.html",
-	"delite/handlebars!./templates/CompoundWidget.html",
 	"delite/theme!"		// to get CSS rules for d-hidden
-], function (require, registerSuite, assert, on, handlebars, register, Widget, buttonHBTmpl, svgTmpl, compoundTmpl) {
+], function (require, registerSuite, assert, Promise, on, handlebars, register, Widget, buttonHBTmpl) {
 	var container, myButton;
 	registerSuite({
 
@@ -323,18 +322,36 @@ define([
 		},
 
 		requires: function () {
-			// Another test of widgets in templates, but this time loading the template from a file.
+			// Another test of widgets in templatea.
 			// This makes sure that the requires attribute (in the top level <template> node)
 			// will pull in the specified modules.
-			var CompoundWidget = register("test-compound-widget", [HTMLElement, Widget], {
-				template: compoundTmpl
-			});
 
-			var myCompoundWidget = new CompoundWidget(),
-				sub1 = myCompoundWidget.getElementsByTagName("test-widget-1")[0],
-				sub2 = myCompoundWidget.getElementsByTagName("test-widget-2")[0];
-			assert(sub1.render, "sub1 instantiated");
-			assert(sub2.render, "sub2 instantiated");
+			var templateText = "<!-- \n" +
+				"Test having widgets in templates\n" +
+				"-->\n" +
+				"<template requires='delite/tests/unit/resources/TestWidget1, " +
+						"delite/tests/unit/resources/TestWidget2'>\n" +
+					"<test-widget-1>hello</test-widget-1>\n" +
+					"<test-widget-2>world</test-widget-2>\n" +
+				"</template>";
+
+			return new Promise(function (resolve) {
+				// workaround apparent requirejs or chrome race condition bug causing spurious
+				// error about a load timeout for TestWidget1 and TestWidget2
+				setTimeout(resolve, 10000);
+			}).then(function () {
+				return handlebars.requireAndCompile(templateText, require);
+			}).then(function (template) {
+				var CompoundWidget = register("test-compound-widget", [HTMLElement, Widget], {
+					template: template
+				});
+
+				var myCompoundWidget = new CompoundWidget(),
+					sub1 = myCompoundWidget.getElementsByTagName("test-widget-1")[0],
+					sub2 = myCompoundWidget.getElementsByTagName("test-widget-2")[0];
+				assert(sub1.render, "sub1 instantiated");
+				assert(sub2.render, "sub2 instantiated");
+			});
 		},
 
 		html: function () {
@@ -365,8 +382,16 @@ define([
 			//		3. tags of SVG nodes are lowercase
 			//		4. attribute names are case sensitive
 
+			var template = "<!-- comment -->\n" +
+				"<template style='width: 50px; height: 50px;'>\n" +
+				"<svg width='20px' height='20px' version='1.1' viewBox='0 0 30 30' preserveAspectRatio='none'\n" +
+				"class='svg-root-class' xmlns='http://www.w3.org/2000/svg'>\n" +
+				"<rect width='100%' height='100%' fill='red'></rect>" +
+				"<text x='49%' y='65%' font-size='14' font-weight='bold' fill='black' text-anchor='middle'>10%</text>" +
+				"</svg>" +
+				"</template>";
 			var TestSvg = register("handlebars-svg", [HTMLElement, Widget], {
-				template: svgTmpl
+				template: handlebars.compile(template)
 			});
 
 			var node = new TestSvg();
