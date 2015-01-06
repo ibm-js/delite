@@ -105,7 +105,7 @@ define([
 
 		/**
 		 * Returns true if container's scroll has reached the maximum limit at
-		 * the top of the contents.  Returns false otherwise.
+		 * the top of the contents. Returns false otherwise.
 		 * @example
 		 * var scrollableNode = scrollableWidget.scrollableNode;
 		 * scrollableNode.on("scroll", function () {
@@ -121,7 +121,7 @@ define([
 
 		/**
 		 * Returns true if container's scroll has reached the maximum limit at
-		 * the bottom of the contents. Returns false otherwise. 
+		 * the bottom of the contents. Returns false otherwise.
 		 * @example
 		 * var scrollableNode = scrollableWidget.scrollableNode;
 		 * scrollableNode.on("scroll", function () {
@@ -139,7 +139,7 @@ define([
 
 		/**
 		 * Returns true if container's scroll has reached the maximum limit at
-		 * the left of the contents. Returns false otherwise. 
+		 * the left of the contents. Returns false otherwise.
 		 * @example
 		 * var scrollableNode = scrollableWidget.scrollableNode;
 		 * scrollableNode.on("scroll", function () {
@@ -155,7 +155,7 @@ define([
 
 		/**
 		 * Returns true if container's scroll has reached the maximum limit at
-		 * the right of the contents. Returns false otherwise. 
+		 * the right of the contents. Returns false otherwise.
 		 * @example
 		 * var scrollableNode = scrollableWidget.scrollableNode;
 		 * scrollableNode.on("scroll", function () {
@@ -182,8 +182,8 @@ define([
 
 		/**
 		 * Scrolls by the given amount.
-		 * @param {Object} by The scroll amount.  An object with x and/or y properties, for example
-		 * `{x: 0, y: -5} or {y: -29}`.
+		 * @param {Object} by - The scroll amount. An object with x and/or y properties, for example
+		 * `{x: 0, y: -5}` or `{y: -29}`.
 		 * @param {number} duration - Duration of scrolling animation in milliseconds.
 		 * If 0 or unspecified, scrolls without animation.
 		 */
@@ -200,11 +200,10 @@ define([
 
 		/**
 		 * Scrolls to the given position.
-		 * @param {Object} to The scroll destination position.  An object with w and/or y properties, for example
-		 * `{x: 0, y: -5} or {y: -29}`.
-		 * @param {number} [duration] Duration of scrolling animation in milliseconds. 
+		 * @param {Object} to - The scroll destination position. An object with w and/or y properties,
+		 * for example `{x: 0, y: -5}` or `{y: -29}`.
+		 * @param {number} [duration] - Duration of scrolling animation in milliseconds.
 		 * If 0 or unspecified, scrolls without animation.
-		 * @returns {module:dojo/_base/fx/Animation}
 		 */
 		scrollTo: function (to, duration) {
 			var scrollableNode = this.scrollableNode;
@@ -244,7 +243,6 @@ define([
 						delete self._animation;
 					}
 				});
-				return self._animation;
 			}
 		},
 

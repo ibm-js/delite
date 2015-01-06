@@ -1,9 +1,9 @@
 define([
 	"intern!object",
-	"intern/chai!assert", "dcl/dcl", "dojo/_base/declare", "dojo/when",
+	"intern/chai!assert", "dcl/dcl", "dojo/_base/declare",
 	"delite/register", "delite/Widget", "delite/Store",
 	"dstore/Trackable", "dstore/Rest", "dstore/Memory"
-], function (registerSuite, assert, dcl, declare, when, register, Widget, Store, Trackable, Rest, Memory) {
+], function (registerSuite, assert, dcl, declare, register, Widget, Store, Trackable, Rest, Memory) {
 	var C = register("test-store", [HTMLElement, Widget, Store]);
 	var M = declare([Memory, Trackable], {});
 	registerSuite({

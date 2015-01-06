@@ -74,7 +74,7 @@ require([
 
 		postRender: function () {
 			this.on("click", this._openPopup.bind(this));
-			this.on("delite-deactivated", this._deactivatedHandler.bind(this))
+			this.on("delite-deactivated", this._deactivatedHandler.bind(this));
 		},
 
 		_openPopup: function () {
@@ -399,7 +399,7 @@ require([
 		});
 	};
 	closeAt1015 = function () {
-		popupUtil.close(xyPopup)
+		popupUtil.close(xyPopup);
 	};
 
 	// For testing orient() callback

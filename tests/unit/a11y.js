@@ -3,7 +3,7 @@ define([
 	"intern/chai!assert",
 	"delite/a11y",
 	"decor/sniff",
-	"requirejs-text/text!../resources/a11y.html"
+	"requirejs-text/text!./resources/a11y.html"
 ], function (registerSuite, assert, a11y, has, html) {
 	var container;
 	registerSuite({

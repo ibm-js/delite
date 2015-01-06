@@ -46,14 +46,6 @@ Note: All of these properties can only be set *before* `Widget#render()` is call
 By default, `delite/HasDropDown` will use either `focusNode` or `domNode` as the element to click to display the drop-down.
 If you want to use a specific element to click to display the drop-down instead, attach that element to `buttonNode`.
 
-### arrowWrapperNode
-
-When `delite/HasDropDown` is instantiated, a CSS class
-`d-up-arrow-button`, `d-down-arrow-button`, `d-right-arrow-button` etc. is added to specify
-which direction the pop-up appears by default relative to the widget.
-By default, these classes are set on `buttonNode`.
-Attaching an element to `arrowWrapperNode` will cause these classes to be applied to that element instead.
-
 ### popupStateNode
 
 When a drop-down is opened, a CSS class `d-drop-down-open` attribute is added to indicate that the drop-down is open.
@@ -120,7 +112,7 @@ The `delite/HasDropDown` class provides the following events:
 
 |event name|dispatched|cancelable|bubbles|properties|
 |----------|----------|----------|-------|----------|
-|delite-display-load|on any show or hide action|True|True|<ul><li>`loadDeferred`: the deferred to resolve once the child will be loaded; resolve with value like `{child: dropdown}`</li></ul>|
+|delite-display-load|on any show or hide action|True|True|<ul><li>`setChild`: method to set child info, a value like `{child: Element}`, or Promise for child info</li></ul>|
 |delite-before-show|just before a child is shown|False|True|<ul><li>`child`: the child to show</li></ul>|
 |delite-after-show|after a child has been shown|False|True|<ul><li>`child`: the child that has been shown</li></ul>|
 |delite-before-hide|just before a child is hidden|False|True|<ul><li>`child`: the child to hide</li></ul>|

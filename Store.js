@@ -1,5 +1,5 @@
 /** @module delite/Store */
-define(["dcl/dcl", "dojo/when", "decor/Invalidating"], function (dcl, when, Invalidating) {
+define(["dcl/dcl", "decor/Invalidating"], function (dcl, Invalidating) {
 
 	/**
 	 * Dispatched once the query has been executed and the `renderItems` array

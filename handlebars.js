@@ -95,7 +95,7 @@ define(["./Template", "require"], function (Template, require) {
 		 */
 		parse: function (templateNode, xmlns) {
 			/* jshint maxcomplexity:13 */
-			// Get tag name, reversing the tag renaming done in parse()
+			// Get tag name, reversing the tag renaming done in toDom()
 			var tag = templateNode.hasAttribute("is") ? templateNode.getAttribute("is") :
 					templateNode.tagName.replace(/^template-/i, "").toLowerCase(),
 				elem = Template.getElement(tag);
@@ -218,7 +218,7 @@ define(["./Template", "require"], function (Template, require) {
 			// closing </template-input> tag.
 			templateText = templateText.replace(
 				/* jshint maxlen:200 */
-				/<template-(area|base|br|col|command|embed|hr|img|input|keygen|link|meta|param|source|track|wbr)([^>]*)\/?>/g,
+				/<template-(area|base|br|col|command|embed|hr|img|input|keygen|link|meta|param|source|track|wbr)([^>]*?)\/?>/g,
 				"<template-$1$2></template-$1>");
 
 			// Create DOM tree from template.

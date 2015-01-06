@@ -1,6 +1,6 @@
 {
 	"name": "delite",
-	"version": "0.5.1",
+	"version": "0.6.0-alpha.3",
 	"dependencies": {},
 	"devDependencies": {
 		"intern": "2.1.x",
