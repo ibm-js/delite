@@ -2,12 +2,12 @@ define([
 	"require",
 	"intern!object",
 	"intern/chai!assert",
-	"dojo/on",
+	"lie/dist/lie",
 	"delite/DisplayContainer",
 	"delite/Widget",
 	"delite/register",
 	"requirejs-domready/domReady!"
-], function (require, registerSuite, assert, on, DisplayContainer, Widget, register) {
+], function (require, registerSuite, assert, Promise, DisplayContainer, Widget, register) {
 	var container;
 	registerSuite({
 		name: "DisplayContainer",
@@ -104,7 +104,6 @@ define([
 			}
 
 			document.addEventListener("delite-display-load", handler = function (event) {
-				event.preventDefault();
 				var view = document.createElement("div");
 				initView(view, event.dest);
 				event.setChild({
@@ -139,12 +138,13 @@ define([
 			}
 
 			document.addEventListener("delite-display-load", handler = function (event) {
-				event.preventDefault();
 				var view = document.createElement("div");
 				initView(view, event.dest);
-				event.setChild({
-					child: view
-				});
+				event.setChild(new Promise(function (resolve) {	// test passing Promise to setChild()
+					setTimeout(function () {
+						resolve({child: view});
+					}, 10);
+				}));
 			});
 			register("test-custom-display-container", [HTMLElement, Widget, DisplayContainer]);
 			var dcontainer = register.createElement("test-custom-display-container");
