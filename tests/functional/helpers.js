@@ -4,7 +4,7 @@ define([
 	"lie/dist/lie",
 	"dojo/dom-attr", "dojo/dom-class", "dojo/dom-geometry", "dojo/dom-style",
 	"dojo/_base/kernel", "dojo/on", "dojo/query",
-	"delite/a11y"	// isTabNavigable, _isElementShown
+	"../../a11y"	// isTabNavigable, _isElementShown
 ], function (Promise, domAttr, domClass, domGeometry, domStyle, kernel, on, query, a11y) {
 
 

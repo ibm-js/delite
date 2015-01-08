@@ -62,7 +62,7 @@ for (i = 0; (script = scripts[i]); i++) {
 // Setup configuration options for the loader
 /* global require:true */
 require = {
-	baseUrl: testDir + "../../",
+	baseUrl: testDir + "../../..",
 	packages: [
 		// TODO: when all tests converted from doh to intern, remove entry for doh
 		{name: "doh", location: "util/doh"}
@@ -79,7 +79,7 @@ for (var key in overrides) {
 }
 
 // Output the boilerplate text to load the loader.
-document.write("<script type='text/javascript' src='" + testDir + "../../requirejs/require.js'></script>");
+document.write("<script type='text/javascript' src='" + testDir + "../../../requirejs/require.js'></script>");
 
 // On IE9 the following inlined script will run before dojo has finished loading, leading to an error because require()
 // isn't defined yet.  Workaround it by putting the code in a separate file.

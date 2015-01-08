@@ -6,7 +6,7 @@
 	  content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no"/>
 <title>popup functional test</title>
 
-<script src="../boilerplate.js"></script>
+<script src="boilerplate.js"></script>
 
 <style type="text/css">
 	body {
@@ -56,7 +56,7 @@ function addBoilerplateText() {
 
 require([
 	"delite/popup", "delite/register", "delite/Widget",
-	"delite/tests/helpers", "delite/activationTracker", "requirejs-domready/domReady!"
+	"delite/tests/functional/helpers", "delite/activationTracker", "requirejs-domready/domReady!"
 ], function (popupUtil, register, Widget, helpers) {
 	tabOrder = helpers.tabOrder;		// used by tests/functional/popup.js (TODO: stop using?)
 	glblPopupUtil = popupUtil;		// used by tests/functional/popup.js
