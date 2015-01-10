@@ -315,6 +315,9 @@ define([
 				accCalls = [];
 				w.setAttribute("foo", "bar");
 				setTimeout(def.rejectOnError(function () {
+					if (accCalls[0] && accCalls[0].oldVal === "") {
+						accCalls[0].oldVal = null;	// workaround inconsistent IE behavior
+					}
 					assert.deepEqual(accCalls, [{name: "foo", oldVal: null, newVal: "bar"}], "accCalls 1");
 
 					accCalls = [];
@@ -325,6 +328,9 @@ define([
 						accCalls = [];
 						w.removeAttribute("foo");
 						setTimeout(def.callback(function () {
+							if (accCalls[0] && accCalls[0].newVal === "") {
+								accCalls[0].newVal = null;	// workaround inconsistent IE behavior
+							}
 							assert.deepEqual(accCalls, [{name: "foo", oldVal: "bar2", newVal: null}], "accCalls 3");
 						}), 10);
 					}), 10);
@@ -344,8 +350,6 @@ define([
 
 				var def = this.async();
 
-				// TODO: I wanted to test refreshRendering() but Invalidating not mixed into CustomElement.
-				// So need tests in Widget too?
 				var changedProps = [];
 				w.observe(function (oldVals) {
 					changedProps.push(oldVals);
@@ -356,8 +360,16 @@ define([
 				w.tabIndex = 1;
 
 				setTimeout(def.callback(function () {
+					if (accCalls[0] && accCalls[0].oldVal === "") {
+						accCalls[0].oldVal = null;	// workaround inconsistent IE behavior
+					}
 					assert.deepEqual(accCalls, [{name: "tabindex", oldVal: null, newVal: "1"}],
 						"attributeChangedCallback");
+
+
+					if (changedProps[0] && changedProps[0].tabIndex === "") {
+						changedProps[0].tabIndex = null;	// workaround inconsistent IE behavior
+					}
 					assert.deepEqual(changedProps, [{tabIndex: null}], "observe()");
 
 					// TODO: change tabIndex again and check results
@@ -385,9 +397,19 @@ define([
 				w.setAttribute("tabindex", "1");
 
 				setTimeout(def.callback(function () {
+					if (accCalls[0] && accCalls[0].oldVal === "") {
+						accCalls[0].oldVal = null;	// workaround inconsistent IE behavior
+					}
 					assert.deepEqual(accCalls, [{name: "tabindex", oldVal: null, newVal: "1"}],
 						"attributeChangedCallback");
+
+
+					if (changedProps[0] && changedProps[0].tabIndex === "") {
+						changedProps[0].tabIndex = null;	// workaround inconsistent IE behavior
+					}
 					assert.deepEqual(changedProps, [{tabIndex: null}], "observe()");
+
+					// TODO: change tabIndex again and check results
 				}), 10);
 
 			}

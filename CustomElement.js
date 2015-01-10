@@ -152,8 +152,15 @@ define([
 						attributes: true,
 						attributeOldValue: true
 					});
-				} else if (/* todo */ false) {
+				} else if (has("DOMAttrModified")) {
 					// see dir PR
+					this.addEventListener("DOMAttrModified", function (evt) {
+						if (evt.target === this) {
+							this.attributeChangedCallback(evt.attrName, evt.prevValue, evt.newValue);
+						}
+					});
+				} else {
+					throw new Error("can't monitor attributes");
 				}
 			}
 
