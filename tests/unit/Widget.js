@@ -367,6 +367,17 @@ define([
 				"your", "three.one.one");
 		},
 
+		initDir: function() {
+			BidiWidget = register("bidi-widget", [HTMLElement, Widget]);
+			var html = "<div dir='rtl'><bidi-widget id='w1'></bidi-widget></div>";
+			container.innerHTML = html;
+			register.parse(container);
+			var w1 = document.getElementById('w1');
+			assert.strictEqual(w1.dir, "rtl", "markup: dir isn't set");
+			var w2 = new BidiWidget().placeAt(container.firstChild, "last");
+			assert.strictEqual(w2.dir, "rtl", "placeAt: dir isn't set");
+		},
+		
 		teardown: function () {
 			container.parentNode.removeChild(container);
 		}

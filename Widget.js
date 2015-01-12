@@ -94,6 +94,7 @@ define([
 			//		https://bugs.webkit.org/show_bug.cgi?id=36423
 			//		https://bugs.webkit.org/show_bug.cgi?id=49739
 			//		https://bugs.webkit.org/show_bug.cgi?id=75297
+			this.dir = window.getComputedStyle(this).direction;
 			var tabIndex = this.tabIndex;
 			// Trace up prototype chain looking for custom setter
 			for (var proto = this; proto; proto = Object.getPrototypeOf(proto)) {
@@ -332,7 +333,9 @@ define([
 			if (!this.started && (this.getParent() || {}).started) {
 				this.startup();
 			}
-
+			if (!this.attached) {
+				this.attachedCallback();
+			}
 			return this;
 		},
 
