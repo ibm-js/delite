@@ -7,7 +7,7 @@ One goal of the project is to
 into a single set of components.
 
 Another is to
-[build on emerging web standards](https://docs.google.com/document/d/1kqe3Oq7W6lg-JY_iqMl5G7SxGTD0uQ6FFIoP4KPAkUw/edit#heading=h.ct7kwnepj0cc).
+[build on emerging web standards](http://ibm-js.github.io/2014/07/18/delite-and-deliteful.html).
 
 ## Status
 
