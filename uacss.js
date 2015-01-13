@@ -3,8 +3,7 @@
  * 
  * - browser: `d-webkit`, `d-safari`, `d-chrome`, `d-gecko`, `d-ios`, `d-android`
  * - browser version (ex: `d-ie-9`, `d-ff-26`)
- * - text direction: `d-rtl` (if the document is RTL)
- * 
+ *
  * Returns the `has()` method.
  *
  * @module delite/uacss
