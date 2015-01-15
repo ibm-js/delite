@@ -3,8 +3,9 @@ define([
 	"dcl/dcl",
 	"decor/Observable",
 	"decor/Destroyable",
-	"decor/Stateful"
-], function (dcl, Observable, Destroyable, Stateful) {
+	"decor/Stateful",
+	"delite/features"
+], function (dcl, Observable, Destroyable, Stateful, has) {
 
 	/**
 	 * Dispatched after the CustomElement has been attached.
@@ -133,12 +134,72 @@ define([
 		 * @fires module:delite/CustomElement#customelement-attached
 		 */
 		attachedCallback: dcl.after(function () {
+			// Call attributeChangedCallback() whenever an attribute value changes, unless it will be called
+			// automatically by the browser (currently chrome only?)
+			if (!has("document-register-element")) {
+				if ("MutationObserver" in window || "WebKitMutationObserver" in window) {
+					// If Polymer is loaded, use MutationObserver rather than WebKitMutationObserver
+					// to avoid error about "referencing a Node in a context where it does not exist".
+					var MO = window.MutationObserver || WebKitMutationObserver;	// for jshint
+					var observer = new MO(function (records) {
+						records.forEach(function (record) {
+							this.attributeChangedCallback(record.attributeName, record.oldValue,
+									this.getAttribute(record.attributeName));
+						}, this);
+					}.bind(this));
+					observer.observe(this, {
+						subtree: false,
+						attributes: true,
+						attributeOldValue: true
+					});
+				} else if (has("DOMAttrModified")) {
+					// see dir PR
+					this.addEventListener("DOMAttrModified", function (evt) {
+						if (evt.target === this) {
+							this.attributeChangedCallback(evt.attrName, evt.prevValue, evt.newValue);
+						}
+					});
+				} else {
+					throw new Error("can't monitor attributes");
+				}
+			}
+
 			this.attached = true;
 			this.emit("customelement-attached", {
 				bubbles: false,
 				cancelable: false
 			});
 		}),
+
+		/**
+		 * Called when an attribute's value is changed.
+		 *
+		 * This method is automatically chained, so subclasses generally do not need to use `dcl.superCall()`,
+		 * `dcl.advise()`, etc.
+		 * @param {string} attrName - Name of attribute.
+		 * @param {string} oldVal - Old value of attribute.
+		 * @param {string} newVal - New value of attribute.
+		 * @protected
+		 */
+		attributeChangedCallback: function (attrName, oldVal, newVal) {
+			// If this attribute has a corresponding property then notify that the property value changed.
+			// Note that it isn't checking for a custom setter.  Do we need support for that?
+			// TODO: make table better?  look in dojo/dom*.js
+			var attrToProp = {
+				"class": "className",
+				tabindex: "tabIndex"
+			};
+			var propName = attrToProp[attrName] || this._propCaseMap[attrName] || attrName;
+			if (propName in this) {
+				Observable.getNotifier(this).notify({
+					// Property is never new because setting up shadow property defines the property
+					type: "update",
+					object: this,
+					name: propName,
+					oldValue: oldVal
+				});
+			}
+		},
 
 		/**
 		 * Returns value for widget property based on attribute value in markup.
@@ -346,7 +407,8 @@ define([
 		// Override Stateful#observe() because the way to get the list of properties to watch is different
 		// than for a plain Stateful.  Especially since IE doesn't support prototype swizzling.
 		observe: function (callback) {
-			var propsToObserve = this._ctor._propsToObserve;
+			var propsToObserve = Object.create(this._ctor._propsToObserve);
+			propsToObserve.tabIndex = true;	// TODO: add all native properties reported by attributeChangedCallback()
 			var h = new Stateful.PropertyListObserver(this, propsToObserve);
 			h.open(callback, this);
 			return h;
@@ -378,6 +440,7 @@ define([
 	// destroy() is chained in Destroyable.js.
 	dcl.chainAfter(CustomElement, "createdCallback");
 	dcl.chainAfter(CustomElement, "attachedCallback");
+	dcl.chainAfter(CustomElement, "attributeChangedCallback");
 
 	return CustomElement;
 });

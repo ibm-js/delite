@@ -2,19 +2,27 @@ define([
 	"intern!object",
 	"intern/chai!assert",
 	"dcl/advise",
+	"decor/Stateful",
 	"delite/register",
 	"delite/CustomElement",
 	"requirejs-domready/domReady!"
-], function (registerSuite, assert, advise, register, CustomElement) {
+], function (registerSuite, assert, advise, Stateful, register, CustomElement) {
 
 	var container;
 	var calls = 0;
+	var MyCustomElement;
 
 	var obj = {
 		foo: function () {
 			// summary: empty function that we connect to
 		}
 	};
+
+	// track calls to attributeChangedCallback;
+	var accCalls = [];
+
+	// track calls to refreshRendering()
+	var rrCalls = [];
 
 	/*jshint multistr: true */
 	var html = "<test-ce-foo id='one' name='bob' attr1=10 attr2=10></test-ce-foo> \
@@ -254,29 +262,156 @@ define([
 			w.className = "foo";	// shouldn't cause notification as per CustomElement#_getProp()
 		},
 
-		"misc methods": {
-			"#findCustomElements": function () {
-				register("test-ce-foo", [HTMLElement, CustomElement], {
-					name: "",
-					attr1: 0,
-					attr2: 0
-				});
-				register("test-ce-bar", [HTMLElement, CustomElement], {
-					name: "",
-					attr1: 0,
-					attr2: 0
-				});
-				register("test-ce-baz", [HTMLElement, CustomElement], {
-					name: "",
-					attr1: 1,
-					attr2: 1
-				});
-				container.innerHTML = html;
-				register.parse(container);
+		"#findCustomElements": function () {
+			register("test-ce-foo", [HTMLElement, CustomElement], {
+				name: "",
+				attr1: 0,
+				attr2: 0
+			});
+			register("test-ce-bar", [HTMLElement, CustomElement], {
+				name: "",
+				attr1: 0,
+				attr2: 0
+			});
+			register("test-ce-baz", [HTMLElement, CustomElement], {
+				name: "",
+				attr1: 1,
+				attr2: 1
+			});
+			container.innerHTML = html;
+			register.parse(container);
 
-				assert.strictEqual(CustomElement.prototype.findCustomElements(container).length, 3);
-				assert.strictEqual(
-					CustomElement.prototype.findCustomElements(document.getElementById("threeWrapper")).length, 1);
+			assert.strictEqual(CustomElement.prototype.findCustomElements(container).length, 3);
+			assert.strictEqual(
+				CustomElement.prototype.findCustomElements(document.getElementById("threeWrapper")).length, 1);
+		},
+
+		"#attributeChangedCallback() etc.": {
+			setup: function () {
+				// TODO: need tabIndex in the prototype for Stateful#observe() to report changes
+				var MyMixin = register.dcl(null, {
+					// Mixin to workaround https://github.com/uhop/dcl/issues/9
+					//tabIndex: "0"
+				});
+				MyCustomElement = register("my-ce-attribute-changed", [HTMLElement, CustomElement, MyMixin], {
+					attributeChangedCallback: function (n, oldv, newv) {
+						accCalls.push({
+							name: n,
+							oldVal: oldv,
+							newVal: newv
+						});
+					}
+				});
+			},
+
+			"basic": function () {
+				var w = new MyCustomElement();
+				container.appendChild(w);
+				w.attachedCallback();
+
+				var def = this.async();
+
+				// Test setting attribute via setAttribute() calls attributeChangedCallback()
+				accCalls = [];
+				w.setAttribute("foo", "bar");
+				setTimeout(def.rejectOnError(function () {
+					if (accCalls[0] && accCalls[0].oldVal === "") {
+						accCalls[0].oldVal = null;	// workaround inconsistent IE behavior
+					}
+					assert.deepEqual(accCalls, [{name: "foo", oldVal: null, newVal: "bar"}], "accCalls 1");
+
+					accCalls = [];
+					w.setAttribute("foo", "bar2");
+					setTimeout(def.rejectOnError(function () {
+						assert.deepEqual(accCalls, [{name: "foo", oldVal: "bar", newVal: "bar2"}], "accCalls 2");
+
+						accCalls = [];
+						w.removeAttribute("foo");
+						setTimeout(def.callback(function () {
+							if (accCalls[0] && accCalls[0].newVal === "") {
+								accCalls[0].newVal = null;	// workaround inconsistent IE behavior
+							}
+							assert.deepEqual(accCalls, [{name: "foo", oldVal: "bar2", newVal: null}], "accCalls 3");
+						}), 10);
+					}), 10);
+				}), 10);
+			},
+
+			"setting mirror property": function () {
+				// Test that setting a mirror property like tabIndex calls both attributeChangedCallback()
+				// and also triggers Object.observe() callback.
+				// Test that attributeChangedCallback() called when attribute set indirectly via shadow property.
+				// TODO: deliver() doesn't make this synchronous but maybe I could make it synchronous if deliver()
+				// called MutationObserver.takeRecords().
+
+				var w = new MyCustomElement();
+				container.appendChild(w);
+				w.attachedCallback();
+
+				var def = this.async();
+
+				var changedProps = [];
+				w.observe(function (oldVals) {
+					changedProps.push(oldVals);
+				});
+
+				accCalls = [];
+
+				w.tabIndex = 1;
+
+				setTimeout(def.callback(function () {
+					if (accCalls[0] && accCalls[0].oldVal === "") {
+						accCalls[0].oldVal = null;	// workaround inconsistent IE behavior
+					}
+					assert.deepEqual(accCalls, [{name: "tabindex", oldVal: null, newVal: "1"}],
+						"attributeChangedCallback");
+
+
+					if (changedProps[0] && changedProps[0].tabIndex === "") {
+						changedProps[0].tabIndex = null;	// workaround inconsistent IE behavior
+					}
+					assert.deepEqual(changedProps, [{tabIndex: null}], "observe()");
+
+					// TODO: change tabIndex again and check results
+				}), 10);
+			},
+
+
+			// Test that setting the attribute via setAttribute() triggers refreshRendering()
+			"set attribute with shadow property": function () {
+				var w = new MyCustomElement();
+				container.appendChild(w);
+				w.attachedCallback();
+
+				var def = this.async();
+
+				// TODO: I wanted to test refreshRendering() but Invalidating not mixed into CustomElement.
+				// So need tests in Widget too?
+				var changedProps = [];
+				w.observe(function (oldVals) {
+					changedProps.push(oldVals);
+				});
+
+				accCalls = [];
+
+				w.setAttribute("tabindex", "1");
+
+				setTimeout(def.callback(function () {
+					if (accCalls[0] && accCalls[0].oldVal === "") {
+						accCalls[0].oldVal = null;	// workaround inconsistent IE behavior
+					}
+					assert.deepEqual(accCalls, [{name: "tabindex", oldVal: null, newVal: "1"}],
+						"attributeChangedCallback");
+
+
+					if (changedProps[0] && changedProps[0].tabIndex === "") {
+						changedProps[0].tabIndex = null;	// workaround inconsistent IE behavior
+					}
+					assert.deepEqual(changedProps, [{tabIndex: null}], "observe()");
+
+					// TODO: change tabIndex again and check results
+				}), 10);
+
 			}
 		}
 	});

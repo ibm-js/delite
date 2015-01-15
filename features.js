@@ -31,6 +31,18 @@ define(["requirejs-dplugins/has"], function (has) {
 		return !!node.attributes;
 	});
 
+	has.add("DOMAttrModified", function () {
+		var result = false;
+		function listener() {
+			result = true;
+		}
+		document.documentElement.addEventListener("DOMAttrModified", listener, false);
+		document.documentElement.setAttribute("checkAttrModified", true);
+		document.documentElement.removeAttribute("checkAttrModified");
+		document.documentElement.removeEventListener("DOMAttrModified", listener, false);
+		return result;
+	});
+
 	// Flag to enable support for textdir attribute
 	has.add("bidi", false);
 
