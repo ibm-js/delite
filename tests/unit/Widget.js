@@ -1,11 +1,11 @@
 define([
 	"intern!object",
 	"intern/chai!assert",
-	"dojo/dom-class",
+	"requirejs-dplugins/jquery!attributes/classes",	// hasClass()
 	"delite/register",
 	"delite/Widget",
 	"requirejs-domready/domReady!"
-], function (registerSuite, assert, domClass, register, Widget) {
+], function (registerSuite, assert, $, register, Widget) {
 	var container;
 
 	var SimpleWidget, simple, pane1;
@@ -177,7 +177,7 @@ define([
 			myWidget.startup();
 			myWidget.deliver();
 
-			assert(domClass.contains(myWidget, "base2"), "baseClass is base2");
+			assert($(myWidget).hasClass("base2"), "baseClass is base2");
 
 			// Then test that baseClass specified as widget parameter gets set
 			var myWidgetCustom = new TestWidget();
@@ -186,7 +186,7 @@ define([
 			myWidgetCustom.startup();
 			myWidgetCustom.deliver();
 
-			assert(domClass.contains(myWidgetCustom, "customBase"), "baseClass is customBase");
+			assert($(myWidgetCustom).hasClass("customBase"), "baseClass is customBase");
 		},
 
 		startup: function () {

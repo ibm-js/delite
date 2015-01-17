@@ -3,13 +3,12 @@ define([
 	"intern!object",
 	"intern/chai!assert",
 	"lie/dist/lie",
-	"dojo/on",
 	"delite/handlebars",
 	"delite/register",
 	"delite/Widget",
 	"delite/handlebars!./templates/HandlebarsButton.html",
 	"delite/theme!"		// to get CSS rules for d-hidden
-], function (require, registerSuite, assert, Promise, on, handlebars, register, Widget, buttonHBTmpl) {
+], function (require, registerSuite, assert, Promise, handlebars, register, Widget, buttonHBTmpl) {
 	var container, myButton;
 	registerSuite({
 
@@ -181,7 +180,7 @@ define([
 				// Test for syntax connecting to a method in the widget: on-click='{{clickHandler}}'
 				var TestListener = register("handlebars-attach-events", [HTMLElement, Widget], {
 					template: handlebars.compile(
-						"<template><span on-click='{{clickHandler}}'>click me</span></template>"),
+						"<template><button on-click='{{clickHandler}}' type=button>click me</button></template>"),
 					clicks: 0,
 					clickHandler: function () {
 						this.clicks++;
@@ -189,7 +188,7 @@ define([
 				});
 				var myListener = new TestListener();
 				myListener.placeAt(container);
-				on.emit(myListener.firstChild, "click", {});
+				myListener.firstChild.click();
 				assert.strictEqual(myListener.clicks, 1, "click callback fired");
 			},
 
@@ -199,11 +198,11 @@ define([
 				g = 1;
 				var TestClick = register("handlebars-events", [HTMLElement, Widget], {
 					template: handlebars.compile(
-						"<template><span on-click='g = 2;'>click me</span></template>")
+						"<template><button on-click='g = 2;' type=button>click me</button></template>")
 				});
 				var myClick = new TestClick();
 				myClick.placeAt(container);
-				on.emit(myClick.firstChild, "click", {});
+				myClick.firstChild.click();
 				assert.strictEqual(g, 2, "click handler fired");
 			}
 		},

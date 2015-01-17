@@ -1,10 +1,10 @@
 define([
 	"intern!object",
 	"intern/chai!assert",
-	"dojo/dom-class",
+	"requirejs-dplugins/jquery!attributes/classes",	// hasClass()
 	"delite/register",
 	"delite/CssState"
-], function (registerSuite, assert, domClass, register, CssState) {
+], function (registerSuite, assert, $, register, CssState) {
 	registerSuite({
 		name: "CssState",
 
@@ -26,9 +26,9 @@ define([
 			});
 			widget.deliver();
 
-			assert(domClass.contains(widget, "d-error"), "error state");
-			assert(domClass.contains(widget, "d-disabled"), "disabled");
-			assert(domClass.contains(widget, "d-checked"), "checked");
+			assert($(widget).hasClass("d-error"), "error state");
+			assert($(widget).hasClass("d-disabled"), "disabled");
+			assert($(widget).hasClass("d-checked"), "checked");
 
 			widget.mix({
 				state: "incomplete",
@@ -37,11 +37,11 @@ define([
 			});
 			widget.deliver();
 
-			assert(!domClass.contains(widget, "d-error"), "not error state");
-			assert(domClass.contains(widget, "d-incomplete"), "incomplete state");
-			assert(!domClass.contains(widget, "d-disabled"), "not disabled");
-			assert(domClass.contains(widget, "d-mixed"), "half checked");
-			assert(!domClass.contains(widget, "d-checked"), "original checked removed");
+			assert(!$(widget).hasClass("d-error"), "not error state");
+			assert($(widget).hasClass("d-incomplete"), "incomplete state");
+			assert.isFalse($(widget).hasClass("d-disabled"), "not disabled");
+			assert($(widget).hasClass("d-mixed"), "half checked");
+			assert.isFalse($(widget).hasClass("d-checked"), "original checked removed");
 		}
 	});
 });

@@ -1,9 +1,8 @@
 define([
 	"intern!object",
 	"intern/chai!assert",
-	"dojo/dom-geometry",
-	"dojo/dom-class"
-], function (registerSuite, assert, domGeom, domClass) {
+	"requirejs-dplugins/jquery!attributes/classes"	// hasClass()
+], function (registerSuite, assert, $) {
 
 	// Test cases for both delite/Scrollable and deliteful/ScrollableContainer.
 	// Since we can not reuse test files accross projects, there are two copies of
@@ -20,71 +19,71 @@ define([
 		"Default CSS": function () {
 			var w = document.getElementById("sc1");
 			w.deliver();
-			assert.isTrue(domClass.contains(w, shared.containerCSSClassName),
+			assert.isTrue($(w).hasClass(shared.containerCSSClassName),
 					"Expecting " + shared.containerCSSClassName + " CSS class! (id='sc1')");
-			assert.isTrue(domClass.contains(w, "d-scrollable"), // class added by the mixin delite/Scrollable
+			assert.isTrue($(w).hasClass("d-scrollable"), // class added by the mixin delite/Scrollable
 				"Expecting d-scrollable CSS class! (id='sc1')");
 
 			w = document.getElementById("sc2"); // with scrollDirection == "none"
 			w.deliver();
 			assert.strictEqual(w.scrollDirection, "none", "wrong scroll direction for id=sc2!");
-			assert.isTrue(domClass.contains(w, shared.containerCSSClassName),
+			assert.isTrue($(w).hasClass(shared.containerCSSClassName),
 					"Expecting " + shared.containerCSSClassName + " CSS class! (id='sc2')");
 			// when scrollDirection is "none", this CSS class should NOT be present:
-			assert.isFalse(domClass.contains(w, "d-scrollable"),
+			assert.isFalse($(w).hasClass("d-scrollable"),
 				"Not expecting d-scrollable CSS class! (id='sc2')");
 
 			w = document.getElementById("mysc1");
 			w.deliver();
-			assert.isTrue(domClass.contains(w, shared.containerCSSClassName),
+			assert.isTrue($(w).hasClass(shared.containerCSSClassName),
 					"Expecting " + shared.containerCSSClassName + " CSS class! (id='mysc1')");
-			assert.isTrue(domClass.contains(w, "d-scrollable"), // class added by the mixin delite/Scrollable
+			assert.isTrue($(w).hasClass("d-scrollable"), // class added by the mixin delite/Scrollable
 				"Expecting d-scrollable CSS class! (id='mysc1')");
 		},
 
 		"CSS class dependency on scrollDirection": function () {
 			var w = document.getElementById("sc1");
 			w.deliver();
-			assert.isTrue(domClass.contains(w, shared.containerCSSClassName),
+			assert.isTrue($(w).hasClass(shared.containerCSSClassName),
 					"Expecting " + shared.containerCSSClassName + " CSS class! (id='sc1')");
-			assert.isTrue(domClass.contains(w, "d-scrollable"), // class added by the mixin delite/Scrollable
+			assert.isTrue($(w).hasClass("d-scrollable"), // class added by the mixin delite/Scrollable
 				"Expecting d-scrollable CSS class! (id='sc1')");
 
 			w.scrollDirection = "none";
 			w.deliver(); // scrollDirection is an invalidating property
-			assert.isTrue(domClass.contains(w, shared.containerCSSClassName),
+			assert.isTrue($(w).hasClass(shared.containerCSSClassName),
 					"Expecting " + shared.containerCSSClassName + " CSS class! (scrollDirection='none')");
 			// when scrollDirection is "none", this CSS class should NOT be present:
-			assert.isFalse(domClass.contains(w, "d-scrollable"),
+			assert.isFalse($(w).hasClass("d-scrollable"),
 				"Not expecting d-scrollable CSS class! (scrollDirection='none')");
 
 			w.scrollDirection = "vertical"; // set back to "vertical"
 			w.deliver();
-			assert.isTrue(domClass.contains(w, shared.containerCSSClassName),
+			assert.isTrue($(w).hasClass(shared.containerCSSClassName),
 					"Expecting " + shared.containerCSSClassName + " CSS class! (scrollDirection='vertical')");
-			assert.isTrue(domClass.contains(w, "d-scrollable"), // class added by the mixin delite/Scrollable
+			assert.isTrue($(w).hasClass("d-scrollable"), // class added by the mixin delite/Scrollable
 				"Expecting d-scrollable CSS class! (scrollDirection='vertical')");
 
 			w.scrollDirection = "horizontal"; // same for "horizontal"
 			w.deliver();
-			assert.isTrue(domClass.contains(w, shared.containerCSSClassName),
+			assert.isTrue($(w).hasClass(shared.containerCSSClassName),
 					"Expecting " + shared.containerCSSClassName + " CSS class! (scrollDirection='horizontal')");
-			assert.isTrue(domClass.contains(w, "d-scrollable"), // class added by the mixin delite/Scrollable
+			assert.isTrue($(w).hasClass("d-scrollable"), // class added by the mixin delite/Scrollable
 				"Expecting d-scrollable CSS class! (scrollDirection='horizontal')");
 
 			w.scrollDirection = "both"; // same for "both"
 			w.deliver();
-			assert.isTrue(domClass.contains(w, shared.containerCSSClassName),
+			assert.isTrue($(w).hasClass(shared.containerCSSClassName),
 					"Expecting " + shared.containerCSSClassName + " CSS class! (scrollDirection='both')");
-			assert.isTrue(domClass.contains(w, "d-scrollable"), // class added by the mixin delite/Scrollable
+			assert.isTrue($(w).hasClass("d-scrollable"), // class added by the mixin delite/Scrollable
 				"Expecting d-scrollable CSS class! (scrollDirection='both')");
 
 			w.scrollDirection = "none"; // and none again
 			w.deliver();
-			assert.isTrue(domClass.contains(w, shared.containerCSSClassName),
+			assert.isTrue($(w).hasClass(shared.containerCSSClassName),
 					"Expecting " + shared.containerCSSClassName + " CSS class! (scrollDirection='none')");
 			// when scrollDirection is "none", this CSS class should NOT be present:
-			assert.isFalse(domClass.contains(w, "d-scrollable"),
+			assert.isFalse($(w).hasClass("d-scrollable"),
 				"Not expecting d-scrollable CSS class! (scrollDirection='none')");
 		},
 
@@ -173,9 +172,9 @@ define([
 			var w = document.getElementById("sc1");
 			var wContent = document.getElementById("sc1content");
 			var pos = {x: 10, y: 10};
-			var box = domGeom.getMarginBox(wContent);
-			var width = box.w;
-			var height = box.h;
+			var box = wContent.getBoundingClientRect();
+			var width = box.width;
+			var height = box.height;
 			w.scrollDirection = "both";
 			w.deliver();
 			w.scrollTo(pos);

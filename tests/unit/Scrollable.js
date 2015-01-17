@@ -2,13 +2,13 @@ define([
 	"dcl/dcl",
 	"intern!object",
 	"intern/chai!assert",
-	"dojo/dom-class",
+	"requirejs-dplugins/jquery!attributes/classes",	// hasClass()
 	"delite/register",
 	"delite/Widget",
 	"delite/Scrollable",
 	"./resources/ScrollableTestContainer",
 	"./resources/Scrollable-shared"
-], function (dcl, registerSuite, assert, domClass, register, Widget,
+], function (dcl, registerSuite, assert, $, register, Widget,
 	Scrollable, ScrollableTestContainer, ScrollableSharedTests) {
 
 	var container, MyScrollableWidget, MyScrollableTestContainer;
@@ -50,7 +50,7 @@ define([
 			assert.strictEqual(w.scrollableNodeInRefreshRendering, w.scrollableNode,
 				"The scrollableNode should been already set to 'this' when refreshRendering() was called!");
 			// The CSS class d-scrollable is expected to be added by the mixin delite/Scrollable
-			assert.isTrue(domClass.contains(w.scrollableNode, "d-scrollable"),
+			assert.isTrue($(w.scrollableNode).hasClass("d-scrollable"),
 				"Expecting d-scrollable CSS class!");
 		},
 
@@ -78,7 +78,7 @@ define([
 				"The scrollableNode property has changed since it was set in render!");
 			// Test that the CSS class d-scrollable has been added by the mixin delite/Scrollable
 			// on the custom scrollableNode.
-			assert.isTrue(domClass.contains(w.scrollableNode, "d-scrollable"),
+			assert.isTrue($(w.scrollableNode).hasClass("d-scrollable"),
 				"Expecting d-scrollable CSS class on my-scrollable-widget-sn!");
 		},
 

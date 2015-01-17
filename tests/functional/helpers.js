@@ -2,10 +2,8 @@
 
 define([
 	"lie/dist/lie",
-	"dojo/dom-attr", "dojo/dom-class", "dojo/dom-geometry", "dojo/dom-style",
-	"dojo/_base/kernel", "dojo/on", "dojo/query",
 	"../../a11y"	// isTabNavigable, _isElementShown
-], function (Promise, domAttr, domClass, domGeometry, domStyle, kernel, on, query, a11y) {
+], function (Promise, a11y) {
 
 
 	// Globals used by onFocus()
@@ -16,21 +14,23 @@ define([
 		isVisible: function isVisible(/*DomNode*/ node) {
 			// summary:
 			//		Return true if node/widget is visible
-			var p;
 
-			return (domStyle.get(node, "display") !== "none") &&
-				(domStyle.get(node, "visibility") !== "hidden") &&
-				(p = domGeometry.position(node, true), p.y + p.h >= 0 && p.x + p.w >= 0 && p.h && p.w);
+			var p, cs = getComputedStyle(node);
+
+			return cs.display !== "none" &&
+				cs.visibility !== "hidden" &&
+				(p = node.getBoundingClientRect(), p.bottom >= 0 && p.right >= 0 && p.height && p.width);
 		},
 
 		isHidden: function isHidden(/*DomNode*/ node) {
 			// summary:
 			//		Return true if node/widget is hidden
-			var p;
 
-			return (domStyle.get(node, "display") === "none") ||
-				(domStyle.get(node, "visibility") === "hidden") ||
-				(p = domGeometry.position(node, true), p.y + p.h < 0 || p.x + p.w < 0 || p.h <= 0 || p.w <= 0);
+			var p, cs = getComputedStyle(node);
+
+			return cs.display === "none" ||
+				cs.visibility === "hidden" ||
+				(p = node.getBoundingClientRect(), p.bottom < 0 || p.right < 0 && p.height <= 0 || p.width <= 0);
 		},
 
 		innerText: function innerText(/*DomNode*/ node) {
@@ -47,7 +47,8 @@ define([
 			var elems = [];
 
 			function walkTree(/*DOMNode*/ parent) {
-				query("> *", parent).forEach(function (child) {
+				var children = Array.prototype.slice.call(parent.children);
+				children.forEach(function (child) {
 					// Skip hidden elements
 					if (!a11y._isElementShown(child)) {
 						return;
@@ -56,7 +57,7 @@ define([
 					if (a11y.isTabNavigable(child)) {
 						elems.push({
 							elem: child,
-							tabIndex: domClass.contains(child, "tabIndex") ? domAttr.get(child, "tabIndex") : 0,
+							tabIndex: child.hasAttribute("tabindex") ? child.getAttribute("tabindex") : 0,
 							pos: elems.length
 						});
 					}
@@ -84,7 +85,7 @@ define([
 			//		delay, newest focused node is passed to func.
 
 			if (!focusListener) {
-				focusListener = on(document, "focusin", function (evt) {
+				focusListener = document.addEventListener("focus", function (evt) {
 					// Track most recently focused node; note it may change again before delay completes
 					curFocusNode = evt.target;
 
@@ -97,7 +98,7 @@ define([
 							callback(curFocusNode);		// return current focus, may be different than 10ms earlier
 						}, focusCallbackDelay);	// allow time for focus to change again, see #8285
 					}
-				});
+				}, true);
 			}
 
 			focusCallback = func;
@@ -109,8 +110,11 @@ define([
 			//		Returns Promise that fires when all widgets have finished initializing.
 			//		Call this after the parser has finished running.
 
-			// Promise fires when all widgets with an loadPromise have fired
-			var widgets = query("[widgetId]").filter(function (w) {
+			// Promise fires when all widgets with a loadPromise have fired.
+			// Note that we really just want to search for the widgets registered via register.createElement()
+			// but that info isn't public.
+			var allNodes = Array.prototype.slice.call(document.getElementsByTagName("*"));
+			var widgets = allNodes.filter(function (w) {
 					return w.loadPromise;
 				}),
 				promises = widgets.map(function (w) {
