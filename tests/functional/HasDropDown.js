@@ -289,7 +289,8 @@ define([
 						};
 					}).then(function (pos) {
 						assert(Math.abs((pos.anchor.left + pos.anchor.width) -
-								(pos.dropDown.left + pos.dropDown.width)) < 1, "drop down and anchor right aligned");
+							(pos.dropDown.left + pos.dropDown.width)) < 1, "drop down and anchor right aligned: " +
+							(pos.anchor.left + pos.anchor.width) + " vs " + (pos.dropDown.left + pos.dropDown.width));
 						assert(pos.anchor.width > pos.dropDown.width, "anchor wider than drop down");
 					})
 					// Click HasDropDown button again to close popup.  Note that this could be interpreted

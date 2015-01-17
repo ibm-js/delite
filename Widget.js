@@ -11,6 +11,22 @@ define([
 	// Used to generate unique id for each widget
 	var cnt = 0;
 
+	// Test is custom setters work for native properties like dir, or if they are ignored.
+	// They don't work on Chrome (v38) or Safari 7, but do work on Safari 8.
+	// If needed, this test could probably be reduced to just use Object.defineProperty() and dcl(),
+	// skipping use of register().
+	has.add("setter-on-native-prop", function () {
+		var works = false,
+			Mixin = dcl(CustomElement, {	// workaround https://github.com/uhop/dcl/issues/9
+				dir: "",
+				_setDirAttr: function () { works = true; }
+			}),
+			TestWidget = register("test-setter-on-native-prop", [HTMLElement, Mixin], {}),
+			tw = new TestWidget();
+		tw.dir = "rtl";
+		return works;
+	});
+
 	/**
 	 * Base class for all widgets, i.e. custom elements that appear visually.
 	 *
@@ -56,6 +72,17 @@ define([
 		 */
 		widgetId: 0,
 
+		/**
+		 * Controls the layout direction of the widget, for example whether the arrow of
+		 * a Combobox appears to the right or the left of the input field.
+		 *
+		 * Values are "ltr" and "rtl", or "" which means that the value is inherited from the
+		 * setting on the document root (either `<html>` or `<body>`).
+		 *
+		 * @member {string}
+		 */
+		dir: "",
+
 		//////////// INITIALIZATION METHODS ///////////////////////////////////////
 
 		/**
@@ -85,46 +112,62 @@ define([
 			}
 			if ("dir" in oldVals) {
 				$(this).toggleClass("d-rtl", !this.isLeftToRight());
+				this.style.direction = this._get("dir");
 			}
 		},
 
 		attachedCallback: function () {
-			// Since safari masks all custom setters for tabIndex on the prototype, call them here manually.
+			// Generate map from native attributes of HTMLElement to custom setters for those attributes.
+			// Also call custom setters for initial values of those attributes.
+			// Necessary because webkit masks all custom setters for native properties on the prototype.
 			// For details see:
 			//		https://bugs.webkit.org/show_bug.cgi?id=36423
 			//		https://bugs.webkit.org/show_bug.cgi?id=49739
 			//		https://bugs.webkit.org/show_bug.cgi?id=75297
-			var tabIndex = this.tabIndex;
-			// Trace up prototype chain looking for custom setter
-			for (var proto = this; proto; proto = Object.getPrototypeOf(proto)) {
-				var desc = Object.getOwnPropertyDescriptor(proto, "tabIndex");
-				if (desc && desc.set) {
-					if (this.hasAttribute("tabindex")) { // initial value was specified
-						this.removeAttribute("tabindex");
-						desc.set.call(this, tabIndex); // call custom setter
+			// TODO: move code to generate map to _getProps() or _introspect().
+			var setterMap = {};
+			["dir", "tabIndex"].forEach(function (propName) {
+				var value = this[propName],
+					attrName = propName.toLowerCase();
+				// Trace up prototype chain looking for custom setter
+				for (var proto = this; proto; proto = Object.getPrototypeOf(proto)) {
+					var desc = Object.getOwnPropertyDescriptor(proto, propName);
+					if (desc && desc.set) {
+						setterMap[attrName] = desc.set;
+						if (this.hasAttribute(attrName)) { // initial value was specified
+							this.removeAttribute(attrName);
+							desc.set.call(this, value); // call custom setter
+						}
+						break;
 					}
-					var self = this;
-					// begin watching for changes to the tabindex DOM attribute
-					/* global WebKitMutationObserver */
-					if ("WebKitMutationObserver" in window) {
-						// If Polymer is loaded, use MutationObserver rather than WebKitMutationObserver
-						// to avoid error about "referencing a Node in a context where it does not exist".
-						var MO = window.MutationObserver || WebKitMutationObserver;	// for jshint
-						var observer = new MO(function () {
-							var newValue = self.getAttribute("tabindex");
-							if (newValue !== null) {
-								self.removeAttribute("tabindex");
-								desc.set.call(self, newValue);
-							}
-						});
-						observer.observe(this, {
-							subtree: false,
-							attributeFilter: ["tabindex"],
-							attributes: true
-						});
-					}
-					break;
 				}
+			}, this);
+
+			// Begin watching for changes to the DOM attribute.
+			// Note that (at least on Chrome) I could use attributeChangedCallback() instead, which is synchronous,
+			// so Widget#deliver() will work as expected, but OTOH gets lots of notifications that I don't care about.
+			/* global WebKitMutationObserver */
+			// TODO: move all code in this function inside the if() statement below?
+			if (!has("setter-on-native-prop")) {
+				// If Polymer is loaded, use MutationObserver rather than WebKitMutationObserver
+				// to avoid error about "referencing a Node in a context where it does not exist".
+				var MO = window.MutationObserver || WebKitMutationObserver;	// for jshint
+				var observer = new MO(function (records) {
+					records.forEach(function (mr) {
+						var attrName = mr.attributeName,
+							setter = setterMap[attrName],
+							newValue = this.getAttribute(attrName);
+						if (newValue !== null) {
+							this.removeAttribute(attrName);
+							setter.call(this, newValue);
+						}
+					}, this);
+				}.bind(this));
+				observer.observe(this, {
+					subtree: false,
+					attributeFilter: Object.keys(setterMap),
+					attributes: true
+				});
 			}
 		},
 
@@ -273,7 +316,7 @@ define([
 		 */
 		isLeftToRight: function () {
 			var doc = this.ownerDocument;
-			return !(/^rtl$/i).test(this.dir || doc.body.dir || doc.documentElement.dir);
+			return !(/^rtl$/i).test(this._get("dir") || doc.body.dir || doc.documentElement.dir);
 		},
 
 		/**

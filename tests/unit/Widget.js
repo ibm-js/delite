@@ -2,13 +2,14 @@ define([
 	"intern!object",
 	"intern/chai!assert",
 	"requirejs-dplugins/jquery!attributes/classes",	// hasClass()
+	"lie/dist/lie",
 	"delite/register",
 	"delite/Widget",
 	"requirejs-domready/domReady!"
-], function (registerSuite, assert, $, register, Widget) {
+], function (registerSuite, assert, $, Promise, register, Widget) {
 	var container;
 
-	var SimpleWidget, simple, pane1;
+	var SimpleWidget, TestDir, simple, pane1;
 
 	function getFragment() {
 		var frag = document.createDocumentFragment();
@@ -153,6 +154,64 @@ define([
 				setTimeout(d.callback(function () {
 					assert.strictEqual(simpleDeclarative.getAttribute("tabindex"), "8", "declarative set");
 				}), 10);
+				return d;
+			}
+		},
+
+		// Widget listens for changes to dir and then sets style.direction and the d-rtl class.
+		dir: {
+			setup: function () {
+				TestDir = register("test-dir", [HTMLElement, Widget], {});
+			},
+
+			programmatic: function () {
+				var bodyOriginalDir = window.getComputedStyle(document.body).direction;
+
+				var myWidget = new TestDir({ });
+				myWidget.dir = "rtl";
+				container.appendChild(myWidget);
+				myWidget.startup();
+
+				function delay(ms) { return new Promise(function (resolve) { setTimeout(resolve, ms); }); }
+
+				return delay(10).then(function () {
+					assert.strictEqual(myWidget.style.direction, "rtl", "style.direction");
+					assert($(myWidget).hasClass("d-rtl"), "has d-rtl class");
+
+					myWidget.dir = "ltr";
+				}).then(function () { return delay(10); }).then(function () {
+					assert.strictEqual(myWidget.style.direction, "ltr", "style.direction 2");
+					assert.isFalse($(myWidget).hasClass("d-rtl"), "doesn't have d-rtl class 1");
+
+					// setting dir to "" should inherit from <body>
+					document.body.dir = "rtl";
+					myWidget.dir = "";
+				}).then(function () { return delay(10); }).then(function () {
+					// Revert changes made to body.dir.   Should be able to just say dir = "" but due to
+					// apparent bugs in Safari 7 (used during saucelabs testing), that leaves the browser
+					// in an RTL state and the Scrollable tests start to fail.
+					document.body.dir = bodyOriginalDir;
+					assert.strictEqual(myWidget.style.direction, "", "style.direction 3");
+					assert($(myWidget).hasClass("d-rtl"), "has d-rtl class 2");
+				}).catch(function (err) {
+					document.body.dir = bodyOriginalDir;
+					throw err;
+				});
+			},
+
+			declarative: function () {
+				// And also test for declarative widgets, to make sure the tabIndex property is
+				// removed from the root node, to prevent an extra tab stop
+				container.innerHTML = "<test-dir id=dirTest dir='rtl'/>";
+				var declarative = document.getElementById("dirTest");
+				register.parse(container);
+
+				var d = this.async(1000);
+				setTimeout(d.callback(function () {
+					assert.strictEqual(declarative.style.direction, "rtl", "style.direction");
+					assert($(declarative).hasClass("d-rtl"), "has d-rtl class");
+				}), 10);
+
 				return d;
 			}
 		},
