@@ -327,6 +327,10 @@ define([
 				parent.insertBefore(this, children[position === "first" ? 0 : position] || null);
 			}
 
+			if (!this.attached) {
+				this.attachedCallback();
+			}
+
 			// Start this iff it has a parent widget that's already started.
 			// TODO: for 2.0 maybe it should also start the widget when this.getParent() returns null??
 			if (!this.started && (this.getParent() || {}).started) {

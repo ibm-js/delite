@@ -226,6 +226,7 @@ define([
 				// create a SimpleWidget
 				simple = (new SimpleWidget({id: "simple-place-at-id"})).placeAt(container);
 				assert.strictEqual(container, simple.parentNode, "simple is child of container");
+				assert(simple.attached, "attachedCallback() ran");
 			},
 
 			"Place as widget child": function () {
