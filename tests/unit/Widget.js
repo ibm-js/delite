@@ -50,7 +50,7 @@ define([
 				});
 				var widget = new SpecialNames({ });
 				widget.tabIndex = "3";
-				document.body.appendChild(widget);
+				container.appendChild(widget);
 				widget.startup();
 				assert.strictEqual(widget.watchedTabIndex, "3", "reported on widget");
 			},
@@ -90,7 +90,7 @@ define([
 
 				var extended = new SpecialExtendedWidget({ });
 				extended.tabIndex = "5";
-				document.body.appendChild(extended);
+				container.appendChild(extended);
 				extended.startup();
 
 				var d = this.async(1000);
@@ -128,7 +128,7 @@ define([
 				// Then the widget should just act like a simple <div>, passing tabIndex through to root node.
 				var SimpleWidget = register("tabindex-not-in-prototype", [HTMLElement, Widget], { });
 				var simple = new SimpleWidget({ tabIndex: 5 });
-				document.body.appendChild(simple);
+				container.appendChild(simple);
 				simple.startup();
 
 				var d = this.async(1000);
@@ -144,7 +144,7 @@ define([
 			declarativeTabIndexRemoved: function () {
 				// And also test for declarative widgets, to make sure the tabIndex property is
 				// removed from the root node, to prevent an extra tab stop
-				container.innerHTML += "<tabindex-not-in-prototype id=simple tabIndex=8></tabindex-not-in-prototype>";
+				container.innerHTML = "<tabindex-not-in-prototype id=simple tabIndex=8></tabindex-not-in-prototype>";
 				var simpleDeclarative = document.getElementById("simple");
 				register.upgrade(simpleDeclarative);
 
