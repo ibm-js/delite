@@ -17,8 +17,8 @@ define([
 			style='position: absolute; width: 200px; height: 200px;'> \
 			<div id='sc1content' style='width: 2000px; height: 2000px;'></div> \
 			</test-scrollable-container>\
-			<my-scrolable-test-container id='mysc1'> \
-			</my-scrolable-test-container> \
+			<my-scrollable-test-container id='mysc1'> \
+			</my-scrollable-test-container> \
 			<test-scrollable-container scrollDirection='none' id='sc2'> \
 			</test-scrollable-container>";
 
@@ -99,8 +99,8 @@ define([
 			container = document.createElement("div");
 			document.body.appendChild(container);
 			container.innerHTML = html;
-			register("my-scrolable-test-container", [ScrollableTestContainer], {});
-			register.parse();
+			register("my-scrollable-test-container", [ScrollableTestContainer], {});
+			register.parse(container);
 		},
 		teardown: function () {
 			container.parentNode.removeChild(container);
@@ -111,7 +111,7 @@ define([
 
 	registerSuite(suite);
 
-	// Programatic creation 
+	// Programmatic creation
 
 	suite = {
 		name: "delite/Scrollable: ScrollableTestContainer programatically",
