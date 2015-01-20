@@ -254,7 +254,7 @@ define([
 				var parsedAttr = this.parseAttribute(name, attr.value);
 				if (parsedAttr) {
 					parsedAttrs.push(parsedAttr);
-					attrsToRemove.push(attr);
+					attrsToRemove.push(attr.name);
 				}
 			}
 

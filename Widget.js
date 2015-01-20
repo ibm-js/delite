@@ -116,41 +116,49 @@ define([
 			}
 		},
 
-		attachedCallback: function () {
-			// Generate map from native attributes of HTMLElement to custom setters for those attributes.
-			// Also call custom setters for initial values of those attributes.
-			// Necessary because webkit masks all custom setters for native properties on the prototype.
-			// For details see:
-			//		https://bugs.webkit.org/show_bug.cgi?id=36423
-			//		https://bugs.webkit.org/show_bug.cgi?id=49739
-			//		https://bugs.webkit.org/show_bug.cgi?id=75297
-			// TODO: move code to generate map to _getProps() or _introspect().
-			var setterMap = {};
-			["dir", "tabIndex"].forEach(function (propName) {
-				var value = this[propName],
-					attrName = propName.toLowerCase();
-				// Trace up prototype chain looking for custom setter
-				for (var proto = this; proto; proto = Object.getPrototypeOf(proto)) {
-					var desc = Object.getOwnPropertyDescriptor(proto, propName);
-					if (desc && desc.set) {
-						setterMap[attrName] = desc.set;
-						if (this.hasAttribute(attrName)) { // initial value was specified
-							this.removeAttribute(attrName);
-							desc.set.call(this, value); // call custom setter
-						}
-						break;
-					}
-				}
-			}, this);
-
-			// Begin watching for changes to the DOM attribute.
-			// Note that (at least on Chrome) I could use attributeChangedCallback() instead, which is synchronous,
-			// so Widget#deliver() will work as expected, but OTOH gets lots of notifications that I don't care about.
-			/* global WebKitMutationObserver */
-			// TODO: move all code in this function inside the if() statement below?
+		_introspect: function () {
 			if (!has("setter-on-native-prop")) {
+				// Generate map from native attributes of HTMLElement to custom setters for those attributes.
+				// Necessary because webkit masks all custom setters for native properties on the prototype.
+				// For details see:
+				//		https://bugs.webkit.org/show_bug.cgi?id=36423
+				//		https://bugs.webkit.org/show_bug.cgi?id=49739
+				//		https://bugs.webkit.org/show_bug.cgi?id=75297
+				var setterMap = this._nativePropSetterMap = {};
+				["dir", "tabIndex"].forEach(function (propName) {
+					// Trace up prototype chain looking for custom setter
+					for (var proto = this; proto; proto = Object.getPrototypeOf(proto)) {
+						var desc = Object.getOwnPropertyDescriptor(proto, propName);
+						if (desc && desc.set) {
+							setterMap[propName.toLowerCase()] = desc.set;
+							break;
+						}
+					}
+				}, this);
+			}
+		},
+
+		attachedCallback: function () {
+			if (!has("setter-on-native-prop")) {
+				var setterMap = this._nativePropSetterMap,
+					attrs = Object.keys(setterMap);
+
+				// Call custom setters for initial values of attributes with shadow properties (dir, tabIndex, etc)
+				attrs.forEach(function (attrName) {
+					if (this.hasAttribute(attrName)) { // initial value was specified
+						var value = this.getAttribute(attrName);
+						this.removeAttribute(attrName);
+						setterMap[attrName].call(this, value); // call custom setter
+					}
+				}, this);
+
+				// Begin watching for changes to those DOM attributes.
+				// Note that (at least on Chrome) I could use attributeChangedCallback() instead, which is synchronous,
+				// so Widget#deliver() will work as expected, but OTOH gets lots of notifications
+				// that I don't care about.
 				// If Polymer is loaded, use MutationObserver rather than WebKitMutationObserver
 				// to avoid error about "referencing a Node in a context where it does not exist".
+				/* global WebKitMutationObserver */
 				var MO = window.MutationObserver || WebKitMutationObserver;	// for jshint
 				var observer = new MO(function (records) {
 					records.forEach(function (mr) {
@@ -165,7 +173,7 @@ define([
 				}.bind(this));
 				observer.observe(this, {
 					subtree: false,
-					attributeFilter: Object.keys(setterMap),
+					attributeFilter: attrs,
 					attributes: true
 				});
 			}
