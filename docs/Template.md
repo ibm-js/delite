@@ -14,20 +14,33 @@ An AST would look like:
 ```js
 {
 	tag: "BUTTON",
-	attributes: {},
 	children: [
+		// child Element (aka tag)
 		{
 			tag: "SPAN",
 			attributes: {
-				class: {expr: "'d-reset' + this.baseClass", dependsOn: ["baseClass"]}
+				class: "'d-reset' + this.baseClass"		// javascript expression where this refers to widget
 			},
 			connect: {
 				click: "myClickHandler"		// name of method in widget to call on click event
 			},
-			attachPoints: [ "focusNode" ],
+			attachPoints: [ "focusNode" ],	// set this.focusNode to point to this DOM node
 			children: [ ... ]
 		},
-		{expr: "'some boilerplate text' + this.label", dependsOn: ["label"]}
+
+		// plain text bound to javascript expression where "this" refers to the widget
+		"'some boilerplate text' + this.label"
 	]
 }
 ```
+
+In handlebars syntax this would be:
+
+```html
+<button>
+   <span class="d-reset {{baseClass}}"> on-click="myClickHandler" attach-point="focusNode">...</span>
+   some boilerplate text {{label}}
+</button>
+```
+
+Note that `label` is escaped, so it cannot contain any HTML.

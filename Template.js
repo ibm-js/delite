@@ -1,6 +1,24 @@
 /** @module delite/Template */
 define(["./register"], function (register) {
+
+	// Get list of properties that the javascript expression depends on.
+	// For example, for "this.label + ' hi ' + this.foo", returns ["label", "foo"].
+	// For nested props (ex: this.item.foo), return top level prop (ex: item).
+	function propertiesReferenced(expr) {
+		var matches = expr.match(/this\.(\w+)/g);
+		if (matches) {
+			// use hash to remove duplicates, then convert to array to return
+			return Object.keys(matches.reduce(function (hash, thisVar) {
+				hash[thisVar.substring(5)] = true;	// "this.foo" --> "foo"
+				return hash;
+			}, {}));
+		} else {
+			return [];
+		}
+	}
+
 	/**
+
 	 * Given an AST representation of the template, generates a function that:
 	 *
 	 * 1. generates DOM corresponding to the template
@@ -90,19 +108,20 @@ define(["./register"], function (register) {
 					);
 				} else {
 					// JS code to compute text value
-					var textNodeName = childName + "t" + (idx + 1);
+					var textNodeName = childName + "t" + (idx + 1),
+						js = child,
+						dependsOn = propertiesReferenced(js);
 
 					// Generate code to create DOM text node.  If the text contains property references, just
 					// leave it blank for now, and set the real value in refreshRendering().\
 					this.buildText.push(
-						"var " + textNodeName + " = document.createTextNode(" +
-							(child.dependsOn.length ? "''" : child.expr) + ");",
+						"var " + textNodeName + " = document.createTextNode(" + (dependsOn.length ? "''" : js) + ");",
 						nodeName + ".appendChild(" + textNodeName + ");"
 					);
 
 					// watch for widget property changes and update DOM text node
-					if (child.dependsOn.length) {
-						this.generateWatchCode(child.dependsOn, textNodeName + ".nodeValue = " + child.expr);
+					if (dependsOn.length) {
+						this.generateWatchCode(dependsOn, textNodeName + ".nodeValue = " + js);
 					}
 				}
 			}, this);
@@ -137,28 +156,28 @@ define(["./register"], function (register) {
 
 			// Set attributes/properties
 			for (var attr in templateNode.attributes) {
-				var info = templateNode.attributes[attr];
+				var js = templateNode.attributes[attr],
+					dependsOn = propertiesReferenced(js);
 
 				// Generate code to set this property or attribute
-				var propName = Template.getProp(templateNode.tag, attr),
-					js = info.expr;		// code to compute property value
+				var propName = Template.getProp(templateNode.tag, attr);
 
 				if (attr === "class" && !templateNode.xmlns) {
 					// Special path for class to not overwrite classes set by application or by other code.
-					if (info.dependsOn.length) {
+					if (dependsOn.length) {
 						// Value depends on widget properties that may not be set yet.
 						// Watch for changes to those widget properties and reflect them to the DOM.
-						this.generateWatchCode(info.dependsOn,
+						this.generateWatchCode(dependsOn,
 								"this.setClassComponent('template', " + js + ", " + nodeName + ")");
 					} else {
 						// Value is a constant; set it during render().
 						this.buildText.push("this.setClassComponent('template', " + js + ", " + nodeName + ")");
 					}
 				} else {
-					if (info.dependsOn.length) {
+					if (dependsOn.length) {
 						// Value depends on widget properties that may not be set yet.
 						// Watch for changes to those widget properties and reflect them to the DOM.
-						this.generateWatchCode(info.dependsOn, propName ? nodeName + "." + propName + " = " + js :
+						this.generateWatchCode(dependsOn, propName ? nodeName + "." + propName + " = " + js :
 							"this.setOrRemoveAttribute(" + nodeName + ", '" + attr + "', " + js + ")");
 					} else {
 						// Value is a constant; set it during render().

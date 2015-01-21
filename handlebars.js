@@ -40,16 +40,16 @@ define(["./Template", "require", "lie/dist/lie"], function (Template, require, P
 
 	/**
 	 * Given a string like "hello {{foo}} world", generate JS code to output that string,
-	 * ex: "hello" + this.foo + "world", and also get list of properties that we need to watch for changes.
+	 * ex: "hello" + this.foo + "world"
 	 * @param {string} text
 	 * @param {boolean} convertUndefinedToBlank - Useful so that class="foo {{item.bar}}" will convert to class="foo"
 	 * rather than class="foo undefined", but for something like aria-valuenow="{{value}}", when value is undefined
 	 * we need to leave it that way, to trigger removal of that attribute completely instead of setting
 	 * aria-valuenow="".
-	 * @returns {Object} Object like {expr: "'hello' + this.foo + 'world'", dependsOn: ["foo"]}
+	 * @returns {string} like "'hello' + this.foo + 'world'"
 	 */
 	function toJs(text, convertUndefinedToBlank) {
-		var inVar, parts = [], wp = {};
+		var inVar, parts = [];
 
 		(text || "").split(/({{|}})/).forEach(function (str) {
 			if (str === "{{") {
@@ -62,12 +62,8 @@ define(["./Template", "require", "lie/dist/lie"], function (Template, require, P
 				if (/this\./.test(prop)) {
 					// JS expression (ex: this.selectionMode === "multiple")
 					parts.push("(" + str + ")");
-					str.match(/this\.(\w+)/g).forEach(function (thisVar) {
-						wp[thisVar.substring(5)] = true;	// "this.foo" --> "foo"
-					});
 				} else {
 					// Property (ex: selectionMode) or path (ex: item.foo)
-					wp[prop.replace(/[^\w].*/, "")] = true; // If nested prop (item.foo), watch top level prop (item).
 					parts.push(convertUndefinedToBlank ? "(this." + prop + "== null ? '' : this." + prop + ")" :
 						"this." + prop);
 				}
@@ -78,10 +74,7 @@ define(["./Template", "require", "lie/dist/lie"], function (Template, require, P
 			}
 		});
 
-		return {
-			expr: parts.join(" + "),
-			dependsOn: Object.keys(wp)
-		};
+		return parts.join(" + ");
 	}
 
 	var handlebars = /** @lends module:delite/handlebars */ {
@@ -132,10 +125,7 @@ define(["./Template", "require", "lie/dist/lie"], function (Template, require, P
 									// conversion code needed on iOS for autocorrect property
 									value = value === "on" ? "true" : "false";
 								}
-								attributes[item.name] = {
-									expr: value,
-									dependsOn: []
-								};
+								attributes[item.name] = value;
 							} else {
 								attributes[item.name] = toJs(item.value, item.name === "class");
 							}
