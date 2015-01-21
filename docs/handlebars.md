@@ -33,7 +33,7 @@ define([..., "delite/handlebars!./templates/MyTemplate.html"], function(..., tem
 }
 ```
 
-Internally, delite/handlebars! compiles the template into an AST format and then uses `delite/template` to generate
+Internally, delite/handlebars! compiles the template into an AST format and then uses `delite/Template` to generate
 the final template object that it returns.
 
 ## Bindings
@@ -93,7 +93,7 @@ path bindings, and an expression:
 
 Handlebars aims to transparently do the right thing to make binding work automatically.
 For example, if a template contains {% raw %}`<input type=checkbox checked={{checked}}>`{% endraw %},
-handlebars (or actually [template](./template.md)) knows to set the `checked` property
+handlebars (or actually [Template](./Template.md)) knows to set the `checked` property
 rather than setting the `checked` attribute, since the latter action doesn't actually change the checked state.
 
 More generally, handlebars directly sets the shadow property rather than the attribute whenever
