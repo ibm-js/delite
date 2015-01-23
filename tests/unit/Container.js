@@ -155,7 +155,7 @@ define([
 
 			// add a started container
 			var container = new MyContainer();
-			document.body.appendChild(container);
+			container.placeAt(document.body);
 			container.startup();
 
 			// adding children should call startup() on the children, and also call onAddChild()
@@ -172,8 +172,15 @@ define([
 			assert.deepEqual(log, ["a1", "a2", "a3", "ib1", "ib3"], "log");
 			assert.deepEqual(["ib1", "a1", "a2", "ib3", "a3"],
 				Array.prototype.map.call(container.children, function (child) { return child.id; }), "children");
+
+			// TODO: see https://github.com/ibm-js/delite/issues/257.
+			// If startup() is removed, should just check that attachedCallback() called for every descendant.
 			assert(Array.prototype.every.call(container.children, function (child) { return child.started; }),
 				"all children started");
+
+			// TODO: Add test where placeAt() is called after the appendChild() calls.
+			// Should just check that attachedCallback() called for every descendant.
+			// Requires updating placeAt()
 
 			// cleanup
 			container.parentNode.removeChild(container);
@@ -202,8 +209,7 @@ define([
 			programmatic: function () {
 				// add a started container
 				var myWidget = new TestContainer();
-				document.body.appendChild(myWidget);
-				myWidget.startup();
+				myWidget.placeAt(document.body);
 
 				// appendChild() and insertBefore() should add children to the containerNode, not the root node
 				var child1 = document.createElement("span");

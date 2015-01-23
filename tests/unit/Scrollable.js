@@ -42,7 +42,6 @@ define([
 
 		"Default CSS": function () {
 			var w = (new MyScrollableWidget({id: "mysw"})).placeAt(container);
-			w.startup();
 			w.deliver();
 
 			assert.strictEqual(w.scrollableNode, w,
@@ -72,7 +71,6 @@ define([
 					})
 				});
 			var w = (new ScrollableWithCustomScrollableNode()).placeAt(container);
-			w.startup();
 			w.deliver();
 			assert.strictEqual(w.scrollableNode, w.createdScrollableNode,
 				"The scrollableNode property has changed since it was set in render!");
@@ -125,24 +123,20 @@ define([
 			w.style.position = "absolute";
 			w.style.width = "200px";
 			w.style.height = "200px";
-			container.appendChild(w);
-			w.startup();
+			w.placeAt(container);
 
 			var innerContent = document.createElement("div");
 			innerContent.id = "sc1content";
 			innerContent.style.width = "2000px";
 			innerContent.style.height = "2000px";
 			w.appendChild(innerContent);
-			w.startup();
 
 			w = new MyScrollableTestContainer({ id: "mysc1" });
-			container.appendChild(w);
-			w.startup();
+			w.placeAt(container);
 
 			w = new ScrollableTestContainer({ id: "sc2" });
 			w.scrollDirection = "none";
-			container.appendChild(w);
-			w.startup();
+			w.placeAt(container);
 		},
 		teardown: function () {
 			container.parentNode.removeChild(container);

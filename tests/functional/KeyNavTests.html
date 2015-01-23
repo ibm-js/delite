@@ -128,7 +128,6 @@
 				div.textContent = label;
 				p1.appendChild(div);
 			});
-			p1.startup();
 
 			var p2 = new TestContainer({
 				id: "testContainer4",
@@ -140,7 +139,6 @@
 				div.textContent = label;
 				p2.appendChild(div);
 			});
-			p2.startup();
 
 			// Setup so keystrokes on the ComboBox get forwarded to the dropdown.
 			combobox.onfocus = function (evt) {

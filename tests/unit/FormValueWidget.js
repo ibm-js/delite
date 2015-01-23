@@ -28,7 +28,6 @@ define([
 				widget = new FormValueWidgetTest({
 					value: "original value"
 				}).placeAt(container);
-				widget.startup();
 			},
 
 			handleOnInput: function () {

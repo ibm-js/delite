@@ -39,8 +39,7 @@ define([
 			var view2 = document.createElement("div");
 			view2.setAttribute("id", "original-view");
 			initView(view2);
-			container.appendChild(dcontainer);
-			dcontainer.startup();
+			dcontainer.placeAt(container);
 			var beforeShowCalled = false;
 			dcontainer.on("delite-before-show", function () {
 				beforeShowCalled = true;
@@ -76,8 +75,7 @@ define([
 			var view2 = document.createElement("div");
 			view2.setAttribute("id", "hide-view");
 			initView(view2);
-			container.appendChild(dcontainer);
-			dcontainer.startup();
+			dcontainer.placeAt(container);
 			var beforeHideCalled = false;
 			dcontainer.on("delite-before-hide", function () {
 				beforeHideCalled = true;
@@ -113,8 +111,7 @@ define([
 			register("test-event-display-container", [HTMLElement, Widget, DisplayContainer]);
 			var dcontainer = register.createElement("test-event-display-container");
 			dcontainer.setAttribute("id", "dcontainer");
-			container.appendChild(dcontainer);
-			dcontainer.startup();
+			dcontainer.placeAt(container);
 			var beforeDisplayCalled = false;
 			dcontainer.on("delite-before-show", function () {
 				beforeDisplayCalled = true;
@@ -149,8 +146,7 @@ define([
 			register("test-custom-display-container", [HTMLElement, Widget, DisplayContainer]);
 			var dcontainer = register.createElement("test-custom-display-container");
 			dcontainer.setAttribute("id", "dcontainer");
-			container.appendChild(dcontainer);
-			dcontainer.startup();
+			dcontainer.placeAt(container);
 			function testView(view) {
 				assert.strictEqual(view.style.visibility, "visible", "visibility");
 				assert.strictEqual(view.style.display, "", "display");

@@ -380,6 +380,7 @@ define([
 
 			if (!this.attached) {
 				this.attachedCallback();
+				// TODO: call attachedCallback() on all descendant widgets.  Update Widget and Container tests.
 			}
 
 			// Start this iff it has a parent widget that's already started.

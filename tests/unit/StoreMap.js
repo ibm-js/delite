@@ -9,11 +9,18 @@ define([
 	"dstore/Trackable",
 	"dstore/Memory", "dcl/inherited"
 ], function (registerSuite, assert, dcl, declare, register, Widget, StoreMap, Trackable, Memory) {
+
+	var container;
 	var M = declare([Memory, Trackable], {});
 
 	registerSuite({
 		name: "StoreMap",
 
+		setup: function () {
+			container = document.createElement("div");
+			document.body.appendChild(container);
+		},
+		
 		Regular: function () {
 			var C = register("test-storemap-1", [HTMLElement, Widget, StoreMap], {
 				fooAttr: "name",
@@ -56,7 +63,7 @@ define([
 				assert.deepEqual(store.renderItems[1], { id: "fb", foo: "FB", bar: "4",
 					__item: myStore.getSync("fb") });
 			}));
-			store.startup();
+			store.placeAt(container);
 			var myStore = new M({ data: myData });
 			store.store = myStore;
 			return d;
@@ -79,7 +86,7 @@ define([
 			var myStore = new M({ data: myData });
 			store.store = myStore;
 			setTimeout(function () {
-				store.startup();
+				store.placeAt(container);
 			}, 1000);
 
 			store.on("query-success", d.callback(function () {
@@ -128,7 +135,7 @@ define([
 				assert.deepEqual(store.renderItems[1], { id: "fb", name: "FB", firstname: "4",
 					__item: myStore.getSync("fb") });
 			}));
-			store.startup();
+			store.placeAt(container);
 			// use empty model to ease comparison
 			var myStore = new M({ data: myData });
 			store.store = myStore;
@@ -173,7 +180,7 @@ define([
 				assert.deepEqual(store.renderItems[1], { id: "fb", foo: "FB",
 					__item: myStore.getSync("fb") });
 			}));
-			store.startup();
+			store.placeAt(container);
 			var myStore = new M({ data: myData });
 			store.store = myStore;
 			return d;
@@ -209,7 +216,7 @@ define([
 				assert.deepEqual(store.renderItems[0].foo, "Foo2");
 				assert.deepEqual(store.renderItems[0].bar, "32");
 			}));
-			store.startup();
+			store.placeAt(container);
 			var myStore = new M({ data: myData });
 			store.store = myStore;
 			return d;
@@ -295,14 +302,14 @@ define([
 						__item: myStore.getSync("foo") });
 				}));
 			}));
-			store.startup();
+			store.placeAt(container);
 			var myStore = new Memory({ data: myData });
 			store.store = myStore;
 			return d;
 		},
 
 		teardown: function () {
-			//container.parentNode.removeChild(container);
+			container.parentNode.removeChild(container);
 		}
 	});
 });

@@ -633,7 +633,6 @@ define([
 
 			var myComplexWidget = new ComplexWidget();
 			myComplexWidget.placeAt(container);
-			myComplexWidget.startup();
 
 			myComplexWidget.a = 1;
 			myComplexWidget.b = 1;

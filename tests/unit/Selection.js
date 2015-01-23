@@ -88,14 +88,12 @@ define([
 					assert.deepEqual(evt.newValue, "2");
 					callbackCalled = true;
 				});
-				o.startup();
 				o.selectFromEvent({}, "2", null, true);
 				assert.isTrue(callbackCalled, "selection-change callback");
 			},
 
 			fromEvent: function () {
 				var o = new C({selectedItem: "1"});
-				o.startup();
 				o.selectFromEvent({}, "2", null, true);
 				assert.deepEqual(o.selectedItems, ["2"]);
 				o = new C({selectedItem: "1"});
@@ -103,7 +101,6 @@ define([
 				o.isMultipleSelection = function () {
 					return true;
 				};
-				o.startup();
 				o.selectFromEvent({}, "2", null, true);
 				assert.deepEqual(o.selectedItems, ["2"]);
 				o.selectFromEvent({ ctrlKey: true, metaKey: true }, "1", null, true);

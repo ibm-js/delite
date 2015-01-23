@@ -29,8 +29,7 @@ define([
 			var BidiWidget = dcl(Widget, Bidi);
 			SimpleWidget = register("check-bidi", [HTMLElement, BidiWidget], { });
 			widget = new SimpleWidget();
-			container.appendChild(widget);
-			widget.startup();
+			widget.placeAt(container);
 		},
 
 		"getTextDir": function () {

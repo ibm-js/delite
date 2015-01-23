@@ -61,7 +61,6 @@ define([
 				store.deliver();
 				assert.strictEqual(refreshRenderingCallCount, 3, "after store.remove");
 			}));
-			store.startup();
 			// use empty model to easy comparison
 			var myStore = new M({ data: myData, model: null});
 			store.store = myStore;
@@ -73,15 +72,14 @@ define([
 			var store = new C({
 				store: new M({ data: [{id: "foo", name: "Foo" }], model: null})
 			});
-			setTimeout(function () {
+			setTimeout(d.rejectOnError(function () {
 				store.on("query-success", d.callback(function () {
 					assert.strictEqual(store.renderItems.length, 0);
 				}));
 
 				// Test the change store to null triggers a so-called query
 				store.store = null;
-			}, 100);
-			store.startup();
+			}), 100);
 			return d;
 		},
 
@@ -113,7 +111,6 @@ define([
 				assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo" });
 				assert.deepEqual(store.renderItems[1], { id: "bar", name: "Bar" });
 			}));
-			store.startup();
 			// use empty model to easy comparison
 			var myStore = new M({ data: myData, model: null });
 			store.store = myStore;
@@ -143,7 +140,6 @@ define([
 				assert.strictEqual(store.renderItems.length, 1);
 				assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo2" });
 			}));
-			store.startup();
 			// use empty model to easy comparison
 			var myStore = new M({ data: myData, model: null });
 			store.store = myStore;
@@ -177,7 +173,6 @@ define([
 				assert.strictEqual(store.renderItems.length, 2);
 				*/
 			}));
-			store.startup();
 			// use empty model to easy comparison
 			var myStore = new M({ data: myData, model: null });
 			store.store = myStore;
@@ -211,7 +206,6 @@ define([
 				assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo", index: 0 });
 				assert.deepEqual(store.renderItems[1], { id: "bar", name: "Bar", index: 1 });
 			}));
-			store.startup();
 			// use empty model to easy comparison
 			var myStore = new M({ data: myData, model: null });
 			store.store = myStore;

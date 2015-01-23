@@ -35,7 +35,7 @@ define([
 
 				// TODO: enable this test when https://github.com/uhop/dcl/issues/9 is fixed
 				if (1 === 1) {
-					return;
+					return this.skip("disabled until https://github.com/uhop/dcl/issues/9 is fixed");
 				}
 
 				var SpecialNames = register("test-tabindex-names", [HTMLElement, Widget], {
@@ -52,7 +52,7 @@ define([
 				var widget = new SpecialNames({ });
 				widget.tabIndex = "3";
 				container.appendChild(widget);
-				widget.startup();
+				widget.attachedCallback();
 				assert.strictEqual(widget.watchedTabIndex, "3", "reported on widget");
 			},
 
@@ -92,7 +92,7 @@ define([
 				var extended = new SpecialExtendedWidget({ });
 				extended.tabIndex = "5";
 				container.appendChild(extended);
-				extended.startup();
+				extended.attachedCallback();
 
 				var d = this.async(1000);
 
@@ -130,7 +130,7 @@ define([
 				var SimpleWidget = register("tabindex-not-in-prototype", [HTMLElement, Widget], { });
 				var simple = new SimpleWidget({ tabIndex: 5 });
 				container.appendChild(simple);
-				simple.startup();
+				simple.attachedCallback();
 
 				var d = this.async(1000);
 
@@ -170,7 +170,7 @@ define([
 				var myWidget = new TestDir({ });
 				myWidget.dir = "rtl";
 				container.appendChild(myWidget);
-				myWidget.startup();
+				myWidget.attachedCallback();
 
 				function delay(ms) { return new Promise(function (resolve) { setTimeout(resolve, ms); }); }
 
@@ -232,8 +232,8 @@ define([
 				baseClass: "base2"
 			});
 			var myWidget = new TestWidget();
-			myWidget.placeAt(container);
-			myWidget.startup();
+			container.appendChild(myWidget);
+			myWidget.attachedCallback();
 			myWidget.deliver();
 
 			assert($(myWidget).hasClass("base2"), "baseClass is base2");
@@ -241,8 +241,8 @@ define([
 			// Then test that baseClass specified as widget parameter gets set
 			var myWidgetCustom = new TestWidget();
 			myWidgetCustom.baseClass = "customBase";
-			myWidgetCustom.placeAt(container);
-			myWidgetCustom.startup();
+			container.appendChild(myWidgetCustom);
+			myWidgetCustom.attachedCallback();
 			myWidgetCustom.deliver();
 
 			assert($(myWidgetCustom).hasClass("customBase"), "baseClass is customBase");

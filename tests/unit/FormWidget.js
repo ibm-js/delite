@@ -88,8 +88,7 @@ define([
 				myWidget = new FormWidgetTest({
 					tabIndex: "3"
 				});
-				container.appendChild(myWidget);
-				myWidget.startup();
+				myWidget.placeAt(container);
 				//myWidget.setAttribute("tabindex", 3);
 				myWidget.deliver();
 				assert.strictEqual(myWidget.focusNode.getAttribute("tabindex"), "3", "specified tabIndex");
