@@ -31,14 +31,15 @@
 					this.appendChild(this.labelNode);
 				},
 
-				attachedCallback: function () {
+				// dcl.after() to avoid spurious failure on chrome, TODO: investigate more later
+				attachedCallback: register.after(function () {
 					// We could do this in _setTabIndexAttr() but I want to test that observe() is working
 					this.observe(function (props) {
 						if ("tabIndex" in props) {
 							this.label = this.label + ", updated to " + this._get("tabIndex");
 						}
 					});
-				},
+				}),
 
 				_setTabIndexAttr: function (val) {
 					this.labelNode.tabIndex = val;

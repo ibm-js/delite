@@ -235,6 +235,12 @@ define([
 				assert.ok(headingWidget.render, "heading widget was instantiated");
 				assert.ok(buttonWidget.render, "button widget was instantiated");
 
+				myComplexWidget.placeAt(container);
+
+				assert.ok(myComplexWidget.attached, "myComplexWidget widget was attached");
+				assert.ok(headingWidget.attached, "heading widget was attached");
+				assert.ok(buttonWidget.attached, "button widget was attached");
+
 				var d = this.async(1000);
 
 				setTimeout(d.rejectOnError(function () {
