@@ -42,6 +42,7 @@ define(["./register"], function (register) {
 	var Template = register.dcl(null, /** @lends module:delite/Template# */ {
 		constructor: function (tree, rootNodeName, createRootNode) {
 			this.buildText = [];	// code to build the initial DOM
+			this.attachText = [];	// code to run in attachedCallback()
 			this.observeText = [];	// code to update the DOM when widget properties change
 			this.dependsOn = {};	// set of properties referenced in the template
 
@@ -51,6 +52,9 @@ define(["./register"], function (register) {
 			this.text = this.buildText.join("\n") + "\n" +
 				"return {\n" +
 					"\tdependencies: " + JSON.stringify(Object.keys(this.dependsOn)) + ",\n" +
+					"\tattach: function(){\n\t\t" +
+						this.attachText.join("\n\t\t") +
+					"\n\t},\n" +
 					"\trefresh: function(props){\n\t\t" +
 						this.observeText.join("\n\t\t") +
 					"\n\t}.bind(this)\n" +
@@ -149,6 +153,9 @@ define(["./register"], function (register) {
 					"document.createElementNS('" + templateNode.xmlns + "', '" + templateNode.tag + "');" :
 					"register.createElement('" + templateNode.tag + "');")
 				);
+				if (/-/.test(templateNode.tag)) {
+					this.attachText.push(nodeName + ".attachedCallback();");
+				}
 			} else if (ap) {
 				// weird case that someone set attach-point on root node
 				this.buildText.push(ap + nodeName + ";");

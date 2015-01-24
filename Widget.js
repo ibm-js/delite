@@ -138,7 +138,7 @@ define([
 			}
 		},
 
-		attachedCallback: function () {
+		attachedCallback: dcl.after(function () {
 			if (!has("setter-on-native-prop")) {
 				var setterMap = this._nativePropSetterMap,
 					attrs = Object.keys(setterMap);
@@ -177,7 +177,12 @@ define([
 					attributes: true
 				});
 			}
-		},
+
+			// Call attachedCallback() on any widgets in the template
+			if (this._templateHandle && !has("document-register-element")) {
+				this._templateHandle.attach();
+			}
+		}),
 
 		/**
 		 * Processing before `render()`.
