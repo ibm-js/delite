@@ -19,7 +19,7 @@ Declarative creation:
 4. `postRender()` callback.
 5. Parameters specified as DOMNode attributes (ex: `<d-slider max=10>`) are mixed into the widget, thus calling
    custom setters.
-6. `startup()` callback.
+6. `attachedCallback()` callback.
 
 Programmatic creation is:
 
@@ -31,18 +31,18 @@ Programmatic creation is:
 5. Parameters specified programatically
    (ex: `new MyWidget({title: "..."})`) are mixed into the widget, thus calling
    custom setters.
-6. `startup()` callback.
+6. `attachedCallback()` callback.
 
-`startup()` will be called automatically in the declarative case, but
-if the widget was created programatically, the app must manually call `startup()`
-on the widget or its ancestor after inserting the widget into the document.
+`attachedCallback()` will be called automatically in the declarative case, and
+when the widget was created programatically, then it can be triggered by calling
+`Widget#placeAt(document.body)` (or specify any parent DOM node).
 
 As mentioned above, there are currently five lifecycle methods which can be extended on the widget:
 
 1. `preRender()`
 2. `render()`
 3. `postRender()`
-4. `startup()`
+4. `attachedCallback()`
 5. `destroy()`
 
 Note that all of these methods except `render()` are automatically chained,

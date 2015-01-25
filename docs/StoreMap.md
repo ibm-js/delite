@@ -134,8 +134,7 @@ require(["EmployeesList"/*, ...*/], function (EmployeesList/*, ...*/) {
      } 
     
   }
-  document.appendChild(widget);
-  widget.startup();
+  widget.placeAt(document.body);
 });
 ``` 
 

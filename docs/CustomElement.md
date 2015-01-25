@@ -26,7 +26,7 @@ It also provides common methods like `on()` and `destroy()`.
 
 `delite/CustomElement` uses the function names from the Custom Elements specification,
 `createdCallback()` and `attachedCallback()`, but does not provide the delite specific lifecycle methods
-like `render()`, `postRender()`, and `startup()`.  These are from [`Widget`](Widget.md).
+like `render()` and `postRender()`.  These are from [`Widget`](Widget.md).
 
 In addition to calling `attachedCallback()`, `delite/CustomElement` makes sure to fire a non-bubbling 
 `customelement-attached` event once the attached callback has been executed.
