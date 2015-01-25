@@ -170,10 +170,11 @@ myWidgetInstance.on("click", myCallback1);
 myWidgetInstance.on("selection-change", myCallback2);
 ```
 
-Finally, note that once the element is inserted into the DOM, and any other related DOM nodes (typically child
-nodes) have been inserted, you need to call `startup()`:
+Finally, use `placeAt()` to insert the element into the DOM:
 
 ```js
 myWidget.placeAt(document.body);
-myWidget.startup();
 ```
+
+Note that `placeAt()` will internally call `attachedCallback()`
+for the widget and any descendant widgets, which may be necessary for them to finish initializing.

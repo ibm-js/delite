@@ -156,9 +156,8 @@ define([
 			// add a started container
 			var container = new MyContainer();
 			container.placeAt(document.body);
-			container.startup();
 
-			// adding children should call startup() on the children, and also call onAddChild()
+			// adding children should call attachedCallback() on the children, and also call onAddChild()
 			var a1 = new PlainWidget({id: "a1"}),
 				a2 = new PlainWidget({id: "a2"}),
 				a3 = new PlainWidget({id: "a3"}),
@@ -173,10 +172,8 @@ define([
 			assert.deepEqual(["ib1", "a1", "a2", "ib3", "a3"],
 				Array.prototype.map.call(container.children, function (child) { return child.id; }), "children");
 
-			// TODO: see https://github.com/ibm-js/delite/issues/257.
-			// If startup() is removed, should just check that attachedCallback() called for every descendant.
-			assert(Array.prototype.every.call(container.children, function (child) { return child.started; }),
-				"all children started");
+			assert(Array.prototype.every.call(container.children, function (child) { return child.attached; }),
+				"all children attached");
 
 			// TODO: Add test where placeAt() is called after the appendChild() calls.
 			// Should just check that attachedCallback() called for every descendant.

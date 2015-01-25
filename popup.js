@@ -163,7 +163,11 @@ define([
 				wrapper.setAttribute("role", "region");
 				wrapper.setAttribute("aria-label", widget["aria-label"] || widget.label || widget.name || widget.id);
 				widget.ownerDocument.body.appendChild(wrapper);
+
 				wrapper.appendChild(widget);
+				if (!widget.attached) {
+					widget.attachedCallback();
+				}
 
 				widget._popupWrapper = wrapper;
 				advise.after(widget, "destroy", destroyWrapper);
@@ -281,10 +285,6 @@ define([
 			// Get pointer to popup wrapper, and create wrapper if it doesn't exist.  Remove display:none (but keep
 			// off screen) so we can do sizing calculations.
 			var wrapper = this.moveOffScreen(widget);
-
-			if (widget.startup && !widget.started) {
-				widget.startup(); // this has to be done after being added to the DOM
-			}
 
 			var wrapperClasses = ["d-popup"];
 			((widget.baseClass || "") + " " + widget.className).split(/ +/).forEach(function (cls) {

@@ -32,13 +32,8 @@ define(["delite/popup"], function(popup){
 	...
 
 	// wrap the pop-up widget and position it offscreen so
-	// that it can be measured by the widget’s startup method
+	// that it can be measured by the widget’s initialization code
 	popup.moveOffScreen(dropDown);
-
-	// if the pop-up has not been started yet, start it now
-	if(dropDown.startup && !dropDown.started){
-		dropDown.startup();
-	}
 
 	// make the pop-up appear around my node
 	popup.open({
@@ -62,7 +57,7 @@ define(["delite/popup"], function(popup){
 
 As you can see, there are three essential calls here, `popup.moveOffScreen`, `popup.open`, and `popup.close`.
 `popup.moveOffScreen` wraps the popup widget in a container, appends it to the `<body>`,
-then moves it off-screen so that any measurement `dropDown.startup` needs to do is possible.
+then moves it off-screen so that size measurements are possible.
 Once that’s done, it opens the pop-up by calling `popup.open`.
 Finally, the `onExecute` and `onCancel` callbacks both call `popup.close`, passing in the correct pop-up widget to close.
 

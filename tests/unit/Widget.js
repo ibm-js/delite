@@ -248,29 +248,6 @@ define([
 			assert($(myWidgetCustom).hasClass("customBase"), "baseClass is customBase");
 		},
 
-		startup: function () {
-			var TestSimpleWidget = register("widget-simple", [HTMLElement, Widget], {
-			});
-			var TestStartupWidget = register("widget-startup", [HTMLElement, Widget], {
-				render: function () {
-					this.appendChild(new TestSimpleWidget());
-					this.appendChild(this.containerNode = this.ownerDocument.createElement("div"));
-					this.containerNode.appendChild(new TestSimpleWidget());
-				}
-			});
-
-			var w1 = new TestStartupWidget();
-			container.appendChild(w1);
-			w1.startup();
-
-			// Startup should be called on all widgets, not just those inside containerNode.
-			var descendants = w1.findCustomElements();
-			assert.strictEqual(descendants.length, 2, "# of custom elements");
-			assert(descendants[0].started, "started first child");
-			assert(descendants[1].started, "started second child");
-		},
-
-
 		placeAt: {
 			setup: function () {
 				SimpleWidget = register("simple-widget-place-at", [HTMLElement, Widget], {
@@ -330,14 +307,14 @@ define([
 				var pane3 = (new SimpleWidget({ title: "pane3" })).placeAt("simple-place-at-id", "first");
 				assert.strictEqual(simple.containerNode, pane3.parentNode, "pane3 added to simple.containerNode");
 				assert.strictEqual(pane3, simple.containerNode.children[0], "pane3 is new first child of SimpleWidget");
-				assert.ok(pane3.started, "pane3 was automatically started because simple was already started");
+				assert.ok(pane3.attached, "pane3 was automatically attached because simple was already attached");
 			},
 
 			"Place last widget": function () {
 				var pane4 = (new SimpleWidget({ title: "pane4" })).placeAt(simple.containerNode, "last");
 				assert.strictEqual(pane4, simple.containerNode.children[simple.containerNode.children.length - 1],
 					"pane4 is new last child of SimpleWidget");
-				assert.ok(pane4.started, "pane4 was automatically started because simple was already started");
+				assert.ok(pane4.attached, "pane4 was automatically attached because simple was already attached");
 			},
 
 			"Place replace": function () {

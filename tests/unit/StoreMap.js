@@ -229,13 +229,11 @@ define([
 			});
 			/* global fct:true */
 			fct = function () { return "fct"; };
-			var tag = "<test-storemap-5 id='ts6' barAttr='firstname' mFunc='fct' " +
-				"nFunc='return item.name + item.firstname;'></test-storemap-6>";
-			var tagHolder = document.createElement("div");
-			tagHolder.innerHTML = tag;
-			register.parse(tagHolder);
+			container.innerHTML = "<test-storemap-5 id='ts5' barAttr='firstname' mFunc='fct' " +
+				"nFunc='return item.name + item.firstname;'></test-storemap-5>";
+			register.parse(container);
 			var d = this.async(2000);
-			var store = tagHolder.children[0];
+			var store = container.children[0];
 			var myData = [
 				{ id: "foo", name: "Foo", firstname: "1" },
 				{ id: "bar", name: "Bar", firstname: "2" }

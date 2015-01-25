@@ -339,28 +339,15 @@ define([
 	}
 
 	/**
-	 * Parse the given DOM tree for any DOMNodes that need to be upgraded to widgets.
+	 * Parse the given DOM tree for any Elements that need to be upgraded to widgets.
 	 * @function module:delite/register.parse
 	 * @param {Element} [root] DOM node to parse from.
 	 */
 	function parse(root) {
-		// Note: if() statement to avoid calling querySelectorAll(""), which fails on Chrome.
-		if (selectors.length) {
-			// Note that upgrade() will be a no-op when has("document-register-element") is true, but we still
-			// need to calculate nodes[] for the startup() call below.
+		if (!has("document-register-element")) {
 			var node, idx = 0, nodes = (root || doc).querySelectorAll(selectors.join(", "));
 			while ((node = nodes[idx++])) {
 				upgrade(node);
-			}
-
-			// Call startup() on top level nodes.  Since I don't know which nodes are top level,
-			// just call startup on all widget nodes.  Most of the calls will be ignored since the nodes
-			// have already been started.
-			idx = 0;
-			while ((node = nodes[idx++])) {
-				if (node.startup && !node.started) {
-					node.startup();
-				}
 			}
 		}
 	}

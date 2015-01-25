@@ -271,18 +271,7 @@ define([
 		},
 
 		/**
-		 * Called after a widget and its children have been created and added to the page,
-		 * and all related widgets have finished their creation cycle, up through `postRender()`.
-		 *
-		 * Most widgets should add initialization code to `attachedCallback()` rather than `startup()`.
-		 * Code in `startup()` is only necessary for widgets that can't be initialized until related widgets have been
-		 * created.  For example, hypothetically, if `DisplayContainer#selectedChildId` could not be processed
-		 * until the specified child DOM node existed, and had been upgraded from a plain DOM node into a widget.
-		 * `startup()` may be removed in the future.
-		 *
-		 * Note that `startup()` may be called while the widget is still hidden, for example if the widget is
-		 * inside a hidden dialog or an unselected tab of a TabContainer, so the widget shouldn't try to do
-		 * layout in startup().
+		 * Deprecated method.   Use attachedCallback() instead, or if you need to recurse, then attachedCallback(true).
 		 */
 		startup: function () {
 			// TODO: remove this method before 1.0 release if it isn't being used
@@ -384,14 +373,8 @@ define([
 			}
 
 			if (!this.attached) {
-				this.attachedCallback();
-				// TODO: call attachedCallback() on all descendant widgets.  Update Widget and Container tests.
-			}
-
-			// Start this iff it has a parent widget that's already started.
-			// TODO: for 2.0 maybe it should also start the widget when this.getParent() returns null??
-			if (!this.started && (this.getParent() || {}).started) {
-				this.startup();
+				// run attach code for this widget and any descendant custom elements too
+				this.attachedCallback(true);
 			}
 
 			return this;
