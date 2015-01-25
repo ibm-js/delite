@@ -63,7 +63,7 @@ define([
 			if (base) {
 				element.setAttribute("is", tag);
 			}
-			upgrade(element);
+			upgrade(element, false);
 			return element;
 		}
 	}
@@ -94,11 +94,12 @@ define([
 	/**
 	 * Converts plain DOMNode of custom type into widget, by adding the widget's custom methods, etc.
 	 * Does nothing if the DOMNode has already been converted or if it doesn't correspond to a custom widget.
-	 * Roughly equivalent to dojo/parser::instantiate(), but for a single node, not an array
 	 * @function module:delite/register.upgrade
-	 * @param {Element} inElement The DOM node.
+	 * @param {Element} element - The DOM node.
+	 * @param {boolean} [attach] - If specified, controls whether or not to call attachedCallback() on element.
+	 * If unspecified, `upgrade()` checks whether or not element is attached to document.
 	 */
-	function upgrade(element) {
+	function upgrade(element, attach) {
 		if (!has("document-register-element") &&
 				/*jshint camelcase: false*/ !element.__upgraded__/*jshint camelcase: true*/) {
 			var widget = registry[element.getAttribute("is") || element.nodeName.toLowerCase()];
@@ -120,7 +121,8 @@ define([
 				if (element.createdCallback) {
 					element.createdCallback();
 				}
-				if (element.attachedCallback && doc.documentElement.contains(element)) {
+				if (element.attachedCallback &&
+						(attach || (attach === undefined && doc.documentElement.contains(element)))) {
 					// Note: if app inserts an element manually it needs to call attachedCallback() manually
 					element.attachedCallback();
 				}
@@ -241,15 +243,9 @@ define([
 		// scan the document for the new type (selectors[length-1]) and upgrade any nodes found.
 
 		// Create a constructor method to return a DOMNode representing this widget.
-		var tagConstructor = function (params, srcNodeRef) {
+		var tagConstructor = function (params) {
 			// Create new widget node or upgrade existing node to widget
-			var node;
-			if (srcNodeRef) {
-				node = typeof srcNodeRef === "string" ? doc.getElementById(srcNodeRef) : srcNodeRef;
-				upgrade(node);
-			} else {
-				node = createElement(tag);
-			}
+			var node = createElement(tag);
 
 			// Set parameters on node
 			for (var name in params || {}) {
@@ -347,7 +343,7 @@ define([
 		if (!has("document-register-element")) {
 			var node, idx = 0, nodes = (root || doc).querySelectorAll(selectors.join(", "));
 			while ((node = nodes[idx++])) {
-				upgrade(node);
+				upgrade(node, true);
 			}
 		}
 	}
