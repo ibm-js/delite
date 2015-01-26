@@ -191,8 +191,8 @@ define([
 		 * @param {Element} navigatedDescendant
 		 * @protected
 		 */
-		homeKeyHandler: function () {
-			this.navigateToFirst();
+		homeKeyHandler: function (evt) {
+			this.navigateToFirst(evt);
 		},
 
 		/**
@@ -201,8 +201,8 @@ define([
 		 * @param {Element} navigatedDescendant
 		 * @protected
 		 */
-		endKeyHandler: function () {
-			this.navigateToLast();
+		endKeyHandler: function (evt) {
+			this.navigateToLast(evt);
 		},
 
 		/**
@@ -220,20 +220,24 @@ define([
 		 * Navigate to the first navigable descendant.
 		 * Note that if `focusDescendants` is false, this will merely set the `d-active-descendant` class
 		 * rather than actually focusing the descendant.
+		 * @param {Event} triggerEvent - The event that lead to the navigation, or `undefined`
+		 *     if the navigation is triggered programmatically.
 		 * @protected
 		 */
-		navigateToFirst: function () {
-			this.navigateTo(this.getNext(this, 1));
+		navigateToFirst: function (triggerEvent) {
+			this.navigateTo(this.getNext(this, 1), triggerEvent);
 		},
 
 		/**
 		 * Navigate to the last navigable descendant.
 		 * Note that if `focusDescendants` is false, this will merely set the `d-active-descendant` class
 		 * rather than actually focusing the descendant.
+		 * @param {Event} triggerEvent - The event that lead to the navigation, or `undefined`
+		 *     if the navigation is triggered programmatically.
 		 * @protected
 		 */
-		navigateToLast: function () {
-			this.navigateTo(this.getNext(this, -1));
+		navigateToLast: function (triggerEvent) {
+			this.navigateTo(this.getNext(this, -1), false, triggerEvent);
 		},
 
 		/**
@@ -244,9 +248,11 @@ define([
 		 * @param {boolean} last - If true and if descendant has multiple focusable nodes, focus the
 		 *     last one instead of the first one.  This assumes that the child's `focus()` method takes a boolean
 		 *     parameter where `true` means to focus the last child.
+		 * @param {Event} triggerEvent - The event that lead to the navigation, or `undefined`
+		 *     if the navigation is triggered programmatically.
 		 * @protected
 		 */
-		navigateTo: function (child, last) {
+		navigateTo: function (child, last, triggerEvent) {
 			if (this.focusDescendants) {
 				// For IE focus outline to appear, must set tabIndex before focus.
 				// If this._savedTabIndex is set, use it instead of this.tabIndex, because it means
@@ -256,7 +262,7 @@ define([
 
 				// _descendantNavigateHandler() will be called automatically from child's focus event.
 			} else {
-				this._descendantNavigateHandler(child);
+				this._descendantNavigateHandler(child, triggerEvent);
 			}
 		},
 
@@ -313,10 +319,12 @@ define([
 		 * Called when a child is navigated to, either by user clicking it, or programatically by arrow key handling
 		 * code.  It marks that the specified child is the navigated one.
 		 * @param {Element} child
+		 * @param {Event} triggerEvent - The event that lead to the navigation, or `undefined`
+		 *     if the navigation is triggered programmatically.
 		 * @fires module:delite/KeyNav#keynav-child-navigated
 		 * @private
 		 */
-		_descendantNavigateHandler: function (child) {
+		_descendantNavigateHandler: function (child, triggerEvent) {
 			if (child && child !== this.navigatedDescendant) {
 				if (this.focusDescendants) {
 					if (this.navigatedDescendant && !this.navigatedDescendant._destroyed) {
@@ -339,7 +347,8 @@ define([
 
 				this.emit("keynav-child-navigated", {
 					oldValue: this.navigatedDescendant,
-					newValue: child
+					newValue: child,
+					triggerEvent: triggerEvent
 				});
 
 				// mark that the new node is the currently navigated one
