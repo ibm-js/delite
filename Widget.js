@@ -280,16 +280,10 @@ define([
 			}
 
 			if (!this.attached) {
-				this.attachedCallback();
+				this.attachedCallback(true);
 			}
 
 			this.started = true;
-			this.findCustomElements(this).forEach(function (obj) {
-				if (!obj.started && !obj._destroyed && typeof obj.startup === "function") {
-					obj.startup();
-					obj.started = true;
-				}
-			});
 		},
 
 		//////////// DESTROY FUNCTIONS ////////////////////////////////
