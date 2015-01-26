@@ -1,5 +1,5 @@
 ---
-layout: doc
+layout: docMain
 ---
 
 Delite provides a widget infrastructure that fits future standards but is possible

@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: doc
 title: Delite Architecture - Fast, Small, and Scalable
 ---
 
