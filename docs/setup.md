@@ -22,7 +22,8 @@ Similarly, for the source form:
 bower install delite
 ```
 
-Both commands will install delite and its dependencies in a `bower_components` directory.
+Both commands will install delite and its dependencies in a `bower_components` directory. You might want to 
+additionally use the `--production` in order to avoid installing dependencies only needed by tests or for debugging.
 
 Using the source form is as simple as requiring the needed AMD modules using RequireJS:
 
