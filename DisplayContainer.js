@@ -1,5 +1,5 @@
 /** @module delite/DisplayContainer */
-define(["dcl/dcl", "lie/dist/lie", "./Container"],
+define(["dcl/dcl", "requirejs-dplugins/Promise!", "./Container"],
 	function (dcl, Promise, Container) {
 	
 	/**

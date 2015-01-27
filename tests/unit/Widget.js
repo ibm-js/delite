@@ -2,7 +2,7 @@ define([
 	"intern!object",
 	"intern/chai!assert",
 	"requirejs-dplugins/jquery!attributes/classes",	// hasClass()
-	"lie/dist/lie",
+	"requirejs-dplugins/Promise!",
 	"delite/register",
 	"delite/Widget",
 	"requirejs-domready/domReady!"

@@ -41,7 +41,7 @@ to the `show()` or `hide()` function in order to perform a visual transition whe
 particular it performs a fading in or out transition based on the value of the `fade` parameter.
 
 ```js
-require(["delite/register", "delite/DisplayContainer", "lie/dist/lie"/*, ...*/],
+require(["delite/register", "delite/DisplayContainer", "requirejs-dplugins/Promise!"/*, ...*/],
   function (register, DisplayContainer, Promise/*, ...*/) {
   return register("my-container", [HTMElement, DisplayContainer], {
     changeDisplay: dcl.superCall(function(sup) {

@@ -1,7 +1,7 @@
 /** @module delite/HasDropDown */
 define([
 	"dcl/dcl",
-	"lie/dist/lie",
+	"requirejs-dplugins/Promise!",
 	"requirejs-dplugins/jquery!attributes/classes",	// addClass(), removeClass(), hasClass()
 	"./keys", // keys.DOWN_ARROW keys.ENTER keys.ESCAPE
 	"./place",

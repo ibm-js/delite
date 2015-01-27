@@ -2,7 +2,7 @@ define([
 	"require",
 	"intern!object",
 	"intern/chai!assert",
-	"lie/dist/lie",
+	"requirejs-dplugins/Promise!",
 	"delite/DisplayContainer",
 	"delite/Widget",
 	"delite/register",

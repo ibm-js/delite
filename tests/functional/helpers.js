@@ -1,7 +1,7 @@
 // Helper methods for automated testing
 
 define([
-	"lie/dist/lie",
+	"requirejs-dplugins/Promise!",
 	"../../a11y"	// isTabNavigable, _isElementShown
 ], function (Promise, a11y) {
 
