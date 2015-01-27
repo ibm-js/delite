@@ -54,9 +54,7 @@ define([
 			if (recurse) {
 				// placeAt() will pass in a recurse flag, telling us to call attachedCallback on children
 				this.findCustomElements(this.containerNode).forEach(function (obj) {
-					if (!obj.attached) {
-						obj.attachedCallback(true);
-					}
+					obj.attachedCallback(true);
 				});
 			}
 		},
@@ -95,7 +93,7 @@ define([
 			// start it now.  Make sure to do this after widget has been
 			// inserted into the DOM tree, so it can see that it's being controlled by me,
 			// so it doesn't try to size itself.
-			if (this.attached && node.attachedCallback && !node.attached) {
+			if (this.attached && node.attachedCallback) {
 				node.attachedCallback();
 			}
 		},

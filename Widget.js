@@ -279,9 +279,7 @@ define([
 				return;
 			}
 
-			if (!this.attached) {
-				this.attachedCallback();
-			}
+			this.attachedCallback();
 
 			this.started = true;
 			this.findCustomElements(this).forEach(function (obj) {

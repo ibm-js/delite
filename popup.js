@@ -165,9 +165,7 @@ define([
 				widget.ownerDocument.body.appendChild(wrapper);
 
 				wrapper.appendChild(widget);
-				if (!widget.attached) {
-					widget.attachedCallback();
-				}
+				widget.attachedCallback();
 
 				widget._popupWrapper = wrapper;
 				advise.after(widget, "destroy", destroyWrapper);
