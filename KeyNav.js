@@ -141,8 +141,6 @@ define([
 		},
 
 		postRender: function () {
-			var self = this;
-
 			// Setup function to check which child nodes are navigable.
 			if (typeof this.descendantSelector === "string") {
 				var matchesFuncName = has("dom-matches");
@@ -152,32 +150,65 @@ define([
 			} else if (this.descendantSelector) {
 				this._selectorFunc = this.descendantSelector;
 			} else {
-				this._selectorFunc = function (elem) { return elem.parentNode === self.containerNode; };
+				this._selectorFunc = function (elem) {
+					return elem.parentNode === this.containerNode;
+				}.bind(this);
 			}
 
 			this.on("keypress", this._keynavKeyPressHandler.bind(this));
 			this.on("keydown", this._keynavKeyDownHandler.bind(this));
 			this.on("pointerdown", function (evt) {
-				var target = self._getTargetElement(evt);
-				if (target !== self) {
-					self._descendantNavigateHandler(target, evt);
+				var target = this._getTargetElement(evt);
+				if (target !== this) {
+					this._descendantNavigateHandler(target, evt);
 				}
-			});
+			}.bind(this));
 
 			if (this.focusDescendants) {
-				this.on("delite-deactivated", this._keynavDeactivatedHandler.bind(this));
-
-				this.on("focusin", function (evt) {
-					var target = self._getTargetElement(evt);
-					if (target === self) {
-						self._keynavFocusHandler(evt);
-					} else {
-						self._descendantNavigateHandler(target, evt);
-					}
-				});
+				this._installConditionalHandlers();
+			}
+		},
+		
+		_installConditionalHandlers: function () {
+			if (this.focusDescendants) {
+				if (!this._deliteDeactivatedHandler) {
+					this._deliteDeactivatedHandler =
+						this.on("delite-deactivated", this._keynavDeactivatedHandler.bind(this));
+				}
+				if (!this._focusInHandler) {
+					this._focusInHandler = this.on("focusin", function (evt) {
+						var target = this._getTargetElement(evt);
+						if (target === this) {
+							this._keynavFocusHandler(evt);
+						} else {
+							this._descendantNavigateHandler(target, evt);
+						}
+					}.bind(this));
+				}
+			}
+		},
+		
+		_removeConditionalHandlers: function () {
+			if (this._deliteDeactivatedHandler) {
+				this._deliteDeactivatedHandler.remove();
+				this._deliteDeactivatedHandler = null;
+			}
+			if (this._focusInHandler) {
+				this._focusInHandler.remove();
+				this._focusInHandler = null;
 			}
 		},
 
+		refreshRendering: function (oldValues) {
+			if ("focusDescendants" in oldValues) {
+				if (this.focusDescendants && !oldValues.focusDescendants) {
+					this._installConditionalHandlers();
+				} else if (!this.focusDescendants && oldValues.focusDescendants) {
+					this._removeConditionalHandlers();
+				}
+			}
+		},
+		
 		attachedCallback: function () {
 			// If the user hasn't specified a tabindex declaratively, then set to default value.
 			if (this.focusDescendants && !this.hasAttribute("tabindex")) {
