@@ -141,8 +141,6 @@ define([
 		},
 
 		postRender: function () {
-			var self = this;
-
 			// Setup function to check which child nodes are navigable.
 			if (typeof this.descendantSelector === "string") {
 				var matchesFuncName = has("dom-matches");
@@ -152,30 +150,34 @@ define([
 			} else if (this.descendantSelector) {
 				this._selectorFunc = this.descendantSelector;
 			} else {
-				this._selectorFunc = function (elem) { return elem.parentNode === self.containerNode; };
+				this._selectorFunc = function (elem) { return elem.parentNode === this.containerNode; };
 			}
 
 			this.on("keypress", this._keynavKeyPressHandler.bind(this));
 			this.on("keydown", this._keynavKeyDownHandler.bind(this));
 			this.on("pointerdown", function (evt) {
-				var target = self._getTargetElement(evt);
-				if (target !== self) {
-					self._descendantNavigateHandler(target, evt);
+				var target = this._getTargetElement(evt);
+				if (target !== this) {
+					this._descendantNavigateHandler(target, evt);
 				}
 			});
 
-			if (this.focusDescendants) {
-				this.on("delite-deactivated", this._keynavDeactivatedHandler.bind(this));
+			this.on("delite-deactivated", function () {
+				if (this.focusDescendants) {
+					this._keynavDeactivatedHandler();
+				}
+			}.bind(this));
 
-				this.on("focusin", function (evt) {
-					var target = self._getTargetElement(evt);
-					if (target === self) {
-						self._keynavFocusHandler(evt);
+			this.on("focusin", function (evt) {
+				if (this.focusDescendants) {
+					var target = this._getTargetElement(evt);
+					if (target === this) {
+						this._keynavFocusHandler(evt);
 					} else {
-						self._descendantNavigateHandler(target, evt);
+						this._descendantNavigateHandler(target, evt);
 					}
-				});
-			}
+				}
+			}.bind(this));
 		},
 
 		attachedCallback: function () {
