@@ -75,6 +75,7 @@ You can view the sample generated HTML `./samples/BlogPost.html` in a browser to
 
 ## Creating a custom element
 Viewing the `./samples/BlogPost.html` example HTML we can see we've (partly) created the custom element declaratively in markup via:
+
 ```html
 <blog-post id="element" value="The Title"></blog-post>
 ```
@@ -166,6 +167,7 @@ Let's make some changes:
 #####Template
 Change our template to add new properties for the blog author, when the blog was published and the text of the blog
 in `./BlogPost/BlogPost.html`:
+
 ```html
 <template>
     <article>
