@@ -1,20 +1,7 @@
 ---
 layout: tutorial
-title: Delite Tutorial Part 1
+title:  Introduction to Delite
 ---
-
-# delite - creating custom components
-
-## delite background
-`delite` is a new JavaScript library to provide a UI framework for both desktop and mobile platforms <sup><a href="#link1">[1]</a></sup>.
-
-This repository is intended to be used as the core building blocks to leverage current and future standards in HTML, CSS & JavaScript for the
-purpose of writing reusable Web Components.
-
-It can be used on its own but more likely used with other projects either from the [ibm-js repositories](https://github.com/ibm-js)
-or other repositories.
-
-More information can be found on the [delite website](http://ibm-js.github.io/delite/) explaining the standards this library aims to conform to.
 
 ## Tutorial details
 In this tutorial you'll learn how to create your own custom elements, learn how to register them, learn how to use templates
@@ -72,15 +59,20 @@ Yeoman created the following (as shown in the console output):
 
 You can view the sample generated HTML `./samples/BlogPost.html` in a browser to see what's been created.
 
+Click here to see the live demo:
+[Delite Introduction Tutorial - Part 1](http://ibm-js.github.io/delite-tutorial/runnable/introduction-part1/samples/BlogPost.html)
 
 ## Creating a custom element
 Viewing the `./samples/BlogPost.html` example HTML we can see we've (partly) created the custom element declaratively in markup via:
+
 ```html
+
 <blog-post id="element" value="The Title"></blog-post>
+
 ```
 
 If you open your browser developer tools and in the console enter `myvar = document.getElementById('element')` and then explore
-the properties on that variable `myvar`, you'll see it's just a regular HTML element <sup><a href="#link2">[2]</a></sup>;
+the properties on that variable `myvar`, you'll see it's just a regular HTML element <sup><a href="#footnote1">[1]</a></sup>;
 if you're more inquisitive you might be able to see there are extra properties/methods on this element which is what the `delite` framework is providing.
 
 ###Registering
@@ -111,7 +103,7 @@ define([
 
 This is an important concept which sometimes isn't clear at a first glance. You can add any non-standard tag to an HTML page and the browser HTML parser
 will not complain; this is because these elements will be defined as a native
-[`HTMLUnknownElement`](http://www.whatwg.org/specs/web-apps/current-work/multipage/dom.html#htmlunknownelement).
+`HTMLUnknownElement`<sup><a href="#footnote2">[2]</a></sup>.
 To create a custom element it must be **upgraded** first; this is what `delite/register` does. `delite/register` supports browsers who natively
 support `document.registerElement` and those who don't.
 
@@ -122,25 +114,31 @@ Elements which inherit from `HTMLElement`
 using [valid custom element names](http://www.w3.org/TR/2013/WD-custom-elements-20130514/#dfn-custom-element-name) are custom elements.
 The most basic requirement for the tag name is it **MUST** contain a dash **(-)**.
 
-In case there's any confusion, note that the module name (i.e. `BlogPost`) is independent of the custom element's name (i.e. `blog-post`), although
+In case there's any confusion, note that the module name (i.e. `BlogPost`) is independent of the custom element's tag name (i.e. `blog-post`), although
 by convention we define one custom element per module, and name them similarly.
 
 ###Declarative creation of custom elements
 If we view the generated sample `./samples/BlogPost.html`, we see the following JavaScript:
 
 ```js
-require(["blogging-package/BlogPost"], function () {
+
+require(["blogging-package/BlogPost"], function (BlogPost) {
+
 });
+
 ```
+
 
 ###Template
 If we look at the template Yeoman just created `./BlogPost/BlogPost.html` we can see the following:
 
 ```html
+
 <template>
     title:
-    <h1>{{value}}</h1>
+    <h1>{%raw%}{{value}}{%endraw%}</h1>
 </template>
+
 ```
 
 All templates must be enclosed in a `<template>` element.
@@ -159,29 +157,34 @@ your components.
 
 
 ####Using handlebars templates
-Imagining we need to implement this blogging widget, the widget needs to show the blog title (which we've already done with `{{value}}`, the date it was
+Imagining how we need to implement our blogging widget, the widget needs to show the blog title (which we've already done with `{%raw%}{{value}}{%endraw%}`, the date it was
 published, the author and the article content of the blog.
 
 Let's make some changes:
 #####Template
 Change our template to add new properties for the blog author, when the blog was published and the text of the blog
 in `./BlogPost/BlogPost.html`:
+
 ```html
+
 <template>
     <article>
-        <h3>{{value}}</h3>
-        <p class='blogdetails'>Published at <span>{{publishDate}}</span> by <span>{{author}}</span></p>
+        <h3>{%raw%}{{value}}{%endraw%}</h3>
+        <p class='blogdetails'>Published at <span>{%raw%}{{publishDate}}{%endraw%}</span> by <span>{%raw%}{{author}}{%endraw%}</span></p>
     </article>
 </template>
+
 ```
-Note that I've not added the the article content property yet. __Properties are for plain text, not HTML__; we'll discuss this in the next
-step in [delite/Container and containerNode](#delitecontainer-and-containernode).
+
+Note that I've not added the article content property yet. __Properties are for plain text, not HTML__; we'll discuss this in the next
+step in <a href="#delitecontainer-and-containernode">delite/Container and containerNode</a>.
 
 
 #####Widget
 So we've added some new properties to our template, which you see is very easy to do. All we need to do now is map those properties in the widget `./BlogPost.js`:
 
 ```js
+
 define([
 	"delite/register",
 	"delite/Widget",
@@ -205,13 +208,16 @@ Note that I've added a default value for `publishDate`, to make setting the date
 So now if you change the body content of `./samples/BlogPost.html` to the following:
 
 ```html
+
 <blog-post id="element" value="A very lazy day" publishDate="Nov 27th 2014" author="My good self"></blog-post>
 <button onclick="element.value='Now sleeping!'; event.target.disabled=true">click to change title</button>
+
 ```
 
 And updating the template CSS `./BlogPost/css/BlogPost.css` to make it slightly more interesting to:
 
 ```css
+
 /* style for the custom element itself */
 .blog-post {
     display: block;
@@ -226,11 +232,15 @@ And updating the template CSS `./BlogPost/css/BlogPost.css` to make it slightly 
 .blog-post div.blog {
     padding-left: 20px;
 }
+
 ```
 
 If you refresh the page you'll see it's becoming something more you'd envisage as a widget we may want to write.
 
-####delite/Container and containerNode
+Click here to see the live demo:
+[Delite Introduction Tutorial - Part 2](http://ibm-js.github.io/delite-tutorial/runnable/introduction-part2/samples/BlogPost.html)
+
+#### <a name="delitecontainer-and-containernode"></a>delite/Container and containerNode
 Now is the time to discuss the functionality provided by [delite/Container](https://github.com/ibm-js/delite/blob/master/docs/Container.md).
 Looking at the widget we created, we need to also add arbitrary HTML to render whatever the content of our blog should be e.g. paragraph tags,
 list tags etc etc. As explained, widget properties to be displayed are really only for plain text. If you try and add any HTML to those
@@ -243,6 +253,7 @@ intentions where we want to add arbitrary HTML.
 Let's update our widget `./BlogPost.js` to use this:
 
 ```js
+
 define([
 	"delite/register",
 	"delite/Widget",
@@ -267,13 +278,15 @@ We've extended our widget using `delite/Container` (we only need to extend `deli
 Update `./BlogPost/BlogPost.html` to the following:
 
 ```html
+
 <template>
     <article>
-        <h3>{{value}}</h3>
+        <h3>{%raw%}{{value}}{%endraw%}</h3>
         <div class='blog' attach-point="containerNode"></div>
-        <p class='blogdetails'>Published at <span>{{publishDate}}</span> by <span>{{author}}</span></p>
+        <p class='blogdetails'>Published at <span>{%raw%}{{publishDate}}{%endraw%}</span> by <span>{%raw%}{{author}}{%endraw%}</span></p>
     </article>
 </template>
+
 ```
 
 Notice the `attach-point="containerNode"` attribute. This is a special 'pointer' to a DOM node which is used by `delite/Container`. When you inherit from
@@ -283,6 +296,7 @@ Notice the `attach-point="containerNode"` attribute. This is a special 'pointer'
 If you change the body content of `./samples/BlogPost.html` to the following:
 
 ```html
+
 <blog-post id="element" value="A very lazy day" publishDate="Nov 27th 2014" author="My good self">
     <h4>So I ate too much</h4>
     <ol>
@@ -293,17 +307,24 @@ If you change the body content of `./samples/BlogPost.html` to the following:
     </ol>
 </blog-post>
 <button onclick="element.value='Now sleeping!'; event.target.disabled=true">click to change title</button>
+
 ```
+
 (Note we've added some arbitrary HTML as children of our widget).
 If you refresh your page now you should see something like the following:
 
 > <img src='./images/custom_templated_containernode.png'/>
 
+Click here to see the live demo:
+[Delite Introduction Tutorial - Part 3](http://ibm-js.github.io/delite-tutorial/runnable/introduction-part3/samples/BlogPost.html)
+
 You can see that the `attach-point="containerNode"` reference we created will render our declarative content wherever we've placed it in the template.
 If you open up your developer tools and in the console enter:
 
 ```js
+
 document.getElementById('element').containerNode.innerHTML = "<i>And now we've replaced our containerNode content</i>"
+
 ```
 
 You'll see that our widget containerNode `innerHTML` is updated to what we've added.
@@ -314,25 +335,35 @@ If you wanted to programmatically create a widget and also set the arbitrary HTM
 `./samples/BlogPost.html` sample from:
 
 ```js
-require(["blogging-package/BlogPost"], function () {
+
+require(["blogging-package/BlogPost"], function (BlogPost) {
+
 });
+
 ```
 
 to the following:
 
 ```js
+
 require(["blogging-package/BlogPost"], function (BlogPost) {
     var anotherCustomElement = new BlogPost({value : 'The day after', publishDate : 'Nov 28th 2014', author : "My good self"});
     anotherCustomElement.placeAt(document.body, 'last');
     var containerNodeContent = "<b>boooooo</b> it's the day after, back to work soon :(" +
             "<pre># time to start thinking about code again</pre>";
     anotherCustomElement.containerNode.innerHTML = containerNodeContent;
-]});
+});
+
 ```
-A helper function is provided by `delite/Widget` to place it somewhere in the DOM named `placeAt()`
+
+A helper function is provided by `delite/Widget` to place it somewhere in the DOM named `placeAt`
 (see the [documentation](https://github.com/ibm-js/delite/blob/master/docs/Widget.md#placement) for it's usage).
 
+
 If you refresh the page you can see how we've added this HTML to the `containerNode` of our widget programmatically.
+
+Click here to see the live demo:
+[Delite Introduction Tutorial - Part 4](http://ibm-js.github.io/delite-tutorial/runnable/introduction-part4/samples/BlogPost.html)
 
 ###Theming
 Whilst we're on a roll we'll quickly discuss the `delite` theming capabilities and make our widget appear more aesthetically pleasing.
@@ -344,12 +375,13 @@ In our custom element module `./BlogPost.js` instead of using the `requirejs-dpl
 Update `./BlogPost.js` to the following:
 
 ```js
+
 define([
 	"delite/register",
 	"delite/Widget",
 	"delite/Container",
 	"delite/handlebars!./BlogPost/BlogPost.html",
-	"delite/theme!./BlogPost/css/{{theme}}/BlogPost.css"
+	"delite/theme!./BlogPost/css/{%raw%}{{theme}}{%endraw%}/BlogPost.css"
 ], function (register, Widget, Container, template) {
 	return register("blog-post", [HTMLElement, Widget, Container], {
 		baseClass: "blog-post",
@@ -362,7 +394,7 @@ define([
 
 ```
 
-Note the `{{theme}}` placeholder. As explained in the theme documentation, this is used to load whatever theme is detected automatically
+Note the `{%raw%}{{theme}}{%endraw%}` placeholder. As explained in the theme documentation, this is used to load whatever theme is detected automatically
 based on the platform/browser, from a request parameter on the URL or set specifically via a `require`. You can also configure themes using the
 loader `require.config`.
 The default theme is the bootstrap theme; have a look at some of the existing less/CSS variables in https://github.com/ibm-js/delite/tree/master/themes/bootstrap.
@@ -374,13 +406,15 @@ To load a widget theme you must create a folder with the name of the theme you w
 see 404's in your browser developer tools.
 
 For example our `./BlogPost/css/BlogPost.css` should be updated so that the bootstrap theme of our widget is located at
-`./BlogPost/css/bootstrap/BlogPost.css`. Assuming you're not testing this on an IOS device, setting the theme via a request parameter etc you
-shouldn't need to create anymore theme folders (the default bootstrap theme will be loaded).
+`./BlogPost/css/bootstrap/BlogPost.css` (therefore create a bootstrap directory at that location and copy the `BlogPost.css` to it).
+Assuming you're not testing this on an IOS device, setting the theme via a request parameter etc you shouldn't need to create anymore
+theme folders (the default bootstrap theme will be loaded).
 
 ####Sample usage
 Update our existing `./samples/BlogPost.html` JavaScript content from:
 
 ```js
+
 require(["blogging-package/BlogPost"], function (BlogPost) {
     var anotherCustomElement = new BlogPost({value : 'The day after', publishDate : 'Nov 28th 2014', author : "My good self"});
     anotherCustomElement.placeAt(document.body, 'last');
@@ -388,26 +422,30 @@ require(["blogging-package/BlogPost"], function (BlogPost) {
             "<pre># time to start thinking about code again</pre>";
     anotherCustomElement.containerNode.innerHTML = containerNodeContent;
 });
+
 ```
 
 to:
 
 ```js
-require(["blogging-package/BlogPost", "delite/theme!delite/themes/{{theme}}/global.css"], function (BlogPost) {
+
+require(["blogging-package/BlogPost", "delite/theme!delite/themes/{%raw%}{{theme}}{%endraw%}/global.css"], function (BlogPost) {
     var anotherCustomElement = new BlogPost({value : 'The day after', publishDate : 'Nov 28th 2014', author : "My good self"});
     anotherCustomElement.placeAt(document.body, 'last');
     var containerNodeContent = "<b>boooooo</b> it's the day after, back to work soon :(" +
             "<pre># time to start thinking about code again</pre>";
     anotherCustomElement.containerNode.innerHTML = containerNodeContent;
 });
+
 ```
 
-i.e. a minor difference but we're now loading `"delite/theme!delite/themes/{{theme}}/global.css"` for the page level theming.
+i.e. a minor difference but we're now loading `"delite/theme!delite/themes/{%raw%}{{theme}}{%endraw%}/global.css"` for the page level theming.
 
 Let's also update the boostrap `./BlogPost/css/boostrap/BlogPost.css` theme CSS slightly to the following:
 
 
 ```css
+
 /* style for the custom element itself */
 .blog-post {
     display: block;
@@ -421,12 +459,15 @@ Let's also update the boostrap `./BlogPost/css/boostrap/BlogPost.css` theme CSS 
 .blog-post div.blog {
     padding-left: 50px;
 }
+
 ```
 
 You should see something like the following if you refresh your browser:
 
 > <img src='./images/custom_templated_theming.png'/>
 
+Click here to see the live demo:
+[Delite Introduction Tutorial - Part 5](http://ibm-js.github.io/delite-tutorial/runnable/introduction-part5/samples/BlogPost.html)
 
 If you look at your debugger network tools, notice how the `./bower_components/delite/themes/bootstrap/common.css` and
 `./bower_components/delite/themes/bootstrap/global.css` CSS files are also loaded. The `"delite/theme!` plugin provides
@@ -435,146 +476,15 @@ basic less variables/CSS classes and structure for loading your theme files. Hav
 
 ---
 
-##Going back to basics
-As shown in the previous example, Templating support is provided 'out of the box' with `delite` and straightforward to implement.
-We'll now look at an example which doesn't use templating; this would not be a normal use case but it's worth showing to explore some of
-the fundamentals of a `delite` custom element.
-
-### create the scaffold
-
-Again we'll use the `generator-delite-element` Yeoman generator.
-
-Create a new directory somewhere (named `title-package`, which will also be our package name) and change directory to it using the commands :
-
-    mkdir -p title-package
-    cd title-package
-
-Run Yeoman to create our scaffold
-
-    yo delite-element
-
-You'll be prompted to enter the widget package name & the name of the custom widget element, enter the following choices shown in brackets below.
-
-    ? What is the name of your delite widget element package? (title-package)
-    ? What do you want to call your delite widget element (must contain a dash)? (title-widget)
-    ? Would you like your delite element to be built on a template? (n)
-    ? Would you like your delite element to providing theming capabilities? (n)
-    ? Will your delite element require string internationalization? (n)
-    ? Will your delite element require pointer management? (n)
-    ? Do you want to use build version of delite package (instead of source version)? (n)
-
-### What's been generated
-Yeoman created the following (as shown in the console output):
-
-We've created a new package named `title-package` for new widgets that we'll create.
-
-- `./TitleWidget.js` - __this is our widget module__
-- `./TitleWidget/css/TitleWidget.css` - __this is our widget css__
-- `./samples/TitleWidget.html` - __this is a sample how to use our new widget__
-
-This is the most basic setup for a widget/custom component. You can view the sample generated HTML `./samples/TitleWidget.html`
-in a browser to see what's been created.
-
-
-
-###A look at the widget lifecycle methods for our simple widget
-If we look at our custom element module  ``./TitleWidget.js`` we can see two methods have been created for us, `render` and `refreshRendering`.
-`render` is the simplest of [lifecycle](https://github.com/ibm-js/delite/blob/master/docs/Widget.md#lifecycle)
-methods we need to create our widget.
-
-#### `render`
-We normally wouldn't create a `render` method because typically we'd be using templates to create the widget UI (which was shown earlier
-on) but because we aren't using a template we need to implement `render` ourselves.
-
-In this `render` method we're adding `<span>title</span>` and `<h1></h1>` elements to our widget as well as assigning a property
-to the widget named `_h1` i.e. via `this.appendChild(this._h = this.ownerDocument.createElement("h1"));` which we can use to update
-it programmatically or set it declaratively.
-
-In comparison to the previous templated widget you see it obviously requires much more work.
-
-#### `refreshRendering`
-`refreshRendering` is also a lifecycle method but implemented in `decor/Invalidating`, which `delite/Widget` inherits from.
-
-Its purpose is to observe changes to properties defined on the widget and update the UI. In your web browser developer tools, if
-you place a breakpoint in that method and then click the "*click to change title*" button, you'll see this method is called
-(because the button adds inline JavaScript to update the element's value property i.e.
-`onclick="element.value='New Title'; event.target.disabled=true"`).
-
-If we wanted to see what the old value was (and also display it to the DOM) we can change this method in `./TitleWidget.js` from
-
-```js
-refreshRendering: function (props) {
-    // if the value change update the display
-    if ("value" in props) {
-        this._h.innerHTML = this.value;
-    }
-}
-```
-
-to the following:
-
-```js
-refreshRendering: function (props) {
-    // if the value change update the display
-    if ("value" in props) {
-        this._h.innerText = "old= '" + props["value"] + "', new='" + this.value + "'";
-    }
-}
-```
-
-Also let's update the `./samples/TitleWidget.html` JavaScript from:
-
-```js
-require(["title-package/TitleWidget"], function (TitleWidget) {
-});
-```
-to add a programmatically created widget:
-
-```js
-require(["title-package/TitleWidget"], function (TitleWidget) {
-    var anotherTitleWidget = new TitleWidget({value : 'another custom element title'});
-    anotherTitleWidget.placeAt(document.body, 'last');
-});
-```
-
-If not already set, set a breakpoint (via your JavaScript debugger) to the `refreshRendering` method of our custom element module `./TitleWidget.js` and
-reload the page.
-
-Notice when you first load the page, this method will be called for each widget, you'll also see that the `value` property of our widget is
-contained in the `props` argument of this method.
-
-This is because we're setting the `value` property on the declaratively written widget to `value="The Title"` and setting the value property
-on the programmatically written widget to `value : "another custom element title"`.
-
-If you don't set the `value` property of the widget at construction time, the `value` property of our widget is NOT contained in the `props` argument.
-
-Click the 'click to change title button' and the widget will render like:
-
-> <img src='./images/custom_element_old_new_props.png'/>
-
-If you still have a breakpoint set in `refreshRendering` you will see again that the `value` property of our widget is again contained in the `props`
-argument.
-
-Update the value `property` of `./TitleWidget.js` to:
-
-```js
-value: "The Title",
-```
-
-And reload the page. Notice again the `value` property of our widget is NOT contained in the `props` argument. This is because the property value hasn't changed.
-The [decor/Invalidating](https://github.com/ibm-js/decor/blob/master/docs/Invalidating.md) documentation explains this behaviour.
-
-
 
 ## Round up
 As you've seen, the basics of `delite` are very easy when building a custom element, keeping in mind we've only touched on some of the capabilities of this project.
-We've also touched on some lower level concerns of `delite`.
 
 We'll expand on this in future and discuss more advanced topics in a later tutorial.
 
 ## Footnotes
 
-1.  <i name="link1">`delite` was written by the same developers who wrote the [Dojo Toolkit Dijit framework](http://dojotoolkit.org/reference-guide/1.10/dijit).</i>
-
-2.  <i name="link2">For those who used the Dojo Toolkit Dijit framework previously, an important conceptual difference in `delite` is that the widget is the DOM node.
+1. <i><a name="footnote1"></a>For those who used the Dojo Toolkit Dijit framework previously, an important conceptual difference in `delite` is that the widget is the DOM node.
    Dijit widgets instead had a property which referenced the DOM node.</i>
+
+2. <i><a name="footnote2"></a>See the definition of [http://www.whatwg.org/specs/web-apps/current-work/multipage/dom.html#htmlunknownelement](http://www.whatwg.org/specs/web-apps/current-work/multipage/dom.html#htmlunknownelement)
