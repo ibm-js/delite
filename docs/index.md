@@ -27,6 +27,7 @@ Specifically, it's based on the following concepts:
 * [Migration notes for dijit based applications](migration.md)
 * [Notes on theme generation](themes.md)
 * [How to load delite modules](setup.md)
+* [Internationalization and localization](g11n.md)
 
 ## Utility modules
 
