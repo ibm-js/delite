@@ -5,7 +5,6 @@ define([
 	"./keys", // keys.END keys.HOME, keys.LEFT_ARROW etc.
 	"./features",
 	"./Widget",
-	"dpointer/events",		// so can just monitor for "pointerdown"
 	"./activationTracker"	// delite-deactivated event when focus removed from KeyNav and logical descendants
 ], function (dcl, $, keys, has, Widget) {
 	
@@ -155,7 +154,7 @@ define([
 
 			this.on("keypress", this._keynavKeyPressHandler.bind(this));
 			this.on("keydown", this._keynavKeyDownHandler.bind(this));
-			this.on("pointerdown", function (evt) {
+			this.on("click", function (evt) {
 				var target = this._getTargetElement(evt);
 				if (target !== this) {
 					this._descendantNavigateHandler(target, evt);
