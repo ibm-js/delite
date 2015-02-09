@@ -143,6 +143,22 @@ define([
 		dropDownPosition: ["below", "above"],
 
 		/**
+		 * Focus the popup when opened by mouse or touch.  This flag should generally be left as `true` unless
+		 * the popup is a menu.  Usually drop down menus don't get focus unless opened by the keyboard.
+		 * @member {boolean}
+		 * @default true
+		 */
+		focusOnPointerOpen: true,
+
+		/**
+		 * Focus the popup when opened by the keyboard.  This flag should be left as `true` except for widgets
+		 * like Combobox where the focus is meant to always remain on the HasDropDown widget itself.
+		 * @member {boolean}
+		 * @default true
+		 */
+		focusOnKeyboardOpen: true,
+
+		/**
 		 * Whether or not the drop down is open.
 		 * @member {boolean}
 		 * @readonly
@@ -241,18 +257,14 @@ define([
 		},
 
 		/**
-		 * Helper function to focus the dropdown when it finishes loading and opening.
-		 * Exception: doesn't focus the dropdown when `dropDown.focusOnOpen === false a menu`, unless it
-		 * was opened via the keyboard.   `dropDown.focusOnOpen` is meant to be set for menus.
+		 * Helper function to focus the dropdown when it finishes loading and opening,
+		 * based on `focusOnPointerOpen` and `focusOnKeyboardOpen` properties.
 		 * @param {boolean} keyboard - True if the user opened the dropdown via the keyboard
 		 */
 		_focusDropDownOnOpen: function (keyboard) {
-			// Wait until the dropdown appears (if it hasn't appeared already), and then
-			// focus it, unless it's a menu (in which case focusOnOpen is set to false).
-			// Even if it's a menu, we need to focus it when it's opened by the keyboard.
 			this._openDropDownPromise.then(function (ret) {
 				var dropDown = ret.dropDown;
-				if (dropDown.focus && (keyboard || dropDown.focusOnOpen !== false)) {
+				if (dropDown.focus && (keyboard ? this.focusOnKeyboardOpen : this.focusOnPointerOpen)) {
 					this._focusDropDownTimer = this.defer(function () {
 						dropDown.focus();
 						delete this._focusDropDownTimer;

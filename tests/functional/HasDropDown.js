@@ -35,7 +35,8 @@ define([
 							assert(visible, "visible");
 						})
 						.execute("return document.activeElement.getAttribute('index')").then(function (index) {
-							// shouldn't focus drop down since it's a mouse click and dropdown has focusOnOpen=false
+							// shouldn't focus drop down since it's a mouse click
+							// and dropdown has focusOnPointerOpen=false
 							if (!environmentType.mouseEnabled) {
 								// TODO: this assert() fails on iOS (not sure why) so disabling for now
 								return;

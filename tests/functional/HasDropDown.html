@@ -62,10 +62,6 @@
 
 			// Base class for focusable and non-focusable menus
 			var MenuBase = register.dcl(Widget, {
-				// Since this is a menu, we don't want to automatically get focus on open, unless it's
-				// opened via the keyboard
-				focusOnOpen: false,
-
 				choice1: "1",
 				choice2: "2",
 				choice3: "3",
@@ -121,9 +117,6 @@
 
 			// A list of values that doesn't get focus; focus remains on the HasDropDown widget.
 			var NonFocusMenu = register("non-focus-menu", [HTMLElement, MenuBase], {
-				// Indicate that we really don't ever get focus
-				focus: null,
-
 				onOpen: function () {
 					this._select(this.firstChild);
 
@@ -168,8 +161,6 @@
 					this._set("label", val);
 				},
 
-				dropDownConstructor: FocusMenu,
-
 				loadDropDown: function () {
 					if (!this._dropDown) {
 						this._dropDown = new this.dropDownConstructor({
@@ -196,6 +187,10 @@
 			// A button that shows a popup
 			var ComboBox = register("combo-box", [HTMLInputElement, HasDropDown], {
 				dropDownConstructor: NonFocusMenu,
+
+				// focus should always remain on the Combobox <input>
+				focusOnPointerOpen: false,
+				focusOnKeyboardOpen: false,
 
 				loadDropDown: function () {
 					return this._dropDown || (this._dropDown = new this.dropDownConstructor({
@@ -240,7 +235,9 @@
 			// basic drop down with menu
 			new SimpleDropDownButton({
 				id: "dd",
-				label: "show menu dropdown - ltr"
+				label: "show menu - ltr",
+				dropDownConstructor: FocusMenu,
+				focusOnPointerOpen: false	// traditionally you only focus drop down menus when opened by the keyboard
 			}).placeAt(document.body);
 
 			// Rtl dropdown with tooltip dialog, delayed open first time.
@@ -261,16 +258,20 @@
 			// auto-width = false
 			new SimpleDropDownButton({
 				id: "nawl",
-				label: "show non-auto-width dropdown - ltr",
-				autoWidth: false
+				label: "show non-auto-width menu - ltr",
+				autoWidth: false,
+				dropDownConstructor: FocusMenu,
+				focusOnPointerOpen: false	// traditionally you only focus drop down menus when opened by the keyboard
 			}).placeAt(document.body);
 
 			// auto-width = false, dir = rtl
 			new SimpleDropDownButton({
 				id: "nawr",
 				dir: "rtl",
-				label: "show non-auto-width dropdown - rtl",
-				autoWidth: false
+				label: "show non-auto-width menu - rtl",
+				autoWidth: false,
+				dropDownConstructor: FocusMenu,
+				focusOnPointerOpen: false	// traditionally you only focus drop down menus when opened by the keyboard
 			}).placeAt(document.body);
 
 			// combobox: arrow keys should navigate drop down, focus stays on combo
