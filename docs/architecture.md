@@ -65,8 +65,8 @@ switch CSS theming based on its runtime environment.
 
 ## Custom Element performance specifics
 
-Custom Elements extend [`decor/Stateful`](/decor/docs/master/Stateful.html).
-See the decor [design documentation](/decor/docs/master/architecture.html) for details about how that class avoids
+Custom Elements extend [`decor/Stateful`](/decor/docs/0.5.0/Stateful.html).
+See the decor [design documentation](/decor/docs/0.5.0/architecture.html) for details about how that class avoids
 polling / dirty checking for property changes.
 
 Also, we intentionally don't set up page level listeners for custom element creation/deletion.
