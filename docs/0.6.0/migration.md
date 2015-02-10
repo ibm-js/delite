@@ -108,7 +108,7 @@ Resources are loaded through `i18n!` plugin rather than a `loadResource()` type 
 ### CSS
 
 A widget should use [delite/theme!](theme.html) or
-[requirejs-dplugins/css!](/requirejs-dplugins/docs/master/css.html) to load its own CSS.
+[requirejs-dplugins/css!](/requirejs-dplugins/docs/0.6.0/css.html) to load its own CSS.
 
 Further, delite/CssState (previously called dijit/_CssStateMixin) no longer sets CSS classes for hover, focus or active,
 so the widget CSS should just use the `:focus`, `:hover`, and `:active` pseudo-classes.
