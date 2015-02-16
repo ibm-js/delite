@@ -326,7 +326,6 @@ define([
 		 * @protected
 		 */
 		isLeftToRight: function () {
-			var doc = this.ownerDocument;
 			return !(/^rtl$/i).test(this._get("dir") || this.effectiveDir);
 		},
 
