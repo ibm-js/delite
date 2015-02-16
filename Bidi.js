@@ -26,7 +26,13 @@ define([], function () {
 		 * By default is as the page direction.
 		 */
 		textDir: "",
-
+		
+		attachedCallback: function() {
+			if (!!window && !this.hasAttribute("dir")) {
+				this.effectiveDir = window.getComputedStyle(this, null).direction;
+			}
+		},
+		
 		/**
 		 * Returns the right direction of text.
 		 *

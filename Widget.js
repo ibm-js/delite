@@ -83,6 +83,14 @@ define([
 		 */
 		dir: "",
 
+		/**
+		 * Direction which is inherited from the setting on the document,
+		 * if direction of widget isn't set explicitly.
+		 *
+		 * @member {string}
+		 */		
+		effectiveDir: "",
+		
 		//////////// INITIALIZATION METHODS ///////////////////////////////////////
 
 		/**
@@ -139,6 +147,10 @@ define([
 		},
 
 		attachedCallback: dcl.after(function () {
+			var doc = this.ownerDocument;
+			if (!this.effectiveDir) {
+				this.effectiveDir = doc.body.dir || doc.documentElement.dir;
+			}
 			if (!has("setter-on-native-prop")) {
 				var setterMap = this._nativePropSetterMap,
 					attrs = Object.keys(setterMap);
@@ -316,7 +328,7 @@ define([
 		 */
 		isLeftToRight: function () {
 			var doc = this.ownerDocument;
-			return !(/^rtl$/i).test(this._get("dir") || doc.body.dir || doc.documentElement.dir);
+			return !(/^rtl$/i).test(this._get("dir") || this.effectiveDir);
 		},
 
 		/**
