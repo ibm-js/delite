@@ -147,9 +147,8 @@ define([
 		},
 
 		attachedCallback: dcl.after(function () {
-			var doc = this.ownerDocument;
 			if (!this.effectiveDir) {
-				this.effectiveDir = doc.body.dir || doc.documentElement.dir;
+				this.effectiveDir = this.ownerDocument.body.dir || this.ownerDocument.documentElement.dir;
 			}
 			if (!has("setter-on-native-prop")) {
 				var setterMap = this._nativePropSetterMap,
