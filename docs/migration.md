@@ -19,8 +19,8 @@ title: delite/migration
 
 ### dcl()
 
-dojo.declare() is replaced by [dcl()](http://www.dcljs.org/).   Its usage is similar except for super calls.
-Rather than using `this.inherited()`, you use dcl.superCall().   So instead of:
+dojo.declare() is replaced by [dcl()](http://www.dcljs.org/).  Its usage is similar except for super calls.
+Rather than using `this.inherited()`, you use dcl.superCall().  So instead of:
 
 ```js
 _inZeroSettingArea: function(/*Number*/ x, /*Number*/ domNodeWidth){
@@ -37,7 +37,7 @@ You would do:
 ```js
 _inZeroSettingArea: dcl.superCall(function(sup){
 	return function(/*Number*/ x, /*Number*/ domNodeWidth){
-		if(this.isLeftToRight()){
+		if(this.effectiveDir === "ltr"){
 			return sup.call(this, x, domNodeWidth);
 		}else{
 			return x > (domNodeWidth - this.zeroAreaWidth);

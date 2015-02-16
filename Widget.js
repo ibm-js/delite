@@ -54,7 +54,7 @@ define([
 		 * @protected
 		 */
 		focused: false,
-		
+
 		/**
 		 * Set to true when `startup()` has completed.
 		 * @member {boolean}
@@ -83,6 +83,15 @@ define([
 		 */
 		dir: "",
 
+		/**
+		 * Actual direction of the widget, which can be set explicitly via `dir` property or inherited from the
+		 * setting on the document root (either `<html>` or `<body>`).
+		 * Value is either "ltr" or "rtl".
+		 * @member {string}
+		 * @readonly
+		 */
+		effectiveDir: "",
+
 		//////////// INITIALIZATION METHODS ///////////////////////////////////////
 
 		/**
@@ -101,6 +110,25 @@ define([
 			this.postRender();
 		},
 
+		computeProperties: function (props) {
+			if ("dir" in props) {
+				if ((/^(ltr|rtl)$/i).test(this._get("dir"))) {
+					this.effectiveDir = this._get("dir").toLowerCase();
+				} else {
+					this.effectiveDir = this.getInheritedDir();
+				}
+			}
+		},
+
+		/**
+		 * Get the direction setting for the page itself.
+		 * @returns {string} "ltr" or "rtl"
+		 * @protected
+		 */
+		getInheritedDir: function () {
+			return (this.ownerDocument.body.dir || this.ownerDocument.documentElement.dir || "ltr").toLowerCase();
+		},
+
 		// Override Invalidating#refreshRendering() to execute the template's refreshRendering() code, etc.
 		refreshRendering: function (oldVals) {
 			if (this._templateHandle) {
@@ -110,8 +138,10 @@ define([
 			if ("baseClass" in oldVals) {
 				$(this).removeClass(oldVals.baseClass).addClass(this.baseClass);
 			}
+			if ("effectiveDir" in oldVals) {
+				$(this).toggleClass("d-rtl", this.effectiveDir === "rtl");
+			}
 			if ("dir" in oldVals) {
-				$(this).toggleClass("d-rtl", !this.isLeftToRight());
 				this.style.direction = this._get("dir");
 			}
 		},
@@ -267,7 +297,7 @@ define([
 			if (this._templateHandle) {
 				this.notifyCurrentValue.apply(this, this._templateHandle.dependencies);
 			}
-			this.notifyCurrentValue("dir", "baseClass");
+			this.notifyCurrentValue("dir", "baseClass");	// "dir" triggers computation of effectiveDir
 		},
 
 		/**
@@ -291,7 +321,7 @@ define([
 		},
 
 		//////////// DESTROY FUNCTIONS ////////////////////////////////
-		
+
 		/**
 		 * Destroy this widget and its descendants.
 		 */
@@ -307,16 +337,6 @@ define([
 		 */
 		getParent: function () {
 			return this.getEnclosingWidget(this.parentNode);
-		},
-
-		/**
-		 * Return this widget's explicit or implicit orientation (true for LTR, false for RTL).
-		 * @returns {boolean}
-		 * @protected
-		 */
-		isLeftToRight: function () {
-			var doc = this.ownerDocument;
-			return !(/^rtl$/i).test(this._get("dir") || doc.body.dir || doc.documentElement.dir);
 		},
 
 		/**

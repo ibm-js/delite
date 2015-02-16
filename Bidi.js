@@ -3,7 +3,10 @@
  *	It enables support for the `textdir` property to control text direction independently from the GUI direction.
  * @module delite/Bidi
  */
-define([], function () {
+define([
+	"dcl/dcl",
+	"./features"
+], function (dcl, has) {
 
 	// UCC - constants that will be used by bidi support.
 	var LRE = "\u202A",
@@ -28,6 +31,19 @@ define([], function () {
 		textDir: "",
 
 		/**
+		 * Get the direction setting for the page itself, or if `has("inherited-dir")` is defined, then
+		 * for the dir setting inherited from any ancestor node.
+		 * @returns {string} "ltr" or "rtl"
+		 * @protected
+		 */
+		getInheritedDir: function () {
+			if (has("inherited-dir")) {
+				return window.getComputedStyle(this, null).direction;
+			}
+			return this.ownerDocument.body.dir || this.ownerDocument.documentElement.dir || "ltr";
+		},
+
+		/**
 		 * Returns the right direction of text.
 		 *
 		 * If textDir is ltr or rtl, returns the value.
@@ -40,8 +56,7 @@ define([], function () {
 		 */
 		getTextDir: function (text) {
 			return this.textDir === "auto" ? this._checkContextual(text) :
-				(/^(rtl|ltr)$/i).test(this.textDir) ? this.textDir :
-				this.isLeftToRight() ? "ltr" : "rtl";
+				(/^(rtl|ltr)$/i).test(this.textDir) ? this.textDir : this.effectiveDir;
 		},
 
 		/**
@@ -55,7 +70,7 @@ define([], function () {
 			// look for strong (directional) characters
 			var fdc = /[A-Za-z\u05d0-\u065f\u066a-\u06ef\u06fa-\u07ff\ufb1d-\ufdff\ufe70-\ufefc]/.exec(text);
 			// if found return the direction that defined by the character, else return widgets dir as default.
-			return fdc ? (fdc[0] <= "z" ? "ltr" : "rtl") : this.isLeftToRight() ? "ltr" : "rtl";
+			return fdc ? (fdc[0] <= "z" ? "ltr" : "rtl") : this.effectiveDir;
 		},
 
 		/**
@@ -76,7 +91,7 @@ define([], function () {
 				element.dir = textDir;
 			}
 			else {
-				element.dir = this.isLeftToRight() ? "ltr" : "rtl";
+				element.dir = this.effectiveDir;
 			}
 		},
 
@@ -95,7 +110,7 @@ define([], function () {
 				return this.removeUcc(text);
 			}
 		},
-		
+
 		/**
 		 * Returns specified text with UCC added to enforce widget's textDir setting.
 		 *
@@ -105,8 +120,7 @@ define([], function () {
 		 */
 		wrapWithUcc: function (text) {
 			var dir = this.textDir === "auto" ? this._checkContextual(text) :
-				(/^(rtl|ltr)$/i).test(this.textDir) ? this.textDir :
-				this.isLeftToRight() ? "ltr" : "rtl";
+				(/^(rtl|ltr)$/i).test(this.textDir) ? this.textDir : this.effectiveDir;
 			return (dir === "ltr" ? LRE : RLE) + text + PDF;
 		},
 
