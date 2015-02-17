@@ -3,11 +3,13 @@ define([
 	"intern!object",
 	"intern/chai!assert",
 	"dcl/dcl",
+	"requirejs-dplugins/jquery!attributes/classes",	// hasClass()
+	"requirejs-dplugins/Promise!",	
 	"delite/register",
 	"delite/Widget",
 	"delite/Bidi",
 	"requirejs-domready/domReady!"
-], function (registerSuite, assert, dcl, register, Widget, Bidi) {
+], function (registerSuite, assert, dcl, $, Promise, register, Widget, Bidi) {
 	var container, div, input, defaultDir;
 	var ltrText = "abc\u05d0\u05d1\u05d2";
 	var rtlText = "@#$123\u05d0\u05d1\u05d2abc";
@@ -104,6 +106,33 @@ define([
 			widget.textDir = "";
 			widget.enforceTextDirWithUcc(div);
 			assert.strictEqual(div.textContent, ltrText, "wrapped, default");
+		},
+
+		"handleImplicitDirSetting": function () {
+			function delay(ms) { return new Promise(function (resolve) { setTimeout(resolve, ms); }); }
+			var bodyOriginalDir = window.getComputedStyle(document.body).direction;
+			var init = function (dir) {
+				document.body.dir = dir;
+				container.innerHTML = "";
+				div = document.createElement("div");
+				div.dir = dir === "rtl"? "ltr" : "rtl";
+				container.appendChild(div);
+				widget = new SimpleWidget();
+				widget.placeAt(div);				
+			};
+			init("ltr");
+			return delay(10).then(function () {
+				assert($(widget).hasClass("d-rtl"), "has d-rtl class");
+				assert.strictEqual(widget.effectiveDir, div.dir, "effectiveDir is " + div.dir);
+				init("rtl");
+			}).then(function () { return delay(10); }).then(function () {
+				assert.isFalse($(widget).hasClass("d-rtl"), "doesn't have d-rtl class");
+				assert.strictEqual(widget.effectiveDir, div.dir, "effectiveDir is " + div.dir);	
+				document.body.dir = bodyOriginalDir;
+			}).catch(function (err) {
+				document.body.dir = bodyOriginalDir;
+				throw err;
+			});
 		},
 
 		teardown: function () {

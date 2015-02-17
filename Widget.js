@@ -109,6 +109,20 @@ define([
 			this.postRender();
 		},
 
+		computeProperties: function (props) {
+			if ("dir" in props) {
+				if ((/^(ltr|rtl)$/i).test(this._get("dir"))) {
+					this.effectiveDir = this._get("dir");
+				} else {
+					this.getInheritedDir();
+				}
+			}
+		},
+		
+		getInheritedDir: function () {
+			this.effectiveDir = this.ownerDocument.body.dir || this.ownerDocument.documentElement.dir;
+		},
+		
 		// Override Invalidating#refreshRendering() to execute the template's refreshRendering() code, etc.
 		refreshRendering: function (oldVals) {
 			if (this._templateHandle) {
@@ -118,8 +132,8 @@ define([
 			if ("baseClass" in oldVals) {
 				$(this).removeClass(oldVals.baseClass).addClass(this.baseClass);
 			}
-			if ("dir" in oldVals) {
-				$(this).toggleClass("d-rtl", !this.isLeftToRight());
+			if ("effectiveDir" in oldVals) {
+				$(this).toggleClass("d-rtl", (/^rtl$/i).test(this.effectiveDir));
 				this.style.direction = this._get("dir");
 			}
 		},
@@ -147,9 +161,6 @@ define([
 		},
 
 		attachedCallback: dcl.after(function () {
-			if (!this.effectiveDir) {
-				this.effectiveDir = this.ownerDocument.body.dir || this.ownerDocument.documentElement.dir;
-			}
 			if (!has("setter-on-native-prop")) {
 				var setterMap = this._nativePropSetterMap,
 					attrs = Object.keys(setterMap);
@@ -326,7 +337,7 @@ define([
 		 * @protected
 		 */
 		isLeftToRight: function () {
-			return !(/^rtl$/i).test(this._get("dir") || this.effectiveDir);
+			return !(/^rtl$/i).test(this.effectiveDir);
 		},
 
 		/**

@@ -3,7 +3,9 @@
  *	It enables support for the `textdir` property to control text direction independently from the GUI direction.
  * @module delite/Bidi
  */
-define([], function () {
+define([
+	"dcl/dcl"
+], function (dcl) {
 
 	// UCC - constants that will be used by bidi support.
 	var LRE = "\u202A",
@@ -27,11 +29,11 @@ define([], function () {
 		 */
 		textDir: "",
 		
-		attachedCallback: function() {
-			if (!!window && !this.hasAttribute("dir")) {
+		getInheritedDir: dcl.after(function () {
+			if (!!window) {
 				this.effectiveDir = window.getComputedStyle(this, null).direction;
 			}
-		},
+		}),
 		
 		/**
 		 * Returns the right direction of text.
@@ -47,7 +49,7 @@ define([], function () {
 		getTextDir: function (text) {
 			return this.textDir === "auto" ? this._checkContextual(text) :
 				(/^(rtl|ltr)$/i).test(this.textDir) ? this.textDir :
-				this.isLeftToRight() ? "ltr" : "rtl";
+					(/^rtl$/i).test(this.effectiveDir) ? "rtl" : "ltr";
 		},
 
 		/**
@@ -61,7 +63,7 @@ define([], function () {
 			// look for strong (directional) characters
 			var fdc = /[A-Za-z\u05d0-\u065f\u066a-\u06ef\u06fa-\u07ff\ufb1d-\ufdff\ufe70-\ufefc]/.exec(text);
 			// if found return the direction that defined by the character, else return widgets dir as default.
-			return fdc ? (fdc[0] <= "z" ? "ltr" : "rtl") : this.isLeftToRight() ? "ltr" : "rtl";
+			return fdc ? (fdc[0] <= "z" ? "ltr" : "rtl") : (/^rtl$/i).test(this.effectiveDir) ? "rtl" : "ltr";
 		},
 
 		/**
@@ -82,7 +84,7 @@ define([], function () {
 				element.dir = textDir;
 			}
 			else {
-				element.dir = this.isLeftToRight() ? "ltr" : "rtl";
+				element.dir = (/^rtl$/i).test(this.effectiveDir) ? "rtl" : "ltr";
 			}
 		},
 
@@ -112,7 +114,7 @@ define([], function () {
 		wrapWithUcc: function (text) {
 			var dir = this.textDir === "auto" ? this._checkContextual(text) :
 				(/^(rtl|ltr)$/i).test(this.textDir) ? this.textDir :
-				this.isLeftToRight() ? "ltr" : "rtl";
+					(/^rtl$/i).test(this.effectiveDir) ? "rtl" : "ltr";
 			return (dir === "ltr" ? LRE : RLE) + text + PDF;
 		},
 
