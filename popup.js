@@ -436,7 +436,7 @@ define([
 				wrapper = widget._popupWrapper,
 				around = args.around,
 				orient = args.orient || ["below", "below-alt", "above", "above-alt"],
-				ltr = args.parent ? args.parent.isLeftToRight() : isDocLtr(widget.ownerDocument);
+				ltr = args.parent ? args.parent.effectiveDir !== "rtl" : isDocLtr(widget.ownerDocument);
 
 			// position the wrapper node
 			if (orient[0] === "center") {

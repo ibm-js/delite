@@ -451,10 +451,10 @@ define([
 			var methodName;
 			switch (evt.keyCode) {
 			case keys.LEFT_ARROW:
-				methodName = this.isLeftToRight() ? "previousArrowKeyHandler" : "nextArrowKeyHandler";
+				methodName = this.effectiveDir === "rtl" ? "nextArrowKeyHandler" : "previousArrowKeyHandler";
 				break;
 			case keys.RIGHT_ARROW:
-				methodName = this.isLeftToRight() ? "nextArrowKeyHandler" : "previousArrowKeyHandler";
+				methodName = this.effectiveDir === "rtl" ? "previousArrowKeyHandler" : "nextArrowKeyHandler";
 				break;
 			default:
 				methodName = keycodeToMethod[evt.keyCode];

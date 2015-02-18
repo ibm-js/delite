@@ -83,6 +83,13 @@ define([
 		 */
 		dir: "",
 
+		/**
+		 * Actual direction of the widget, which can be set explicitly or inherited from the
+		 * setting on the document root (either `<html>` or `<body>`).
+		 * @member {string}
+		 */		
+		effectiveDir: "",
+		
 		//////////// INITIALIZATION METHODS ///////////////////////////////////////
 
 		/**
@@ -101,6 +108,20 @@ define([
 			this.postRender();
 		},
 
+		computeProperties: function (props) {
+			if ("dir" in props) {
+				if ((/^(ltr|rtl)$/i).test(this._get("dir"))) {
+					this.effectiveDir = this._get("dir").toLowerCase();
+				} else {
+					this.effectiveDir = this.getInheritedDir();
+				}
+			}
+		},
+		
+		getInheritedDir: function () {
+			return this.ownerDocument.body.dir || this.ownerDocument.documentElement.dir || "ltr";
+		},
+		
 		// Override Invalidating#refreshRendering() to execute the template's refreshRendering() code, etc.
 		refreshRendering: function (oldVals) {
 			if (this._templateHandle) {
@@ -110,8 +131,8 @@ define([
 			if ("baseClass" in oldVals) {
 				$(this).removeClass(oldVals.baseClass).addClass(this.baseClass);
 			}
-			if ("dir" in oldVals) {
-				$(this).toggleClass("d-rtl", !this.isLeftToRight());
+			if ("effectiveDir" in oldVals) {
+				$(this).toggleClass("d-rtl", this.effectiveDir === "rtl");
 				this.style.direction = this._get("dir");
 			}
 		},
@@ -315,8 +336,7 @@ define([
 		 * @protected
 		 */
 		isLeftToRight: function () {
-			var doc = this.ownerDocument;
-			return !(/^rtl$/i).test(this._get("dir") || doc.body.dir || doc.documentElement.dir);
+			return this.effectiveDir !== "rtl";
 		},
 
 		/**

@@ -31,8 +31,11 @@ define(["requirejs-dplugins/has"], function (has) {
 		return !!node.attributes;
 	});
 
-	// Flag to enable support for textdir attribute
+	// Flag to enable advanced bidi support
 	has.add("bidi", false);
+	
+	// Flag to enable inheritance direction from any ancestor
+	has.add("inherited-dir", false);
 
 	return has;
 });
