@@ -336,7 +336,7 @@ define([
 		 * @protected
 		 */
 		isLeftToRight: function () {
-			return effectiveDir !== "rtl";
+			return this.effectiveDir !== "rtl";
 		},
 
 		/**
