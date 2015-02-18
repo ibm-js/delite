@@ -4,8 +4,9 @@
  * @module delite/Bidi
  */
 define([
-	"dcl/dcl"
-], function (dcl) {
+	"dcl/dcl",
+	"./features"
+], function (dcl, has) {
 
 	// UCC - constants that will be used by bidi support.
 	var LRE = "\u202A",
@@ -29,11 +30,12 @@ define([
 		 */
 		textDir: "",
 		
-		getInheritedDir: dcl.after(function () {
-			if (!!window) {
-				this.effectiveDir = window.getComputedStyle(this, null).direction;
+		getInheritedDir: function () {
+			if (has("inherited-dir")) {
+				return window.getComputedStyle(this, null).direction;
 			}
-		}),
+			return this.ownerDocument.body.dir || this.ownerDocument.documentElement.dir || "ltr";
+		},
 		
 		/**
 		 * Returns the right direction of text.
@@ -48,8 +50,7 @@ define([
 		 */
 		getTextDir: function (text) {
 			return this.textDir === "auto" ? this._checkContextual(text) :
-				(/^(rtl|ltr)$/i).test(this.textDir) ? this.textDir :
-					(/^rtl$/i).test(this.effectiveDir) ? "rtl" : "ltr";
+				(/^(rtl|ltr)$/i).test(this.textDir) ? this.textDir : this.effectiveDir;
 		},
 
 		/**
@@ -63,7 +64,7 @@ define([
 			// look for strong (directional) characters
 			var fdc = /[A-Za-z\u05d0-\u065f\u066a-\u06ef\u06fa-\u07ff\ufb1d-\ufdff\ufe70-\ufefc]/.exec(text);
 			// if found return the direction that defined by the character, else return widgets dir as default.
-			return fdc ? (fdc[0] <= "z" ? "ltr" : "rtl") : (/^rtl$/i).test(this.effectiveDir) ? "rtl" : "ltr";
+			return fdc ? (fdc[0] <= "z" ? "ltr" : "rtl") : this.effectiveDir;
 		},
 
 		/**
@@ -84,7 +85,7 @@ define([
 				element.dir = textDir;
 			}
 			else {
-				element.dir = (/^rtl$/i).test(this.effectiveDir) ? "rtl" : "ltr";
+				element.dir = this.effectiveDir;
 			}
 		},
 
@@ -113,8 +114,7 @@ define([
 		 */
 		wrapWithUcc: function (text) {
 			var dir = this.textDir === "auto" ? this._checkContextual(text) :
-				(/^(rtl|ltr)$/i).test(this.textDir) ? this.textDir :
-					(/^rtl$/i).test(this.effectiveDir) ? "rtl" : "ltr";
+				(/^(rtl|ltr)$/i).test(this.textDir) ? this.textDir : this.effectiveDir;
 			return (dir === "ltr" ? LRE : RLE) + text + PDF;
 		},
 

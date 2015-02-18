@@ -84,9 +84,8 @@ define([
 		dir: "",
 
 		/**
-		 * Direction which is inherited from the setting on the document,
-		 * if direction of widget isn't set explicitly.
-		 *
+		 * Actual direction of the widget, which can be set explicitly or inherited from the
+		 * setting on the document root (either `<html>` or `<body>`).
 		 * @member {string}
 		 */		
 		effectiveDir: "",
@@ -112,15 +111,15 @@ define([
 		computeProperties: function (props) {
 			if ("dir" in props) {
 				if ((/^(ltr|rtl)$/i).test(this._get("dir"))) {
-					this.effectiveDir = this._get("dir");
+					this.effectiveDir = this._get("dir").toLowerCase();
 				} else {
-					this.getInheritedDir();
+					this.effectiveDir = this.getInheritedDir();
 				}
 			}
 		},
 		
 		getInheritedDir: function () {
-			this.effectiveDir = this.ownerDocument.body.dir || this.ownerDocument.documentElement.dir;
+			return this.ownerDocument.body.dir || this.ownerDocument.documentElement.dir || "ltr";
 		},
 		
 		// Override Invalidating#refreshRendering() to execute the template's refreshRendering() code, etc.
@@ -133,7 +132,7 @@ define([
 				$(this).removeClass(oldVals.baseClass).addClass(this.baseClass);
 			}
 			if ("effectiveDir" in oldVals) {
-				$(this).toggleClass("d-rtl", (/^rtl$/i).test(this.effectiveDir));
+				$(this).toggleClass("d-rtl", this.effectiveDir === "rtl");
 				this.style.direction = this._get("dir");
 			}
 		},
@@ -337,7 +336,7 @@ define([
 		 * @protected
 		 */
 		isLeftToRight: function () {
-			return !(/^rtl$/i).test(this.effectiveDir);
+			return effectiveDir !== "rtl";
 		},
 
 		/**
