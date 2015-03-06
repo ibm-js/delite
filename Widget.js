@@ -12,7 +12,8 @@ define([
 	var cnt = 0;
 
 	// Test is custom setters work for native properties like dir, or if they are ignored.
-	// They don't work on Chrome (v38) or Safari 7, but do work on Safari 8.
+	// They don't work on older versions of webkit: Chrome v38, Safari 7, iOS 7,
+	// but do work on Safari 8, Chrome 40, and iOS 8.
 	// If needed, this test could probably be reduced to just use Object.defineProperty() and dcl(),
 	// skipping use of register().
 	has.add("setter-on-native-prop", function () {
@@ -154,17 +155,24 @@ define([
 				//		https://bugs.webkit.org/show_bug.cgi?id=36423
 				//		https://bugs.webkit.org/show_bug.cgi?id=49739
 				//		https://bugs.webkit.org/show_bug.cgi?id=75297
-				var setterMap = this._nativePropSetterMap = {};
-				["dir", "tabIndex"].forEach(function (propName) {
-					// Trace up prototype chain looking for custom setter
-					for (var proto = this; proto; proto = Object.getPrototypeOf(proto)) {
-						var desc = Object.getOwnPropertyDescriptor(proto, propName);
-						if (desc && desc.set) {
-							setterMap[propName.toLowerCase()] = desc.set;
-							break;
+				var proto = this,
+					nativeProps = document.createElement(this._extends || this._tag),
+					setterMap = this._nativePropSetterMap = {};
+
+				do {
+					Object.keys(proto).forEach(function (prop) {
+						var lcProp = prop.toLowerCase();
+
+						if (prop in nativeProps && !setterMap[lcProp]) {
+							var desc = Object.getOwnPropertyDescriptor(proto, prop);
+							if (desc && desc.set) {
+								setterMap[lcProp] = desc.set;
+							}
 						}
-					}
-				}, this);
+					});
+
+					proto = Object.getPrototypeOf(proto);
+				} while (proto && proto.constructor !== this._baseElement);
 			}
 		},
 

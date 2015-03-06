@@ -56,7 +56,7 @@ define([
 			// ex: iconclass --> iconClass, which does include the methods, but again doesn't
 			// include props like "style" that are merely inherited from HTMLElement.
 
-			var hash = {}, proto = this, ctor,
+			var hash = {}, proto = this,
 				pcm = this._propCaseMap = {};
 
 			do {
@@ -70,8 +70,7 @@ define([
 				});
 
 				proto = Object.getPrototypeOf(proto);
-				ctor = proto && proto.constructor;
-			} while (proto && ctor !== this._baseElement);
+			} while (proto && proto.constructor !== this._baseElement);
 
 			return hash;
 		},

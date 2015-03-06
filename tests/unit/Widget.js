@@ -9,7 +9,7 @@ define([
 ], function (registerSuite, assert, $, Promise, register, Widget) {
 	var container;
 
-	var SimpleWidget, TestDir, simple, pane1;
+	var SimpleWidget, TestDir, TestNativeProps, simple, pane1;
 
 	function getFragment() {
 		var frag = document.createDocumentFragment();
@@ -19,6 +19,7 @@ define([
 		return frag;
 	}
 
+	function delay(ms) { return new Promise(function (resolve) { setTimeout(resolve, ms); }); }
 
 	// tabIndex is problematic, see https://github.com/ibm-js/delite/issues/34.
 	registerSuite({
@@ -172,8 +173,6 @@ define([
 				container.appendChild(myWidget);
 				myWidget.attachedCallback();
 
-				function delay(ms) { return new Promise(function (resolve) { setTimeout(resolve, ms); }); }
-
 				return delay(10).then(function () {
 					assert.strictEqual(myWidget.style.direction, "rtl", "style.direction");
 					assert($(myWidget).hasClass("d-rtl"), "has d-rtl class");
@@ -210,6 +209,61 @@ define([
 				setTimeout(d.callback(function () {
 					assert.strictEqual(declarative.style.direction, "rtl", "style.direction");
 					assert($(declarative).hasClass("d-rtl"), "has d-rtl class");
+				}), 10);
+
+				return d;
+			}
+		},
+
+		// Test that we can observe changes to other native properties (besides tabIndex and dir)
+		"other native properties": {
+			setup: function () {
+				// mixin to workaround https://github.com/uhop/dcl/issues/9
+				var TestNativePropsMixin = register.dcl(Widget, {
+					name: "hello",
+					_setNameAttr: function (name) {
+						this._name = name;
+					},
+
+					title: "world",
+					_setTitleAttr: function (title) {
+						this._title = title;
+					}
+				});
+
+				TestNativeProps = register("test-native-props", [HTMLInputElement, TestNativePropsMixin], {});
+			},
+
+			programmatic: function () {
+				var myWidget = new TestNativeProps({ });
+				myWidget.title = "new title";
+				myWidget.name = "new name";
+				container.appendChild(myWidget);
+				myWidget.attachedCallback();
+
+				return delay(10).then(function () {
+					assert.strictEqual(myWidget._title, "new title");
+					assert.strictEqual(myWidget._name, "new name");
+
+					myWidget.title = "new title 2";
+					myWidget.name = "new name 2";
+				}).then(function () { return delay(10); }).then(function () {
+					assert.strictEqual(myWidget._title, "new title 2");
+					assert.strictEqual(myWidget._name, "new name 2");
+				});
+			},
+
+			declarative: function () {
+				// And also test for declarative widgets, to make sure the tabIndex property is
+				// removed from the root node, to prevent an extra tab stop
+				container.innerHTML = "<input is='test-native-props' id=nativePropsTest name=name1 title=title1>";
+				var declarative = document.getElementById("nativePropsTest");
+				register.parse(container);
+
+				var d = this.async(1000);
+				setTimeout(d.callback(function () {
+					assert.strictEqual(declarative._title, "title1");
+					assert.strictEqual(declarative._name, "name1");
 				}), 10);
 
 				return d;

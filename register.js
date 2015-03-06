@@ -208,23 +208,20 @@ define([
 	 * Handles situations where the base constructor inherits from
 	 * HTMLElement but is not HTMLElement.
 	 * @param  {string}   tag         The custom tag name for the element, or the "is" attribute value.
+	 * @param  {string}	  _extends    The name of the tag this element extends, ex: "button" for <button is="...">
 	 * @param  {string}   baseElement The native HTML*Element "class" that this custom element is extending.
 	 * @param  {Function} baseCtor    The constructor function.
 	 * @return {Function}             The "new" constructor function that can create instances of the custom element.
 	 */
-	function getTagConstructor(tag, baseElement, baseCtor) {
+	function getTagConstructor(tag, _extends, baseElement, baseCtor) {
 		var proto = baseCtor.prototype,
 			config = registry[tag] = {
 				constructor: baseCtor,
 				prototype: proto
 			};
-		if (baseElement !== HTMLElement) {
-			config.extends = tags.filter(function (tag) {
-				return tagMap[tag] === baseElement;
-			})[0];
-			if (!config.extends) {
-				throw new TypeError(tag + ": must have HTMLElement in prototype chain");
-			}
+
+		if (_extends) {
+			config.extends = _extends;
 		}
 
 		if (has("document-register-element")) {
@@ -237,7 +234,7 @@ define([
 		}
 
 		// Register the selector to find this custom element
-		selectors.push(config.extends ? config.extends + "[is='" + tag + "']" : tag);
+		selectors.push(_extends ? _extends + "[is='" + tag + "']" : tag);
 
 		// Note: if we wanted to support registering new types after the parser was called, then here we should
 		// scan the document for the new type (selectors[length-1]) and upgrade any nodes found.
@@ -313,11 +310,24 @@ define([
 			baseElement = baseElement.prototype._baseElement;
 		}
 
+		// Get name of tag that this widget extends, for example <button is="..."> --> "button"
+		var _extends;
+		if (baseElement !== HTMLElement) {
+			_extends = tags.filter(function (tag) {
+				return tagMap[tag] === baseElement;
+			})[0];
+			if (!_extends) {
+				throw new TypeError(tag + ": must have HTMLElement in prototype chain");
+			}
+		}
+
 		// Get a composited constructor
 		var ctor = dcl(bases, props || {}),
 			proto = ctor.prototype;
 		proto._ctor = ctor;
 		proto._baseElement = baseElement;
+		proto._tag = tag;
+		proto._extends = _extends;
 
 		// Run introspection to add ES5 getters/setters.
 		// Doesn't happen automatically because Stateful's constructor isn't called.
@@ -331,7 +341,7 @@ define([
 
 		// Save widget metadata to the registry and return constructor that creates an upgraded DOMNode for the widget
 		/* jshint boss:true */
-		return getTagConstructor(tag, baseElement, ctor);
+		return getTagConstructor(tag, _extends, baseElement, ctor);
 	}
 
 	/**
