@@ -11,23 +11,6 @@ define([
 	// Used to generate unique id for each widget
 	var cnt = 0;
 
-	// Test is custom setters work for native properties like dir, or if they are ignored.
-	// They don't work on older versions of webkit: Chrome v38, Safari 7, iOS 7,
-	// but do work on Safari 8, Chrome 40, and iOS 8.
-	// If needed, this test could probably be reduced to just use Object.defineProperty() and dcl(),
-	// skipping use of register().
-	has.add("setter-on-native-prop", function () {
-		var works = false,
-			Mixin = dcl(CustomElement, {	// workaround https://github.com/uhop/dcl/issues/9
-				dir: "",
-				_setDirAttr: function () { works = true; }
-			}),
-			TestWidget = register("test-setter-on-native-prop", [HTMLElement, Mixin], {}),
-			tw = new TestWidget();
-		tw.dir = "rtl";
-		return works;
-	});
-
 	/**
 	 * Base class for all widgets, i.e. custom elements that appear visually.
 	 *
@@ -147,75 +130,7 @@ define([
 			}
 		},
 
-		_introspect: function () {
-			if (!has("setter-on-native-prop")) {
-				// Generate map from native attributes of HTMLElement to custom setters for those attributes.
-				// Necessary because webkit masks all custom setters for native properties on the prototype.
-				// For details see:
-				//		https://bugs.webkit.org/show_bug.cgi?id=36423
-				//		https://bugs.webkit.org/show_bug.cgi?id=49739
-				//		https://bugs.webkit.org/show_bug.cgi?id=75297
-				var proto = this,
-					nativeProps = document.createElement(this._extends || this._tag),
-					setterMap = this._nativePropSetterMap = {};
-
-				do {
-					Object.keys(proto).forEach(function (prop) {
-						var lcProp = prop.toLowerCase();
-
-						if (prop in nativeProps && !setterMap[lcProp]) {
-							var desc = Object.getOwnPropertyDescriptor(proto, prop);
-							if (desc && desc.set) {
-								setterMap[lcProp] = desc.set;
-							}
-						}
-					});
-
-					proto = Object.getPrototypeOf(proto);
-				} while (proto && proto.constructor !== this._baseElement);
-			}
-		},
-
 		attachedCallback: dcl.after(function () {
-			if (!has("setter-on-native-prop")) {
-				var setterMap = this._nativePropSetterMap,
-					attrs = Object.keys(setterMap);
-
-				// Call custom setters for initial values of attributes with shadow properties (dir, tabIndex, etc)
-				attrs.forEach(function (attrName) {
-					if (this.hasAttribute(attrName)) { // initial value was specified
-						var value = this.getAttribute(attrName);
-						this.removeAttribute(attrName);
-						setterMap[attrName].call(this, value); // call custom setter
-					}
-				}, this);
-
-				// Begin watching for changes to those DOM attributes.
-				// Note that (at least on Chrome) I could use attributeChangedCallback() instead, which is synchronous,
-				// so Widget#deliver() will work as expected, but OTOH gets lots of notifications
-				// that I don't care about.
-				// If Polymer is loaded, use MutationObserver rather than WebKitMutationObserver
-				// to avoid error about "referencing a Node in a context where it does not exist".
-				/* global WebKitMutationObserver */
-				var MO = window.MutationObserver || WebKitMutationObserver;	// for jshint
-				var observer = new MO(function (records) {
-					records.forEach(function (mr) {
-						var attrName = mr.attributeName,
-							setter = setterMap[attrName],
-							newValue = this.getAttribute(attrName);
-						if (newValue !== null) {
-							this.removeAttribute(attrName);
-							setter.call(this, newValue);
-						}
-					}, this);
-				}.bind(this));
-				observer.observe(this, {
-					subtree: false,
-					attributeFilter: attrs,
-					attributes: true
-				});
-			}
-
 			// Call attachedCallback() on any widgets in the template
 			if (this._templateHandle && !has("document-register-element")) {
 				this._templateHandle.attach();
