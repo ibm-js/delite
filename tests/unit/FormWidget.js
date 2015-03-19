@@ -70,7 +70,6 @@ define([
 				assert(myWidget.valueNode.disabled, "disabled set on valueNode");
 				assert(myWidget.focusNode.disabled, "disabled set on focusNode");
 
-
 				myWidget.disabled = false;
 				myWidget.deliver();
 				assert.isFalse(myWidget.valueNode.disabled, "disabled not set on valueNode");
@@ -78,36 +77,41 @@ define([
 			},
 
 			"#tabIndex": function () {
+				// When !has("setter-on-native-prop"), tabIndex changes reported asynchronously even if you call
+				// this.deliver().  See code in CustomElement.js.
+				var d = this.async(1000);
+
 				// default tabIndex
 				var myWidget = new FormWidgetTest();
-				myWidget.deliver();
-				assert.strictEqual(myWidget.focusNode.getAttribute("tabindex"), "0", "default tabIndex");
-				assert.isFalse(HTMLElement.prototype.hasAttribute.call(myWidget, "tabindex"), "no tabIndex on root 1");
-
-				// specify initial tabIndex
-				myWidget = new FormWidgetTest({
-					tabIndex: "3"
-				});
-				myWidget.placeAt(container);
-				//myWidget.setAttribute("tabindex", 3);
-				myWidget.deliver();
-				assert.strictEqual(myWidget.focusNode.getAttribute("tabindex"), "3", "specified tabIndex");
-				assert.isFalse(HTMLElement.prototype.hasAttribute.call(myWidget, "tabindex"), "no tabIndex on root 2");
-
-				// Change tabIndex.  At least on Chrome, this always happens asynchronously even if you call deliver().
-				myWidget.tabIndex = 4;
-				setTimeout(this.async().callback(function () {
-					assert.strictEqual(myWidget.focusNode.getAttribute("tabindex"), "4", "changed tabIndex");
+				setTimeout(d.rejectOnError(function () {
+					assert.strictEqual(myWidget.focusNode.getAttribute("tabindex"), "0", "default tabIndex");
 					assert.isFalse(HTMLElement.prototype.hasAttribute.call(myWidget, "tabindex"),
-						"no tabIndex on root 3");
-				}), 100);
+						"no tabIndex on root 1");
+
+					// specify initial tabIndex
+					myWidget = new FormWidgetTest({
+						tabIndex: "3"
+					});
+					setTimeout(d.rejectOnError(function () {
+						assert.strictEqual(myWidget.focusNode.getAttribute("tabindex"), "3", "specified tabIndex");
+						assert.isFalse(HTMLElement.prototype.hasAttribute.call(myWidget, "tabindex"),
+							"no tabIndex on root 2");
+
+						// Change tabIndex.
+						myWidget.tabIndex = 4;
+						setTimeout(d.callback(function () {
+							assert.strictEqual(myWidget.focusNode.getAttribute("tabindex"), "4", "changed tabIndex");
+							assert.isFalse(HTMLElement.prototype.hasAttribute.call(myWidget, "tabindex"),
+								"no tabIndex on root 3");
+						}), 10);
+					}), 10);
+				}), 10);
 			},
 
 			"#alt": function () {
 				var myWidget = new FormWidgetTest({
 					alt: "hello world"
 				});
-				myWidget.deliver();
 				assert.strictEqual(myWidget.focusNode.getAttribute("alt"), "hello world");
 			},
 
@@ -115,7 +119,6 @@ define([
 				var myWidget = new FormWidgetTest({
 					name: "bob"
 				});
-				myWidget.deliver();
 				assert.strictEqual(myWidget.valueNode.getAttribute("name"), "bob");
 			}
 		},
@@ -155,7 +158,6 @@ define([
 				register.parse(container);
 
 				var myWidget = container.firstChild;
-				myWidget.deliver();
 
 				// tabIndex
 				assert.strictEqual(myWidget.field1.getAttribute("tabindex"), "0", "field1 default tabIndex");
@@ -203,7 +205,6 @@ define([
 				assert(myWidget.valueNode.disabled, "disabled set on valueNode");
 				assert(myWidget.field1.disabled, "disabled set on field1");
 				assert(myWidget.field2.disabled, "disabled set on field2");
-
 
 				myWidget.disabled = false;
 				myWidget.deliver();

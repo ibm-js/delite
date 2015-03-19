@@ -5,7 +5,7 @@ define([
 ], function (registerSuite, assert, $) {
 
 	// Test cases for both delite/Scrollable and deliteful/ScrollableContainer.
-	// Since we can not reuse test files accross projects, there are two copies of
+	// Since we can not reuse test files across projects, there are two copies of
 	// this file, one in delite/unit/tests/resources and another in 
 	// deliteful/unit/tests/resources. They need to be kept in sync.
 	
@@ -18,14 +18,12 @@ define([
 	shared.testCases = {
 		"Default CSS": function () {
 			var w = document.getElementById("sc1");
-			w.deliver();
 			assert.isTrue($(w).hasClass(shared.containerCSSClassName),
 					"Expecting " + shared.containerCSSClassName + " CSS class! (id='sc1')");
 			assert.isTrue($(w).hasClass("d-scrollable"), // class added by the mixin delite/Scrollable
 				"Expecting d-scrollable CSS class! (id='sc1')");
 
 			w = document.getElementById("sc2"); // with scrollDirection == "none"
-			w.deliver();
 			assert.strictEqual(w.scrollDirection, "none", "wrong scroll direction for id=sc2!");
 			assert.isTrue($(w).hasClass(shared.containerCSSClassName),
 					"Expecting " + shared.containerCSSClassName + " CSS class! (id='sc2')");
@@ -34,7 +32,6 @@ define([
 				"Not expecting d-scrollable CSS class! (id='sc2')");
 
 			w = document.getElementById("mysc1");
-			w.deliver();
 			assert.isTrue($(w).hasClass(shared.containerCSSClassName),
 					"Expecting " + shared.containerCSSClassName + " CSS class! (id='mysc1')");
 			assert.isTrue($(w).hasClass("d-scrollable"), // class added by the mixin delite/Scrollable
@@ -43,7 +40,6 @@ define([
 
 		"CSS class dependency on scrollDirection": function () {
 			var w = document.getElementById("sc1");
-			w.deliver();
 			assert.isTrue($(w).hasClass(shared.containerCSSClassName),
 					"Expecting " + shared.containerCSSClassName + " CSS class! (id='sc1')");
 			assert.isTrue($(w).hasClass("d-scrollable"), // class added by the mixin delite/Scrollable
@@ -89,8 +85,7 @@ define([
 
 		"scrollableNode": function () {
 			var w = document.getElementById("sc1");
-			w.deliver();
-			assert.isTrue(w.scrollableNode === w, "Wrong scrollableNode!");
+			assert.strictEqual(w.scrollableNode, w, "Wrong scrollableNode!");
 		},
 
 		"scrollTop/scrollLeft": function () {

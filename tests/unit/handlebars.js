@@ -31,7 +31,6 @@ define([
 			});
 
 			var myWidget = new MyWidget({});
-			myWidget.deliver();
 
 			assert.strictEqual(myWidget.textContent.trim(), "number 0, boolean false, string hi, null");
 		},
@@ -44,7 +43,6 @@ define([
 				template: buttonHBTmpl
 			});
 			myButton = new TestButton();
-			myButton.deliver();
 			assert.strictEqual(myButton.tagName.toLowerCase(), "button", "root node exists");
 			assert.strictEqual(myButton.firstChild.tagName.toLowerCase(), "span", "icon node exists too");
 			assert.strictEqual(myButton.firstChild.className, "d-reset originalClass", "icon class set");
@@ -93,7 +91,6 @@ define([
 					)
 				});
 				var mySpecialPropsWidget = new SpecialPropsWidget();
-				mySpecialPropsWidget.deliver();
 				var input = mySpecialPropsWidget.children[0];
 
 				assert.strictEqual(input.value, "original value", "value set as property");
@@ -130,16 +127,10 @@ define([
 					multiple: true
 				});
 
-				var d = this.async(1000);
-
-				setTimeout(d.callback(function () {
-					var select = myWidget.select;
-					assert.strictEqual(select.getAttribute("foo"), "2", "foo");
-					assert.strictEqual(select.size, 2, "size");
-					assert.strictEqual(select.multiple, true, "multiple");
-				}), 100);
-
-				return d;
+				var select = myWidget.select;
+				assert.strictEqual(select.getAttribute("foo"), "2", "foo");
+				assert.strictEqual(select.size, 2, "size");
+				assert.strictEqual(select.multiple, true, "multiple");
 			},
 
 			autocorrect: function () {
@@ -166,7 +157,6 @@ define([
 					"<ul><li foo=\"a.b('c,d')\" bar='\\\"hello\"'>\"\\{{label}}\n\twas \n\there'</li></ul>")
 			});
 			var myList = new TestList();
-			myList.deliver();
 
 			assert.strictEqual(myList.tagName.toLowerCase(), "ul", "root node exists");
 			assert.strictEqual(myList.firstChild.tagName.toLowerCase(), "li", "child exists");
@@ -241,26 +231,19 @@ define([
 				assert.ok(headingWidget.attached, "heading widget was attached");
 				assert.ok(buttonWidget.attached, "button widget was attached");
 
-				var d = this.async(1000);
+				assert.strictEqual(headingWidget.textContent, "original heading",
+					"heading widget got title from main widget");
+				assert.strictEqual(buttonWidget.textContent.trim(), "original button label",
+					"button widget got label from main widget");
 
-				setTimeout(d.rejectOnError(function () {
-					assert.strictEqual(headingWidget.textContent, "original heading",
-						"heading widget got title from main widget");
-					assert.strictEqual(buttonWidget.textContent.trim(), "original button label",
-						"button widget got label from main widget");
+				myComplexWidget.mix({
+					heading: "new heading",
+					buttonLabel: "new button label"
+				});
+				myComplexWidget.deliver();
 
-					myComplexWidget.mix({
-						heading: "new heading",
-						buttonLabel: "new button label"
-					});
-
-					setTimeout(d.callback(function () {
-						assert.strictEqual(headingWidget.textContent, "new heading", "heading changed");
-						assert.strictEqual(buttonWidget.textContent.trim(), "new button label", "button changed");
-					}), 100);
-				}), 100);
-
-				return d;
+				assert.strictEqual(headingWidget.textContent, "new heading", "heading changed");
+				assert.strictEqual(buttonWidget.textContent.trim(), "new button label", "button changed");
 			},
 
 			buttons: function () {
@@ -275,7 +258,6 @@ define([
 				});
 				var testWidget = new ButtonWidget();
 				testWidget.placeAt(container);
-				testWidget.deliver();
 
 				// Make sure all the buttons are siblings of each other, not parent-child.
 				assert.strictEqual(testWidget.children.length, 3, "direct children");
@@ -301,7 +283,6 @@ define([
 				});
 
 				var myComplexWidget = new ComplexWidget();
-				myComplexWidget.deliver();
 
 				assert.strictEqual(myComplexWidget.firstElementChild.vertical, false, "prop is false not 'false'");
 				assert.strictEqual(myComplexWidget.firstElementChild.className, "horizontal", "className");
@@ -318,7 +299,6 @@ define([
 				});
 
 				var myComplexWidget = new ComplexWidget();
-				myComplexWidget.deliver();
 
 				assert.strictEqual(myComplexWidget.firstElementChild.vertical, false, "prop is false not 'false'");
 				assert.strictEqual(myComplexWidget.firstElementChild.className, "horizontal", "className");
@@ -487,7 +467,6 @@ define([
 			});
 
 			var node = new TestUndefined();
-			node.deliver();
 			assert.strictEqual(node.className, "", "class #1");
 			assert.strictEqual(node.textContent.trim(), "Hello Bob !", "textContent #1");
 
@@ -512,35 +491,25 @@ define([
 					"<span class={{item.className}}>Hello {{item.first}} {{item.last}}!</span>")
 			});
 
-			var d = this.async(1000);
-
 			var node = new TestNested();
+			assert.strictEqual(node.className, "", "class #1");
+			assert.strictEqual(node.textContent.trim(), "Hello Bob !", "textContent #1");
 
+			node.item = {
+				first: "Tom"
+			};
+			node.deliver();
+			assert.strictEqual(node.className, "", "class #2");
+			assert.strictEqual(node.textContent.trim(), "Hello Tom !", "textContent #2");
 
-			setTimeout(d.rejectOnError(function () {
-				assert.strictEqual(node.className, "", "class #1");
-				assert.strictEqual(node.textContent.trim(), "Hello Bob !", "textContent #1");
-
-				node.item = {
-					first: "Tom"
-				};
-				setTimeout(d.rejectOnError(function () {
-					assert.strictEqual(node.className, "", "class #2");
-					assert.strictEqual(node.textContent.trim(), "Hello Tom !", "textContent #2");
-
-					node.item = {
-						first: "Fred",
-						last: "Smith",
-						className: "blue"
-					};
-					setTimeout(d.callback(function () {
-						assert.strictEqual(node.className, "blue", "class #3");
-						assert.strictEqual(node.textContent.trim(), "Hello Fred Smith!", "textContent #3");
-					}), 100);
-				}), 100);
-			}), 100);
-
-			return d;
+			node.item = {
+				first: "Fred",
+				last: "Smith",
+				className: "blue"
+			};
+			node.deliver();
+			assert.strictEqual(node.className, "blue", "class #3");
+			assert.strictEqual(node.textContent.trim(), "Hello Fred Smith!", "textContent #3");
 		},
 
 		aria: function () {
@@ -558,7 +527,6 @@ define([
 			// Initial values
 			var node = new TestAria();
 			node.placeAt(container);
-			node.deliver();
 			assert(node.hasAttribute("aria-valuenow"), "aria-valuenow exists");
 			assert.strictEqual(node.getAttribute("aria-valuenow"), "", "aria-valuenow initial value");
 			assert.strictEqual(node.getAttribute("aria-selected"), "true", "aria-selected initial value");
@@ -604,7 +572,6 @@ define([
 
 				var node = new TestNested();
 				node.placeAt(container);
-				node.deliver();
 				assert.strictEqual(getComputedStyle(node).display, "inline", "not hidden");
 
 				node.showSpan = false;
@@ -666,7 +633,6 @@ define([
 			// Initial values
 			var node = new TextExpr();
 			node.placeAt(container);
-			node.deliver();
 			assert.strictEqual(node.textContent.trim(), "1 + 1 = 2");
 			assert.strictEqual(node.getAttribute("d-shown"), "true", "d-shown");
 
@@ -707,7 +673,6 @@ define([
 
 			var node = new ImgWidget();
 			node.placeAt(container);
-			node.deliver();
 
 			assert.strictEqual(node.firstElementChild.nodeName.toLowerCase(), "img", "tag name");
 			assert(/plus.gif/.test(node.firstElementChild.src, "img src set"));
@@ -740,7 +705,6 @@ define([
 			container.innerHTML += "<handlebars-const-class class='userDefinedClass'></handlebars-const-class>";
 			var cwdc = container.lastChild;
 			register.upgrade(cwdc);
-			cwdc.deliver();
 			assert.strictEqual(cwdc.className, "userDefinedClass constClass myBaseClass",
 				"declarative const");
 
@@ -748,7 +712,6 @@ define([
 			container.innerHTML += "<handlebars-var-class class='userDefinedClass'></handlebars-var-class>";
 			var cwdv = container.lastChild;
 			register.upgrade(cwdv);
-			cwdv.deliver();
 			assert.strictEqual(cwdv.className, "userDefinedClass myTemplateClass1 myBaseClass",
 				"declarative var, before update");
 
@@ -761,21 +724,19 @@ define([
 			var cwpc = new ClassConstWidget({
 				className: "userDefinedClass"
 			});
-			cwpc.deliver();
-			assert.strictEqual(cwpc.className, "constClass userDefinedClass myBaseClass",
+			assert.strictEqual(cwpc.className, "constClass myBaseClass userDefinedClass",
 				"programmatic const");
 
 			// Test programmatic with class={{foo}}
 			var cwpv = new ClassVarWidget({
 				className: "userDefinedClass"
 			});
-			cwpv.deliver();
-			assert.strictEqual(cwpv.className, "userDefinedClass myTemplateClass1 myBaseClass",
+			assert.strictEqual(cwpv.className, "myTemplateClass1 myBaseClass userDefinedClass",
 				"programmatic var, before update");
 
 			cwpv.templateClass = "myTemplateClass2";
 			cwpv.deliver();
-			assert.strictEqual(cwpv.className, "userDefinedClass myBaseClass myTemplateClass2",
+			assert.strictEqual(cwpv.className, "myBaseClass userDefinedClass myTemplateClass2",
 				"programmatic var, after update");
 		},
 

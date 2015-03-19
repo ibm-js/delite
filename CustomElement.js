@@ -162,6 +162,50 @@ define([
 						this[pa.prop] = pa.value;
 					}
 				}, this);
+
+				if (!has("setter-on-native-prop")) {
+					var setterMap = this._nativePropSetterMap,
+						attrs = Object.keys(setterMap);
+
+					// Call custom setters for initial values of attributes with shadow properties (dir, tabIndex, etc)
+					attrs.forEach(function (attrName) {
+						if (this.hasAttribute(attrName)) { // initial value was specified
+							var value = this.getAttribute(attrName);
+							this.removeAttribute(attrName);
+							setterMap[attrName].call(this, value); // call custom setter
+						}
+					}, this);
+
+					// Begin watching for changes to those DOM attributes.
+					// Note that (at least on Chrome) I could use attributeChangedCallback() instead, which is
+					// synchronous, so Widget#deliver() will work as expected, but OTOH gets lots of notifications
+					// that I don't care about.
+					// If Polymer is loaded, use MutationObserver rather than WebKitMutationObserver
+					// to avoid error about "referencing a Node in a context where it does not exist".
+					/* global WebKitMutationObserver */
+					var MO = window.MutationObserver || WebKitMutationObserver;	// for jshint
+					var observer = new MO(function (records) {
+						records.forEach(function (mr) {
+							var attrName = mr.attributeName,
+								setter = setterMap[attrName],
+								newValue = this.getAttribute(attrName);
+							if (newValue !== null) {
+								this.removeAttribute(attrName);
+								setter.call(this, newValue);
+							}
+						}, this);
+					}.bind(this));
+					observer.observe(this, {
+						subtree: false,
+						attributeFilter: attrs,
+						attributes: true
+					});
+				}
+
+				// TODO: deliver() should be called from Widget but I can't get dcl.advise() w/around advice to work.
+				if (this.deliver) {
+					this.deliver();
+				}
 			}
 		}),
 
@@ -182,52 +226,17 @@ define([
 		 * @method
 		 * @fires module:delite/CustomElement#customelement-attached
 		 */
-		attachedCallback: dcl.after(function () {
-			this.attached = true;
-			this.emit("customelement-attached", {
-				bubbles: false,
-				cancelable: false
-			});
+		attachedCallback: dcl.advise({
+			before: function () {
+				this.attached = true;
 
-			// Prevent against repeated calls
-			this.attachedCallback = nop;
-
-			if (!has("setter-on-native-prop")) {
-				var setterMap = this._nativePropSetterMap,
-					attrs = Object.keys(setterMap);
-
-				// Call custom setters for initial values of attributes with shadow properties (dir, tabIndex, etc)
-				attrs.forEach(function (attrName) {
-					if (this.hasAttribute(attrName)) { // initial value was specified
-						var value = this.getAttribute(attrName);
-						this.removeAttribute(attrName);
-						setterMap[attrName].call(this, value); // call custom setter
-					}
-				}, this);
-
-				// Begin watching for changes to those DOM attributes.
-				// Note that (at least on Chrome) I could use attributeChangedCallback() instead, which is synchronous,
-				// so Widget#deliver() will work as expected, but OTOH gets lots of notifications
-				// that I don't care about.
-				// If Polymer is loaded, use MutationObserver rather than WebKitMutationObserver
-				// to avoid error about "referencing a Node in a context where it does not exist".
-				/* global WebKitMutationObserver */
-				var MO = window.MutationObserver || WebKitMutationObserver;	// for jshint
-				var observer = new MO(function (records) {
-					records.forEach(function (mr) {
-						var attrName = mr.attributeName,
-							setter = setterMap[attrName],
-							newValue = this.getAttribute(attrName);
-						if (newValue !== null) {
-							this.removeAttribute(attrName);
-							setter.call(this, newValue);
-						}
-					}, this);
-				}.bind(this));
-				observer.observe(this, {
-					subtree: false,
-					attributeFilter: attrs,
-					attributes: true
+				// Prevent against repeated calls
+				this.attachedCallback = nop;
+			},
+			after: function () {
+				this.emit("customelement-attached", {
+					bubbles: false,
+					cancelable: false
 				});
 			}
 		}),

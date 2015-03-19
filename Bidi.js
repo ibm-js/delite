@@ -37,10 +37,18 @@ define([
 		 * @protected
 		 */
 		getInheritedDir: function () {
-			if (has("inherited-dir")) {
+			if (this.attached && has("inherited-dir")) {
 				return window.getComputedStyle(this, null).direction;
 			}
 			return this.ownerDocument.body.dir || this.ownerDocument.documentElement.dir || "ltr";
+		},
+
+		attachedCallback: function () {
+			if (has("inherited-dir")) {
+				// Now that the widget is attached to the DOM, need to retrigger computation of effectiveDir.
+				this.notifyCurrentValue("dir");
+				this.deliver();
+			}
 		},
 
 		/**

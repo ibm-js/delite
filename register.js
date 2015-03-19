@@ -254,6 +254,9 @@ define([
 					node[name] = params[name];
 				}
 			}
+			if (node.deliver) {
+				node.deliver();
+			}
 
 			return node;
 		};

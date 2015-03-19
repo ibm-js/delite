@@ -115,14 +115,7 @@ define([
 				assert.isFalse(declarative.hasAttribute("tabindex"), "tabindex attr removed");
 				assert.isTrue(declarative.isrange, "isrange set");
 				assert.isTrue(declarative.isbool, "isbool set");
-
-				var d = this.async(1000);
-
-				setTimeout(d.callback(function () {
-					assert.strictEqual(declarative.value, "5", "value");
-				}), 10);
-
-				return d;
+				assert.strictEqual(declarative.value, "5", "value");
 			},
 
 			notInPrototype: function () {
@@ -199,8 +192,6 @@ define([
 			},
 
 			declarative: function () {
-				// And also test for declarative widgets, to make sure the tabIndex property is
-				// removed from the root node, to prevent an extra tab stop
 				container.innerHTML = "<test-dir id=dirTest dir='rtl'/>";
 				var declarative = document.getElementById("dirTest");
 				register.parse(container);
@@ -233,7 +224,6 @@ define([
 			var myWidget = new TestWidget();
 			container.appendChild(myWidget);
 			myWidget.attachedCallback();
-			myWidget.deliver();
 
 			assert($(myWidget).hasClass("base2"), "baseClass is base2");
 

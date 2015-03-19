@@ -112,7 +112,6 @@ define([
 			myWidget.deliver();
 			assert(myWidget.focusNode.readOnly, "readOnly set on focusNode");
 
-
 			myWidget.readOnly = false;
 			myWidget.deliver();
 			assert.isFalse(myWidget.focusNode.readOnly, "readOnly not set on focusNode");
