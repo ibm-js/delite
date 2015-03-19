@@ -218,10 +218,7 @@ define([
 
 		//////////// DESTROY FUNCTIONS ////////////////////////////////
 
-		/**
-		 * Destroy this widget and its descendants.
-		 */
-		destroy: function () {
+		detachedCallback: function () {
 			if (this.bgIframe) {
 				this.bgIframe.destroy();
 				delete this.bgIframe;

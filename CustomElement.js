@@ -210,7 +210,7 @@ define([
 		}),
 
 		/**
-		 * Set to true when `attachedCallback()` has completed.
+		 * Set to true when `attachedCallback()` has completed, and false when `detachedCallback() called.
 		 * @member {boolean}
 		 * @protected
 		 */
@@ -230,7 +230,8 @@ define([
 			before: function () {
 				this.attached = true;
 
-				// Prevent against repeated calls
+				// Prevent against repeated calls.
+				// TODO: restore original attachedCallback() method if detachedCallback() called.
 				this.attachedCallback = nop;
 			},
 			after: function () {
@@ -240,6 +241,16 @@ define([
 				});
 			}
 		}),
+
+		/**
+		 * Called when the element is removed the document.  Note that the app must manually call this method.
+		 *
+		 * This method is automatically chained, so subclasses generally do not need to use `dcl.superCall()`,
+		 * `dcl.advise()`, etc.
+		 */
+		detachedCallback: function () {
+			this.attached = false;
+		},
 
 		/**
 		 * Returns value for widget property based on attribute value in markup.
@@ -381,6 +392,7 @@ define([
 
 			if (this.parentNode) {
 				this.parentNode.removeChild(this);
+				this.detachedCallback();
 			}
 		},
 
@@ -437,11 +449,11 @@ define([
 			node = node || this;
 
 			node.addEventListener(adjustedType, func, capture);
-			return this.own({
+			return {
 				remove: function () {
 					node.removeEventListener(adjustedType, func, capture);
 				}
-			})[0];
+			};
 		},
 
 		// Override Stateful#observe() because the way to get the list of properties to watch is different
@@ -479,6 +491,7 @@ define([
 	// destroy() is chained in Destroyable.js.
 	dcl.chainAfter(CustomElement, "createdCallback");
 	dcl.chainAfter(CustomElement, "attachedCallback");
+	dcl.chainBefore(CustomElement, "detachedCallback");
 
 	return CustomElement;
 });

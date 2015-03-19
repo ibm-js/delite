@@ -26,14 +26,22 @@ define([
 			this.className = "d-dialog-underlay";
 		},
 
-		postRender: function () {
-			// Append the underlay to the body
+		createdCallback: register.after(function () {
+			// Automatically append the underlay to <body> on creation.
 			this.ownerDocument.body.appendChild(this);
-			this.own(Viewport.on("resize", function () {
+			this.attachedCallback();
+		}),
+
+		attachedCallback: function () {
+			this._resizeListener = Viewport.on("resize", function () {
 				if (this._open) {
 					this.layout();
 				}
-			}.bind(this)));
+			}.bind(this));
+		},
+
+		detachedCallback: function () {
+			this._resizeListener.remove();
 		},
 
 		/**

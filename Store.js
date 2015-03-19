@@ -179,6 +179,10 @@ define(["dcl/dcl", "decor/Invalidating"], function (dcl, Invalidating) {
 			}
 		},
 
+		detachedCallback: function () {
+			this._untrack();
+		},
+
 		destroy: function () {
 			this._untrack();
 		},

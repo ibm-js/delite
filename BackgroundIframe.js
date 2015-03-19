@@ -54,10 +54,6 @@ define([
 		 * Destroy the iframe.
 		 */
 		destroy: function () {
-			if (this._conn) {
-				this._conn.remove();
-				this._conn = null;
-			}
 			if (this.iframe) {
 				this.iframe.parentNode.removeChild(this.iframe);
 				_frames.push(this.iframe);

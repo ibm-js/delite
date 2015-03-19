@@ -324,13 +324,21 @@ define([
 			this.notifyCurrentValue("dropDownPosition");
 		},
 
-		destroy: function () {
+		detachedCallback: function () {
 			// If dropdown is open, close it, to avoid leaving delite/activationTracker in a strange state.
 			// Put focus back on me to avoid the focused node getting destroyed, which flummoxes IE.
 			if (this.opened) {
 				this.closeDropDown(true);
 			}
 
+			var dropDown = this.dropDown;
+			if (dropDown && dropDown.parentNode) {
+				dropDown.parentNode.removeChild(dropDown);
+				dropDown.detachedCallback();
+			}
+		},
+
+		destroy: function () {
 			if (this.dropDown) {
 				// Destroy the drop down, unless it's already been destroyed.  This can happen because
 				// the drop down is a direct child of <body> even though it's logically my child.

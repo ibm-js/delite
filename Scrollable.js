@@ -99,7 +99,7 @@ define([
 			}
 		},
 
-		destroy: function () {
+		detachedCallback: function () {
 			this._stopAnimation();
 		},
 
