@@ -1,13 +1,6 @@
 # delite [![Build Status](https://travis-ci.org/ibm-js/delite.png?branch=master)](https://travis-ci.org/ibm-js/delite)
 
-This project provides a UI Widget framework working both on desktop and mobile platforms.
-
-One goal of the project is to
-[converge the dijit and dojox/mobile widgets](https://docs.google.com/document/d/1_kgrX25ylxuhtZCRrqAoABMaSdgxjAQgpyd0Ap4xvZU)
-into a single set of components.
-
-Another is to build on emerging web standards, in particular
-[custom elements](http://www.html5rocks.com/en/tutorials/webcomponents/customelements/).
+This project provides a [custom elements](http://www.html5rocks.com/en/tutorials/webcomponents/customelements/) based UI Widget framework working both on desktop and mobile platforms.
 
 ## Status
 
