@@ -18,7 +18,7 @@ define([
 				// should fire before the timeout
 				d.resolve();
 			});
-			store.startup();
+			store.attachedCallback();
 			store.store = new Rest({ target: "/" });
 			return d;
 		},
@@ -240,7 +240,7 @@ define([
 					d.resolve();
 				}
 			}));
-			store.startup();
+			store.attachedCallback();
 			// use empty model to easy comparison
 			var myStore = new M({ data: myData, model: null });
 			store.store = myStore;

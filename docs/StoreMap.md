@@ -154,7 +154,7 @@ As the documentation states, mapping properties are meant to be defined in the w
 also add the mapping properties directly to an instance without defining them on the class, but in this case
 there are two limitations:
 
-* the property must be added before the widget is started
+* the property must be added before the widget is attached to the DOM
 * if the property is added in the markup then only fully lower case properties are supported (e.g. foobar not fooBar)
 
 ## Mapping functions in markup

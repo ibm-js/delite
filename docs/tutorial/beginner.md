@@ -329,18 +329,15 @@ to the following:
 require(["delite/register", "blogging-package/BlogPost"], function (register, BlogPost) {
     register.parse();
     var anotherCustomElement = new BlogPost({value : 'The day after', publishDate : 'Nov 28th 2014', author : "My good self"});
-    // note you must call startup() for programmatically created widgets
     anotherCustomElement.placeAt(document.body, 'last');
     var containerNodeContent = "<b>boooooo</b> it's the day after, back to work soon :(" +
             "<pre># time to start thinking about code again</pre>";
     anotherCustomElement.containerNode.innerHTML = containerNodeContent;
-    anotherCustomElement.startup();
-});
+]});
 ```
-Note that programmatically created widget instances should always call `startup()`. A helper function is provided by `delite/Widget` to place it
-somewhere in the DOM named `placeAt`
+A helper function is provided by `delite/Widget` to place it somewhere in the DOM named `placeAt()`
 (see the [documentation](https://github.com/ibm-js/delite/blob/master/docs/Widget.md#placement) for it's usage).
-
+If you don't call `placeAt()` then programmatically created widget instances should  call `attachedCallback()`.
 
 If you refresh the page you can see how we've added this HTML to the `containerNode` of our widget programmatically.
 
@@ -394,12 +391,10 @@ Update our existing `./samples/BlogPost.html` JavaScript content from:
 require(["delite/register", "blogging-package/BlogPost"], function (register, BlogPost) {
     register.parse();
     var anotherCustomElement = new BlogPost({value : 'The day after', publishDate : 'Nov 28th 2014', author : "My good self"});
-    // note you must call startup() for programmatically created widgets
     anotherCustomElement.placeAt(document.body, 'last');
     var containerNodeContent = "<b>boooooo</b> it's the day after, back to work soon :(" +
             "<pre># time to start thinking about code again</pre>";
     anotherCustomElement.containerNode.innerHTML = containerNodeContent;
-    anotherCustomElement.startup();
 });
 ```
 
@@ -409,12 +404,10 @@ to:
 require(["delite/register", "blogging-package/BlogPost", "delite/theme!delite/themes/{{theme}}/global.css"], function (register, BlogPost) {
     register.parse();
     var anotherCustomElement = new BlogPost({value : 'The day after', publishDate : 'Nov 28th 2014', author : "My good self"});
-    // note you must call startup() for programmatically created widgets
     anotherCustomElement.placeAt(document.body, 'last');
     var containerNodeContent = "<b>boooooo</b> it's the day after, back to work soon :(" +
             "<pre># time to start thinking about code again</pre>";
     anotherCustomElement.containerNode.innerHTML = containerNodeContent;
-    anotherCustomElement.startup();
 });
 ```
 
@@ -551,9 +544,7 @@ to add a programmatically created widget:
 require(["delite/register", "title-package/TitleWidget"], function (register, TitleWidget) {
     register.parse();
     var anotherTitleWidget = new TitleWidget({value : 'another custom element title'});
-    // note you must call startup() for programmatically created widgets
     anotherTitleWidget.placeAt(document.body, 'last');
-    anotherTitleWidget.startup();
 });
 ```
 

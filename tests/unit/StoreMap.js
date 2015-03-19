@@ -90,7 +90,7 @@ define([
 			}, 1000);
 
 			store.on("query-success", d.callback(function () {
-				// startup() called late, after adding data to the store
+				// attachedCallback() called late, after adding data to the store
 				assert.strictEqual(store.renderItems.length, 2);
 			}));
 			return d;

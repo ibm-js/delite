@@ -292,7 +292,6 @@ define([
 			},
 
 			"Place first widget": function () {
-				simple.startup();
 				var pane3 = (new SimpleWidget({ title: "pane3" })).placeAt("simple-place-at-id", "first");
 				assert.strictEqual(simple.containerNode, pane3.parentNode, "pane3 added to simple.containerNode");
 				assert.strictEqual(pane3, simple.containerNode.children[0], "pane3 is new first child of SimpleWidget");

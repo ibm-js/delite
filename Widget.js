@@ -40,13 +40,6 @@ define([
 		focused: false,
 
 		/**
-		 * Set to true when `startup()` has completed.
-		 * @member {boolean}
-		 * @protected
-		 */
-		started: false,
-
-		/**
 		 * Unique id for this widget, separate from id attribute (which may or may not be set).
 		 * Useful when widget creates subnodes that need unique id's.
 		 * @member {number}
@@ -221,26 +214,6 @@ define([
 				this.notifyCurrentValue.apply(this, this._templateHandle.dependencies);
 			}
 			this.notifyCurrentValue("dir", "baseClass");	// "dir" triggers computation of effectiveDir
-		},
-
-		/**
-		 * Deprecated method.   Use attachedCallback() instead, or if you need to recurse, then attachedCallback(true).
-		 */
-		startup: function () {
-			// TODO: remove this method before 1.0 release if it isn't being used
-			if (this.started) {
-				return;
-			}
-
-			this.attachedCallback();
-
-			this.started = true;
-			this.findCustomElements(this).forEach(function (obj) {
-				if (!obj.started && !obj._destroyed && typeof obj.startup === "function") {
-					obj.startup();
-					obj.started = true;
-				}
-			});
 		},
 
 		//////////// DESTROY FUNCTIONS ////////////////////////////////
