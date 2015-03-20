@@ -201,11 +201,6 @@ define([
 						attributes: true
 					});
 				}
-
-				// TODO: deliver() should be called from Widget but I can't get dcl.advise() w/around advice to work.
-				if (this.deliver) {
-					this.deliver();
-				}
 			}
 		}),
 

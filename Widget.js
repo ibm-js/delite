@@ -81,11 +81,18 @@ define([
 		 * only be done as a last resort.
 		 * @protected
 		 */
-		createdCallback: function () {
-			this.preRender();
-			this.render();
-			this.postRender();
-		},
+		createdCallback: dcl.advise({
+			around: function () {
+				return function () {
+					this.preRender();
+					this.render();
+					this.postRender();
+				};
+			},
+			after: function () {
+				this.deliver();
+			}
+		}),
 
 		computeProperties: function (props) {
 			if ("dir" in props) {
