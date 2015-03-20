@@ -121,27 +121,52 @@ define([
 			}
 		},
 
-		"own and destroy": function () {
+		lifecycle: function () {
 			// Setup ownership
 			register("test-ce-lifecycle-custom-element", [HTMLElement, CustomElement], {
+				attaches: 0,
+				detaches: 0,
 				createdCallback: function () {
 					// Rather odd call to this.own() for testing the connections are dropped on destroy()
 					this.own(advise.after(obj, "foo", function () {
 						calls++;
 					}, true));
+				},
+				attachedCallback: function () {
+					this.attaches++;
+				},
+				detachedCallback: function () {
+					this.detaches++;
 				}
 			});
 
+			// create
 			container.innerHTML +=
 				"<test-ce-lifecycle-custom-element id='w1'></test-ce-lifecycle-custom-element>" +
 				"<test-ce-lifecycle-custom-element id='w2'></test-ce-lifecycle-custom-element>";
 			register.parse(container);
+			assert.strictEqual(window.w1.attaches, 1, "attach");
 
 			// test the connection
 			assert.strictEqual(calls, 0, "foo() not called yet");
 			obj.foo();
 			assert.strictEqual(calls, 2, "foo() called from each custom element");
 
+
+			// Test attaching and detaching
+			var w1 = window.w1;
+			w1.attachedCallback();	// shouldn't do anything, since already attached
+			assert.strictEqual(w1.attaches, 1, "redundant attach");
+
+			w1.detachedCallback();
+			w1.detachedCallback();	// shouldn't do anything, since already attached
+			assert.strictEqual(w1.detaches, 1, "detach");
+
+			w1.attachedCallback();	// shouldn't reattach
+			assert.strictEqual(w1.attaches, 2, "reattach");
+
+			w1.detachedCallback();	// re-detach
+			assert.strictEqual(w1.detaches, 2, "re-detach");
 
 			// Then destroy
 			var w = document.getElementById("w1");

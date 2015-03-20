@@ -230,9 +230,12 @@ define([
 			before: function () {
 				this.attached = true;
 
-				// Prevent against repeated calls.
-				// TODO: restore original attachedCallback() method if detachedCallback() called.
+				// Protect against repeated calls.
+				this._realAttachedCallback = this.attachedCallback;
 				this.attachedCallback = nop;
+				if (this._realDetachedCallback) {
+					this.detachedCallback = this._realDetachedCallback;
+				}
 			},
 			after: function () {
 				this.emit("customelement-attached", {
@@ -249,7 +252,14 @@ define([
 		 * `dcl.advise()`, etc.
 		 */
 		detachedCallback: function () {
-			this.attached = false;
+			if (this.attached) {
+				this.attached = false;
+
+				// Protect against repeated calls.
+				this._realDetachedCallback = this.detachedCallback;
+				this.detachedCallback = nop;
+				this.attachedCallback = this._realAttachedCallback;
+			}
 		},
 
 		/**
