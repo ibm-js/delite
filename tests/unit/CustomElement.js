@@ -248,7 +248,7 @@ define([
 		},
 
 		// Test that Stateful notification of properties works.
-		// Testing specifically here (in addition to decor) because CustomElement redefines Stateful#_getProps()
+		// Testing specifically here (in addition to decor) because CustomElement redefines Stateful#getProps()
 		stateful: {
 			basic: function () {
 				var d = this.async(1000);

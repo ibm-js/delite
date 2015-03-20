@@ -28,7 +28,7 @@ define([
 	has.add("setter-on-native-prop", function () {
 		var works = false,
 			Mixin = dcl(Stateful, {	// mixin to workaround https://github.com/uhop/dcl/issues/9
-				_getProps: function () { return {dir: true}; },
+				getProps: function () { return {dir: true}; },
 				dir: "",
 				_setDirAttr: function () { works = true; }
 			}),
@@ -66,7 +66,7 @@ define([
 	 * @augments module:decor/Destroyable
 	 */
 	var CustomElement = dcl([Stateful, Destroyable], /** @lends module:delite/CustomElement# */{
-		_introspect: function () {
+		introspect: function () {
 			if (!has("setter-on-native-prop")) {
 				// Generate map from native attributes of HTMLElement to custom setters for those attributes.
 				// Necessary because webkit masks all custom setters for native properties on the prototype.
@@ -95,8 +95,8 @@ define([
 			}
 		},
 
-		_getProps: function () {
-			// Override _Stateful._getProps() to ignore properties from the HTML*Element superclasses, like "style".
+		getProps: function () {
+			// Override _Stateful.getProps() to ignore properties from the HTML*Element superclasses, like "style".
 			// You would need to explicitly declare style: "" in your widget to get it here.
 			// Intentionally skips methods, because it seems wasteful to have a custom
 			// setter for every method; not sure that would work anyway.

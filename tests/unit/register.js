@@ -95,10 +95,10 @@ define([
 					this._set("cs1", val + 1);
 				},
 
-				// Need to redefine Stateful._getProps() because on FF and IE, we get exceptions when accessing props
+				// Need to redefine Stateful.getProps() because on FF and IE, we get exceptions when accessing props
 				// like HTMLElement.title.  We are accessing them in the HTMLElement prototype rather than an object
 				// created from the document.createElement() factory.
-				_getProps: function () {
+				getProps: function () {
 					var hash = {};
 					for (var prop in this) {
 						if (!(prop in nativeButton)) {
