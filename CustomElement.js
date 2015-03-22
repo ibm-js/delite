@@ -1,12 +1,13 @@
 /** @module delite/CustomElement */
 define([
+	"dcl/advise",
 	"dcl/dcl",
 	"decor/Observable",
 	"decor/Destroyable",
 	"decor/Stateful",
 	"requirejs-dplugins/has",
 	"./register"
-], function (dcl, Observable, Destroyable, Stateful, has, register) {
+], function (advise, dcl, Observable, Destroyable, Stateful, has, register) {
 
 	function nop() {}
 
@@ -78,6 +79,7 @@ define([
 					nativeProps = document.createElement(this._extends || "div"),
 					setterMap = this._nativePropSetterMap = {};
 
+				this._nativeAttrs = [];
 				do {
 					Object.keys(proto).forEach(function (prop) {
 						var lcProp = prop.toLowerCase();
@@ -85,10 +87,11 @@ define([
 						if (prop in nativeProps && !setterMap[lcProp]) {
 							var desc = Object.getOwnPropertyDescriptor(proto, prop);
 							if (desc && desc.set) {
+								this._nativeAttrs.push(lcProp);
 								setterMap[lcProp] = desc.set;
 							}
 						}
-					});
+					}, this);
 
 					proto = Object.getPrototypeOf(proto);
 				} while (proto && proto.constructor !== this._baseElement);
@@ -122,6 +125,26 @@ define([
 			} while (proto && proto.constructor !== this._baseElement);
 
 			return hash;
+		},
+
+		/**
+		 * This method will detect and process any properties that the application has set, but the custom setter
+		 * didn't run because `has("setter-on-native-prop") === false`.
+		 * Used during initialization and also by `deliver()`.
+		 * @private
+		 */
+		_processNativeProps: function () {
+			if (!has("setter-on-native-prop")) {
+				this._nativeAttrs.forEach(function (attrName) {
+					if (this.hasAttribute(attrName)) { // value was specified
+						var value = this.getAttribute(attrName);
+						this.removeAttribute(attrName);
+						if (value !== null) {
+							this._nativePropSetterMap[attrName].call(this, value); // call custom setter
+						}
+					}
+				}, this);
+			}
 		},
 
 		/**
@@ -164,17 +187,8 @@ define([
 				}, this);
 
 				if (!has("setter-on-native-prop")) {
-					var setterMap = this._nativePropSetterMap,
-						attrs = Object.keys(setterMap);
-
 					// Call custom setters for initial values of attributes with shadow properties (dir, tabIndex, etc)
-					attrs.forEach(function (attrName) {
-						if (this.hasAttribute(attrName)) { // initial value was specified
-							var value = this.getAttribute(attrName);
-							this.removeAttribute(attrName);
-							setterMap[attrName].call(this, value); // call custom setter
-						}
-					}, this);
+					this._processNativeProps();
 
 					// Begin watching for changes to those DOM attributes.
 					// Note that (at least on Chrome) I could use attributeChangedCallback() instead, which is
@@ -187,7 +201,7 @@ define([
 					var observer = new MO(function (records) {
 						records.forEach(function (mr) {
 							var attrName = mr.attributeName,
-								setter = setterMap[attrName],
+								setter = this._nativePropSetterMap[attrName],
 								newValue = this.getAttribute(attrName);
 							if (newValue !== null) {
 								this.removeAttribute(attrName);
@@ -197,9 +211,13 @@ define([
 					}.bind(this));
 					observer.observe(this, {
 						subtree: false,
-						attributeFilter: attrs,
+						attributeFilter: this._nativeAttrs,
 						attributes: true
 					});
+				}
+
+				if (this.deliver) {
+					this.deliver();
 				}
 			}
 		}),
@@ -461,14 +479,17 @@ define([
 			};
 		},
 
-		// Override Stateful#observe() because the way to get the list of properties to watch is different
+		// Override Stateful#getPropsToObserve() because the way to get the list of properties to watch is different
 		// than for a plain Stateful.  Especially since IE doesn't support prototype swizzling.
-		observe: function (callback) {
-			var propsToObserve = this._ctor._propsToObserve;
-			var h = new Stateful.PropertyListObserver(this, propsToObserve);
-			h.open(callback, this);
-			return h;
+		getPropsToObserve: function () {
+			return this._ctor._propsToObserve;
 		},
+
+		// Before deliver() runs, process any native properties (tabIndex, dir) etc. that may have been
+		// set without the custom setter getting called.
+		deliver: dcl.before(function () {
+			this._processNativeProps();
+		}),
 
 		/**
 		 * Search subtree under root returning custom elements found.

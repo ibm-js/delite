@@ -4,9 +4,8 @@ define([
 	"dcl/advise",
 	"delite/register",
 	"delite/CustomElement",
-	"requirejs-dplugins/Promise!",
 	"requirejs-domready/domReady!"
-], function (registerSuite, assert, advise, register, CustomElement, Promise) {
+], function (registerSuite, assert, advise, register, CustomElement) {
 
 	var container;
 	var TestNativeProps;
@@ -30,8 +29,6 @@ define([
 		</test-ce-bar> \
 		</div> \
 		<div id='not-a-custom-element'></div>";
-
-	function delay(ms) { return new Promise(function (resolve) { setTimeout(resolve, ms); }); }
 
 	registerSuite({
 		name: "CustomElement",
@@ -249,96 +246,92 @@ define([
 
 		// Test that Stateful notification of properties works.
 		// Testing specifically here (in addition to decor) because CustomElement redefines Stateful#getProps()
-		stateful: {
-			basic: function () {
-				var d = this.async(1000);
+		stateful: function () {
+			var d = this.async(1000);
 
-				// Create a custom element with a custom "foo" event, plus the standard "click" event.
-				var MyCustomElement = register("my-widget-stateful", [HTMLElement, CustomElement], {
+			// Create a custom element with a custom "foo" event, plus the standard "click" event.
+			var MyCustomElement = register("my-widget-stateful", [HTMLElement, CustomElement], {
+				_private: 1,
+
+				foo: 2,
+				_setFooAttr: function (val) {
+					this._set("foo", val);
+				},
+
+				preRender: function () {
+					this.instanceProp = 3;
+				},
+
+				anotherFunc: function () {
+				}
+			});
+
+			var w = new MyCustomElement({});
+			w.observe(d.callback(function (oldValues) {
+				assert.deepEqual(oldValues, {
 					_private: 1,
+					foo: 2
+				});
+			}));
 
-					foo: 2,
-					_setFooAttr: function (val) {
-						this._set("foo", val);
-					},
+			w._private = 11;
+			w.foo = 22;
+			w.instanceProp = 33;
+			w.className = "foo";	// shouldn't cause notification as per CustomElement#_getProp()
+		},
 
-					preRender: function () {
-						this.instanceProp = 3;
-					},
-
-					anotherFunc: function () {
+		// Test that we can observe changes to other native properties like tabIndex, dir, etc
+		"observing native properties": {
+			setup: function () {
+				// mixin to workaround https://github.com/uhop/dcl/issues/9
+				var TestNativePropsMixin = register.dcl(CustomElement, {
+					name: "hello",
+					title: "world",
+					createdCallback: function () {
+						this.observe(function (oldProps) {
+							Object.keys(oldProps).forEach(function (prop) {
+								this["_" + prop] = this._get(prop);
+							}, this);
+						}.bind(this));
 					}
 				});
 
-				var w = new MyCustomElement({});
-				w.observe(d.callback(function (oldValues) {
-					assert.deepEqual(oldValues, {
-						_private: 1,
-						foo: 2
-					});
-				}));
-
-				w._private = 11;
-				w.foo = 22;
-				w.instanceProp = 33;
-				w.className = "foo";	// shouldn't cause notification as per CustomElement#_getProp()
+				TestNativeProps = register("test-native-props", [HTMLInputElement, TestNativePropsMixin], {});
 			},
 
-			// Test that we can observe changes to other native properties like tabIndex, dir, etc
-			"native properties": {
-				setup: function () {
-					// mixin to workaround https://github.com/uhop/dcl/issues/9
-					var TestNativePropsMixin = register.dcl(CustomElement, {
-						name: "hello",
-						_setNameAttr: function (name) {
-							this._name = name;
-						},
+			programmatic: function () {
+				var myCustomElement = new TestNativeProps({
+					title: "new title",
+					name: "new name"
+				});
+				container.appendChild(myCustomElement);
+				myCustomElement.attachedCallback();
+				assert.strictEqual(myCustomElement._title, "new title");
+				assert.strictEqual(myCustomElement._name, "new name");
 
-						title: "world",
-						_setTitleAttr: function (title) {
-							this._title = title;
-						}
-					});
+				// test setting native props and then calling deliver
+				myCustomElement.title = "new title 2";
+				myCustomElement.name = "new name 2";
+				myCustomElement.deliver();
+				assert.strictEqual(myCustomElement._title, "new title 2");
+				assert.strictEqual(myCustomElement._name, "new name 2");
 
-					TestNativeProps = register("test-native-props", [HTMLInputElement, TestNativePropsMixin], {});
-				},
+				// test setting native props without calling deliver
+				myCustomElement.title = "new title 3";
+				myCustomElement.name = "new name 3";
+				setTimeout(this.async().callback(function () {
+					assert.strictEqual(myCustomElement._title, "new title 3");
+					assert.strictEqual(myCustomElement._name, "new name 3");
+				}), 10);
+			},
 
-				programmatic: function () {
-					var myCustomElement = new TestNativeProps({});
-					myCustomElement.title = "new title";
-					myCustomElement.name = "new name";
-					container.appendChild(myCustomElement);
-					myCustomElement.attachedCallback();
+			declarative: function () {
+				container.innerHTML = "<input is='test-native-props' id=nativePropsTest name=name1 title=title1>";
+				var declarative = document.getElementById("nativePropsTest");
+				register.parse(container);
 
-					return delay(10).then(function () {
-						assert.strictEqual(myCustomElement._title, "new title");
-						assert.strictEqual(myCustomElement._name, "new name");
-
-						myCustomElement.title = "new title 2";
-						myCustomElement.name = "new name 2";
-					}).then(function () {
-						return delay(10);
-					}).then(function () {
-						assert.strictEqual(myCustomElement._title, "new title 2");
-						assert.strictEqual(myCustomElement._name, "new name 2");
-					});
-				},
-
-				declarative: function () {
-					// And also test for declarative widgets, to make sure the tabIndex property is
-					// removed from the root node, to prevent an extra tab stop
-					container.innerHTML = "<input is='test-native-props' id=nativePropsTest name=name1 title=title1>";
-					var declarative = document.getElementById("nativePropsTest");
-					register.parse(container);
-
-					var d = this.async(1000);
-					setTimeout(d.callback(function () {
-						assert.strictEqual(declarative._title, "title1");
-						assert.strictEqual(declarative._name, "name1");
-					}), 10);
-
-					return d;
-				}
+				assert.strictEqual(declarative._title, "title1");
+				assert.strictEqual(declarative._name, "name1");
 			}
 		},
 

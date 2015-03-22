@@ -71,28 +71,11 @@ define([
 
 		//////////// INITIALIZATION METHODS ///////////////////////////////////////
 
-		/**
-		 * Kick off the life-cycle of a widget.
-		 *
-		 * Calls a number of widget methods (`preRender()`, `render()`, and `postRender()`),
-		 * some of which of you'll want to override.
-		 *
-		 * Of course, adventurous developers could override createdCallback entirely, but this should
-		 * only be done as a last resort.
-		 * @protected
-		 */
-		createdCallback: dcl.advise({
-			around: function () {
-				return function () {
-					this.preRender();
-					this.render();
-					this.postRender();
-				};
-			},
-			after: function () {
-				this.deliver();
-			}
-		}),
+		createdCallback: function () {
+			this.preRender();
+			this.render();
+			this.postRender();
+		},
 
 		computeProperties: function (props) {
 			if ("dir" in props) {

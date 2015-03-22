@@ -77,35 +77,26 @@ define([
 			},
 
 			"#tabIndex": function () {
-				// When !has("setter-on-native-prop"), tabIndex changes reported asynchronously even if you call
-				// this.deliver().  See code in CustomElement.js.
-				var d = this.async(1000);
-
 				// default tabIndex
 				var myWidget = new FormWidgetTest();
-				setTimeout(d.rejectOnError(function () {
-					assert.strictEqual(myWidget.focusNode.getAttribute("tabindex"), "0", "default tabIndex");
-					assert.isFalse(HTMLElement.prototype.hasAttribute.call(myWidget, "tabindex"),
-						"no tabIndex on root 1");
+				assert.strictEqual(myWidget.focusNode.getAttribute("tabindex"), "0", "default tabIndex");
+				assert.isFalse(HTMLElement.prototype.hasAttribute.call(myWidget, "tabindex"),
+					"no tabIndex on root 1");
 
-					// specify initial tabIndex
-					myWidget = new FormWidgetTest({
-						tabIndex: "3"
-					});
-					setTimeout(d.rejectOnError(function () {
-						assert.strictEqual(myWidget.focusNode.getAttribute("tabindex"), "3", "specified tabIndex");
-						assert.isFalse(HTMLElement.prototype.hasAttribute.call(myWidget, "tabindex"),
-							"no tabIndex on root 2");
+				// specify initial tabIndex
+				myWidget = new FormWidgetTest({
+					tabIndex: "3"
+				});
+				assert.strictEqual(myWidget.focusNode.getAttribute("tabindex"), "3", "specified tabIndex");
+				assert.isFalse(HTMLElement.prototype.hasAttribute.call(myWidget, "tabindex"),
+					"no tabIndex on root 2");
 
-						// Change tabIndex.
-						myWidget.tabIndex = 4;
-						setTimeout(d.callback(function () {
-							assert.strictEqual(myWidget.focusNode.getAttribute("tabindex"), "4", "changed tabIndex");
-							assert.isFalse(HTMLElement.prototype.hasAttribute.call(myWidget, "tabindex"),
-								"no tabIndex on root 3");
-						}), 10);
-					}), 10);
-				}), 10);
+				// Change tabIndex.
+				myWidget.tabIndex = 4;
+				myWidget.deliver();
+				assert.strictEqual(myWidget.focusNode.getAttribute("tabindex"), "4", "changed tabIndex");
+				assert.isFalse(HTMLElement.prototype.hasAttribute.call(myWidget, "tabindex"),
+					"no tabIndex on root 3");
 			},
 
 			"#alt": function () {
