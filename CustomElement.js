@@ -205,7 +205,7 @@ define([
 		}),
 
 		/**
-		 * Set to true when `attachedCallback()` has completed, and false when `detachedCallback() called.
+		 * Set to true when `attachedCallback()` has completed, and false when `detachedCallback()` called.
 		 * @member {boolean}
 		 * @protected
 		 */
