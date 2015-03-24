@@ -4,9 +4,8 @@
  * @module delite/Bidi
  */
 define([
-	"dcl/dcl",
 	"./features"
-], function (dcl, has) {
+], function (has) {
 
 	// UCC - constants that will be used by bidi support.
 	var LRE = "\u202A",
