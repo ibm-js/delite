@@ -244,6 +244,13 @@ define([
 
 				assert.strictEqual(headingWidget.textContent, "new heading", "heading changed");
 				assert.strictEqual(buttonWidget.textContent.trim(), "new button label", "button changed");
+
+				container.removeChild(myComplexWidget);
+				myComplexWidget.detachedCallback();
+
+				assert.isFalse(myComplexWidget.attached, "myComplexWidget widget was detached");
+				assert.isFalse(headingWidget.attached, "heading widget was detached");
+				assert.isFalse(buttonWidget.attached, "button widget was detached");
 			},
 
 			buttons: function () {

@@ -209,6 +209,10 @@ define([
 		//////////// DESTROY FUNCTIONS ////////////////////////////////
 
 		detachedCallback: function () {
+			// Call detachedCallback() on any widgets in the template
+			if (this._templateHandle && !has("document-register-element")) {
+				this._templateHandle.detach();
+			}
 			if (this.bgIframe) {
 				this.bgIframe.destroy();
 				delete this.bgIframe;
