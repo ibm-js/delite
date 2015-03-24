@@ -16,7 +16,6 @@ define([
 		"isTabNavigable": function () {
 			assert.ok(a11y.isTabNavigable(document.getElementById("a-with-href")), "a-with-href");
 			assert.ok(!a11y.isTabNavigable(document.getElementById("a-without-href")), "a-without-href");
-			assert.ok(a11y.isTabNavigable(document.getElementById("area")), "area");
 			assert.ok(a11y.isTabNavigable(document.getElementById("button")), "button");
 			assert.ok(a11y.isTabNavigable(document.getElementById("input")), "input");
 			assert.ok(a11y.isTabNavigable(document.getElementById("object")), "object");
@@ -36,13 +35,6 @@ define([
 			assert.strictEqual(a11y.getFirstInTabbingOrder("a-without-href-container"), undefined);
 			assert.strictEqual(a11y.getFirstInTabbingOrder("a-with-href-container").id, "a-with-href");
 
-			// in WebKit area elements are not in the tab order
-			// and their display style property is "none";
-			// therefore it is expected that this test will fail
-			if (!has("webkit")) {
-				assert.strictEqual(a11y.getFirstInTabbingOrder("area-map").id, "area");
-			}
-
 			assert.strictEqual(a11y.getFirstInTabbingOrder("button-container").id, "button");
 			assert.strictEqual(a11y.getFirstInTabbingOrder("input-container").id, "input");
 			assert.strictEqual(a11y.getFirstInTabbingOrder("object-container").id, "object");
@@ -51,13 +43,6 @@ define([
 			assert.strictEqual(a11y.getLastInTabbingOrder("div-container"), undefined);
 			assert.strictEqual(a11y.getLastInTabbingOrder("a-without-href-container"), undefined);
 			assert.strictEqual(a11y.getLastInTabbingOrder("a-with-href-container").id, "a-with-href");
-
-			// in WebKit area elements are not in the tab order
-			// and their display style property is "none";
-			// therefore it is expected that this test will fail
-			if (!has("webkit")) {
-				assert.strictEqual(a11y.getLastInTabbingOrder("area-map").id, "area");
-			}
 
 			assert.strictEqual(a11y.getLastInTabbingOrder("button-container").id, "button");
 			assert.strictEqual(a11y.getLastInTabbingOrder("input-container").id, "input");
