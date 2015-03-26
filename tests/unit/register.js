@@ -1,10 +1,11 @@
 define([
 	"intern!object",
 	"intern/chai!assert",
+	"decor/sniff",
 	"delite/register",
 	"decor/Stateful",
 	"requirejs-domready/domReady!"
-], function (registerSuite, assert, register, Stateful) {
+], function (registerSuite, assert, has, register, Stateful) {
 
 	// The <div> node where we will put all our DOM nodes
 	var container;
@@ -36,6 +37,9 @@ define([
 
 		// Declare and instantiate a simple widget
 		simple: function () {
+			if (has("ios") >= 8 || has("safari") >= 8) {
+				return this.skip("fails on safari and ios due to https://github.com/uhop/dcl/issues/15");
+			}
 			TestWidget = register("test-simple-widget", [HTMLElement], {
 				foo: 3,
 				createdCallback: function () {
