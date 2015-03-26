@@ -353,7 +353,7 @@ define([
 	 * @param {Element} [root] DOM node to parse from.
 	 */
 	function parse(root) {
-		if (!has("document-register-element")) {
+		if (!has("document-register-element") && selectors.length) {
 			var node, idx = 0, nodes = (root || doc).querySelectorAll(selectors.join(", "));
 			while ((node = nodes[idx++])) {
 				upgrade(node, true);
