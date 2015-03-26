@@ -709,16 +709,16 @@ define([
 			});
 
 			// Test declarative with class=const
-			container.innerHTML += "<handlebars-const-class class='userDefinedClass'></handlebars-const-class>";
-			var cwdc = container.lastChild;
-			register.upgrade(cwdc);
+			container.innerHTML = "<handlebars-const-class class='userDefinedClass'></handlebars-const-class>";
+			register.parse(container);
+			var cwdc = container.firstChild;
 			assert.strictEqual(cwdc.className, "userDefinedClass constClass myBaseClass",
 				"declarative const");
 
 			// Test declarative with class={{foo}}
-			container.innerHTML += "<handlebars-var-class class='userDefinedClass'></handlebars-var-class>";
-			var cwdv = container.lastChild;
-			register.upgrade(cwdv);
+			container.innerHTML = "<handlebars-var-class class='userDefinedClass'></handlebars-var-class>";
+			register.parse(container);
+			var cwdv = container.firstChild;
 			assert.strictEqual(cwdv.className, "userDefinedClass myTemplateClass1 myBaseClass",
 				"declarative var, before update");
 

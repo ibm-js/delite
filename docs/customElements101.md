@@ -91,26 +91,23 @@ to the property's type.
 
 ### Parsing
 
-In order for declarative custom elements to be instantiated on platforms without native custom element support,
-you must call the parser:
+"Parsing" refers to scanning the document for custom element usages (ex: `<my-widget></my-widget>`), and upgrading
+those plain HTML elements to be proper custom elements (i.e. setting up the prototype chain, and calling
+`createdCallback()` and `attachedCallback()`).
 
-```js
-require(["delite/register", "requirejs-domready/domReady!"], function (register) {
-	register.parse();
-});
-```
+When the document has finished loading, delite will do an initial parse.
+Afterwards, if new custom elements are defined, delite will scan the document for any additional nodes that need to
+be upgraded.
 
-Note that on platforms *with* custom element support, the custom elements will be instantiated before
-the call to `register.parse()`, and without any guaranteed order.  Therefore, if your custom elements
-depend on a global variable, like in the example above, you should make sure it is available before
-the custom element is loaded.   Therefore, you may need code like this:
+So, custom elements will be instantiated without any guaranteed order, and without any guaranteed timing relative to
+other javascript code running.
+Therefore, if your custom elements depend on a global variable, like in the example above,
+you should make sure it is available before the custom element is loaded.  So you may need code like this:
 
 ```js
 require(["dstore/Memory"], function (Memory) {
 	myGlobalVar = new Memory();
-	require(["delite/register", "requirejs-domready/domReady!"], function (register) {
-		register.parse();
-	});
+	require(["deliteful/List"]);
 });
 ```
 ### Declarative Events

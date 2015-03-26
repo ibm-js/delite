@@ -15,6 +15,29 @@ define(["requirejs-dplugins/has"], function (has) {
 	// Does platform have native support for document.registerElement() or a polyfill to simulate it?
 	has.add("document-register-element", typeof document !== "undefined" && !!document.registerElement);
 
+	// Test for how to monitor DOM nodes being inserted and removed from the document.
+	// For DOMNodeInserted events, there are two variations:
+	//		"root" - just notified about the root of each tree added to the document
+	//		"all" - notified about all nodes added to the document
+	has.add("MutationObserver", window.MutationObserver ? "MutationObserver" : window.WebKitMutationObserver ?
+		"WebKitMutationObserver" : "");
+	has.add("DOMNodeInserted", function () {
+		var root = document.createElement("div"),
+			child = document.createElement("div"),
+			sawRoot, sawChild;
+		root.id = "root";
+		child.id = "child";
+		function listener(event) {
+			if (event.target.id === "root") { sawRoot = true; }
+			if (event.target.id === "child") { sawChild = true; }
+		}
+		document.body.addEventListener("DOMNodeInserted", listener);
+		document.body.appendChild(root);
+		document.body.removeChild(root);
+		document.body.removeEventListener("DOMNodeInserted", listener);
+		return sawChild ? "all" : sawRoot ? "root" : "";
+	});
+
 	// Can we use __proto__ to reset the prototype of DOMNodes?
 	// It's not available on IE<11, and even on IE11 it makes the node's attributes
 	// (ex: node.attributes, node.textContent) disappear, so disabling it on IE11 too.

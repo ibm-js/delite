@@ -31,12 +31,10 @@ Using the source form is as simple as requiring the needed AMD modules using Req
 require.config({
    baseUrl: "bower_components"
 });
-require(["delite/register", "requirejs-domready/domReady!"], function (register) {
+require(["delite/register"], function (register) {
    register("my-element", [HTMLElement, Widget], {    
         //...
    });
-   register.parse();
-   //...
 });
 ```
    
@@ -48,7 +46,7 @@ corresponding layer and then the AMD modules as follows:
     baseUrl: "bower_components"
  });
  require(["delite/layer"], function() {
-   require(["delite/register", "requirejs-domready/domReady!"], function (register) {
+   require(["delite/register"], function (register) {
       //...
    });
  });

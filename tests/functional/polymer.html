@@ -13,7 +13,7 @@
 			baseUrl: "../../.."
 		});
 		require(["delite/samples/ExampleWidget", "delite/register", "requirejs-domready/domReady!"], function (ExampleWidget, register) {
-			register.parse();
+			register.deliver();
 
 			// Set global variable to signal that the test page is ready
 			ready = true;

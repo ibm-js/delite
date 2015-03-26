@@ -161,7 +161,7 @@
 				activeStackChangeNotifications.value = +activeStackChangeNotifications.value + 1;
 			});
 
-			register.parse();
+			register.deliver();
 
 			["form", "fieldset1", "fieldset2", "combobox", "editor", "spinner"].forEach(function (id) {
 				var w = document.getElementById(id);

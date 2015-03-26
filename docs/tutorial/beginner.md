@@ -129,13 +129,9 @@ by convention we define one custom element per module, and name them similarly.
 If we view the generated sample `./samples/BlogPost.html`, we see the following JavaScript:
 
 ```js
-require(["delite/register", "blogging-package/BlogPost"], function (register) {
-    register.parse();
+require(["blogging-package/BlogPost"], function () {
 });
 ```
-
-Declarative widget instances (those created via markup in the page) need to be parsed in order to kick off the lifecycle of creating the widget.
-
 
 ###Template
 If we look at the template Yeoman just created `./BlogPost/BlogPost.html` we can see the following:
@@ -318,16 +314,14 @@ If you wanted to programmatically create a widget and also set the arbitrary HTM
 `./samples/BlogPost.html` sample from:
 
 ```js
-require(["delite/register", "blogging-package/BlogPost"], function (register) {
-    register.parse();
+require(["blogging-package/BlogPost"], function () {
 });
 ```
 
 to the following:
 
 ```js
-require(["delite/register", "blogging-package/BlogPost"], function (register, BlogPost) {
-    register.parse();
+require(["blogging-package/BlogPost"], function (BlogPost) {
     var anotherCustomElement = new BlogPost({value : 'The day after', publishDate : 'Nov 28th 2014', author : "My good self"});
     anotherCustomElement.placeAt(document.body, 'last');
     var containerNodeContent = "<b>boooooo</b> it's the day after, back to work soon :(" +
@@ -337,7 +331,6 @@ require(["delite/register", "blogging-package/BlogPost"], function (register, Bl
 ```
 A helper function is provided by `delite/Widget` to place it somewhere in the DOM named `placeAt()`
 (see the [documentation](https://github.com/ibm-js/delite/blob/master/docs/Widget.md#placement) for it's usage).
-If you don't call `placeAt()` then programmatically created widget instances should  call `attachedCallback()`.
 
 If you refresh the page you can see how we've added this HTML to the `containerNode` of our widget programmatically.
 
@@ -388,8 +381,7 @@ shouldn't need to create anymore theme folders (the default bootstrap theme will
 Update our existing `./samples/BlogPost.html` JavaScript content from:
 
 ```js
-require(["delite/register", "blogging-package/BlogPost"], function (register, BlogPost) {
-    register.parse();
+require(["blogging-package/BlogPost"], function (BlogPost) {
     var anotherCustomElement = new BlogPost({value : 'The day after', publishDate : 'Nov 28th 2014', author : "My good self"});
     anotherCustomElement.placeAt(document.body, 'last');
     var containerNodeContent = "<b>boooooo</b> it's the day after, back to work soon :(" +
@@ -401,8 +393,7 @@ require(["delite/register", "blogging-package/BlogPost"], function (register, Bl
 to:
 
 ```js
-require(["delite/register", "blogging-package/BlogPost", "delite/theme!delite/themes/{{theme}}/global.css"], function (register, BlogPost) {
-    register.parse();
+require(["blogging-package/BlogPost", "delite/theme!delite/themes/{{theme}}/global.css"], function (BlogPost) {
     var anotherCustomElement = new BlogPost({value : 'The day after', publishDate : 'Nov 28th 2014', author : "My good self"});
     anotherCustomElement.placeAt(document.body, 'last');
     var containerNodeContent = "<b>boooooo</b> it's the day after, back to work soon :(" +
@@ -534,15 +525,13 @@ refreshRendering: function (props) {
 Also let's update the `./samples/TitleWidget.html` JavaScript from:
 
 ```js
-require(["delite/register", "title-package/TitleWidget"], function (register, TitleWidget) {
-    register.parse();
+require(["title-package/TitleWidget"], function (TitleWidget) {
 });
 ```
 to add a programmatically created widget:
 
 ```js
-require(["delite/register", "title-package/TitleWidget"], function (register, TitleWidget) {
-    register.parse();
+require(["title-package/TitleWidget"], function (TitleWidget) {
     var anotherTitleWidget = new TitleWidget({value : 'another custom element title'});
     anotherTitleWidget.placeAt(document.body, 'last');
 });

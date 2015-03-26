@@ -18,14 +18,11 @@
 		readyDijit = false, readyDelite = false, dojoWidgetsLength = 0, dijitRegistry = null; // set readies to true when the test page is ready
 		require(["delite/Widget", "delite/samples/ExampleWidget", "delite/register", "dojo/domReady!"],
 				function (Widget, ExampleWidget, register) {
-			register.parse();
+			register.deliver();
 			var dExample = document.getElementById("declarativecustomelement");
 			console.log("declarative dExample instance widget has render = " + Boolean(dExample.render !=null && dExample.render != undefined));
 
 			var SimpleWidget = register("simple-widget", [HTMLElement, Widget], {
-				// summary:
-				//		A trivial widget
-
 				render: function () {
 					this.textContent = "i'm a simple custom element, created at " + new Date() + ", my widgetId is " + this.widgetId;
 				}

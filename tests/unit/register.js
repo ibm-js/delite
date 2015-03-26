@@ -60,7 +60,7 @@ define([
 
 			container.innerHTML += "<test-simple-widget id=tsw></test-simple-widget>";
 			var tsw = document.getElementById("tsw");
-			register.upgrade(tsw);
+			register.upgrade(tsw, true);
 
 			// lifecycle methods
 			assert.ok(tsw._createdCallbackCalled, "createdCallback called");
@@ -263,6 +263,124 @@ define([
 			register.parse(container);
 			assert.strictEqual(document.getElementById("pw").createdCalls, 1, "pw.createdCalls");
 			assert.strictEqual(document.getElementById("pw").attachedCalls, 1, "pw.attachedCalls");
+		},
+
+		// Test the parser, which scans the DOM for registered widgets and upgrades them.
+		"auto parse": function () {
+			// create dom nodes for not-yet-declared-widget, and attach them to document
+			container.innerHTML = "<test-auto-parse id=ap1></test-auto-parse>" +
+			"<div><test-auto-parse id=ap2></test-auto-parse></div>";
+
+			// declare widget
+			register("test-auto-parse", [HTMLElement, Mixin], {
+				createdCalls: 0,
+				createdCallback: function () {
+					this.createdCalls++;
+				},
+
+				attachedCalls: 0,
+				attachedCallback: function () {
+					this.attachedCalls++;
+				},
+
+				detachedCalls: 0,
+				detachedCallback: function () {
+					this.detachedCalls++;
+				}
+			});
+
+			// Check that existing dom nodes were parsed.
+			var ap1 = document.getElementById("ap1"),
+				ap2 = document.getElementById("ap2");
+			assert.strictEqual(ap1.createdCalls, 1, "ap1.createdCalls");
+			assert.strictEqual(ap2.createdCalls, 1, "ap2.createdCalls");
+			assert.strictEqual(ap1.attachedCalls, 1, "ap1.attachedCalls");
+			assert.strictEqual(ap2.attachedCalls, 1, "ap2.attachedCalls");
+
+			// Add more dom nodes, and check that they get auto-parsed and auto-attached.
+			// Check both when custom element is added directly, and when a node containing a custom element is added.
+			var ap3 = document.createElement("test-auto-parse");
+			ap3.id = "ap3";
+			container.appendChild(ap3);
+			var parent = document.createElement("div");
+			var ap4 = document.createElement("test-auto-parse");
+			ap4.id = "ap4";
+			parent.appendChild(ap4);
+			container.appendChild(parent);
+
+			setTimeout(this.async().rejectOnError(function () {
+				assert.strictEqual(ap3.createdCalls, 1, "ap3.createdCalls");
+				assert.strictEqual(ap3.attachedCalls, 1, "ap3.attachedCalls");
+				assert.strictEqual(ap4.createdCalls, 1, "ap4.createdCalls");
+				assert.strictEqual(ap4.attachedCalls, 1, "ap4.attachedCalls");
+
+				// Remove the dom nodes and check that detachedCallback() was called.
+				container.removeChild(ap3);
+				container.removeChild(parent);
+				setTimeout(this.async().rejectOnError(function () {
+					assert.strictEqual(ap3.detachedCalls, 1, "ap3.detachedCalls");
+					assert.strictEqual(ap4.detachedCalls, 1, "ap4.detachedCalls");
+
+					// Reattach the nodes and check that attachedCallback() was called again.
+					container.appendChild(ap3);
+					container.appendChild(parent);
+					setTimeout(this.async().callback(function () {
+						assert.strictEqual(ap3.attachedCalls, 2, "ap3.attachedCalls");
+						assert.strictEqual(ap4.attachedCalls, 2, "ap4.attachedCalls");
+					}.bind(this)), 10);
+				}.bind(this)), 10);
+			}.bind(this)), 10);
+		},
+
+		// Test that deliver() synchronously upgrades widgets.
+		deliver: function () {
+			// declare widget
+			register("test-deliver", [HTMLElement, Mixin], {
+				createdCalls: 0,
+				createdCallback: function () {
+					this.createdCalls++;
+				},
+
+				attachedCalls: 0,
+				attachedCallback: function () {
+					this.attachedCalls++;
+				},
+
+				detachedCalls: 0,
+				detachedCallback: function () {
+					this.detachedCalls++;
+				}
+			});
+
+			// Add dom nodes, and check that they get auto-parsed and auto-attached.
+			// Check both when custom element is added directly, and when a node containing a custom element is added.
+			var ap3 = document.createElement("test-deliver");
+			ap3.id = "ap3";
+			container.appendChild(ap3);
+			var parent = document.createElement("div");
+			var ap4 = document.createElement("test-deliver");
+			ap4.id = "ap4";
+			parent.appendChild(ap4);
+			container.appendChild(parent);
+			register.deliver();
+			assert.strictEqual(ap3.createdCalls, 1, "ap3.createdCalls");
+			assert.strictEqual(ap3.attachedCalls, 1, "ap3.attachedCalls");
+			assert.strictEqual(ap4.createdCalls, 1, "ap4.createdCalls");
+			assert.strictEqual(ap4.attachedCalls, 1, "ap4.attachedCalls");
+
+			// Remove the dom nodes and check that detachedCallback() was called.
+			container.removeChild(ap3);
+			container.removeChild(parent);
+			register.deliver();
+			assert.strictEqual(ap3.detachedCalls, 1, "ap3.detachedCalls");
+			assert.strictEqual(ap4.detachedCalls, 1, "ap4.detachedCalls");
+
+			// Reattach the nodes and check that attachedCallback() was called again.
+			container.appendChild(ap3);
+			container.appendChild(parent);
+			register.deliver();
+			assert.strictEqual(ap3.attachedCalls, 2, "ap3.attachedCalls");
+			assert.strictEqual(ap4.attachedCalls, 2, "ap4.attachedCalls");
 		},
 
 		// Test error conditions

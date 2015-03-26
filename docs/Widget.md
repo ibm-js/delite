@@ -33,23 +33,22 @@ Programmatic creation is:
    custom setters.
 6. `attachedCallback()` callback.
 
-`attachedCallback()` will be called automatically in the declarative case, and
-when the widget was created programatically, then it can be triggered by calling
-`Widget#placeAt(document.body)` (or specify any parent DOM node).
+`attachedCallback()` will be called automatically, although asynchronously.
 
-As mentioned above, there are currently five lifecycle methods which can be extended on the widget:
+There are currently five lifecycle methods which can be extended on the widget:
 
 1. `preRender()`
 2. `render()`
 3. `postRender()`
 4. `attachedCallback()`
-5. `destroy()`
+5. `detachedCallback()`
 
 Note that all of these methods except `render()` are automatically chained,
 so you don't need to worry about setting up code to call the superclasses' methods.
 
 Also, note that widget authors don't typically extend `render()` directly, but rather
 specify the `template` property.   See the [`handlebars!`](handlebars.md) documentation for more details.
+
 ## Placement
 
 Delite widgets are DOM Custom Elements.  That means they can be placed and manipulated just like other DOM elements.

@@ -9,8 +9,6 @@ define([
 	"./register"
 ], function (advise, dcl, Observable, Destroyable, Stateful, has, register) {
 
-	function nop() {}
-
 	/**
 	 * Dispatched after the CustomElement has been attached.
 	 * This is useful to be notified when an HTMLElement has been upgraded to a
@@ -226,10 +224,7 @@ define([
 		attached: false,
 
 		/**
-		 * Called when the element is added to the document, after `createdCallback()` completes.
-		 * Note though that for programatically created custom elements, the app must manually call
-		 * this method.
-		 *
+		 * Called automatically when the element is added to the document, after `createdCallback()` completes.
 		 * This method is automatically chained, so subclasses generally do not need to use `dcl.superCall()`,
 		 * `dcl.advise()`, etc.
 		 * @method
@@ -241,13 +236,6 @@ define([
 				// Do this in attachedCallback() rather than createdCallback() to avoid calling refreshRendering() etc.
 				// prematurely in the programmatic case (i.e. calling it before user parameters have been applied).
 				this.deliver();
-
-				// Protect against repeated calls.
-				this._realAttachedCallback = this.attachedCallback;
-				this.attachedCallback = nop;
-				if (this._realDetachedCallback) {
-					this.detachedCallback = this._realDetachedCallback;
-				}
 			},
 			after: function () {
 				this.attached = true;
@@ -260,20 +248,12 @@ define([
 		}),
 
 		/**
-		 * Called when the element is removed the document.  Note that the app must manually call this method.
-		 *
+		 * Called when the element is removed the document.
 		 * This method is automatically chained, so subclasses generally do not need to use `dcl.superCall()`,
 		 * `dcl.advise()`, etc.
 		 */
 		detachedCallback: function () {
-			if (this.attached) {
-				this.attached = false;
-
-				// Protect against repeated calls.
-				this._realDetachedCallback = this.detachedCallback;
-				this.detachedCallback = nop;
-				this.attachedCallback = this._realAttachedCallback;
-			}
+			this.attached = false;
 		},
 
 		/**

@@ -1,11 +1,18 @@
 /** @module delite/register */
 define([
+	"dcl/advise",
 	"dcl/dcl",
+	"decor/schedule",
+	"requirejs-domready/domReady",	// loading as a function, not as a plugin
 	"./features"
-], function (dcl, has) {
+], function (advise, dcl, schedule, domReady, has) {
 	"use strict";
 
 	var doc = typeof document !== "undefined" && document;	// "typeof document" check so module loads in NodeJS
+
+	// Set to true after the page finishes loading and the parser runs.  Any widgets declared after initialParseComplete
+	// instantiated in a separate code path.
+	var initialParseComplete;
 
 	// Workaround problem using dcl() on native DOMNodes on FF and IE,
 	// see https://github.com/uhop/dcl/issues/9.
@@ -63,7 +70,7 @@ define([
 			if (base) {
 				element.setAttribute("is", tag);
 			}
-			upgrade(element, false);
+			upgrade(element);
 			return element;
 		}
 	}
@@ -92,41 +99,54 @@ define([
 	}
 
 	/**
-	 * Converts plain DOMNode of custom type into widget, by adding the widget's custom methods, etc.
-	 * Does nothing if the DOMNode has already been converted or if it doesn't correspond to a custom widget.
+	 * Converts plain Element of custom type into "custom element", by adding the widget's custom methods, etc.
+	 * Does nothing if the Element has already been converted or if it doesn't correspond to a registered custom tag.
+	 * After the upgrade, calls `createdCallback()`.
+	 *
+	 * Usually the application will not need to call this method directly, because it's called automatically
+	 * on page load and as elements are added to the document.
+	 *
 	 * @function module:delite/register.upgrade
 	 * @param {Element} element - The DOM node.
-	 * @param {boolean} [attach] - If specified, controls whether or not to call attachedCallback() on element.
-	 * If unspecified, `upgrade()` checks whether or not element is attached to document.
+	 * @param {boolean} attach - If `element`'s tag has been registered, but `attachedCallback()` hasn't yet been
+	 * called [since the last call to `detachedCallback()`], then call `attachedCallback()`.  Call even if the element
+	 * has already been upgraded.
 	 */
 	function upgrade(element, attach) {
-		if (!has("document-register-element") &&
-				/*jshint camelcase: false*/ !element.__upgraded__/*jshint camelcase: true*/) {
+		if (!has("document-register-element")) {
 			var widget = registry[element.getAttribute("is") || element.nodeName.toLowerCase()];
 			if (widget) {
-				if (has("dom-proto-set")) {
-					// Redefine Element's prototype to point to widget's methods etc.
-					/*jshint camelcase: false*/
-					/*jshint proto: true*/
-					element.__proto__ = widget.prototype;
-					/*jshint camelcase: true*/
-					/*jshint proto: false*/
-				} else {
-					// Mixin all the widget's methods etc. into Element
-					Object.defineProperties(element, widget.props);
+				if (!element._upgraded) {
+					if (has("dom-proto-set")) {
+						// Redefine Element's prototype to point to widget's methods etc.
+						/*jshint camelcase: false*/
+						/*jshint proto: true*/
+						element.__proto__ = widget.prototype;
+						/*jshint camelcase: true*/
+						/*jshint proto: false*/
+					} else {
+						// Mixin all the widget's methods etc. into Element
+						Object.defineProperties(element, widget.props);
+					}
+					element._upgraded = true;
+					if (element.createdCallback) {
+						element.createdCallback();
+					}
 				}
-				/*jshint camelcase: false*/
-				element.__upgraded__ = true;
-				/*jshint camelcase: true*/
-				if (element.createdCallback) {
-					element.createdCallback();
-				}
-				if (element.attachedCallback &&
-						(attach || (attach === undefined && doc.documentElement.contains(element)))) {
-					// Note: if app inserts an element manually it needs to call attachedCallback() manually
+				if (attach && !element._attached) {
 					element.attachedCallback();
 				}
 			}
+		}
+	}
+
+	/**
+	 * Call detachedCallback() on specified Element if it's a custom element that was upgraded by us.
+	 * @param {Element} node
+	 */
+	function detach(node) {
+		if (node._upgraded) {
+			node.detachedCallback();
 		}
 	}
 
@@ -233,9 +253,6 @@ define([
 			}
 		}
 
-		// Register the selector to find this custom element
-		selectors.push(_extends ? _extends + "[is='" + tag + "']" : tag);
-
 		// Note: if we wanted to support registering new types after the parser was called, then here we should
 		// scan the document for the new type (selectors[length-1]) and upgrade any nodes found.
 
@@ -264,6 +281,20 @@ define([
 		// Add some flags for debugging and return the new constructor
 		tagConstructor.tag = tag;
 		tagConstructor._ctor = baseCtor;
+
+		// Register the selector to find this custom element
+		var selector = _extends ? _extends + "[is='" + tag + "']" : tag;
+		selectors.push(selector);
+
+		// If the document has already been parsed then do a supplementary sweep for this new custom element.
+		if (initialParseComplete && !has("document-register-element")) {
+			unobserve();	// pause listening for added/deleted nodes
+			var node, idx = 0, nodes = doc.querySelectorAll(selector);
+			while ((node = nodes[idx++])) {
+				upgrade(node, true);
+			}
+			observe();	// resume listening for added/deleted nodes
+		}
 
 		return tagConstructor;
 	}
@@ -332,6 +363,24 @@ define([
 		proto._tag = tag;
 		proto._extends = _extends;
 
+		// Monkey-patch attachedCallback() and detachedCallback() to avoid double executions.
+		// Generally this isn't an issue, but it could happen if the app manually called the functions
+		// and then they were called automatically too.
+		advise.around(proto, "attachedCallback", function (sup) {
+			return function () {
+				if (this._attached) { return; }
+				if (sup) { sup.apply(this, arguments); }
+				this._attached = true;
+			};
+		});
+		advise.around(proto, "detachedCallback", function (sup) {
+			return function () {
+				if (!this._attached) { return; }
+				if (sup) { sup.apply(this, arguments); }
+				this._attached = false;
+			};
+		});
+
 		// Run introspection to add ES5 getters/setters.
 		// Doesn't happen automatically because Stateful's constructor isn't called.
 		// Also, on IE this needs to happen before the getTagConstructor() call,
@@ -349,6 +398,11 @@ define([
 
 	/**
 	 * Parse the given DOM tree for any Elements that need to be upgraded to widgets.
+	 * Searches all descendants of the specified node, but does not upgrade the node itself.
+	 *
+	 * Usually the application will not need to call this method directly, because it's called automatically
+	 * on page load and as elements are added to the document.
+	 *
 	 * @function module:delite/register.parse
 	 * @param {Element} [root] DOM node to parse from.
 	 */
@@ -361,10 +415,139 @@ define([
 		}
 	}
 
+	// ------------------------
+	// Code to listen for nodes being added/deleted from the document, to automatically call parse()/detachedCallback()
+	var observer;
+
+	/**
+	 * Start listening for added/deleted nodes.
+	 */
+	function observe() {
+		if (!has("document-register-element")) {
+			if (!observer) {
+				if (has("MutationObserver")) {
+					observer = new MutationObserver(processMutations);
+				} else {
+					// Fallback for Android < 4.2 and IE < 11.  Partial shim of MutationObserver, except sometimes
+					// addedNodes lists all nodes not just the root of each added tree.
+					// Note that this code won't work if the same node(s) are
+					// attached and detached (or vice-versa) before the timer fires.  That's a little bit hard to do
+					// correctly, especially given the different behavior of DOMNodeInserted on IE vs. Android.
+					observer = {
+						takeRecords: function () {
+							var ret = this._mutations;
+							this._mutations = [];
+							if (this._timer) {
+								this._timer.remove();
+								this._timer = null;
+							}
+							return ret;
+						},
+						observe: function () {
+							this._mutations = [];
+							this._listener = function (event) {
+								if (event.target.nodeType === 1) {
+									var mutation = {};
+									mutation[event.type === "DOMNodeInserted" ? "addedNodes" : "removedNodes"] =
+										[event.target];
+									this._mutations.push(mutation);
+								}
+								if (!this._timer) {
+									this._timer = schedule(function () {
+										this._timer = null;
+										processMutations(this.takeRecords());
+									}.bind(this));
+								}
+							}.bind(this);
+							doc.body.addEventListener("DOMNodeInserted", this._listener);
+							doc.body.addEventListener("DOMNodeRemoved", this._listener);
+						},
+						disconnect: function () {
+							doc.body.removeEventListener("DOMNodeInserted", this._listener);
+							doc.body.removeEventListener("DOMNodeRemoved", this._listener);
+						}
+					};
+				}
+			}
+			observer.observe(doc.body, {childList: true, subtree: true});
+		}
+	}
+
+	/**
+	 * Stop (aka pause) listening for added/deleted nodes.
+	 */
+	function unobserve() {
+		if (observer) {
+			observer.disconnect();
+		}
+	}
+
+	/**
+	 * Process the added/deleted nodes.  Called for incremental updates after initial parse.
+	 * @param mutations
+	 */
+	function processMutations(mutations) {
+		if (!has("document-register-element") && selectors.length) {
+			unobserve();	// pause listening for added/deleted nodes
+			var parseDescendants = has("MutationObserver") || has("DOMNodeInserted") === "root";
+			mutations.forEach(function (mutation) {
+				var added, idx1 = 0;
+				while ((added = mutation.addedNodes && mutation.addedNodes[idx1++])) {
+					if (added.nodeType === 1) {
+						// upgrade the node itself (if it's a custom widget and it hasn't been upgraded yet),
+						// and then call attachedCallback() on it
+						upgrade(added, true);
+
+						// upgrade any descendants that are custom widgets (if they aren't already upgraded),
+						// and then call attachedCallback() on them
+						if (parseDescendants) {
+							parse(added);
+						}
+					}
+				}
+
+				var removedRoot, idx2 = 0;
+				while ((removedRoot = mutation.removedNodes && mutation.removedNodes[idx2++])) {
+					if (removedRoot.nodeType === 1) {
+						detach(removedRoot);
+						var removed, idx3 = 0, removedDescendants = removedRoot.querySelectorAll(selectors.join(", "));
+						while ((removed = removedDescendants[idx3++])) {
+							detach(removed);
+						}
+					}
+				}
+			});
+			observe();	// resume listening for added/deleted nodes
+		}
+	}
+
+	/**
+	 * Upgrade any custom tags in the document that have not yet been upgraded.
+	 * Nodes are automatically updated asynchronously, but applications can synchronously update them by calling
+	 * this method.  Should not be called before domReady event.
+	 */
+	function deliver() {
+		if (!has("document-register-element")) {
+			if (!initialParseComplete) {
+				parse();
+				initialParseComplete = true;
+				observe();
+			} else {
+				processMutations(observer.takeRecords());
+			}
+		}
+	}
+
+	// Setup initial parse of document and also listeners for future document modifications.
+	if (!has("document-register-element") && doc) {
+		domReady(deliver);
+	}
+
 	// Setup return value as register() method, with other methods hung off it.
 	register.upgrade = upgrade;
 	register.createElement = createElement;
 	register.parse = parse;
+	register.deliver = deliver;
 
 	// Add helpers from dcl for declaring classes.
 

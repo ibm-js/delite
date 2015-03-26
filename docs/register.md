@@ -143,11 +143,6 @@ open: register.after(function(){
 })
 ```
 
-## Parsing
-
-If you've declared widgets in markup, then you need to instantiate them by calling `register.parse()`.
-
-Eventually browsers will support custom elements natively, and then this step will not be necessary.
 
 ## Standards
 

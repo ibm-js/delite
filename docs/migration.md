@@ -10,7 +10,7 @@ title: delite/migration
 1. In markup, widgets look like `<d-star-rating foo=bar>` rather than
 	`<div data-dojo-type=delite/StarRating data-dojo-props="foo: bar">`.
 	For widgets that enhance an existing tag, syntax is `<button is="d-button">`.
-2. Use `register.parse()` rather than `dojo/parser.parse()`.  There's no `parseOnLoad:true` or auto-loading
+2. Widgets are parsed automatically without needing a `parseOnLoad:true` flag.  But there's no auto-loading
 	or `data-dojo-mixins`.
 3. Since each widget defines and loads its own CSS, you don't need to manually include dijit.css or claro.css;
    also, the theme is determined automatically so you don't need to add `class="claro"` to the `<body>` node.

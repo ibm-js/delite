@@ -69,12 +69,14 @@ Custom Elements extend [`decor/Stateful`](/decor/docs/0.5.0/Stateful.html).
 See the decor [design documentation](/decor/docs/0.5.0/architecture.html) for details about how that class avoids
 polling / dirty checking for property changes.
 
-Also, we intentionally don't set up page level listeners for custom element creation/deletion.
-The listeners could be a bottleneck for applications that create thousands of DOM nodes on the fly.
-Think of applications drawing charts in SVG, or quickly paging/scrolling through a table with
-lots of data.  As a consequence to this, you must call `.parse()` on page load.
+Although we set up page level listeners for custom elements being attached/detached from the document, the listeners are
+disabled as widgets are being instantiated.  This prevents a performance issue for widgets that internally
+create lots of elements, like charts.
+Therefore, custom elements that create other custom elements are responsible for creating those
+custom elements via javascript (`new MyWidget(...)`), and then calling `attachedCallback()` at the appropriate time.
+Note however that this is handled automatically for widgets in templates.
 
-Another decision decision was to not shim shadow DOM.  While shadow DOM a nice concept, it takes lots of code to shim,
+Another decision was to not shim shadow DOM.  While shadow DOM a nice concept, it takes lots of code to shim,
 and we felt the download cost outweighed the benefit.
 
 ## register() implementation details
