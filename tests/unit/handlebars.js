@@ -731,19 +731,19 @@ define([
 			var cwpc = new ClassConstWidget({
 				className: "userDefinedClass"
 			});
-			assert.strictEqual(cwpc.className, "constClass myBaseClass userDefinedClass",
+			assert.strictEqual(cwpc.className, "constClass userDefinedClass myBaseClass",
 				"programmatic const");
 
 			// Test programmatic with class={{foo}}
 			var cwpv = new ClassVarWidget({
 				className: "userDefinedClass"
 			});
-			assert.strictEqual(cwpv.className, "myTemplateClass1 myBaseClass userDefinedClass",
+			assert.strictEqual(cwpv.className, "userDefinedClass myTemplateClass1 myBaseClass",
 				"programmatic var, before update");
 
 			cwpv.templateClass = "myTemplateClass2";
 			cwpv.deliver();
-			assert.strictEqual(cwpv.className, "myBaseClass userDefinedClass myTemplateClass2",
+			assert.strictEqual(cwpv.className, "userDefinedClass myBaseClass myTemplateClass2",
 				"programmatic var, after update");
 		},
 

@@ -215,10 +215,6 @@ define([
 						attributes: true
 					});
 				}
-
-				if (this.deliver) {
-					this.deliver();
-				}
 			}
 		}),
 
@@ -241,6 +237,11 @@ define([
 		 */
 		attachedCallback: dcl.advise({
 			before: function () {
+				// Call computeProperties() and refreshRendering() for declaratively set properties.
+				// Do this in attachedCallback() rather than createdCallback() to avoid calling refreshRendering() etc.
+				// prematurely in the programmatic case (i.e. calling it before user parameters have been applied).
+				this.deliver();
+
 				this.attached = true;
 
 				// Protect against repeated calls.
