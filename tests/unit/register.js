@@ -224,14 +224,14 @@ define([
 
 			// Test also that we can create plain elements that are not registered as widgets
 			var div = register.createElement("div");
-			assert.strictEqual("div", div.nodeName.toLowerCase(), "nodeName of div");
+			assert.strictEqual(div.nodeName.toLowerCase(), "div", "nodeName of div");
 		},
 
 		// Test the new MyWidget() syntactic sugar
 		"new": function () {
 			var tw = new TestWidget({});
 			assert.ok(tw.foo, "TestWidget.foo");
-			assert.strictEqual("test-widget", tw.nodeName.toLowerCase(), "nodeName of TestWidget");
+			assert.strictEqual(tw.nodeName.toLowerCase(), "test-widget", "nodeName of TestWidget");
 		},
 
 		// Test the parser, which scans the DOM for registered widgets and upgrades them
@@ -255,14 +255,14 @@ define([
 				"</div>";
 
 			register.parse(container);
-			assert.strictEqual("my label", document.getElementById("ebw2").label, "ebw2.label");
-			assert.strictEqual(1, document.getElementById("pw").createdCalls, "pw.createdCalls");
-			assert.strictEqual(1, document.getElementById("pw").attachedCalls, "pw.attachedCalls");
+			assert.strictEqual(document.getElementById("ebw2").label, "my label", "ebw2.label");
+			assert.strictEqual(document.getElementById("pw").createdCalls, 1, "pw.createdCalls");
+			assert.strictEqual(document.getElementById("pw").attachedCalls, 1, "pw.attachedCalls");
 
 			// Call parse again to make sure that we don't repeat
 			register.parse(container);
-			assert.strictEqual(1, document.getElementById("pw").createdCalls, "pw.createdCalls");
-			assert.strictEqual(1, document.getElementById("pw").attachedCalls, "pw.attachedCalls");
+			assert.strictEqual(document.getElementById("pw").createdCalls, 1, "pw.createdCalls");
+			assert.strictEqual(document.getElementById("pw").attachedCalls, 1, "pw.attachedCalls");
 		},
 
 		// Test error conditions
