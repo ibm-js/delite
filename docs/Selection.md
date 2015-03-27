@@ -70,7 +70,7 @@ require(["delite/register", "delite/Selection", "delite/StoreMap"/*, ...*/],
       }
     },
     getIdentity: function (item) {
-      return this.store.getIdentity(item);
+      return this.source.getIdentity(item);
     },
     updateRenderers: function (items) {
       for (var i = 0; i < items.length; i++) {

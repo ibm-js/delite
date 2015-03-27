@@ -15,6 +15,7 @@ define([
 		{ browserName: "firefox" },
 		// { browserName: "safari" },
 		{ browserName: "chrome" }
+		// { browserName: "internet explorer", requireWindowFocus: "true" }
 	];
 
 	return intern;

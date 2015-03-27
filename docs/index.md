@@ -65,8 +65,8 @@ Specifically, it's based on the following concepts:
   selection state of its internal items.
 * [Store](Store.md) - mixin to query a store object from the
   [dstore](https://github.com/SitePen/dstore/blob/master/README.md) project and
-  create render items for this widget based on the store items.
+  create render items for this widget based on the source items.
 * [StoreMap](StoreMap.md) - extension of [Store](Store.md) that performs some automatic mapping between the properties
-  on the store items and the properties on the render items
+  on the source items and the properties on the render items
 * [Widget](Widget.md) - base class for visual widgets
 
