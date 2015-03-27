@@ -14,6 +14,12 @@ title: delite/migration
 	or `data-dojo-mixins`.
 3. Since each widget defines and loads its own CSS, you don't need to manually include dijit.css or claro.css;
    also, the theme is determined automatically so you don't need to add `class="claro"` to the `<body>` node.
+4. In dijit you could alter when the "change" event fired by setting the `intermediateChanges` flag to true or
+   false.  In delite, there are two separate events: "input" and "change".  Listen to the "input" event to get
+   notifications as the user is changing the value (for example, as the user is dragging the slider), and listen
+   to the "change" event to get a notification  when the user has finished changing the value (for example,
+   mouseup on a slider).  Also note that the "change" and "input" events only fire when the user changes the
+   value, not when the value is changed programatically.
 
 ## Notes for widget authors
 
