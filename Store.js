@@ -1,5 +1,14 @@
 /** @module delite/Store */
-define(["dcl/dcl", "decor/Invalidating"], function (dcl, Invalidating) {
+define([
+	"dcl/dcl",
+	"requirejs-dplugins/has",
+	"decor/Invalidating",
+	"requirejs-dplugins/Promise!",
+	"decor/ObservableArray",
+	"decor/Observable",
+	"./ArrayToStoreAdapter",
+	"./DstoreToStoreAdapter"
+], function (dcl, has, Invalidating, Promise, ObservableArray, Observable, ArrayToStoreAdapter, DstoreToStoreAdapter) {
 
 	/**
 	 * Dispatched once the query has been executed and the `renderItems` array
@@ -26,12 +35,13 @@ define(["dcl/dcl", "decor/Invalidating"], function (dcl, Invalidating) {
 	 * @mixin module:delite/Store
 	 */
 	return dcl(Invalidating, /** @lends module:delite/Store# */{
+
 		/**
-		 * The store that contains the items to display.
-		 * @member {dstore/Store}
+		 * The source that contains the items to display.
+		 * @member {(dstore/Store|decor/ObservableArray|Array)}
 		 * @default null
 		 */
-		store: null,
+		source: null,
 
 		/**
 		 * A query filter to apply to the store.
@@ -41,13 +51,14 @@ define(["dcl/dcl", "decor/Invalidating"], function (dcl, Invalidating) {
 		query: {},
 
 		/**
-		 * A function that processes the collection returned by the store query and returns a new collection
-		 * (to sort it, etc...). This processing is applied before potentially tracking the store
-		 * for modifications (if Trackable).
+		 * A function that processes the collection or the array returned by the source query and returns a new
+		 * collection or a new array (to sort it, etc...). This processing is applied before potentially tracking
+		 * the source for modifications (if Trackable or Observable).
+		 * Be careful you can not use the same function for both arrays and collections.
 		 * Changing this function on the instance will not automatically refresh the class.
 		 * @default identity function
 		 */
-		processQueryResult: function (store) { return store; },
+		processQueryResult: function (source) { return source; },
 
 		/**
 		 * The render items corresponding to the store items for this widget. This is filled from the store and
@@ -77,6 +88,41 @@ define(["dcl/dcl", "decor/Invalidating"], function (dcl, Invalidating) {
 			return item;
 		},
 
+		preRender: function () {
+			// Get the data from the textContent and clear it
+			if (this.source === null && this.textContent !== "") {
+				this._saveData(this.textContent);
+				this.textContent = "";
+			}
+		},
+
+		attachedCallback: function () {
+			// Setting the source with the data got from the textContent (not done in preRender because the source
+			// is not send in the props list when it is modified there)
+			if (this._source) {
+				this.source = new ObservableArray();
+				for (var j = 0; j < this._source.length; j++) {
+					this.source[j] = new Observable(this._source[j]);
+				}
+			}
+		},
+
+		/**
+		 * Get the data from the textContent of the widget and set them in source property in an array
+		 * @param text
+		 */
+		_saveData: function (text) {
+			var data = JSON.parse("[" + text + "]");
+			for (var j = 0; j < data.length; j++) {
+				if (!data[j].id) {
+					data[j].id = Math.random();
+				}
+			}
+			if (data.length !== 0) {
+				this._source = data;
+			}
+		},
+
 		/**
 		 * This method is called once the query has been executed to initialize the renderItems array
 		 * with the list of initial render items.
@@ -101,7 +147,7 @@ define(["dcl/dcl", "decor/Invalidating"], function (dcl, Invalidating) {
 		 * @protected
 		 */
 		computeProperties: function (props) {
-			if ("store" in props || "query" in props) {
+			if ("source" in props || "query" in props) {
 				this.queryStoreAndInitItems(this.processQueryResult);
 			}
 		},
@@ -115,37 +161,58 @@ define(["dcl/dcl", "decor/Invalidating"], function (dcl, Invalidating) {
 		 * if needed.
 		 * @param processQueryResult - A function that processes the collection returned by the store query
 		 * and returns a new collection (to sort it, etc...)., applied before tracking.
-		 * @returns {Promise} If store to be processed is not null a promise that will be resolved when the loading 
+		 * @returns {Promise} If store to be processed is not null a promise that will be resolved when the loading
 		 * process will be finished.
 		 * @protected
 		 */
 		queryStoreAndInitItems: function (processQueryResult) {
 			this._untrack();
-			if (this.store != null) {
-				if (!this.store.filter && this.store instanceof HTMLElement && !this.store.attached) {
-					// this might a be a store custom element, wait for it
-					this.store.addEventListener("customelement-attached", this._attachedlistener = function () {
-						this.queryStoreAndInitItems(this.processQueryResult);
-					}.bind(this));
+			if (this.source != null) {
+				if (!Array.isArray(this.source)) {
+					this._storeAdapter = new DstoreToStoreAdapter({source: this.source, query: this.query,
+						processQueryResult: processQueryResult});
 				} else {
-					if (this._attachedlistener) {
-						this.store.removeEventListener("customelement-attached", this._attachedlistener);
-					}
-					var collection = processQueryResult.call(this, this.store.filter(this.query));
-					if (collection.track) {
-						// user asked us to observe the store
-						collection = this._tracked = collection.track();
-						collection.on("add", this._itemAdded.bind(this));
-						collection.on("update", this._itemUpdated.bind(this));
-						collection.on("delete", this._itemRemoved.bind(this));
-						collection.on("refresh", this._refreshHandler.bind(this));
-					}
-					return this.processCollection(collection);
+					this._storeAdapter = new ArrayToStoreAdapter({source: this.source, query: this.query,
+						processQueryResult: processQueryResult});
 				}
+				var collection = this._storeAdapter;
+				if (collection.track) {
+					this._addListener = collection.on("add", this._itemAdded.bind(this));
+					this._deleteListener = collection.on("delete", this._itemRemoved.bind(this));
+					this._updateListener = collection.on("update", this._itemUpdated.bind(this));
+					this._newQueryListener = collection.on("_new-query-asked", function (evt) {
+						this.emit("new-query-asked", evt);
+					}.bind(this));
+				}
+				return this.processCollection(collection);
 			} else {
 				this.initItems([]);
 			}
 		},
+
+		/**
+		 * Synchronously deliver change records to all listeners registered via `observe()`.
+		 */
+		deliver: dcl.superCall(function (sup) {
+			return function () {
+				sup.call();
+				if (this._storeAdapter && typeof(this._storeAdapter.deliver) === "function") {
+					this._storeAdapter.deliver();
+				}
+			};
+		}),
+
+		/**
+		 * Discard change records for all listeners registered via `observe()`.
+		 */
+		discardChanges: dcl.superCall(function (sup) {
+			return function () {
+				sup.call();
+				if (this._storeAdapter && typeof(this._storeAdapter.discardChanges) === "function") {
+					this._storeAdapter.discardChanges();
+				}
+			};
+		}),
 
 		/**
 		 * Called to process the items returned after querying the store.
@@ -173,9 +240,20 @@ define(["dcl/dcl", "decor/Invalidating"], function (dcl, Invalidating) {
 		},
 
 		_untrack: function () {
-			if (this._tracked) {
-				this._tracked.tracking.remove();
-				this._tracked = null;
+			if (this._storeAdapter) {
+				this._storeAdapter.untrack();
+			}
+			if (this._addListener) {
+				this._addListener.remove(this._addListener);
+			}
+			if (this._deleteListener) {
+				this._deleteListener.remove(this._deleteListener);
+			}
+			if (this._updateListener) {
+				this._updateListener.remove(this._updateListener);
+			}
+			if (this._newQueryListener) {
+				this._newQueryListener.remove(this._newQueryListener);
 			}
 		},
 
@@ -301,6 +379,16 @@ define(["dcl/dcl", "decor/Invalidating"], function (dcl, Invalidating) {
 				this.notifyCurrentValue("renderItems");
 			}
 			// if no index the item is added outside of the range we monitor so we don't care
+		},
+
+		/**
+		 * Returns the identity of an item.
+		 * @param {Object} item The item
+		 * @returns {Object}
+		 * @protected
+		 */
+		getIdentity: function (item) {
+			return this._storeAdapter.getIdentity(item);
 		}
 	});
 });
