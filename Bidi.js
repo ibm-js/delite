@@ -30,21 +30,19 @@ define([
 		textDir: "",
 
 		/**
-		 * Get the direction setting for the page itself, or if `has("inherited-dir")` is defined, then
-		 * for the dir setting inherited from any ancestor node.
+		 * Return the direction setting for the page itself, or if `has("inherited-dir")` is defined and the widget is
+		 * attached to the page, then return the dir setting inherited from any ancestor node.
 		 * @returns {string} "ltr" or "rtl"
 		 * @protected
 		 */
 		getInheritedDir: function () {
-			if (this.attached && has("inherited-dir")) {
-				return window.getComputedStyle(this, null).direction;
-			}
-			return this.ownerDocument.body.dir || this.ownerDocument.documentElement.dir || "ltr";
+			return this._inheritedDir || this.ownerDocument.body.dir || this.ownerDocument.documentElement.dir || "ltr";
 		},
 
 		attachedCallback: function () {
 			if (has("inherited-dir")) {
 				// Now that the widget is attached to the DOM, need to retrigger computation of effectiveDir.
+				this._inheritedDir = window.getComputedStyle(this, null).direction;
 				this.notifyCurrentValue("dir");
 				this.deliver();
 			}

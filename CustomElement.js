@@ -242,8 +242,6 @@ define([
 				// prematurely in the programmatic case (i.e. calling it before user parameters have been applied).
 				this.deliver();
 
-				this.attached = true;
-
 				// Protect against repeated calls.
 				this._realAttachedCallback = this.attachedCallback;
 				this.attachedCallback = nop;
@@ -252,6 +250,8 @@ define([
 				}
 			},
 			after: function () {
+				this.attached = true;
+
 				this.emit("customelement-attached", {
 					bubbles: false,
 					cancelable: false
