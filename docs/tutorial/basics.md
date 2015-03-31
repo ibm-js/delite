@@ -151,17 +151,10 @@ value: "The Title",
 And reload the page. Notice again the `value` property of our widget is NOT contained in the `props` argument. This is because the property value hasn't changed.
 The [decor/Invalidating](https://github.com/ibm-js/decor/blob/master/docs/Invalidating.md) documentation explains this behaviour.
 
-
+---
 
 ## Round up
 As you've seen, the basics of `delite` are very easy when building a custom element, keeping in mind we've only touched on some of the capabilities of this project.
 We've also touched on some lower level concerns of `delite`.
 
 We'll expand on this in future and discuss more advanced topics in a later tutorial.
-
-## Footnotes
-
-1.  <i><a name="link1"></a>`delite` was written by the same developers who wrote the [Dojo Toolkit Dijit framework](http://dojotoolkit.org/reference-guide/1.10/dijit).</i>
-
-2.  <i><a name="link2"></a>For those who used the Dojo Toolkit Dijit framework previously, an important conceptual difference in `delite` is that the widget is the DOM node.
-   Dijit widgets instead had a property which referenced the DOM node.</i>
