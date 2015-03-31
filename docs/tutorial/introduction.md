@@ -59,7 +59,7 @@ Yeoman created the following (as shown in the console output):
 
 You can view the sample generated HTML `./samples/BlogPost.html` in a browser to see what's been created.
 
-TODO: part 1 (add link to branch part1) DONE
+**TODO: part 1 (add link to branch part1) DONE**
 
 ## Creating a custom element
 Viewing the `./samples/BlogPost.html` example HTML we can see we've (partly) created the custom element declaratively in markup via:
@@ -237,7 +237,8 @@ And updating the template CSS `./BlogPost/css/BlogPost.css` to make it slightly 
 ```
 
 If you refresh the page you'll see it's becoming something more you'd envisage as a widget we may want to write.
-TODO: part 2 (add link to branch part2) DONE
+
+**TODO: part 2 (add link to branch part2) DONE**
 
 ####delite/Container and containerNode
 Now is the time to discuss the functionality provided by [delite/Container](https://github.com/ibm-js/delite/blob/master/docs/Container.md).
@@ -311,7 +312,8 @@ If you change the body content of `./samples/BlogPost.html` to the following:
 
 (Note we've added some arbitrary HTML as children of our widget).
 If you refresh your page now you should see something like the following:
-TODO: part 3 (add link to branch part3) DONE
+
+**TODO: part 3 (add link to branch part3) DONE**
 
 > <img src='./images/custom_templated_containernode.png'/>
 
@@ -362,7 +364,8 @@ somewhere in the DOM named `placeAt`
 
 
 If you refresh the page you can see how we've added this HTML to the `containerNode` of our widget programmatically.
-TODO: part4 (add link to branch part4) DONE
+
+**TODO: part4 (add link to branch part4) DONE**
 
 ###Theming
 Whilst we're on a roll we'll quickly discuss the `delite` theming capabilities and make our widget appear more aesthetically pleasing.
@@ -470,7 +473,7 @@ You should see something like the following if you refresh your browser:
 
 > <img src='./images/custom_templated_theming.png'/>
 
-TODO: part 5 (add link to branch part5) DONE
+**TODO: part 5 (add link to branch part5) DONE**
 
 If you look at your debugger network tools, notice how the `./bower_components/delite/themes/bootstrap/common.css` and
 `./bower_components/delite/themes/bootstrap/global.css` CSS files are also loaded. The `"delite/theme!` plugin provides

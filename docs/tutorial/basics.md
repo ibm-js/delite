@@ -7,7 +7,8 @@ title:  Delite - going back to basics
 In this tutorial you'll learn some of the more fundamental concepts of `delite`.
 
 ##Going back to basics
-TODO : got to here (this should be part6 but it hasn't been created yet)
+**TODO : got to here (this should be part6 but it hasn't been created yet)**
+
 As shown in the [introduction tutorial](introduction.md) example, Templating support is provided 'out of the box' with `delite` and straightforward to implement.
 We'll now look at an example which doesn't use templating; this would not be a normal use case but it's worth showing to explore some of
 the fundamentals of a `delite` custom element.
