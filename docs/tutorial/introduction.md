@@ -1,20 +1,7 @@
 ---
 layout: tutorial
-title: Delite Tutorial Part 1
+title:  Introduction to Delite
 ---
-
-# delite - creating custom components
-
-## delite background
-`delite` is a new JavaScript library to provide a UI framework for both desktop and mobile platforms <sup><a href="#link1">[1]</a></sup>.
-
-This repository is intended to be used as the core building blocks to leverage current and future standards in HTML, CSS & JavaScript for the
-purpose of writing reusable Web Components.
-
-It can be used on its own but more likely used with other projects either from the [ibm-js repositories](https://github.com/ibm-js)
-or other repositories.
-
-More information can be found on the [delite website](http://ibm-js.github.io/delite/) explaining the standards this library aims to conform to.
 
 ## Tutorial details
 In this tutorial you'll learn how to create your own custom elements, learn how to register them, learn how to use templates
@@ -133,10 +120,15 @@ by convention we define one custom element per module, and name them similarly.
 If we view the generated sample `./samples/BlogPost.html`, we see the following JavaScript:
 
 ```js
-require(["blogging-package/BlogPost"], function () {
+
+require(["delite/register", "blogging-package/BlogPost"], function (register) {
+    register.parse();
 });
 
 ```
+
+Declarative widget instances (those created via markup in the page) need to be parsed in order to kick off the lifecycle of creating the widget.
+
 
 ###Template
 If we look at the template Yeoman just created `./BlogPost/BlogPost.html` we can see the following:
@@ -340,7 +332,9 @@ If you wanted to programmatically create a widget and also set the arbitrary HTM
 `./samples/BlogPost.html` sample from:
 
 ```js
-require(["blogging-package/BlogPost"], function () {
+
+require(["delite/register", "blogging-package/BlogPost"], function (register) {
+    register.parse();
 });
 
 ```
@@ -348,15 +342,22 @@ require(["blogging-package/BlogPost"], function () {
 to the following:
 
 ```js
-require(["blogging-package/BlogPost"], function (BlogPost) {
+
+require(["delite/register", "blogging-package/BlogPost"], function (register, BlogPost) {
+    register.parse();
     var anotherCustomElement = new BlogPost({value : 'The day after', publishDate : 'Nov 28th 2014', author : "My good self"});
+    // note you must call startup() for programmatically created widgets
     anotherCustomElement.placeAt(document.body, 'last');
     var containerNodeContent = "<b>boooooo</b> it's the day after, back to work soon :(" +
             "<pre># time to start thinking about code again</pre>";
     anotherCustomElement.containerNode.innerHTML = containerNodeContent;
-]});
+    anotherCustomElement.startup();
+});
+
 ```
-A helper function is provided by `delite/Widget` to place it somewhere in the DOM named `placeAt()`
+
+Note that programmatically created widget instances should always call `startup()`. A helper function is provided by `delite/Widget` to place it
+somewhere in the DOM named `placeAt`
 (see the [documentation](https://github.com/ibm-js/delite/blob/master/docs/Widget.md#placement) for it's usage).
 
 
@@ -411,12 +412,16 @@ shouldn't need to create anymore theme folders (the default bootstrap theme will
 Update our existing `./samples/BlogPost.html` JavaScript content from:
 
 ```js
-require(["blogging-package/BlogPost"], function (BlogPost) {
+
+require(["delite/register", "blogging-package/BlogPost"], function (register, BlogPost) {
+    register.parse();
     var anotherCustomElement = new BlogPost({value : 'The day after', publishDate : 'Nov 28th 2014', author : "My good self"});
+    // note you must call startup() for programmatically created widgets
     anotherCustomElement.placeAt(document.body, 'last');
     var containerNodeContent = "<b>boooooo</b> it's the day after, back to work soon :(" +
             "<pre># time to start thinking about code again</pre>";
     anotherCustomElement.containerNode.innerHTML = containerNodeContent;
+    anotherCustomElement.startup();
 });
 
 ```
@@ -424,12 +429,16 @@ require(["blogging-package/BlogPost"], function (BlogPost) {
 to:
 
 ```js
-require(["blogging-package/BlogPost", "delite/theme!delite/themes/{{theme}}/global.css"], function (BlogPost) {
+
+require(["delite/register", "blogging-package/BlogPost", "delite/theme!delite/themes/{%raw%}{{theme}}{%endraw%}/global.css"], function (register, BlogPost) {
+    register.parse();
     var anotherCustomElement = new BlogPost({value : 'The day after', publishDate : 'Nov 28th 2014', author : "My good self"});
+    // note you must call startup() for programmatically created widgets
     anotherCustomElement.placeAt(document.body, 'last');
     var containerNodeContent = "<b>boooooo</b> it's the day after, back to work soon :(" +
             "<pre># time to start thinking about code again</pre>";
     anotherCustomElement.containerNode.innerHTML = containerNodeContent;
+    anotherCustomElement.startup();
 });
 
 ```
@@ -565,7 +574,9 @@ refreshRendering: function (props) {
 Also let's update the `./samples/TitleWidget.html` JavaScript from:
 
 ```js
-require(["title-package/TitleWidget"], function (TitleWidget) {
+
+require(["delite/register", "title-package/TitleWidget"], function (register, TitleWidget) {
+    register.parse();
 });
 
 ```
@@ -573,9 +584,13 @@ require(["title-package/TitleWidget"], function (TitleWidget) {
 to add a programmatically created widget:
 
 ```js
-require(["title-package/TitleWidget"], function (TitleWidget) {
+
+require(["delite/register", "title-package/TitleWidget"], function (register, TitleWidget) {
+    register.parse();
     var anotherTitleWidget = new TitleWidget({value : 'another custom element title'});
+    // note you must call startup() for programmatically created widgets
     anotherTitleWidget.placeAt(document.body, 'last');
+    anotherTitleWidget.startup();
 });
 
 ```
