@@ -230,21 +230,18 @@ define([
 		 * @method
 		 * @fires module:delite/CustomElement#customelement-attached
 		 */
-		attachedCallback: dcl.advise({
-			before: function () {
-				// Call computeProperties() and refreshRendering() for declaratively set properties.
-				// Do this in attachedCallback() rather than createdCallback() to avoid calling refreshRendering() etc.
-				// prematurely in the programmatic case (i.e. calling it before user parameters have been applied).
-				this.deliver();
-			},
-			after: function () {
-				this.attached = true;
+		attachedCallback: dcl.after(function () {
+			// Call computeProperties() and refreshRendering() for declaratively set properties.
+			// Do this in attachedCallback() rather than createdCallback() to avoid calling refreshRendering() etc.
+			// prematurely in the programmatic case (i.e. calling it before user parameters have been applied).
+			this.deliver();
 
-				this.emit("customelement-attached", {
-					bubbles: false,
-					cancelable: false
-				});
-			}
+			this.attached = true;
+
+			this.emit("customelement-attached", {
+				bubbles: false,
+				cancelable: false
+			});
 		}),
 
 		/**
