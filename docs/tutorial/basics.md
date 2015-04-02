@@ -7,8 +7,6 @@ title:  Delite - going back to basics
 In this tutorial you'll learn some of the more fundamental concepts of `delite`.
 
 ##Going back to basics
-**TODO : got to here (this should be part6 but it hasn't been created yet)**
-
 As shown in the [introduction tutorial](introduction.md) example, Templating support is provided 'out of the box' with `delite` and straightforward to implement.
 We'll now look at an example which doesn't use templating; this would not be a normal use case but it's worth showing to explore some of
 the fundamentals of a `delite` custom element.
@@ -48,7 +46,7 @@ We've created a new package named `title-package` for new widgets that we'll cre
 This is the most basic setup for a widget/custom component. You can view the sample generated HTML `./samples/TitleWidget.html`
 in a browser to see what's been created.
 
-
+**TODO: part 1 (add link to runnable branch in delite-tutorial basics-part1) DONE**
 
 ###A look at the widget lifecycle methods for our simple widget
 If we look at our custom element module  ``./TitleWidget.js`` we can see two methods have been created for us, `render` and `refreshRendering`.
@@ -120,6 +118,8 @@ require(["title-package/TitleWidget"], function (TitleWidget) {
 
 ```
 
+**TODO: part 2 (add link to runnable branch in delite-tutorial basics-part2) DONE**
+
 If not already set, set a breakpoint (via your JavaScript debugger) to the `refreshRendering` method of our custom element module `./TitleWidget.js` and
 reload the page.
 
@@ -145,6 +145,8 @@ Update the value `property` of `./TitleWidget.js` to:
 value: "The Title",
 
 ```
+
+**TODO: part 3 (add link to runnable branch in delite-tutorial basics-part3) DONE**
 
 And reload the page. Notice again the `value` property of our widget is NOT contained in the `props` argument. This is because the property value hasn't changed.
 The [decor/Invalidating](https://github.com/ibm-js/decor/blob/master/docs/Invalidating.md) documentation explains this behaviour.

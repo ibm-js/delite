@@ -1,5 +1,6 @@
 ---
-layout: tutorialMain
+layout: tutorial
+title:  Delite tutorials
 ---
 
 The delite tutorial guides you, step by step, through some of the important concepts in delite as well as introducing you to some more fundamental, core API's.

@@ -59,7 +59,7 @@ Yeoman created the following (as shown in the console output):
 
 You can view the sample generated HTML `./samples/BlogPost.html` in a browser to see what's been created.
 
-**TODO: part 1 (add link to branch part1) DONE**
+**TODO: part 1 (add link to runnable branch in delite-tutorial introduction-part1) DONE**
 
 ## Creating a custom element
 Viewing the `./samples/BlogPost.html` example HTML we can see we've (partly) created the custom element declaratively in markup via:
@@ -71,7 +71,7 @@ Viewing the `./samples/BlogPost.html` example HTML we can see we've (partly) cre
 ```
 
 If you open your browser developer tools and in the console enter `myvar = document.getElementById('element')` and then explore
-the properties on that variable `myvar`, you'll see it's just a regular HTML element <sup><a href="#link1">[1]</a></sup>;
+the properties on that variable `myvar`, you'll see it's just a regular HTML element <sup><a href="#footnote1">[1]</a></sup>;
 if you're more inquisitive you might be able to see there are extra properties/methods on this element which is what the `delite` framework is providing.
 
 ###Registering
@@ -102,7 +102,7 @@ define([
 
 This is an important concept which sometimes isn't clear at a first glance. You can add any non-standard tag to an HTML page and the browser HTML parser
 will not complain; this is because these elements will be defined as a native
-[`HTMLUnknownElement`](http://www.whatwg.org/specs/web-apps/current-work/multipage/dom.html#htmlunknownelement).
+`HTMLUnknownElement`<sup><a href="#footnote2">[2]</a></sup>.
 To create a custom element it must be **upgraded** first; this is what `delite/register` does. `delite/register` supports browsers who natively
 support `document.registerElement` and those who don't.
 
@@ -113,7 +113,7 @@ Elements which inherit from `HTMLElement`
 using [valid custom element names](http://www.w3.org/TR/2013/WD-custom-elements-20130514/#dfn-custom-element-name) are custom elements.
 The most basic requirement for the tag name is it **MUST** contain a dash **(-)**.
 
-In case there's any confusion, note that the module name (i.e. `BlogPost`) is independent of the custom element's name (i.e. `blog-post`), although
+In case there's any confusion, note that the module name (i.e. `BlogPost`) is independent of the custom element's tag name (i.e. `blog-post`), although
 by convention we define one custom element per module, and name them similarly.
 
 ###Declarative creation of custom elements
@@ -121,7 +121,7 @@ If we view the generated sample `./samples/BlogPost.html`, we see the following 
 
 ```js
 
-require(["delite/register", "blogging-package/BlogPost"], function (register) {
+require(["blogging-package/BlogPost"], function (BlogPost) {
 
 });
 
@@ -135,7 +135,7 @@ If we look at the template Yeoman just created `./BlogPost/BlogPost.html` we can
 
 <template>
     title:
-    <h1>{{value}}</h1>
+    <h1>{%raw%}{{value}}{%endraw%}</h1>
 </template>
 
 ```
@@ -156,7 +156,7 @@ your components.
 
 
 ####Using handlebars templates
-Imagining we need to implement this blogging widget, the widget needs to show the blog title (which we've already done with `{%raw%}{{value}}{%endraw%}`, the date it was
+Imagining how we need to implement our blogging widget, the widget needs to show the blog title (which we've already done with `{%raw%}{{value}}{%endraw%}`, the date it was
 published, the author and the article content of the blog.
 
 Let's make some changes:
@@ -168,15 +168,15 @@ in `./BlogPost/BlogPost.html`:
 
 <template>
     <article>
-        <h3>{{value}}</h3>
-        <p class='blogdetails'>Published at <span>{{publishDate}}</span> by <span>{{author}}</span></p>
+        <h3>{%raw%}{{value}}{%endraw%}</h3>
+        <p class='blogdetails'>Published at <span>{%raw%}{{publishDate}}{%endraw%}</span> by <span>{%raw%}{{author}}{%endraw%}</span></p>
     </article>
 </template>
 
 ```
 
-Note that I've not added the the article content property yet. __Properties are for plain text, not HTML__; we'll discuss this in the next
-step in [delite/Container and containerNode](#delitecontainer-and-containernode).
+Note that I've not added the article content property yet. __Properties are for plain text, not HTML__; we'll discuss this in the next
+step in <a href="#delitecontainer-and-containernode">delite/Container and containerNode</a>.
 
 
 #####Widget
@@ -236,9 +236,9 @@ And updating the template CSS `./BlogPost/css/BlogPost.css` to make it slightly 
 
 If you refresh the page you'll see it's becoming something more you'd envisage as a widget we may want to write.
 
-**TODO: part 2 (add link to branch part2) DONE**
+**TODO: part 2 (add link to runnable branch in delite-tutorial introduction-part2) DONE**
 
-####delite/Container and containerNode
+#### <a name="delitecontainer-and-containernode"></a>delite/Container and containerNode
 Now is the time to discuss the functionality provided by [delite/Container](https://github.com/ibm-js/delite/blob/master/docs/Container.md).
 Looking at the widget we created, we need to also add arbitrary HTML to render whatever the content of our blog should be e.g. paragraph tags,
 list tags etc etc. As explained, widget properties to be displayed are really only for plain text. If you try and add any HTML to those
@@ -279,9 +279,9 @@ Update `./BlogPost/BlogPost.html` to the following:
 
 <template>
     <article>
-        <h3>{{value}}</h3>
+        <h3>{%raw%}{{value}}{%endraw%}</h3>
         <div class='blog' attach-point="containerNode"></div>
-        <p class='blogdetails'>Published at <span>{{publishDate}}</span> by <span>{{author}}</span></p>
+        <p class='blogdetails'>Published at <span>{%raw%}{{publishDate}}{%endraw%}</span> by <span>{%raw%}{{author}}{%endraw%}</span></p>
     </article>
 </template>
 
@@ -311,9 +311,9 @@ If you change the body content of `./samples/BlogPost.html` to the following:
 (Note we've added some arbitrary HTML as children of our widget).
 If you refresh your page now you should see something like the following:
 
-**TODO: part 3 (add link to branch part3) DONE**
-
 > <img src='./images/custom_templated_containernode.png'/>
+
+**TODO: part 3 (add link to runnable branch in delite-tutorial introduction-part3) DONE**
 
 You can see that the `attach-point="containerNode"` reference we created will render our declarative content wherever we've placed it in the template.
 If you open up your developer tools and in the console enter:
@@ -333,7 +333,7 @@ If you wanted to programmatically create a widget and also set the arbitrary HTM
 
 ```js
 
-require(["delite/register", "blogging-package/BlogPost"], function (register) {
+require(["blogging-package/BlogPost"], function (BlogPost) {
 
 });
 
@@ -349,7 +349,6 @@ require(["blogging-package/BlogPost"], function (BlogPost) {
     var containerNodeContent = "<b>boooooo</b> it's the day after, back to work soon :(" +
             "<pre># time to start thinking about code again</pre>";
     anotherCustomElement.containerNode.innerHTML = containerNodeContent;
-    anotherCustomElement.startup();
 });
 
 ```
@@ -360,7 +359,7 @@ A helper function is provided by `delite/Widget` to place it somewhere in the DO
 
 If you refresh the page you can see how we've added this HTML to the `containerNode` of our widget programmatically.
 
-**TODO: part4 (add link to branch part4) DONE**
+**TODO: part4 (add link to runnable branch in delite-tutorial introduction-part4) DONE**
 
 ###Theming
 Whilst we're on a roll we'll quickly discuss the `delite` theming capabilities and make our widget appear more aesthetically pleasing.
@@ -378,7 +377,7 @@ define([
 	"delite/Widget",
 	"delite/Container",
 	"delite/handlebars!./BlogPost/BlogPost.html",
-	"delite/theme!./BlogPost/css/{{theme}}/BlogPost.css"
+	"delite/theme!./BlogPost/css/{%raw%}{{theme}}{%endraw%}/BlogPost.css"
 ], function (register, Widget, Container, template) {
 	return register("blog-post", [HTMLElement, Widget, Container], {
 		baseClass: "blog-post",
@@ -391,7 +390,7 @@ define([
 
 ```
 
-Note the `{{theme}}` placeholder. As explained in the theme documentation, this is used to load whatever theme is detected automatically
+Note the `{%raw%}{{theme}}{%endraw%}` placeholder. As explained in the theme documentation, this is used to load whatever theme is detected automatically
 based on the platform/browser, from a request parameter on the URL or set specifically via a `require`. You can also configure themes using the
 loader `require.config`.
 The default theme is the bootstrap theme; have a look at some of the existing less/CSS variables in https://github.com/ibm-js/delite/tree/master/themes/bootstrap.
@@ -403,21 +402,21 @@ To load a widget theme you must create a folder with the name of the theme you w
 see 404's in your browser developer tools.
 
 For example our `./BlogPost/css/BlogPost.css` should be updated so that the bootstrap theme of our widget is located at
-`./BlogPost/css/bootstrap/BlogPost.css`. Assuming you're not testing this on an IOS device, setting the theme via a request parameter etc you
-shouldn't need to create anymore theme folders (the default bootstrap theme will be loaded).
+`./BlogPost/css/bootstrap/BlogPost.css` (therefore create a bootstrap directory at that location and copy the `BlogPost.css` to it).
+Assuming you're not testing this on an IOS device, setting the theme via a request parameter etc you shouldn't need to create anymore
+theme folders (the default bootstrap theme will be loaded).
 
 ####Sample usage
 Update our existing `./samples/BlogPost.html` JavaScript content from:
 
 ```js
 
-require(["delite/register", "blogging-package/BlogPost"], function (BlogPost) {
+require(["blogging-package/BlogPost"], function (BlogPost) {
     var anotherCustomElement = new BlogPost({value : 'The day after', publishDate : 'Nov 28th 2014', author : "My good self"});
     anotherCustomElement.placeAt(document.body, 'last');
     var containerNodeContent = "<b>boooooo</b> it's the day after, back to work soon :(" +
             "<pre># time to start thinking about code again</pre>";
     anotherCustomElement.containerNode.innerHTML = containerNodeContent;
-    anotherCustomElement.startup();
 });
 
 ```
@@ -463,7 +462,7 @@ You should see something like the following if you refresh your browser:
 
 > <img src='./images/custom_templated_theming.png'/>
 
-**TODO: part 5 (add link to branch part5) DONE**
+**TODO: part 5 (add link to runnable branch in delite-tutorial introduction-part5) DONE**
 
 If you look at your debugger network tools, notice how the `./bower_components/delite/themes/bootstrap/common.css` and
 `./bower_components/delite/themes/bootstrap/global.css` CSS files are also loaded. The `"delite/theme!` plugin provides
@@ -480,5 +479,7 @@ We'll expand on this in future and discuss more advanced topics in a later tutor
 
 ## Footnotes
 
-1.  <i><a name="link1"></a>For those who used the Dojo Toolkit Dijit framework previously, an important conceptual difference in `delite` is that the widget is the DOM node.
+1. <i><a name="footnote1"></a>For those who used the Dojo Toolkit Dijit framework previously, an important conceptual difference in `delite` is that the widget is the DOM node.
    Dijit widgets instead had a property which referenced the DOM node.</i>
+
+2. <i><a name="footnote2"></a>See the definition of [http://www.whatwg.org/specs/web-apps/current-work/multipage/dom.html#htmlunknownelement](http://www.whatwg.org/specs/web-apps/current-work/multipage/dom.html#htmlunknownelement)
