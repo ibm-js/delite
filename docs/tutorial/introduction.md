@@ -122,12 +122,10 @@ If we view the generated sample `./samples/BlogPost.html`, we see the following 
 ```js
 
 require(["delite/register", "blogging-package/BlogPost"], function (register) {
-    register.parse();
+
 });
 
 ```
-
-Declarative widget instances (those created via markup in the page) need to be parsed in order to kick off the lifecycle of creating the widget.
 
 
 ###Template
@@ -336,7 +334,7 @@ If you wanted to programmatically create a widget and also set the arbitrary HTM
 ```js
 
 require(["delite/register", "blogging-package/BlogPost"], function (register) {
-    register.parse();
+
 });
 
 ```
@@ -345,10 +343,8 @@ to the following:
 
 ```js
 
-require(["delite/register", "blogging-package/BlogPost"], function (register, BlogPost) {
-    register.parse();
+require(["blogging-package/BlogPost"], function (BlogPost) {
     var anotherCustomElement = new BlogPost({value : 'The day after', publishDate : 'Nov 28th 2014', author : "My good self"});
-    // note you must call startup() for programmatically created widgets
     anotherCustomElement.placeAt(document.body, 'last');
     var containerNodeContent = "<b>boooooo</b> it's the day after, back to work soon :(" +
             "<pre># time to start thinking about code again</pre>";
@@ -358,8 +354,7 @@ require(["delite/register", "blogging-package/BlogPost"], function (register, Bl
 
 ```
 
-Note that programmatically created widget instances should always call `startup()`. A helper function is provided by `delite/Widget` to place it
-somewhere in the DOM named `placeAt`
+A helper function is provided by `delite/Widget` to place it somewhere in the DOM named `placeAt`
 (see the [documentation](https://github.com/ibm-js/delite/blob/master/docs/Widget.md#placement) for it's usage).
 
 
@@ -416,10 +411,8 @@ Update our existing `./samples/BlogPost.html` JavaScript content from:
 
 ```js
 
-require(["delite/register", "blogging-package/BlogPost"], function (register, BlogPost) {
-    register.parse();
+require(["delite/register", "blogging-package/BlogPost"], function (BlogPost) {
     var anotherCustomElement = new BlogPost({value : 'The day after', publishDate : 'Nov 28th 2014', author : "My good self"});
-    // note you must call startup() for programmatically created widgets
     anotherCustomElement.placeAt(document.body, 'last');
     var containerNodeContent = "<b>boooooo</b> it's the day after, back to work soon :(" +
             "<pre># time to start thinking about code again</pre>";
@@ -433,15 +426,12 @@ to:
 
 ```js
 
-require(["delite/register", "blogging-package/BlogPost", "delite/theme!delite/themes/{%raw%}{{theme}}{%endraw%}/global.css"], function (register, BlogPost) {
-    register.parse();
+require(["blogging-package/BlogPost", "delite/theme!delite/themes/{%raw%}{{theme}}{%endraw%}/global.css"], function (BlogPost) {
     var anotherCustomElement = new BlogPost({value : 'The day after', publishDate : 'Nov 28th 2014', author : "My good self"});
-    // note you must call startup() for programmatically created widgets
     anotherCustomElement.placeAt(document.body, 'last');
     var containerNodeContent = "<b>boooooo</b> it's the day after, back to work soon :(" +
             "<pre># time to start thinking about code again</pre>";
     anotherCustomElement.containerNode.innerHTML = containerNodeContent;
-    anotherCustomElement.startup();
 });
 
 ```

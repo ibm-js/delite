@@ -103,8 +103,8 @@ Also let's update the `./samples/TitleWidget.html` JavaScript from:
 
 ```js
 
-require(["delite/register", "title-package/TitleWidget"], function (register, TitleWidget) {
-    register.parse();
+require(["title-package/TitleWidget"], function (TitleWidget) {
+
 });
 
 ```
@@ -113,12 +113,9 @@ to add a programmatically created widget:
 
 ```js
 
-require(["delite/register", "title-package/TitleWidget"], function (register, TitleWidget) {
-    register.parse();
+require(["title-package/TitleWidget"], function (TitleWidget) {
     var anotherTitleWidget = new TitleWidget({value : 'another custom element title'});
-    // note you must call startup() for programmatically created widgets
     anotherTitleWidget.placeAt(document.body, 'last');
-    anotherTitleWidget.startup();
 });
 
 ```
