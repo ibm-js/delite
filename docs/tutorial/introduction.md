@@ -59,7 +59,8 @@ Yeoman created the following (as shown in the console output):
 
 You can view the sample generated HTML `./samples/BlogPost.html` in a browser to see what's been created.
 
-**TODO: part 1 (add link to runnable branch in delite-tutorial introduction-part1) DONE**
+Click here to see the live demo:
+[Delite Introduction Tutorial - Part 1](http://ibm-js.github.io/delite-tutorial/runnable/introduction-part1/samples/BlogPost.html)
 
 ## Creating a custom element
 Viewing the `./samples/BlogPost.html` example HTML we can see we've (partly) created the custom element declaratively in markup via:
@@ -236,7 +237,8 @@ And updating the template CSS `./BlogPost/css/BlogPost.css` to make it slightly 
 
 If you refresh the page you'll see it's becoming something more you'd envisage as a widget we may want to write.
 
-**TODO: part 2 (add link to runnable branch in delite-tutorial introduction-part2) DONE**
+Click here to see the live demo:
+[Delite Introduction Tutorial - Part 2](http://ibm-js.github.io/delite-tutorial/runnable/introduction-part2/samples/BlogPost.html)
 
 #### <a name="delitecontainer-and-containernode"></a>delite/Container and containerNode
 Now is the time to discuss the functionality provided by [delite/Container](https://github.com/ibm-js/delite/blob/master/docs/Container.md).
@@ -313,7 +315,8 @@ If you refresh your page now you should see something like the following:
 
 > <img src='./images/custom_templated_containernode.png'/>
 
-**TODO: part 3 (add link to runnable branch in delite-tutorial introduction-part3) DONE**
+Click here to see the live demo:
+[Delite Introduction Tutorial - Part 3](http://ibm-js.github.io/delite-tutorial/runnable/introduction-part3/samples/BlogPost.html)
 
 You can see that the `attach-point="containerNode"` reference we created will render our declarative content wherever we've placed it in the template.
 If you open up your developer tools and in the console enter:
@@ -359,7 +362,8 @@ A helper function is provided by `delite/Widget` to place it somewhere in the DO
 
 If you refresh the page you can see how we've added this HTML to the `containerNode` of our widget programmatically.
 
-**TODO: part4 (add link to runnable branch in delite-tutorial introduction-part4) DONE**
+Click here to see the live demo:
+[Delite Introduction Tutorial - Part 4](http://ibm-js.github.io/delite-tutorial/runnable/introduction-part4/samples/BlogPost.html)
 
 ###Theming
 Whilst we're on a roll we'll quickly discuss the `delite` theming capabilities and make our widget appear more aesthetically pleasing.
@@ -462,7 +466,8 @@ You should see something like the following if you refresh your browser:
 
 > <img src='./images/custom_templated_theming.png'/>
 
-**TODO: part 5 (add link to runnable branch in delite-tutorial introduction-part5) DONE**
+Click here to see the live demo:
+[Delite Introduction Tutorial - Part 5](http://ibm-js.github.io/delite-tutorial/runnable/introduction-part5/samples/BlogPost.html)
 
 If you look at your debugger network tools, notice how the `./bower_components/delite/themes/bootstrap/common.css` and
 `./bower_components/delite/themes/bootstrap/global.css` CSS files are also loaded. The `"delite/theme!` plugin provides

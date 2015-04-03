@@ -46,7 +46,8 @@ We've created a new package named `title-package` for new widgets that we'll cre
 This is the most basic setup for a widget/custom component. You can view the sample generated HTML `./samples/TitleWidget.html`
 in a browser to see what's been created.
 
-**TODO: part 1 (add link to runnable branch in delite-tutorial basics-part1) DONE**
+Click here to see the live demo:
+[Delite Basics Tutorial - Part 1](http://ibm-js.github.io/delite-tutorial/runnable/basics-part1/samples/TitleWidget.html)
 
 ###A look at the widget lifecycle methods for our simple widget
 If we look at our custom element module  ``./TitleWidget.js`` we can see two methods have been created for us, `render` and `refreshRendering`.
@@ -118,7 +119,9 @@ require(["title-package/TitleWidget"], function (TitleWidget) {
 
 ```
 
-**TODO: part 2 (add link to runnable branch in delite-tutorial basics-part2) DONE**
+Click here to see the live demo:
+[Delite Basics Tutorial - Part 2](http://ibm-js.github.io/delite-tutorial/runnable/basics-part2/samples/TitleWidget.html)
+
 
 If not already set, set a breakpoint (via your JavaScript debugger) to the `refreshRendering` method of our custom element module `./TitleWidget.js` and
 reload the page.
@@ -146,10 +149,11 @@ value: "The Title",
 
 ```
 
-**TODO: part 3 (add link to runnable branch in delite-tutorial basics-part3) DONE**
-
 And reload the page. Notice again the `value` property of our widget is NOT contained in the `props` argument. This is because the property value hasn't changed.
 The [decor/Invalidating](https://github.com/ibm-js/decor/blob/master/docs/Invalidating.md) documentation explains this behaviour.
+
+Click here to see the live demo:
+[Delite Basics Tutorial - Part 3](http://ibm-js.github.io/delite-tutorial/runnable/basics-part3/samples/TitleWidget.html)
 
 ---
 
