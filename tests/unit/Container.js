@@ -143,7 +143,7 @@ define([
 		},
 
 		notifications: function () {
-			var log = [], eventLog = [];
+			var log = [], addEventLog = [], removeEventLog = [];
 			var MyContainer = register("my-container", [HTMLElement, Container], {
 				onAddChild: register.superCall(function (sup) {
 					return function (child) {
@@ -153,12 +153,15 @@ define([
 				})
 			});
 
-			// add a started container
+			// Create and attach a container.
 			var container = new MyContainer();
-			container.placeAt(document.body);
 			container.on("delite-add-child", function (evt) {
-				eventLog.push(evt.child.id);
+				addEventLog.push(evt.child.id);
 			});
+			container.on("delite-remove-child", function (evt) {
+				removeEventLog.push(evt.child.id);
+			});
+			container.placeAt(document.body);
 
 			// Adding children should call attachedCallback() on the children, and also call onAddChild(),
 			// and also emit a delite-add-child event.
@@ -173,12 +176,17 @@ define([
 			container.insertBefore(ib1, a1);
 			container.insertBefore(ib3, a3);
 			assert.deepEqual(log, ["a1", "a2", "a3", "ib1", "ib3"], "log");
-			assert.deepEqual(eventLog, ["a1", "a2", "a3", "ib1", "ib3"], "eventLog");
+			assert.deepEqual(addEventLog, ["a1", "a2", "a3", "ib1", "ib3"], "addEventLog");
 			assert.deepEqual(["ib1", "a1", "a2", "ib3", "a3"],
 				Array.prototype.map.call(container.children, function (child) { return child.id; }), "children");
 
 			assert(Array.prototype.every.call(container.children, function (child) { return child.attached; }),
 				"all children attached");
+
+			// Removing children should emit a delite-remove-child event.
+			container.removeChild(1);
+			container.removeChild(ib3);
+			assert.deepEqual(removeEventLog, ["a1", "ib3"], "removeEventLog");
 
 			// TODO: Add test where placeAt() is called after the appendChild() calls.
 			// Should just check that attachedCallback() called for every descendant.

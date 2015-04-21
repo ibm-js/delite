@@ -14,6 +14,15 @@ define([
 	 */
 
 	/**
+	 * Dispatched after an child Element has been removed from this widget.
+	 * @example
+	 * element.addEventListener("delite-remove-child", function (evt) {
+	 *      console.log("container: " + evt.target.id + " removed child " + evt.child.id);
+	 * });
+	 * @event module:delite/Container#delite-remove-child
+	 */
+
+	/**
 	 * Base class for widgets that contain content.
 	 * Useful both for widgets that contain free-form markup (ex: ContentPane),
 	 * and widgets that contain an ordered list of children (ex: Toolbar).
@@ -139,6 +148,12 @@ define([
 			if (node && node.parentNode) {
 				HTMLElement.prototype.removeChild.call(node.parentNode, node); // detach but don't destroy
 			}
+
+			this.emit("delite-remove-child", {
+				bubbles: false,
+				cancelable: false,
+				child: node
+			});
 		},
 
 		/**
