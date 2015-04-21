@@ -142,8 +142,8 @@ define([
 			}
 		},
 
-		onAddChild: function () {
-			var log = [];
+		notifications: function () {
+			var log = [], eventLog = [];
 			var MyContainer = register("my-container", [HTMLElement, Container], {
 				onAddChild: register.superCall(function (sup) {
 					return function (child) {
@@ -156,8 +156,12 @@ define([
 			// add a started container
 			var container = new MyContainer();
 			container.placeAt(document.body);
+			container.on("delite-add-child", function (evt) {
+				eventLog.push(evt.child.id);
+			});
 
-			// adding children should call attachedCallback() on the children, and also call onAddChild()
+			// Adding children should call attachedCallback() on the children, and also call onAddChild(),
+			// and also emit a delite-add-child event.
 			var a1 = new PlainWidget({id: "a1"}),
 				a2 = new PlainWidget({id: "a2"}),
 				a3 = new PlainWidget({id: "a3"}),
@@ -169,6 +173,7 @@ define([
 			container.insertBefore(ib1, a1);
 			container.insertBefore(ib3, a3);
 			assert.deepEqual(log, ["a1", "a2", "a3", "ib1", "ib3"], "log");
+			assert.deepEqual(eventLog, ["a1", "a2", "a3", "ib1", "ib3"], "eventLog");
 			assert.deepEqual(["ib1", "a1", "a2", "ib3", "a3"],
 				Array.prototype.map.call(container.children, function (child) { return child.id; }), "children");
 

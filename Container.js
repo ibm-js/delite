@@ -5,6 +5,15 @@ define([
 ], function (dcl, Widget) {
 
 	/**
+	 * Dispatched after an Element has been added as child of this widget.
+	 * @example
+	 * element.addEventListener("delite-add-child", function (evt) {
+	 *      console.log("container: " + evt.target.id + " has new child " + evt.child.id);
+	 * });
+	 * @event module:delite/Container#delite-add-child
+	 */
+
+	/**
 	 * Base class for widgets that contain content.
 	 * Useful both for widgets that contain free-form markup (ex: ContentPane),
 	 * and widgets that contain an ordered list of children (ex: Toolbar).
@@ -96,6 +105,12 @@ define([
 			if (this.attached && node.attachedCallback) {
 				node.attachedCallback();
 			}
+
+			this.emit("delite-add-child", {
+				bubbles: false,
+				cancelable: false,
+				child: node
+			});
 		},
 
 		/**
