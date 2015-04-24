@@ -364,9 +364,9 @@ define([
 			container.appendChild(parent);
 			register.deliver();
 			assert.strictEqual(ap3.createdCalls, 1, "ap3.createdCalls");
-			assert.strictEqual(ap3.attachedCalls, 1, "ap3.attachedCalls");
+			assert.strictEqual(ap3.attachedCalls, 1, "ap3.attachedCalls (first time)");
 			assert.strictEqual(ap4.createdCalls, 1, "ap4.createdCalls");
-			assert.strictEqual(ap4.attachedCalls, 1, "ap4.attachedCalls");
+			assert.strictEqual(ap4.attachedCalls, 1, "ap4.attachedCalls (first time)");
 
 			// Remove the dom nodes and check that detachedCallback() was called.
 			container.removeChild(ap3);
@@ -379,8 +379,23 @@ define([
 			container.appendChild(ap3);
 			container.appendChild(parent);
 			register.deliver();
-			assert.strictEqual(ap3.attachedCalls, 2, "ap3.attachedCalls");
-			assert.strictEqual(ap4.attachedCalls, 2, "ap4.attachedCalls");
+			assert.strictEqual(ap3.attachedCalls, 2, "ap3.attachedCalls (second time)");
+			assert.strictEqual(ap4.attachedCalls, 2, "ap4.attachedCalls (second time)");
+
+			// Check that attachedCallback() isn't called for nodes that aren't attached to the DOM,
+			// due to a race condition where the node is attached and then detached (or the node is attached and
+			// its parent is detached) before changes have a chance to be delivered.
+			container.removeChild(ap3);
+			container.removeChild(parent);
+			container.appendChild(ap3);
+			container.appendChild(parent);
+			container.removeChild(ap3);
+			container.removeChild(parent);
+			ap3.attachedCalls = ap3.detachedCalls = 0;	// ignore sync calls to attachedCallback()/detachedCallback()
+			ap4.attachedCalls = ap4.detachedCalls = 0;	// on chrome
+			register.deliver();
+			assert.strictEqual(ap3.attachedCalls, 0, "ap3.attachedCalls (third time)");
+			assert.strictEqual(ap4.attachedCalls, 0, "ap4.attachedCalls (third time)");
 		},
 
 		// Test error conditions

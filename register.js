@@ -430,9 +430,6 @@ define([
 				} else {
 					// Fallback for Android < 4.2 and IE < 11.  Partial shim of MutationObserver, except sometimes
 					// addedNodes lists all nodes not just the root of each added tree.
-					// Note that this code won't work if the same node(s) are
-					// attached and detached (or vice-versa) before the timer fires.  That's a little bit hard to do
-					// correctly, especially given the different behavior of DOMNodeInserted on IE vs. Android.
 					observer = {
 						takeRecords: function () {
 							var ret = this._mutations;
@@ -493,7 +490,10 @@ define([
 			mutations.forEach(function (mutation) {
 				var added, idx1 = 0;
 				while ((added = mutation.addedNodes && mutation.addedNodes[idx1++])) {
-					if (added.nodeType === 1) {
+					// contains() checks avoid calling attachedCallback() on nodes not attached to document because:
+					//		1. node was added then removed before processMutations() was called
+					//		2. node was added and then its ancestor was removed before processMutations() was called
+					if (added.nodeType === 1 && added.ownerDocument.body.contains(added)) {
 						// upgrade the node itself (if it's a custom widget and it hasn't been upgraded yet),
 						// and then call attachedCallback() on it
 						upgrade(added, true);
