@@ -6,10 +6,12 @@ define([
 	"requirejs-dplugins/has!bidi?delite/theme!./ExampleWidget/themes/{{theme}}/ExampleWidget_rtl.css"
 ], function (register, CssState, template) {
 
+	/**
+	 * Example widget for testing and as template for new widgets.
+	 * @class module:delite/samples/ExampleWidget
+	 * @augments module:delite/CssState
+	 */
 	return register("d-example", [HTMLElement, CssState], {
-		// summary:
-		//		Example widget for testing and as template for new widgets.
-
 		template: template,
 
 		baseClass: "d-example-widget"
