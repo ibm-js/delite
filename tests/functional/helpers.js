@@ -1,16 +1,13 @@
 // Helper methods for automated testing
-
 define([
 	"requirejs-dplugins/Promise!",
 	"../../a11y"	// isTabNavigable, _isElementShown
 ], function (Promise, a11y) {
 
-
 	// Globals used by onFocus()
 	var curFocusNode, focusListener, focusCallback, focusCallbackDelay;
 
 	return {
-
 		isVisible: function isVisible(/*DomNode*/ node) {
 			// summary:
 			//		Return true if node/widget is visible
@@ -19,7 +16,7 @@ define([
 
 			return cs.display !== "none" &&
 				cs.visibility !== "hidden" &&
-				(p = node.getBoundingClientRect(), p.bottom >= 0 && p.right >= 0 && p.height && p.width);
+				(p = node.getBoundingClientRect(), p.bottom >= 0 && p.right >= 0 && p.height > 0 && p.width > 0);
 		},
 
 		isHidden: function isHidden(/*DomNode*/ node) {
@@ -77,7 +74,6 @@ define([
 			});
 		},
 
-
 		onFocus: function onFocus(func, delay) {
 			// summary:
 			//		Wait for the next change of focus, and then delay ms (so widget has time to react to focus event),
@@ -130,7 +126,5 @@ define([
 				console.log("All widgets loaded.");
 			});
 		}
-
 	};
-
 });

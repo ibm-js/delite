@@ -18,5 +18,6 @@ define([
 	"./KeyNav",
 	"./FormWidget",
 	"./FormValueWidget",
-	"./Bidi"
+	"./Bidi",
+	"./HasDropDown"
 ]);

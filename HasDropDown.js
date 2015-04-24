@@ -331,10 +331,9 @@ define([
 				this.closeDropDown(true);
 			}
 
-			var dropDown = this.dropDown;
-			if (dropDown && dropDown.parentNode) {
-				dropDown.parentNode.removeChild(dropDown);
-				dropDown.detachedCallback();
+			if (this._previousDropDown) {
+				popup.detach(this._previousDropDown);
+				delete this._previousDropDown;
 			}
 		},
 
@@ -482,6 +481,11 @@ define([
 			var loadDropDownPromise = this.loadDropDown();
 
 			this._openDropDownPromise = Promise.resolve(loadDropDownPromise).then(function (dropDown) {
+				if (this._previousDropDown && this._previousDropDown !== dropDown) {
+					popup.detach(this._previousDropDown);
+					delete this._previousDropDown;
+				}
+
 				if (canceled) { return; }
 				delete this._cancelPendingDisplay;
 
@@ -612,6 +616,7 @@ define([
 				});
 			}
 
+			this._previousDropDown = this._currentDropDown;
 			delete this._currentDropDown;
 		}
 	});

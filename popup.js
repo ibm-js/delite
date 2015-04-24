@@ -200,6 +200,21 @@ define([
 		},
 
 		/**
+		 * Detach specified popup widget from document
+		 * @param {module:delite/Widget} widget
+		 */
+		detach: function (widget) {
+			if (widget._popupWrapper) {
+				widget._popupWrapper.parentNode.removeChild(widget._popupWrapper);
+				delete widget._popupWrapper;
+				widget.detachedCallback();
+			} else if(widget.parentNode) {
+				widget.parentNode.removeChild(widget);
+				widget.detachedCallback();
+			}
+		},
+
+		/**
 		 * Hide this popup widget (until it is ready to be shown).
 		 * Initialization for widgets that will be used as popups.
 		 *
