@@ -42,6 +42,8 @@ define(["requirejs-dplugins/has"], function (has) {
 				sawRoot, sawChild;
 			root.id = "root";
 			child.id = "child";
+			root.appendChild(child);
+
 			function listener(event) {
 				if (event.target.id === "root") {
 					sawRoot = true;
