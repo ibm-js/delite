@@ -220,10 +220,10 @@ define([
 		},
 
 		/**
-		 * Returns the parent widget of this widget.
+		 * Returns the parent widget of this widget, or null if there is no parent widget.
 		 */
 		getParent: function () {
-			return this.getEnclosingWidget(this.parentNode);
+			return this.parentNode ? this.getEnclosingWidget(this.parentNode) : null;
 		},
 
 		/**

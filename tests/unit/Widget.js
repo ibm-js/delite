@@ -382,6 +382,26 @@ define([
 				"your", "three.one.one");
 		},
 
+		"#getParent": function () {
+			var MyWidget = register("test-get-parent", [HTMLElement, Widget], {
+				name: "",
+				attr1: 0,
+				attr2: 0
+			});
+
+			var w = new MyWidget();
+			assert.strictEqual(w.getParent(), null, "null if not connected to anything");
+
+			w.placeAt(container);
+			assert.strictEqual(w.getParent(), null, "null if connected but no parent widget");
+
+			var div = document.createElement("div");
+			w.appendChild(div);
+			var w2 = new MyWidget();
+			w.appendChild(w2);
+			assert.strictEqual(w2.getParent(), w, "getParent() finds grandparent widget");
+		},
+
 		teardown: function () {
 			container.parentNode.removeChild(container);
 		}
