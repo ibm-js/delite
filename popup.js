@@ -208,7 +208,7 @@ define([
 				widget._popupWrapper.parentNode.removeChild(widget._popupWrapper);
 				delete widget._popupWrapper;
 				widget.detachedCallback();
-			} else if(widget.parentNode) {
+			} else if (widget.parentNode) {
 				widget.parentNode.removeChild(widget);
 				widget.detachedCallback();
 			}
