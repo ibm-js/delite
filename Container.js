@@ -68,15 +68,6 @@ define([
 			}
 		}),
 
-		attachedCallback: function (recurse) {
-			if (recurse) {
-				// placeAt() will pass in a recurse flag, telling us to call attachedCallback on children
-				this.findCustomElements(this.containerNode).forEach(function (obj) {
-					obj.attachedCallback(true);
-				});
-			}
-		},
-
 		appendChild: dcl.superCall(function (sup) {
 			return function (child) {
 				if (this.created) {
