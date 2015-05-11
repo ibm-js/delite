@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Module: delite/DialogUnderlay</title>
+
+    <script src="../scripts/prettify/prettify.js"> </script>
+    <script src="../scripts/prettify/lang-css.js"> </script>
+    <style>
+        [inherited] {
+            display: none;
+        }
+
+        [inherited-show] {
+            display: block;
+        }
+    </style>
+    <script>
+        function toggleInherited(event) {
+            var shouldShow = event.type !== "DOMContentLoaded" && !document.querySelector("[inherited][inherited-show]");
+            Array.prototype.forEach.call(document.querySelectorAll("dl"), function (elem) {
+                var inherited = elem.querySelectorAll("[inherited]");
+                Array.prototype.forEach.call(inherited, function (elem) {
+                    if (shouldShow) {
+                        elem.setAttribute("inherited-show", "");
+                    } else {
+                        elem.removeAttribute("inherited-show");
+                    }
+                });
+                if (inherited.length > 0) {
+                    var header = elem.previousElementSibling;
+                    if (header.tagName === "H3") {
+                        header.style.display = parseInt(document.defaultView.getComputedStyle(elem).height) > 0 ? "" : "none";
+                    }
+                }
+            });
+            if (event.type !== "DOMContentLoaded") {
+                event.target.innerHTML = (shouldShow ? "Hide" : "Show") + " inherited";
+            } else if (!document.querySelector("[inherited]")) {
+                var toggleLink = document.getElementById("toggleinherited");
+                if (toggleLink) {
+                    toggleLink.style.display = "none";
+                }
+            }
+        }
+        window.addEventListener("DOMContentLoaded", toggleInherited);
+    </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="../styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="../styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Module: delite/DialogUnderlay</h1>
+
+    
+
+
+
+<section>
+
+<header>
+    <h2>
+    delite/DialogUnderlay
+    </h2>
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+        
+<dt>
+    
+    <h4 class="name" id="module:delite/DialogUnderlay">require(["delite/DialogUnderlay"], function (DialogUnderlay) { <br/>&nbsp;&nbsp;<span class="type-signature"></span>new DialogUnderlay<span class="signature">()</span><span class="type-signature"></span>;<br/> });</h4>
+    
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>A component used to block input behind a Dialog widget.</p>
+<p>Normally this widget should not be instantiated directly, but rather shown and hidden via
+<code>DialogUnderlay.show()</code> and <code>DialogUnderlay.hide()</code>.  And usually the module is not accessed directly
+at all, since the underlay is shown and hidden by the Dialog.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="../DialogUnderlay.js.html">delite/DialogUnderlay.js</a>, <a href="../DialogUnderlay.js.html#line13">line 13</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+    
+
+    
+        
+
+        
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+
+    <a id="toggleinherited" href="#" onclick="toggleInherited(event)">Show inherited</a>
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        <dl>
+            
+            
+<dt>
+    
+    <h4 class="name" id="DialogUnderlay.hide"><span class="type-signature">&lt;static> </span>DialogUnderlay.hide<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Static method to hide the underlay.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="../DialogUnderlay.js.html">delite/DialogUnderlay.js</a>, <a href="../DialogUnderlay.js.html#line119">line 119</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+            
+<dt>
+    
+    <h4 class="name" id="DialogUnderlay.show"><span class="type-signature">&lt;static> </span>DialogUnderlay.show<span class="signature">(attrs, zIndex)</span><span class="type-signature"></span></h4>
+    
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Static method to display the underlay with the given attributes set.  If the underlay is already displayed,
+then adjust it's attributes as specified.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>attrs</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The parameters to create DialogUnderlay with.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>zIndex</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>z-index of the underlay.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="../DialogUnderlay.js.html">delite/DialogUnderlay.js</a>, <a href="../DialogUnderlay.js.html#line102">line 102</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+            
+<dt>
+    
+    <h4 class="name" id="hide"><span class="type-signature"></span>hide<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Hide the dialog underlay (instance method).</p>
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="../DialogUnderlay.js.html">delite/DialogUnderlay.js</a>, <a href="../DialogUnderlay.js.html#line85">line 85</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+            
+<dt>
+    
+    <h4 class="name" id="show"><span class="type-signature"></span>show<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Show the dialog underlay (instance method).</p>
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="../DialogUnderlay.js.html">delite/DialogUnderlay.js</a>, <a href="../DialogUnderlay.js.html#line73">line 73</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        </dl>
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="../delite/a11y.html">delite/a11y</a></li><li><a href="../delite/a11yclick.html">delite/a11yclick</a></li><li><a href="../delite/activationTracker.html">delite/activationTracker</a></li><li><a href="../delite/BackgroundIframe.html">delite/BackgroundIframe</a></li><li><a href="../delite/Bidi.html">delite/Bidi</a></li><li><a href="../delite/Container.html">delite/Container</a></li><li><a href="../delite/CssState.html">delite/CssState</a></li><li><a href="../delite/CustomElement.html">delite/CustomElement</a></li><li><a href="../delite/Dialog.html">delite/Dialog</a></li><li><a href="../delite/DialogUnderlay.html">delite/DialogUnderlay</a></li><li><a href="../delite/DisplayContainer.html">delite/DisplayContainer</a></li><li><a href="../delite/FormValueWidget.html">delite/FormValueWidget</a></li><li><a href="../delite/FormWidget.html">delite/FormWidget</a></li><li><a href="../delite/handlebars.html">delite/handlebars</a></li><li><a href="../delite/HasDropDown.html">delite/HasDropDown</a></li><li><a href="../delite/KeyNav.html">delite/KeyNav</a></li><li><a href="../delite/keys.html">delite/keys</a></li><li><a href="../delite/place.html">delite/place</a></li><li><a href="../delite/popup.html">delite/popup</a></li><li><a href="../delite/register.html">delite/register</a></li><li><a href="../delite/Scrollable.html">delite/Scrollable</a></li><li><a href="../delite/Selection.html">delite/Selection</a></li><li><a href="../delite/Store.html">delite/Store</a></li><li><a href="../delite/StoreMap.html">delite/StoreMap</a></li><li><a href="../delite/Template.html">delite/Template</a></li><li><a href="../delite/theme.html">delite/theme</a></li><li><a href="../delite/uacss.html">delite/uacss</a></li><li><a href="../delite/Viewport.html">delite/Viewport</a></li><li><a href="../delite/Widget.html">delite/Widget</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha7</a> on Mon May 11 2015 16:06:27 GMT+0200 (Romance Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="../scripts/linenumber.js"> </script>
+</body>
+</html>
