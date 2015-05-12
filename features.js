@@ -9,7 +9,7 @@ define(["requirejs-dplugins/has"], function (has) {
 	// Flag to enable inheritance direction from any ancestor
 	has.add("inherited-dir", false);
 
-	if (typeof window !== undefined) {
+	if (typeof window !== "undefined") {
 		// Returns the name of the method to test if an element matches a CSS selector.
 		has.add("dom-matches", function () {
 			var node = document.body;
