@@ -75,6 +75,10 @@ define(["requirejs-dplugins/has"], function (has) {
 			/* jshint proto: false */
 			return !!node.attributes;
 		});
+
+		// Support for <template> elements (specifically, that their content is available via templateNode.content
+		// rather than templateNode.children[] etc.
+		has.add("dom-template", !!document.createElement("template").content);
 	}
 
 	return has;
