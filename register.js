@@ -540,7 +540,24 @@ define([
 
 	// Setup initial parse of document and also listeners for future document modifications.
 	if (!has("document-register-element") && doc) {
-		domReady(deliver);
+		domReady(function () {
+			if (!has("dom-template")) {
+				// Move <template> child nodes to .content property, so that we don't parse custom elements in
+				// <template> nodes.  Could be done on dynamically created nodes too, but currently there's no need.
+				var template, idx = 0, nodes = doc.querySelectorAll("template");
+				while ((template = nodes[idx++])) {
+					if (!template.content) {
+						var child, content = template.content = doc.createDocumentFragment();
+						while ((child = template.firstChild)) {
+							content.appendChild(child);
+						}
+					}
+				}
+			}
+
+			// Upgrade all custom element nodes, and setup listeners for future changes.
+			deliver();
+		});
 	}
 
 	// Setup return value as register() method, with other methods hung off it.

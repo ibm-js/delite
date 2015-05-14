@@ -8,5 +8,6 @@ define([
 	"./KeyNav",
 	"./polymer",
 	"./popup",
+	"./register",
 	"./DojoParser"
 ]);

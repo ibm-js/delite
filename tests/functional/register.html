@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="../../../requirejs/require.js"></script>
+	<script>
+		var ready = false; // set to true when the test page is ready
+		require.config({
+			baseUrl: "../../.."
+		});
+		require(["delite/register", "requirejs-domready/domReady!"], function (register) {
+			register("test-widget", [HTMLElement], {
+				_createdCallbackCalled: false,
+				createdCallback: function () {
+					this._createdCallbackCalled = true;
+				},
+
+				_attachedCallbackCalled: false,
+				attachedCallback: function () {
+					this._attachedCallbackCalled = true;
+				}
+			});
+
+			// Set global variable to signal that the test page is ready.
+			// Give register time to instantiate widgets before setting flag.
+			setTimeout(function () {
+				ready = true;
+			}, 0);
+		});
+	</script>
+</head>
+<body>
+	<template>
+		<test-widget id="inside"></test-widget>
+	</template>
+	<test-widget id="outside"></test-widget>
+</body>
+</html>
