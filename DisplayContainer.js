@@ -174,13 +174,8 @@ define(["dcl/dcl", "requirejs-dplugins/Promise!", "./Container"],
 				self.emit("delite-before-hide", event);
 
 				return Promise.resolve(self.changeDisplay(value.child, event)).then(function () {
-					// if view is not already removed, remove it
-					if (self.getIndexOfChild(value.child) !== -1) {
-						self.removeChild(value.child);
-					}
-
+					// one might listen to that event and actuall remove the child if needed (view unload feature)
 					self.emit("delite-after-hide", event);
-
 					return value;
 				});
 			});
