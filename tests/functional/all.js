@@ -6,6 +6,7 @@ define([
 	"./HasDropDown",
 	"./TabIndex",
 	"./KeyNav",
+	"./on",
 	"./polymer",
 	"./popup",
 	"./register",

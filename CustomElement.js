@@ -6,8 +6,9 @@ define([
 	"decor/Destroyable",
 	"decor/Stateful",
 	"requirejs-dplugins/has",
+	"./on",
 	"./register"
-], function (advise, dcl, Observable, Destroyable, Stateful, has, register) {
+], function (advise, dcl, Observable, Destroyable, Stateful, has, on, register) {
 
 	/**
 	 * Dispatched after the CustomElement has been attached.
@@ -428,33 +429,19 @@ define([
 		 * Call specified function when event occurs.
 		 *
 		 * Note that the function is not run in any particular scope, so if (for example) you want it to run
-		 * in the widget's scope you must do `myWidget.on("click", myWidget.func.bind(myWidget))`.
+		 * in the element's scope you must do `myCustomElement.on("click", myCustomElement.func.bind(myCustomElement))`.
+		 *
+		 * Note that `delite/Widget` overrides `on()` so that `on("focus", ...)` and `on("blur", ...) will trigger the
+		 * listener when focus moves into or out of the widget, rather than just when the widget's root node is
+		 * focused/blurred.  In other words, the listener is called when the widget is conceptually focused or blurred.
+		 *
 		 * @param {string} type - Name of event (ex: "click").
 		 * @param {Function} func - Callback function.
 		 * @param {Element} [node] - Element to attach handler to, defaults to `this`.
 		 * @returns {Object} Handle with `remove()` method to cancel the event.
 		 */
 		on: function (type, func, node) {
-			// Shim support for focusin/focusout, plus treat on(focus, "...") like on("focusin", ...) since
-			// conceptually when widget.focusNode gets focus, it means the widget itself got focus.
-			var captures = {
-					focusin: "focus",
-					focus: "focus",
-					focusout: "blur",
-					blur: "blur"
-				},
-				capture = type in captures,
-				adjustedType = capture ? captures[type] : type;
-
-			// TODO: would it be better if node was the first parameter (but optional)?
-			node = node || this;
-
-			node.addEventListener(adjustedType, func, capture);
-			return {
-				remove: function () {
-					node.removeEventListener(adjustedType, func, capture);
-				}
-			};
+			return on(node || this, type, func);
 		},
 
 		// Override Stateful#getPropsToObserve() because the way to get the list of properties to watch is different
