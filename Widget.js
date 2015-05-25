@@ -226,6 +226,19 @@ define([
 			return this.parentNode ? this.getEnclosingWidget(this.parentNode) : null;
 		},
 
+		// Override CustomElement#on() to handle on("focus", ...) when the widget conceptually gets focus.
+		on: dcl.superCall(function (sup) {
+			return function (type, func, node) {
+				// Treat on(focus, "...") like on("focusin", ...) since
+				// conceptually when widget.focusNode gets focus, it means the widget itself got focus.
+				// Ideally we would set up a wrapper function to ignore focus changes between nodes inside the widget,
+				// but evt.relatedTarget in null on FF.
+				type = {focus: "focusin", blur: "focusout"}[type] || type;
+
+				return sup.call(this, type, func, node);
+			};
+		}),
+
 		/**
 		 * Place this widget somewhere in the dom, and allow chaining.
 		 *

@@ -2,8 +2,8 @@
   * @module delite/a11yclick
  */
 define([
-	"./keys" // keys.ENTER keys.SPACE
-], function (keys) {
+	"./on"
+], function (on) {
 
 	// TODO: add functional tests
 
@@ -12,8 +12,8 @@ define([
 		// Only track for nodes marked to be tracked, and not for buttons or inputs,
 		// since buttons handle keyboard click natively, and text inputs should not
 		// prevent typing spaces or newlines.
-		if ((e.keyCode === keys.ENTER || e.keyCode === keys.SPACE) &&
-				!/input|button|textarea/i.test(e.target.nodeName)) {
+		if ((e.key === "Enter" || e.key === "Spacebar") &&
+				!/^(input|button|textarea)$/i.test(e.target.nodeName)) {
 
 			// Test if a node or its ancestor has been marked with the d-keyboard-click property
 			// to indicate special processing
@@ -27,7 +27,7 @@ define([
 
 	var lastKeyDownNode;
 
-	document.addEventListener("keydown", function (e) {
+	on(document, "keydown", function (e) {
 		//console.log("a11yclick: onkeydown, e.target = ", e.target, ", lastKeyDownNode was ",
 		// lastKeyDownNode, ", equality is ", (e.target === lastKeyDownNode));
 		if (!e.defaultPrevented && clickKey(e)) {
@@ -41,7 +41,7 @@ define([
 		}
 	});
 
-	document.addEventListener("keyup", function (e) {
+	on(document, "keyup", function (e) {
 		//console.log("a11yclick: onkeyup, e.target = ", e.target, ", lastKeyDownNode was ",
 		// lastKeyDownNode, ", equality is ", (e.target === lastKeyDownNode));
 		if (clickKey(e) && e.target === lastKeyDownNode) {

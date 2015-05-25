@@ -3,13 +3,12 @@ define([
 	"dcl/dcl",
 	"requirejs-dplugins/Promise!",
 	"requirejs-dplugins/jquery!attributes/classes",	// addClass(), removeClass(), hasClass()
-	"./keys", // keys.DOWN_ARROW keys.ENTER keys.ESCAPE
 	"./place",
 	"./popup",
 	"./Widget",
 	"./activationTracker",		// for delite-deactivated event
 	"dpointer/events"		// so can just monitor for "pointerdown"
-], function (dcl, Promise, $, keys, place, popup, Widget) {
+], function (dcl, Promise, $, place, popup, Widget) {
 	
 	/**
 	 * Dispatched before popup widget is shown.
@@ -368,14 +367,14 @@ define([
 					return;
 				}
 			}
-			if (dropDown && this.opened && e.keyCode === keys.ESCAPE) {
+			if (dropDown && this.opened && e.key === "Esc") {
 				this.closeDropDown();
 				e.stopPropagation();
 				e.preventDefault();
 			} else if (!this.opened &&
-				(e.keyCode === keys.DOWN_ARROW ||
+				(e.key === "Down" ||
 					// ignore unmodified SPACE if KeyNav has search in progress
-					((e.keyCode === keys.ENTER || (e.keyCode === keys.SPACE &&
+					((e.key === "Enter" || (e.key === "Spacebar" &&
 						(!this._searchTimer || (e.ctrlKey || e.altKey || e.metaKey)))) &&
 						//ignore enter and space if the event is for a text input
 						((target.tagName || "").toLowerCase() !== "input" ||

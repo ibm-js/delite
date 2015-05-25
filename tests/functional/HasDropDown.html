@@ -31,13 +31,12 @@
 
 		require([
 			"requirejs-dplugins/Promise!",
-			"delite/keys",
 			"delite/register",
 			"delite/HasDropDown",
 			"delite/Widget",
 			"dpointer/events",	// since I'm using touch-action
 			"requirejs-domready/domReady!"
-		], function (Promise, keys, register, HasDropDown, Widget) {
+		], function (Promise, register, HasDropDown, Widget) {
 
 			// A trivial popup widget
 			var SimpleDialog = register("simple-dialog", [HTMLElement, Widget], {
@@ -96,11 +95,11 @@
 						child.setAttribute("tabindex", "-1");
 					});
 					this.on("keydown", function (evt) {
-						if(evt.keyCode == keys.ENTER || evt.keyCode == keys.SPACE) {
+						if(evt.key === "Enter" || evt.key === "Spacebar") {
 							this.emit("change");
-						} else if(evt.keyCode == keys.DOWN_ARROW ) {
-							this.focus((this.selected && this.selected.nextSibling) || this.firstChild);;
-						} else if(evt.keyCode == keys.UP_ARROW ) {
+						} else if(evt.key === "Down" ) {
+							this.focus((this.selected && this.selected.nextSibling) || this.firstChild);
+						} else if(evt.key === "Up" ) {
 							this.focus((this.selected && this.selected.previousSibling) || this.lastChild);
 						}
 					}.bind(this));
@@ -140,13 +139,13 @@
 				},
 
 				_keydownHandler: function (evt) {
-					if(evt.keyCode == keys.ENTER || evt.keyCode == keys.SPACE) {
+					if(evt.key === "Enter" || evt.key === "Spacebar") {
 						this.emit("change");
 						this.selected.className = "";
-					} else if(evt.keyCode == keys.DOWN_ARROW ) {
+					} else if(evt.key === "Down" ) {
 						this._select(this.selected.nextSibling || this.firstChild);
 						return false;
-					} else if(evt.keyCode == keys.UP_ARROW ) {
+					} else if(evt.key === "Up" ) {
 						this._select(this.selected.previousSibling || this.lastChild);
 						return false;
 					}

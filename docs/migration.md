@@ -138,10 +138,10 @@ _KeyNavMixin has been renamed to KeyNav.
 The `_keyNavCodes` property has been removed as KeyNav now figures out the method name to call automatically.
 However, the method names for arrows have been changed:
 
-- onLeftArrow --> previousArrowKeyHandler
-- onRightArrow --> nextArrowKeyHandler
-- onDownArrow --> downArrowKeyHandler
-- onUpArrow --> upArrowKeyHandler
+- onLeftArrow --> previousKeyHandler
+- onRightArrow --> nextKeyHandler
+- onDownArrow --> downKeyHandler
+- onUpArrow --> upKeyHandler
 
 Methods for handling other keys (like SPACE or ENTER) are similarly named, ex: spaceKeyHandler() and enterKeyHandler().
 

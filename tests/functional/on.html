@@ -1,0 +1,74 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+	<meta name="viewport"
+		  content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no"/>
+	<meta name="apple-mobile-web-app-capable" content="yes"/>
+	<title>on() Tests</title>
+	<script type="text/javascript" src="boilerplate.js"></script>
+	<script language="JavaScript" type="text/javascript">
+		var ready = false; // set to true when the test page is ready
+		require([
+			"delite/on",
+			"requirejs-domready/domReady!"
+		], function (on) {
+
+			// Make sure that focusin/focusout is shimmed when necessary.
+			on(document.getElementById("focus"), "focusin", function () {
+				document.getElementById("focus_log").value += " focusin";
+			});
+			on(document.getElementById("focus"), "focusout", function () {
+				document.getElementById("focus_log").value += " focusout";
+			});
+
+			// Focus and blur events shouldn't bubble, so we should never see these messages.
+			on(document.getElementById("focus"), "focus", function () {
+				document.getElementById("focus_log").value += " focus";
+			});
+			on(document.getElementById("focus"), "blur", function () {
+				document.getElementById("focus_log").value += " blur";
+			});
+
+			["keydown", "keyup"].forEach(function (type) {
+				on(document.getElementById("key"), type, function (event) {
+					document.getElementById(type + "_log").value = event.key;
+					event.preventDefault();		// avoid TAB, ESC doing something
+				});
+			});
+			on(document.getElementById("keypress"), "keypress", function (event) {
+				document.getElementById("keypress_log").value = event.key;
+			});
+
+			// Set global variable to signal that the test page is ready
+			ready = true;
+		})
+	</script>
+</head>
+<body>
+	<h1>on() functional test</h1>
+
+	<h2>Tests for focusin/focusout shim</h2>
+	<div id=focus style="border: 1px solid black; width: 80%;" onfocusin="console.log('focusin');" onfocusout="console.log('focusout');">
+		<p>
+			This div has focus, focusin, focusout, and blur listeners.
+			The focusin and focusout listeners should fire as the nested &lt;input&gt; nodes are focused.
+			The focus and blur listener should never fire, because those events shouldn't bubble.
+		</p>
+		<label for="f1">first input inside div:</label> <input id="f1">
+		<label for="f2">second input inside div:</label> <input id="f2">
+	</div>
+	<label for="f3">input outside div:</label> <input id="f3">
+	<br>
+	<label for="focus_log">focus log:</label> <input id="focus_log" style="width: 80%" readonly>
+
+	<h2>Tests for event.key shim</h2>
+	<label for="key">type here:</label> <input id="key">
+	<label for="keydown_log">keydown event.key:</label> <input id="keydown_log" readonly>
+	<label for="keyup_log">keyup event.key:</label> <input id="keyup_log" readonly>
+	<br><br>
+
+	<label for="keypress">type here:</label> <input id="keypress">
+	<label for="keypress_log">keypress event.key:</label> <input id="keypress_log" readonly>
+</body>
+</html>

@@ -2,7 +2,6 @@
 define([
 	"dcl/dcl",
 	"./a11y",
-	"./keys", // keys.DOWN_ARROW keys.ENTER keys.ESCAPE
 	"./Widget"
 ], function (dcl, a11y, keys, Widget) {
 	/**
@@ -28,7 +27,7 @@ define([
 		},
 
 		_dialogKeyDownHandler: function (/*Event*/ evt) {
-			if (evt.keyCode === keys.TAB) {
+			if (evt.key === "Tab") {
 				this._getFocusItems(this.domNode);
 				var node = evt.target;
 				if (this._firstFocusItem === this._lastFocusItem) {

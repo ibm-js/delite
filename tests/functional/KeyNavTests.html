@@ -11,13 +11,12 @@
 		var ready = false; // set to true when the test page is ready
 		require([
 			"delite/a11yclick",
-			"delite/keys",
 			"delite/register",
 			"delite/Widget",
 			"delite/Container",
 			"delite/KeyNav",
 			"requirejs-domready/domReady!"
-		], function (a11yclick, keys, register, Widget, Container, KeyNav) {
+		], function (a11yclick, register, Widget, Container, KeyNav) {
 			// Complex KeyNav subclass with string descendantSelector
 			register("my-grid", [HTMLElement, KeyNav], {
 				// Specifies which descendants can be navigated to
@@ -27,20 +26,20 @@
 				multiCharSearchDuration: 100,
 
 				// Simple arrow key support.
-				previousArrowKeyHandler: function () {
+				previousKeyHandler: function () {
 					var listItem = this.navigatedDescendant.parentNode;
 					this.navigateTo(this.navigatedDescendant.previousElementSibling || listItem.lastElementChild);
 				},
-				nextArrowKeyHandler: function () {
+				nextKeyHandler: function () {
 					var listItem = this.navigatedDescendant.parentNode;
 					this.navigateTo(this.navigatedDescendant.nextElementSibling || listItem.firstElementChild);
 				},
-				downArrowKeyHandler: function () {
+				downKeyHandler: function () {
 					// For simplicity I'll just go to the first field in the next row
 					var listItem = this.navigatedDescendant.parentNode;
 					this.navigateTo((listItem.nextElementSibling || this.firstElementChild).firstElementChild);
 				},
-				upArrowKeyHandler: function () {
+				upKeyHandler: function () {
 					// For simplicity I'll just go to the first field in the previous row
 					var listItem = this.navigatedDescendant.parentNode;
 					this.navigateTo((listItem.previousElementSibling || this.lastElementChild).firstElementChild);
@@ -58,13 +57,13 @@
 				descendantSelector: function (child) {
 					return child !== this;
 				},
-				downArrowKeyHandler: function () {
+				downKeyHandler: function () {
 					var nextChild = this.getNext(this.navigatedDescendant, 1);
 					if (nextChild) {
 						this.navigateTo(nextChild);
 					}
 				},
-				upArrowKeyHandler: function () {
+				upKeyHandler: function () {
 					var previousChild = this.getNext(this.navigatedDescendant, -1);
 					if (previousChild) {
 						this.navigateTo(previousChild);
@@ -88,19 +87,19 @@
 				descendantSelector: function (child) {
 					return child !== this;
 				},
-				downArrowKeyHandler: function () {
+				downKeyHandler: function () {
 					var nextChild = this.getNext(this.navigatedDescendant, 1);
 					if (nextChild) {
 						this.navigateTo(nextChild);
 					}
 				},
-				upArrowKeyHandler: function () {
+				upKeyHandler: function () {
 					var previousChild = this.getNext(this.navigatedDescendant, -1);
 					if (previousChild) {
 						this.navigateTo(previousChild);
 					}
 				},
-				spaceKeyHandler: function () {
+				spacebarKeyHandler: function () {
 					if (this.spaceCountNodeId) {
 						window[this.spaceCountNodeId].innerHTML = window[this.spaceCountNodeId].innerHTML - -1;
 					}

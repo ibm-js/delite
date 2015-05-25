@@ -2,11 +2,10 @@
 define([
 	"dcl/dcl",
 	"requirejs-dplugins/jquery!attributes/classes",	// addClass(), removeClass()
-	"./keys", // keys.END keys.HOME, keys.LEFT_ARROW etc.
 	"./features",
 	"./Widget",
 	"./activationTracker"	// delite-deactivated event when focus removed from KeyNav and logical descendants
-], function (dcl, $, keys, has, Widget) {
+], function (dcl, $, has, Widget) {
 	
 	/**
 	 * Dispatched after the user has selected a different descendant, by clicking, arrow keys,
@@ -20,14 +19,6 @@ define([
 	 * @property {number} oldValue - The previously selected item.
 	 * @property {number} newValue - The new selected item.
 	 */
-
-	// Generate map from keyCode to handler name
-	var keycodeToMethod = {};
-	for (var key in keys) {
-		keycodeToMethod[keys[key]] = key.replace(/[^_]+|_./g, function (c) {
-			return c.charAt(0) === "_" ? c.charAt(1) : c.toLowerCase();
-		}) + "KeyHandler";
-	}
 
 	/**
 	 * Return true if node is an `<input>` or similar that responds to keyboard input.
@@ -48,13 +39,14 @@ define([
 	  * 
 	  * To use this mixin, the subclass must:
 	  *
-	  * - Implement one method for each keystroke that subclass wants to handle, with names based on the keys
-	  *   defined in delite/keys.  For example, `DOWN_ARROW` --> `downArrowKeyHandler()`.
+	  * - Implement one method for each keystroke that subclass wants to handle, with names based on the key names
+	  *   defined by https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key.  For example, `DOWN_ARROW` -->
+	  *   `downKeyHandler()`.
 	  *   The method takes two parameters: the events, and the currently navigated node.
-	  *   For BIDI support, the left and right arrows are handled specially, mapped to the `previousArrowKeyHandler()`
-	  *   and `nextArrowKeyHandler()` methods in LTR mode, or reversed in RTL mode.
-	  *   Most subclasses will want to implement either `previousArrowKeyHandler()`
-	  *   and `nextArrowKeyHandler()`, or `downArrowKeyHandler()` and `upArrowKeyHandler()`.
+	  *   For BIDI support, the left and right arrows are handled specially, mapped to the `previousKeyHandler()`
+	  *   and `nextKeyHandler()` methods in LTR mode, or reversed in RTL mode.
+	  *   Most subclasses will want to implement either `previousKeyHandler()`
+	  *   and `nextKeyHandler()`, or `downKeyHandler()` and `upKeyHandler()`.
 	  * - Set all navigable descendants' initial tabIndex to "-1"; both initial descendants and any
 	  *   descendants added later, by for example `addChild()`.  Exception: if `focusDescendants` is false then the
 	  *   descendants shouldn't have any tabIndex at all.
@@ -87,7 +79,7 @@ define([
 		 * - The focused Element must forward keystrokes by calling `emit("keydown", ...)` and/or
 		 *   `emit("keypress", ...)` on this widget.
 		 * - You must somehow set the initial navigated descendant, typically by calling `navigateToFirst()` either
-		 *   when the the dropdown is opened, or on the first call to `downArrowKeyHandler()`.
+		 *   when the the dropdown is opened, or on the first call to `downKeyHandler()`.
 		 * - You must have some CSS styling so that the currently navigated node is apparent.
 		 *
 		 * See http://www.w3.org/WAI/GL/wiki/Using_aria-activedescendant_to_allow_changes_in_focus_within_widgets_to_be_communicated_to_Assistive_Technology#Example_1:_Combobox
@@ -306,7 +298,7 @@ define([
 			// Note that using _onBlur() so that this doesn't happen when focus is shifted
 			// to one of my child widgets (typically a popup)
 
-			// TODO: for 2.0 consider changing this to blur whenever the container blurs, to be truthful that there is
+			// TODO: Consider changing this to blur whenever the container blurs, to be truthful that there is
 			// no focused child at that time.
 			this.setAttribute("tabindex", this._savedTabIndex);
 			delete this._savedTabIndex;
@@ -420,12 +412,12 @@ define([
 		_keynavKeyDownHandler: function (evt) {
 			// Ignore left, right, home, end, and space on <input> controls
 			if (takesInput(evt.target) &&
-				(evt.keyCode === keys.LEFT_ARROW || evt.keyCode === keys.RIGHT_ARROW ||
-					evt.keyCode === keys.HOME || evt.keyCode === keys.END || evt.keyCode === keys.SPACE)) {
+				(evt.key === "Left" || evt.key === "Right" ||
+					evt.key === "Home" || evt.key === "End" || evt.key === "Spacebar")) {
 				return;
 			}
 
-			if (evt.keyCode === keys.SPACE && this._searchTimer && !(evt.ctrlKey || evt.altKey || evt.metaKey)) {
+			if (evt.key === "Spacebar" && this._searchTimer && !(evt.ctrlKey || evt.altKey || evt.metaKey)) {
 				// If the user types some string like "new york", interpret the space as part of the search rather
 				// than to perform some action, even if there is a key handler method defined.
 
@@ -449,15 +441,15 @@ define([
 		_applyKeyHandler: function (evt) {
 			// Get name of method to call
 			var methodName;
-			switch (evt.keyCode) {
-			case keys.LEFT_ARROW:
-				methodName = this.effectiveDir === "rtl" ? "nextArrowKeyHandler" : "previousArrowKeyHandler";
+			switch (evt.key) {
+			case "Left":
+				methodName = this.effectiveDir === "rtl" ? "nextKeyHandler" : "previousKeyHandler";
 				break;
-			case keys.RIGHT_ARROW:
-				methodName = this.effectiveDir === "rtl" ? "previousArrowKeyHandler" : "nextArrowKeyHandler";
+			case "Right":
+				methodName = this.effectiveDir === "rtl" ? "previousKeyHandler" : "nextKeyHandler";
 				break;
 			default:
-				methodName = keycodeToMethod[evt.keyCode];
+				methodName = evt.key.charAt(0).toLowerCase() + evt.key.substr(1) + "KeyHandler";
 			}
 
 			// Call it
@@ -484,14 +476,14 @@ define([
 			//
 			// Note: if there's no search in progress, then SPACE should be ignored.   If there is a search
 			// in progress, then SPACE is handled in _keynavKeyDownHandler.
-			if (takesInput(evt.target) || evt.charCode <= keys.SPACE || evt.ctrlKey || evt.altKey || evt.metaKey) {
+			if (takesInput(evt.target) || evt.charCode <= 32 || evt.ctrlKey || evt.altKey || evt.metaKey) {
 				return;
 			}
 
 			evt.preventDefault();
 			evt.stopPropagation();
 
-			this._keyboardSearch(evt, String.fromCharCode(evt.charCode).toLowerCase());
+			this._keyboardSearch(evt, evt.key.toLowerCase());
 		},
 
 		/**

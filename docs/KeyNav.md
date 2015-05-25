@@ -14,10 +14,10 @@ A List, Tree, or Grid widget could all be subclasses of KeyNav.
 To use this base class, the subclass should implement methods for the keystrokes that it wants to handle.
 For LEFT/RIGHT/UP/DOWN arrow key navigation, implement:
 
-* previousArrowKeyHandler(event, currentDescendant)
-* nextArrowKeyHandler(event, currentDescendant)
-* downArrowKeyHandler(event, currentDescendant)
-* upArrowKeyHandler(event, currentDescendant)
+* previousKeyHandler(event, currentDescendant)
+* nextKeyHandler(event, currentDescendant)
+* downKeyHandler(event, currentDescendant)
+* upKeyHandler(event, currentDescendant)
 
 The subclass can implement methods for other keys too, following the naming pattern above, for example
 spaceKeyHandler(), f2KeyHandler(), etc.

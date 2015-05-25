@@ -7,11 +7,10 @@ define([
 	"dcl/dcl",
 	"./BackgroundIframe",
 	"./features", // has("config-bgIframe")
-	"./keys",
 	"./place",
 	"./Viewport",
 	"./theme!" // d-popup class
-], function (advise, dcl, BackgroundIframe, has, keys, place, Viewport) {
+], function (advise, dcl, BackgroundIframe, has, place, Viewport) {
 
 	function isDocLtr(doc) {
 		return !(/^rtl$/i).test(doc.body.dir || doc.documentElement.dir);
@@ -332,11 +331,11 @@ define([
 			// provide default escape and tab key handling
 			// (this will work for any widget, not just menu)
 			var onKeyDown = function (evt) {
-				if (evt.keyCode === keys.ESCAPE && args.onCancel) {
+				if (evt.key === "Esc" && args.onCancel) {
 					evt.stopPropagation();
 					evt.preventDefault();
 					args.onCancel();
-				} else if (evt.keyCode === keys.TAB) {
+				} else if (evt.key === "Tab") {
 					evt.stopPropagation();
 					evt.preventDefault();
 					var topPopup = this.getTopPopup();

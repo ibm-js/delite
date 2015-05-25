@@ -62,6 +62,7 @@ module.exports = function (grunt) {
 					runType: "runner",
 					config: "tests/intern.local",
 					reporters: ["runner"]
+					//, leaveRemoteOpen: true	// uncomment for debugging
 				}
 			},
 			remote: {
