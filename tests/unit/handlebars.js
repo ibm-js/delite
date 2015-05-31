@@ -682,7 +682,7 @@ define([
 			node.placeAt(container);
 
 			assert.strictEqual(node.firstElementChild.nodeName.toLowerCase(), "img", "tag name");
-			assert(/plus.gif/.test(node.firstElementChild.src, "img src set"));
+			assert(/plus.gif/.test(node.firstElementChild.src), "img src set");
 		},
 
 		"class": function () {

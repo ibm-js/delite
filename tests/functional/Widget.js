@@ -4,7 +4,7 @@ define([
 	"intern!object",
 	"intern/chai!assert",
 	"intern/dojo/node!leadfoot/keys",
-	"intern/dojo/node!leadfoot/helpers/pollUntil",
+	"intern/dojo/node!leadfoot/helpers/pollUntil"
 ], function (require, intern, registerSuite, assert, keys, pollUntil) {
 
 	// Most of Widget's functionality is checked via the unit tests, but we have a functional test for checking
