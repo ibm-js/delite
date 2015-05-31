@@ -8,7 +8,7 @@ define([
 	var curFocusNode, focusListener, focusCallback, focusCallbackDelay;
 
 	return {
-		isVisible: function isVisible(/*DomNode*/ node) {
+		isVisible: function isVisible(/*Element*/ node) {
 			// summary:
 			//		Return true if node/widget is visible
 
@@ -19,7 +19,7 @@ define([
 				(p = node.getBoundingClientRect(), p.bottom >= 0 && p.right >= 0 && p.height > 0 && p.width > 0);
 		},
 
-		isHidden: function isHidden(/*DomNode*/ node) {
+		isHidden: function isHidden(/*Element*/ node) {
 			// summary:
 			//		Return true if node/widget is hidden
 
@@ -30,20 +30,20 @@ define([
 				(p = node.getBoundingClientRect(), p.bottom < 0 || p.right < 0 && p.height <= 0 || p.width <= 0);
 		},
 
-		innerText: function innerText(/*DomNode*/ node) {
+		innerText: function innerText(/*Element*/ node) {
 			// summary:
-			//		Browser portable function to get the innerText of specified DOMNode
+			//		Browser portable function to get the innerText of specified Element
 			return (node.textContent || "").trim();
 		},
 
-		tabOrder: function tabOrder(/*DomNode?*/ root) {
+		tabOrder: function tabOrder(/*Element?*/ root) {
 			// summary:
 			//		Return all tab-navigable elements under specified node in the order that
 			//		they will be visited (by repeated presses of the tab key)
 
 			var elems = [];
 
-			function walkTree(/*DOMNode*/ parent) {
+			function walkTree(/*Element*/ parent) {
 				var children = Array.prototype.slice.call(parent.children);
 				children.forEach(function (child) {
 					// Skip hidden elements

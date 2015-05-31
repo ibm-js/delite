@@ -213,7 +213,7 @@ define([
 		 * Navigate to the first navigable descendant.
 		 * Note that if `focusDescendants` is false, this will merely set the `d-active-descendant` class
 		 * rather than actually focusing the descendant.
-		 * @param {Event} triggerEvent - The event that lead to the navigation, or `undefined`
+		 * @param {Event} [triggerEvent] - The event that lead to the navigation, or `undefined`
 		 *     if the navigation is triggered programmatically.
 		 * @protected
 		 */
@@ -225,7 +225,7 @@ define([
 		 * Navigate to the last navigable descendant.
 		 * Note that if `focusDescendants` is false, this will merely set the `d-active-descendant` class
 		 * rather than actually focusing the descendant.
-		 * @param {Event} triggerEvent - The event that lead to the navigation, or `undefined`
+		 * @param {Event} [triggerEvent] - The event that lead to the navigation, or `undefined`
 		 *     if the navigation is triggered programmatically.
 		 * @protected
 		 */
@@ -238,10 +238,10 @@ define([
 		 * Note that if `focusDescendants` is false, this will merely set the `d-active-descendant` class
 		 * rather than actually focusing the descendant.
 		 * @param {Element} child - Reference to the descendant.
-		 * @param {boolean} last - If true and if descendant has multiple focusable nodes, focus the
+		 * @param {boolean} [last] - If true and if descendant has multiple focusable nodes, focus the
 		 *     last one instead of the first one.  This assumes that the child's `focus()` method takes a boolean
 		 *     parameter where `true` means to focus the last child.
-		 * @param {Event} triggerEvent - The event that lead to the navigation, or `undefined`
+		 * @param {Event} [triggerEvent] - The event that lead to the navigation, or `undefined`
 		 *     if the navigation is triggered programmatically.
 		 * @protected
 		 */

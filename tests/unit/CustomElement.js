@@ -208,7 +208,7 @@ define([
 				// Define a custom element that emits two events, "click" and "custom".
 				// You can catch the events via either programmatic on("click", ...) or declarative on-custom=...
 				// syntax.
-				MyCustomElement = register("my-custom-element-on", [HTMLElement, CustomElement], { });
+				register("my-custom-element-on", [HTMLElement, CustomElement], { });
 
 				// Create variables accessed from the declarative custom element (see definition in <body>)
 				/* global globalClicked:true */

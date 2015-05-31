@@ -108,7 +108,7 @@ define([
 	 *
 	 * @function module:delite/register.upgrade
 	 * @param {Element} element - The DOM node.
-	 * @param {boolean} attach - If `element`'s tag has been registered, but `attachedCallback()` hasn't yet been
+	 * @param {boolean} [attach] - If `element`'s tag has been registered, but `attachedCallback()` hasn't yet been
 	 * called [since the last call to `detachedCallback()`], then call `attachedCallback()`.  Call even if the element
 	 * has already been upgraded.
 	 */

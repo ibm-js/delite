@@ -80,7 +80,7 @@
 			});
 
 			// Register handler for the space key
-			var MyCustKeyNavCode = register("my-list-cust", [HTMLElement, Container, KeyNav], {
+			register("my-list-cust", [HTMLElement, Container, KeyNav], {
 				// Id of node to update when there's an space event
 				spaceCountNodeId: "",
 
@@ -107,7 +107,7 @@
 			});
 
 			// Child of TestContainer
-			var TestContained = register("my-list-item", [HTMLElement, Widget], {
+			register("my-list-item", [HTMLElement, Widget], {
 				postRender: function () {
 					// With help of delite/a11yclick, convert SPACE/ENTER key to click event.
 					a11yclick(this);
@@ -140,7 +140,7 @@
 			});
 
 			// Setup so keystrokes on the ComboBox get forwarded to the dropdown.
-			combobox.onfocus = function (evt) {
+			combobox.onfocus = function () {
 				combobox_dropdown.navigateToFirst();
 			};
 			combobox.onkeydown = function (evt) {

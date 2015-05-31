@@ -30,7 +30,7 @@
 			"requirejs-domready/domReady!"
 		], function (register, Widget) {
 			register("my-content-pane", [HTMLElement, Widget], {
-				render: function (sup) {
+				render: function () {
 					var srcDom = this._srcDom = this.ownerDocument.createDocumentFragment();
 					while (this.firstChild) {
 						srcDom.appendChild(this.firstChild);

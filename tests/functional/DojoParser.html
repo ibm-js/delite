@@ -15,7 +15,12 @@
 	<link rel="stylesheet" href="../../../dijit/themes/dijit.css"/>
 	<script src="boilerplate.js"></script>
 	<script type="text/javascript">
-		readyDijit = false, readyDelite = false, dojoWidgetsLength = 0, dijitRegistry = null; // set readies to true when the test page is ready
+		// set readies to true when the test page is ready
+		readyDijit = false;
+		readyDelite = false;
+		dojoWidgetsLength = 0;
+		dijitRegistry = null;
+
 		require(["delite/Widget", "delite/samples/ExampleWidget", "delite/register", "dojo/domReady!"],
 				function (Widget, ExampleWidget, register) {
 			register.deliver();
@@ -42,7 +47,7 @@
 				id : "dijitprogrammaticid"
 			}, "dijitcalendarprogrammatic").startup();
 			// Set global variable to signal that the test page is ready
-			parser.parse(document.getElementById("dojowidgetsid")).then(function (items) {
+			parser.parse(document.getElementById("dojowidgetsid")).then(function () {
 				dojoWidgets = registry.findWidgets(document.body);
 				dojoWidgetsLength = dojoWidgets.length;
 				console.log("dijit registry of widgets on this page", dojoWidgets);

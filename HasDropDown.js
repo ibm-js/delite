@@ -575,7 +575,7 @@ define([
 
 		/**
 		 * Closes the drop down on this widget.
-		 * @param {boolean} focus - If true, refocus this widget.
+		 * @param {boolean} [focus] - If true, refocus this widget.
 		 * @protected
 		 * @fires module:delite/HasDropDown#delite-before-hide
 		 * @fires module:delite/HasDropDown#delite-after-hide

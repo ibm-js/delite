@@ -187,7 +187,7 @@ define([
 			},
 
 			declarative: function () {
-				container.innerHTML = "<test-dir id=dirTest dir='rtl'/>";
+				container.innerHTML = "<test-dir id=dirTest dir='rtl'></test-dir>";
 				var declarative = document.getElementById("dirTest");
 				register.parse(container);
 
@@ -357,19 +357,18 @@ define([
 			});
 
 			/*jshint multistr: true */
-			var html = "<test-foo id='one' name='bob' attr1=10 attr2=10></test-foo> \
-			<test-foo id='two' name='is' attr1=5 attr2=10></test-foo> \
-			<div id='threeWrapper'> \
-				<test-bar id='three' name='your' attr1=5 attr2=5> \
-					<div id='three.one'> \
-						<div id='three.one.one'></div> \
-						<test-bar id='four' name='uncle' attr1=10 attr2=5></test-bar> \
-					</div> \
-				</test-bar> \
-			</div> \
-			<div id='not-a-widget'></div>";
+			container.innerHTML = "<test-foo id='one' name='bob' attr1=10 attr2=10></test-foo> \
+				<test-foo id='two' name='is' attr1=5 attr2=10></test-foo> \
+				<div id='threeWrapper'> \
+					<test-bar id='three' name='your' attr1=5 attr2=5> \
+						<div id='three.one'> \
+							<div id='three.one.one'></div> \
+							<test-bar id='four' name='uncle' attr1=10 attr2=5></test-bar> \
+						</div> \
+					</test-bar> \
+				</div> \
+				<div id='not-a-widget'></div>";
 
-			container.innerHTML = html;
 			register.parse(container);
 
 			assert.strictEqual(Widget.prototype.getEnclosingWidget(document.getElementById("not-a-widget")), null,

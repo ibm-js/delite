@@ -55,17 +55,17 @@
 			var popup = dom.byId("popup");
 
 			doh.register("around with body margin", [
-				function aroundT(t) {
+				function aroundT() {
 					// Dropdown from "aroundTop" node.
-					var ret = place.around(popup, aroundTop, [
+					place.around(popup, aroundTop, [
 						"below"	// aroundTop's bottom-left corner with the popup's top-left corner
 					], true);
 
 					doh.is("20px", popup.style.top, "underneath around node");
 				},
-				function aroundL(t) {
+				function aroundL() {
 					// middle left popup from "aroundLeft" node
-					var ret = place.around(popup, aroundLeft, [
+					place.around(popup, aroundLeft, [
 						"after-centered"	// aroundLeft's middle-right with the popup's middle-left
 					], true);
 
@@ -73,9 +73,9 @@
 					var aroundPos = domGeometry.position(aroundLeft);
 					doh.is(Math.round(aroundPos.x + aroundPos.w), Math.round(popupPos.x), "after around node");
 				},
-				function aroundR(t) {
+				function aroundR() {
 					// This will put the drop-down to the left of the "aroundRight" node
-					var ret = place.around(popup, aroundRight, ["before-centered"], true);
+					place.around(popup, aroundRight, ["before-centered"], true);
 
 					var popupPos = domGeometry.position(popup);
 					var aroundPos = domGeometry.position(aroundRight);
@@ -92,9 +92,9 @@
 <body style="position: relative; top: 0; margin-top: 40px;">
 <h1>Dijit Place With Margin On BODY Unit Test</h1>
 
-<div id="aroundTop" class="aroundNode" style="top: 0px; left: 50%">T</div>
-<div id="aroundLeft" class="aroundNode" style="bottom: 30%; left: 0px;">L</div>
-<div id="aroundRight" class="aroundNode" style="bottom: 30%; right: 0px;">R</div>
+<div id="aroundTop" class="aroundNode" style="top: 0; left: 50%">T</div>
+<div id="aroundLeft" class="aroundNode" style="bottom: 30%; left: 0;">L</div>
+<div id="aroundRight" class="aroundNode" style="bottom: 30%; right: 0;">R</div>
 
 <div id="popup">
 	I'm a drop down, wider and taller than the around nodes I'm placed next to.
