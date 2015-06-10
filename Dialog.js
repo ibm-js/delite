@@ -3,7 +3,7 @@ define([
 	"dcl/dcl",
 	"./a11y",
 	"./Widget"
-], function (dcl, a11y, keys, Widget) {
+], function (dcl, a11y, Widget) {
 	/**
 	 * Base class for modal dialogs, where tabbing from the last element loops to the first, and vice-versa.
 	 * @mixin module:delite/Dialog
