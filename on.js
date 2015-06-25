@@ -45,7 +45,8 @@ define(function () {
 				});
 
 				if (event.key !== fixedKey) {
-					event.key = fixedKey;
+					// A simple "event.key = fixedKey" doesn't work on FF31 (for " " --> "Spacebar" conversion).
+					Object.defineProperty(event, "key", {value: fixedKey, enumerable: true});
 				}
 
 				origFunc(event);
