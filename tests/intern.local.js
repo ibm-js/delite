@@ -8,8 +8,11 @@ define([
 		port: 4444
 	};
 
+	// Uncomment this line (and modify machine name) for testing against remote VM.
+	// intern.proxyUrl = "http://mac.local:9000";
+
 	intern.environments = [
-		// { browserName: "firefox" },
+		{ browserName: "firefox" },
 		// { browserName: "safari" },
 		{ browserName: "chrome" }
 	];
