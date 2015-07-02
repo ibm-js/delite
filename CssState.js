@@ -29,14 +29,6 @@ define([
 		 */
 		booleanCssProps: ["disabled", "readOnly", "selected", "opened"],
 
-		postRender: function () {
-			["checked", "state"].concat(this.booleanCssProps).forEach(function (name) {
-				if (this[name]) {
-					this.notifyCurrentValue(name);
-				}
-			});
-		},
-
 		refreshRendering: function (oldVals) {
 			// Monitoring changes to disabled, readonly, etc. state, and update CSS class of root node
 			this.booleanCssProps.forEach(function (name) {

@@ -82,7 +82,7 @@ define([
 				})
 				.execute("return document.activeElement.innerHTML").then(function (value) {
 					// making sure that observe() worked
-					assert.strictEqual(value, "widget, tabindex=1, updated to 5");
+					assert.strictEqual(value, "s2 widget, tabindex=1, updated to 5");
 				})
 				.pressKeys(keys.TAB)
 				.execute("return document.activeElement.parentNode.id").then(function (value) {

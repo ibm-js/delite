@@ -25,15 +25,16 @@
 				tabIndex: 0
 			});
 			register("test-tab-index", [HTMLElement, TabbableWidget], {
+				label: "",
+
 				render: function () {
 					this.labelNode = document.createElement("span");
-					this.labelNode.tabIndex = 0;
 					this.appendChild(this.labelNode);
 				},
 
 				// dcl.after() to avoid spurious failure on chrome, TODO: investigate more later
 				attachedCallback: register.after(function () {
-					// We could do this in _setTabIndexAttr() but I want to test that observe() is working
+					// Test that observe() is working.
 					this.observe(function (props) {
 						if ("tabIndex" in props) {
 							this.label = this.label + ", updated to " + this._get("tabIndex");
@@ -41,27 +42,23 @@
 					});
 				}),
 
-				_setTabIndexAttr: function (val) {
-					this.labelNode.tabIndex = val;
-					this._set("tabIndex", val);
-				},
-
-				label: "",
-				_setLabelAttr: function (val) {
-					this.labelNode.innerHTML = val;	// should be innerText/textContent but we're just testing
-					this._set("label", val);
+				refreshRendering: function (props) {
+					if ("tabIndex" in props) {
+						this.labelNode.tabIndex = this._get("tabIndex");
+					}
+					if ("label" in props) {
+						this.labelNode.textContent = this.label;
+					}
 				}
 			});
-
-			register.deliver();
 
 			// Set global variable to signal that the test page is ready
 			ready = true;
 		});
 
 		function changeIndices() {
-			document.getElementById("s2").tabIndex = 5;
-			document.getElementById("s3").tabIndex = 6;
+			s2.tabIndex = 5;
+			s3.tabIndex = 6;
 		}
 	</script>
 </head>
@@ -76,12 +73,11 @@
 
 	<fieldset>
 		<legend>Specified tab index</legend>
-		<div id="s1" tabindex="1">div, tabindex=1</div>
-		<test-tab-index id="s3" label="widget, tabindex=2" tabindex="2"></test-tab-index>
-		<test-tab-index id="s2" label="widget, tabindex=1" tabindex="1"></test-tab-index>
-		<div id="s4" tabindex="3">div, tabindex=3</div>
+		<div id="s1" tabindex="1">s1 div, tabindex=1</div>
+		<test-tab-index id="s3" label="s3 widget, tabindex=2" tabindex="2"></test-tab-index>
+		<test-tab-index id="s2" label="s2 widget, tabindex=1" tabindex="1"></test-tab-index>
+		<div id="s4" tabindex="3">s4 div, tabindex=3</div>
 		<button id="button" tabindex="3" onclick="changeIndices();">change indices</button>
-
 	</fieldset>
 </body>
 </html>

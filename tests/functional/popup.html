@@ -221,11 +221,6 @@ require([
 	var DialogWithPopupWidget = register("dialog-with-popup-widget", [HTMLElement, DialogWithPopupWidgetMixin], {
 		label: "show popup",
 
-		popup: null,
-		_setPopupAttr: function (popup) {
-			this.button.popup = popup;
-		},
-
 		render: function () {
 			this.innerHTML +=
 				"<div>" + this.title + "</div>" +
@@ -239,6 +234,7 @@ require([
 			this.button = new SimpleDropDownButton({
 				id: this.id + "PopupButton",
 				label: this.label,
+				popup: this.popup,
 				orient: ["after"]	// so popup doesn't cover OK button
 			});
 			this.button.placeAt(this);

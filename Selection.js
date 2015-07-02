@@ -22,7 +22,7 @@ define(["dcl/dcl", "decor/sniff", "./Widget"], function (dcl, has, Widget) {
 	 * @augments module:delite/Widget
 	 */
 	return dcl(Widget, /** @lends module:delite/Selection# */{
-		preRender: function () {
+		createdCallback: function () {
 			this._set("selectedItems", []);
 		},
 		

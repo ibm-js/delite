@@ -89,7 +89,7 @@ define([
 			}
 		},
 
-		postRender: function () {
+		createdCallback: function () {
 			this.on("delite-activated", function () {
 				// Called when user may be about to start input.
 				// Saves the widget's current value, which is the most recent of:

@@ -5,7 +5,7 @@ title: delite/Widget
 
 # delite/Widget
 
-`delite/Widget` is a mixin used by all widgets.
+`delite/Widget` is the superclass for all visual widgets.
 It provides fine grained lifecycle methods, shorthand notation for declaring custom setters,
 and code to read widget parameters specified as DOMNode attributes.
 
@@ -14,34 +14,40 @@ and code to read widget parameters specified as DOMNode attributes.
 Declarative creation:
 
 1. Element upgraded to have all methods and properties of the widget class.
-2. `preRender()` callback executed.
-3. `render()` callback executed.   Note though that the root node already exists.
-4. `postRender()` callback.
-5. Parameters specified as DOMNode attributes (ex: `<d-slider max=10>`) are mixed into the widget, thus calling
+2. `createdCallback()` executed.
+3. Parameters specified as attributes (ex: `<d-slider max=10>`) are mixed into the widget, thus calling
    custom setters.
-6. `attachedCallback()` callback.
+4. `computeProperties(this, true)` executed.
+5. `preRender()` executed.
+6. `render()` executed.  Note though that the root node already exists.
+7. `postRender()` executed.
+8. `refreshRendering(this, true)` executed.
+9. `attachedCallback()` executed.
 
 Programmatic creation is:
 
 1. Element created with widget tag name (ex: `<d-slider>`), and
    upgraded to have all methods and properties of the widget class.
-2. `preRender()` callback executed.
-3. `render()` callback executed.   Note though that the root node already exists.
-4. `postRender()` callback.
-5. Parameters specified programatically
+2. Parameters specified programmatically
    (ex: `new MyWidget({title: "..."})`) are mixed into the widget, thus calling
    custom setters.
-6. `attachedCallback()` callback.
+4. `computeProperties(this, true)` executed.
+5. `preRender()` executed.
+6. `render()` executed.  Note though that the root node already exists.
+7. `postRender()` executed.
+8. `refreshRendering(this, true)` executed.
 
-`attachedCallback()` will be called automatically, although asynchronously.
+`attachedCallback()` will be called automatically, although asynchronously, when the widget is attached to the
+document.
 
-There are currently five lifecycle methods which can be extended on the widget:
+There are currently six lifecycle methods which can be extended on the widget:
 
-1. `preRender()`
-2. `render()`
-3. `postRender()`
-4. `attachedCallback()`
-5. `detachedCallback()`
+1. `createdCallback()`
+2. `preRender()`
+3. `render()`
+4. `postRender()`
+5. `attachedCallback()`
+6. `detachedCallback()`
 
 Note that all of these methods except `render()` are automatically chained,
 so you don't need to worry about setting up code to call the superclasses' methods.
@@ -81,13 +87,33 @@ arguments:
 * `type` - The type of the event being emitted. (e.g. `"click"`)
 * `event` - Properties to set on the synthetic event object.
 
-## Custom setters
+## Updating widgets
 
-Note that custom setters need to call `this._set()` to record the new value:
+`delite/Widget` extends [`decor/Invalidating`](/decor/docs/0.5.0/Invalidating.html) and thus uses the same mechanism
+for updating the widget DOM according to changes to widget properties.
+
+Specifically, the properties must be declared in the prototype, along with
+`computeProperties()` and `refreshRendering()` methods to respond to property changes:
 
 ```js
-_setLabelAttr: function(val){
-	this._set("label", val);	// to notify listeners and record the new value
-	this.labelNode.textContent = val;	// update the DOM
-}
+define(["delite/register", "delite/Widget"/*, ...*/], function (register, Widget/*, ...*/) {
+  return register("my-widget", [HTMElement, Widget], {
+    a: true,
+    b: "value",
+    computeProperties: function (oldValues) {
+      if ("a" in oldValues) {
+        // do something logical that does not directly impact the DOM because "a" has changed
+        // To access new value, access directly to `this.a`
+      }
+    },
+    refreshRendering: function (oldValues) {
+      if ("b" in oldValues) {
+        // modify the DOM because "b" has changed
+        // To access new value, access directly to `this.b`
+      }
+      if ("a" in oldValues) {
+      }
+    }
+  });
+});
 ```

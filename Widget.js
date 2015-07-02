@@ -72,10 +72,17 @@ define([
 		//////////// INITIALIZATION METHODS ///////////////////////////////////////
 
 		createdCallback: function () {
-			this.preRender();
-			this.render();
-			this.postRender();
+			this.widgetId = ++cnt;
 		},
+
+		// deliver() is called on widget creation, either from CustomElement#attachedCallback() (for the declarative
+		// case) or the widget constructor (for the programmatic case).  At that point, Invalidating's observers haven't
+		// been set up yet, so Stateful#deliver() won't call computeProperties() or refreshRendering().  But instead,
+		// Widget calls Invalidating#initializeInvalidating(), which calls computeProperties(this, true) and
+		// refreshRendering(this, true).
+		deliver: dcl.after(function () {
+			this.initializeInvalidating();
+		}),
 
 		computeProperties: function (props) {
 			if ("dir" in props) {
@@ -85,6 +92,19 @@ define([
 					this.effectiveDir = this.getInheritedDir();
 				}
 			}
+		},
+
+		shouldInitializeRendering: function (oldVals) {
+			// render the template on widget creation and also whenever app changes template prop
+			return !this.rendered || "template" in oldVals;
+		},
+
+		initializeRendering: function () {
+			this.rendered = false;
+			this.preRender();
+			this.render();
+			this.postRender();
+			this.rendered = true;
 		},
 
 		/**
@@ -97,8 +117,10 @@ define([
 		},
 
 		// Override Invalidating#refreshRendering() to execute the template's refreshRendering() code, etc.
-		refreshRendering: function (oldVals) {
-			if (this._templateHandle) {
+		refreshRendering: function (oldVals, justRendered) {
+			if (this._templateHandle && !justRendered) {
+				// Refresh the template based on changed values, but not right after the template is rendered,
+				// because that would be redundant.
 				this._templateHandle.refresh(oldVals);
 			}
 
@@ -128,7 +150,6 @@ define([
 		 * @protected
 		 */
 		preRender: function () {
-			this.widgetId = ++cnt;
 		},
 
 		/**
@@ -146,8 +167,18 @@ define([
 		 * @protected
 		 */
 		render: function () {
+			// Tear down old rendering (if there is one).
+			if (this._templateHandle) {
+				this._templateHandle.destroy();
+				delete this._templateHandle;
+			}
+
+			// Render the widget.
 			if (this.template) {
 				this._templateHandle = this.template(this.ownerDocument, register);
+				if (this.attached && !has("document-register-element")) {
+					this._templateHandle.attach();
+				}
 			}
 		},
 
@@ -199,11 +230,6 @@ define([
 		 * @protected
 		 */
 		postRender: function () {
-			this.initializeInvalidating();
-			if (this._templateHandle) {
-				this.notifyCurrentValue.apply(this, this._templateHandle.dependencies);
-			}
-			this.notifyCurrentValue("dir", "baseClass");	// "dir" triggers computation of effectiveDir
 		},
 
 		//////////// DESTROY FUNCTIONS ////////////////////////////////
