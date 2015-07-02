@@ -10,7 +10,7 @@ define([
 	 * @augments module:delite/Widget
 	 */
 	return dcl(Widget, /** @lends module:delite/Dialog# */ {
-		postRender: function () {
+		createdCallback: function () {
 			this.on("keydown", this._dialogKeyDownHandler.bind(this));
 		},
 

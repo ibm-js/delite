@@ -272,16 +272,8 @@ define([
 			}.bind(this));
 		},
 
-		postRender: function () {
-			this.buttonNode = this.buttonNode || this.focusNode || this;
-			this.popupStateNode = this.popupStateNode || this.focusNode || this.buttonNode;
-
+		createdCallback: function () {
 			this.setAttribute("aria-haspopup", "true");
-
-			// basic listeners
-			this.on("pointerdown", this._dropDownPointerDownHandler.bind(this), this.buttonNode);
-			this.on("keydown", this._dropDownKeyDownHandler.bind(this), this.focusNode || this);
-			this.on("keyup", this._dropDownKeyUpHandler.bind(this), this.focusNode || this);
 
 			// set this.hovering when mouse is over widget so we can differentiate real mouse clicks from synthetic
 			// mouse clicks generated from JAWS upon keyboard events
@@ -292,32 +284,54 @@ define([
 				this.hovering = false;
 			}.bind(this));
 
-			// Avoid phantom click on android [and maybe iOS] where touching the button opens a centered dialog, but
-			// then there's a phantom click event on the dialog itself, possibly closing it.
-			// Happens in deliteful/tests/functional/ComboBox-prog.html on a phone (portrait mode), when you click
-			// towards the right side of the second ComboBox.
-			this.on("touchstart", function (evt) {
-				// Note: need to be careful not to call evt.preventDefault() indiscriminately because that would
-				// prevent [non-disabled] <input> etc. controls from getting focus.
-				if (this.dropDownPosition[0] === "center") {
-					evt.preventDefault();
-				}
-			}.bind(this), this.buttonNode);
-
-			// Stop click events and workaround problem on iOS where a blur event occurs ~300ms after
-			// the focus event, causing the dropdown to open then immediately close.
-			// Workaround iOS problem where clicking a Menu can focus an <input> (or click a button) behind it.
-			// Need to be careful though that you can still focus <input>'s and click <button>'s in a TooltipDialog.
-			// Also, be careful not to break (native) scrolling of dropdown like ComboBox's options list.
-			this.on("touchend", function (evt) {
-				evt.preventDefault();
-			}, this.buttonNode);
-			this.on("click", function (evt) {
-				evt.preventDefault();
-				evt.stopPropagation();
-			}, this.buttonNode);
-
 			this.on("delite-deactivated", this._deactivatedHandler.bind(this));
+		},
+
+		preRender: function () {
+			// Remove old listeners if we are re-rendering, just in case some of the listeners were put onto
+			// the root node.  We don't want to make duplicate listeners.
+			if (this._HasDropDownListeners) {
+				this._HasDropDownListeners.forEach(function (handle) {
+					handle.remove();
+				});
+			}
+		},
+
+		postRender: function () {
+			this.buttonNode = this.buttonNode || this.focusNode || this;
+			this.popupStateNode = this.popupStateNode || this.focusNode || this.buttonNode;
+
+			this._HasDropDownListeners = [
+				// basic listeners
+				this.on("pointerdown", this._dropDownPointerDownHandler.bind(this), this.buttonNode),
+				this.on("keydown", this._dropDownKeyDownHandler.bind(this), this.focusNode || this),
+				this.on("keyup", this._dropDownKeyUpHandler.bind(this), this.focusNode || this),
+
+				// Avoid phantom click on android [and maybe iOS] where touching the button opens a centered dialog, but
+				// then there's a phantom click event on the dialog itself, possibly closing it.
+				// Happens in deliteful/tests/functional/ComboBox-prog.html on a phone (portrait mode), when you click
+				// towards the right side of the second ComboBox.
+				this.on("touchstart", function (evt) {
+					// Note: need to be careful not to call evt.preventDefault() indiscriminately because that would
+					// prevent [non-disabled] <input> etc. controls from getting focus.
+					if (this.dropDownPosition[0] === "center") {
+						evt.preventDefault();
+					}
+				}.bind(this), this.buttonNode),
+
+				// Stop click events and workaround problem on iOS where a blur event occurs ~300ms after
+				// the focus event, causing the dropdown to open then immediately close.
+				// Workaround iOS problem where clicking a Menu can focus an <input> (or click a button) behind it.
+				// Need to be careful though that you can still focus <input>'s and click <button>'s in a TooltipDialog.
+				// Also, be careful not to break (native) scrolling of dropdown like ComboBox's options list.
+				this.on("touchend", function (evt) {
+					evt.preventDefault();
+				}, this.buttonNode),
+				this.on("click", function (evt) {
+					evt.preventDefault();
+					evt.stopPropagation();
+				}, this.buttonNode)
+			];
 		},
 
 		detachedCallback: function () {

@@ -64,7 +64,7 @@ define([
 						// saving the new value without applying it to any this.focusNode Element.
 						this._set("tabIndex", val);
 					},
-					postRender: function () {
+					createdCallback: function () {
 						this.observe(function (props) {
 							if ("tabIndex" in props) {
 								this.watchedTabIndex = this._get("tabIndex");

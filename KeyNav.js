@@ -131,19 +131,7 @@ define([
 			return this;
 		},
 
-		postRender: function () {
-			// Setup function to check which child nodes are navigable.
-			if (typeof this.descendantSelector === "string") {
-				var matchesFuncName = has("dom-matches");
-				this._selectorFunc = function (elem) {
-					return elem[matchesFuncName](this.descendantSelector);
-				};
-			} else if (this.descendantSelector) {
-				this._selectorFunc = this.descendantSelector;
-			} else {
-				this._selectorFunc = function (elem) { return elem.parentNode === this.containerNode; };
-			}
-
+		createdCallback: function () {
 			this.on("keypress", this._keynavKeyPressHandler.bind(this));
 			this.on("keydown", this._keynavKeyDownHandler.bind(this));
 			this.on("click", function (evt) {
@@ -169,6 +157,18 @@ define([
 					}
 				}
 			}.bind(this));
+
+			// Setup function to check which child nodes are navigable.
+			if (typeof this.descendantSelector === "string") {
+				var matchesFuncName = has("dom-matches");
+				this._selectorFunc = function (elem) {
+					return elem[matchesFuncName](this.descendantSelector);
+				};
+			} else if (this.descendantSelector) {
+				this._selectorFunc = this.descendantSelector;
+			} else {
+				this._selectorFunc = function (elem) { return elem.parentNode === this.containerNode; };
+			}
 		},
 
 		attachedCallback: function () {
