@@ -87,7 +87,6 @@ define(["./Template", "require", "requirejs-dplugins/Promise!"], function (Templ
 		 * @private
 		 */
 		parse: function (templateNode, xmlns) {
-			/* jshint maxcomplexity:13 */
 			// Get tag name, reversing the tag renaming done in toDom()
 			var tag = templateNode.hasAttribute("is") ? templateNode.getAttribute("is") :
 					templateNode.tagName.replace(/^template-/i, "").toLowerCase(),
@@ -96,39 +95,26 @@ define(["./Template", "require", "requirejs-dplugins/Promise!"], function (Templ
 			// Process attributes
 			var attributes = {}, connects = {}, attachPoints;
 			var i = 0, item, attrs = templateNode.attributes;
-			for (i = 0; (item = attrs[i]); i++) {
-				if (item.value) {
-					switch (item.name) {
+			while ((item = attrs[i++])) {
+				var name = item.name, value = item.value;
+				if (value || typeof elem[name.toLowerCase()] === "boolean") {
+					switch (name) {
 					case "xmlns":
-						xmlns = item.value;
+						xmlns = value;
 						break;
 					case "is":
 						// already handled above
 						break;
 					case "attach-point":
 					case "data-attach-point":		// in case user wants to use HTML validator
-						attachPoints = item.value.split(/, */);
+						attachPoints = value.split(/, */);
 						break;
 					default:
-						if (/^on-/.test(item.name)) {
+						if (/^on-/.test(name)) {
 							// on-click="{{handlerMethod}}" sets connects.click = "handlerMethod"
-							connects[item.name.substring(3)] = item.value.replace(/\s*({{|}})\s*/g, "");
+							connects[name.substring(3)] = value.replace(/\s*({{|}})\s*/g, "");
 						} else {
-							// map x="hello {{foo}} world" --> "hello " + this.foo + " world";
-							var propName = Template.getProp(tag, item.name);
-							if (propName && typeof elem[propName] !== "string" &&
-								!/{{/.test(item.value) && propName !== "style.cssText") {
-								// This attribute corresponds to a non-string property, and the value specified is a
-								// literal like vertical="false", so *don't* convert value to string.
-								var value = item.value;
-								if (typeof elem[propName] === "boolean" && (value === "off" || value === "on")) {
-									// conversion code needed on iOS for autocorrect property
-									value = value === "on" ? "true" : "false";
-								}
-								attributes[item.name] = value;
-							} else {
-								attributes[item.name] = toJs(item.value, item.name === "class");
-							}
+							attributes[name] = this.parseValueAttribute(tag, elem, name, value);
 						}
 					}
 				}
@@ -142,6 +128,38 @@ define(["./Template", "require", "requirejs-dplugins/Promise!"], function (Templ
 				children: handlebars.parseChildren(templateNode, xmlns),
 				attachPoints: attachPoints
 			};
+		},
+
+		/**
+		 * Parse markup for a normal attribute, ex: value="foo".  Does not handle on-click="..." or attach-point="...".
+		 * Returns the value to set for the corresponding property (if there's a shadow property), or otherwise
+		 * the value to set for the attribute.
+		 * For example, for markup of value="fred", returns "fred", and for selected="selected", returns true.
+		 * @param {string} tag - Name of tag, ex: "div".
+		 * @param {Element} elem - Example element.
+		 * @param {string} name - The name of the attribute.
+		 * @param {string} value - The value of the attribute.
+		 * @returns {string} Javascript expression representing the value, ex: "true" or "5 + this.bar".
+		 * @private
+		 */
+		parseValueAttribute: function (tag, elem, name, value) {
+			// map x="hello {{foo}} world" --> "hello " + this.foo + " world";
+			var propName = Template.getProp(tag, name),
+				propType = typeof elem[propName];
+			if (propName && propType !== "string" && !/{{/.test(value) && propName !== "style.cssText") {
+				// This attribute corresponds to a non-string property, and the value specified is a
+				// literal like vertical="false", so *don't* convert value to string.
+				if (propType === "boolean") {
+					// Convert autocorrect="on" and selected="selected" and just <option selected> to set
+					// corresponding properties to true.  Also convert autocorrect="off" to set
+					// corresponding property to false.
+					return value === "off" || value === "false" ? "false" : "true";
+				} else {
+					return value;
+				}
+			} else {
+				return toJs(value, name === "class");
+			}
 		},
 
 		/**

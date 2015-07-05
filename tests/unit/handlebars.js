@@ -111,26 +111,42 @@ define([
 			},
 
 			select: function () {
-				var MyWidget = register("handlebars-special-props-2", [HTMLElement, Widget], {
+				var MySelect = register("handlebars-select-1", [HTMLElement, Widget], {
 					foo: 0,
 					size: 0,
 					multiple: false,
 					template: handlebars.compile(
 							"<template><select data-attach-point='select' foo='{{foo}}' " +
-							"size='{{size}}' multiple='{{multiple}}'></select></template>"
+									"size='{{size}}' multiple='{{multiple}}'>" +
+								"<option value=''>hello now</option>" +
+								"<option selected='selected' value='CA16'>Reference Number</option>" +
+							"</select></template>"
 					)
 				});
 
-				var myWidget = new MyWidget({ // custom values
+				var mySelect = new MySelect({ // custom values
 					foo: 2,
 					size: 2,
 					multiple: true
 				});
 
-				var select = myWidget.select;
+				var select = mySelect.select;
 				assert.strictEqual(select.getAttribute("foo"), "2", "foo");
 				assert.strictEqual(select.size, 2, "size");
 				assert.strictEqual(select.multiple, true, "multiple");
+				assert.strictEqual(select.selectedIndex, 1, "selected=selected");
+
+				// Also make sure that <option selected> markup works.
+				var MySelect2 = register("handlebars-select-2", [HTMLElement, Widget], {
+					template: handlebars.compile(
+						"<template><select attach-point='select'>" +
+							"<option value=''>hello now</option>" +
+							"<option selected value='CA16'>Reference Number</option>" +
+						"</select></template>"
+					)
+				});
+				var mySelect2 = new MySelect2();
+				assert.strictEqual(mySelect2.select.selectedIndex, 1, "selected");
 			},
 
 			autocorrect: function () {
