@@ -52,7 +52,8 @@ define([
 		}
 	}
 
-	var REGEXP_SHADOW_PROPS = /^_(.+)Attr$/;
+	// Properties not to monitor for changes.
+	var REGEXP_IGNORE_PROPS = /^constructor$|^_set$|^_get$|^deliver$|^discardChanges$|^_(.+)Attr$/;
 
 	/**
 	 * Base class for all custom elements.
@@ -100,8 +101,6 @@ define([
 		getProps: function () {
 			// Override _Stateful.getProps() to ignore properties from the HTML*Element superclasses, like "style".
 			// You would need to explicitly declare style: "" in your widget to get it here.
-			// Intentionally skips methods, because it seems wasteful to have a custom
-			// setter for every method; not sure that would work anyway.
 			//
 			// Also sets up this._propCaseMap, a mapping from lowercase property name to actual name,
 			// ex: iconclass --> iconClass, which does include the methods, but again doesn't
@@ -112,10 +111,8 @@ define([
 
 			do {
 				Object.keys(proto).forEach(function (prop) {
-					if (!REGEXP_SHADOW_PROPS.test(prop)) {
-						if (typeof proto[prop] !== "function") {
-							hash[prop] = true;
-						}
+					if (!REGEXP_IGNORE_PROPS.test(prop)) {
+						hash[prop] = true;
 						pcm[prop.toLowerCase()] = prop;
 					}
 				});
