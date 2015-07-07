@@ -60,8 +60,9 @@ define([
 		 * @protected
 		 */
 		getTextDir: function (text) {
-			return this.textDir === "auto" ? this._checkContextual(text) :
-				(/^(rtl|ltr)$/i).test(this.textDir) ? this.textDir : this.effectiveDir;
+			var textDir = this.textDir;
+			return textDir === "auto" ? this._checkContextual(text) :
+				(/^(rtl|ltr)$/i).test(textDir) ? textDir : this.effectiveDir;
 		},
 
 		/**
@@ -110,8 +111,7 @@ define([
 		applyTextDirection: function (text) {
 			if (this.textDir) {
 				return this.wrapWithUcc(this.removeUcc(text));
-			}
-			else {
+			} else {
 				return this.removeUcc(text);
 			}
 		},
@@ -124,9 +124,7 @@ define([
 		 * @protected
 		 */
 		wrapWithUcc: function (text) {
-			var dir = this.textDir === "auto" ? this._checkContextual(text) :
-				(/^(rtl|ltr)$/i).test(this.textDir) ? this.textDir : this.effectiveDir;
-			return (dir === "ltr" ? LRE : RLE) + text + PDF;
+			return (this.getTextDir(text) === "ltr" ? LRE : RLE) + text + PDF;
 		},
 
 		/**
@@ -137,11 +135,9 @@ define([
 		 * @protected
 		 */
 		removeUcc: function (text) {
-			if (text) {
-				return text.replace(/[\u200E\u200F\u202A-\u202C]/g, "");
-			}
-			return text;
+			return text && text.replace(/[\u200E\u200F\u202A-\u202C]/g, "");
 		},
+
 		/**
 		 * Wraps by UCC (Unicode control characters) option's text according to this.textDir.
 		 *
