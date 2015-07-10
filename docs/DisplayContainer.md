@@ -36,7 +36,7 @@ mycontainer.show("mychildid", {/* optional params depending on the subclass */})
 ## Extending DisplayContainer
 
 In order for a container to leverage `delite/DisplayContainer` it must extend it and possibly implement the `changeDisplay()` 
-and/or `load()` functions in order to customize their behavior. The following subclass is looking at the parameters passed
+and/or `loadChild()` functions in order to customize their behavior. The following subclass is looking at the parameters passed
 to the `show()` or `hide()` function in order to perform a visual transition when switching the child visibility. In 
 particular it performs a fading in or out transition based on the value of the `fade` parameter.
 

@@ -83,32 +83,15 @@ define(["dcl/dcl", "requirejs-dplugins/Promise!", "./Container"],
 		 * @fires module:delite/DisplayContainer#delite-display-load
 		 */
 		show: function (dest, params) {
-			// we need to warn potential app controller we are going to load a view & transition
-			var child, event = {
-				dest: dest,
-				setChild: function (val) {
-					child = val;
-				}
-			};
 			var self = this;
-			dcl.mix(event, params);
-
-			// we now need to warn potential app controller we need to load a new child.
-			// if the controller specifies the child then use it,
-			// otherwise call the container load method
-			this.emit("delite-display-load", event);
-			if (!child) {
-				child = this.load(dest);
-			}
-
-			return Promise.resolve(child).then(function (value) {
+			return this.loadChild(dest, params).then(function (value) {
 				// if view is not already a child this means we loaded a new view (div), add it
 				if (self.getIndexOfChild(value.child) === -1) {
 					self.addChild(value.child, value.index);
 				}
 				// the child is here, actually perform the display
 				// notify everyone we are going to proceed
-				event = {
+				var event = {
 					dest: dest,
 					cancelable: false
 				};
@@ -129,7 +112,7 @@ define(["dcl/dcl", "requirejs-dplugins/Promise!", "./Container"],
 		 * This method must be called to hide a particular destination child on this container.
 		 * @param {Element|string} dest - Element or Element id that points to the child this container must
 		 * hide.
-		 * @param {Object} [params] - Optional params that might be taken into account when removing the child.
+		 * @param {Object} [params] - Optional params that might be taken into account when hiding the child.
 		 * This can be the type of visual transitions involved.  This might vary from one DisplayContainer to another.
 		 * @returns {Promise} A promise that will be resolved when the display & transition effect will have been
 		 * performed.
@@ -138,31 +121,13 @@ define(["dcl/dcl", "requirejs-dplugins/Promise!", "./Container"],
 		 * @fires module:delite/DisplayContainer#delite-after-hide
 		 */
 		hide: function (dest, params) {
-			// we need to warn potential app controller we are going to load a view & transition
-			var child, event = {
-				dest: dest,
-				setChild: function (val) {
-					child = val;
-				},
-				bubbles: true,
-				cancelable: true,
-				hide: true
-			};
+			var args = {hide: true};
+			dcl.mix(args, params);
 			var self = this;
-			dcl.mix(event, params);
-
-			// we now need to warn potential app controller we need to load a new child.
-			// if the controller specifies the child then use it,
-			// otherwise call the container load method
-			this.emit("delite-display-load", event);
-			if (!child) {
-				child = this.load(dest);
-			}
-
-			return Promise.resolve(child).then(function (value) {
+			return this.loadChild(dest, args).then(function (value) {
 				// the child is here, actually perform the display
 				// notify everyone we are going to proceed
-				event = {
+				var event = {
 					dest: dest,
 					bubbles: true,
 					cancelable: false,
@@ -204,18 +169,36 @@ define(["dcl/dcl", "requirejs-dplugins/Promise!", "./Container"],
 		},
 
 		/**
-		 * This method can be redefined to load a child of the container.  By default it just looks up
-		 * elements by id.
-		 * @protected
-		 * @param {Element|string} widget - Element or Element id that points to the child this container must
-		 * display.
-		 * @returns {Promise|Object} If asynchronous a promise that will be resolved when the child will have been 
-		 * loaded with an object of the following form: `{ child: widget }` or with an optional index
-		 * `{ child: widget, index: index }`. Other properties might be added to	the object if needed.
-		 * If the action is synchronous this directly returns the given object.
+		 * This method must be called to load a particular child on this container.
+		 * A `delite-display-load` event is fired giving the chance to a controller to load/create the child.
+		 * This method can be redefined to actually load a child of the container. If a controller is not present,
+		 * it just looks up elements by id.
+		 * @param {Element|string} dest  - Element or Element id that points to the child this container must
+		 * load.
+		 * @param {Object} [params] - Optional params that might be taken into account when removing the child.
+		 * @returns {Promise} A promise that will be resolved when the child will have been
+		 * loaded with an object of the following form: `{ child: childElement }` or with an optional index
+		 * `{ child: childElement, index: index }`. Other properties might be added to	the object if needed.
+		 * @fires module:delite/DisplayContainer#delite-display-load
 		 */
-		load: function (dest) {
-			return { child: typeof dest === "string" ? this.ownerDocument.getElementById(dest) : dest };
+		loadChild: function (dest, params) {
+			// we need to warn potential app controller we are going to load a view
+			var child, event = {
+				dest: dest,
+				setChild: function (val) {
+					child = val;
+				}
+			};
+			dcl.mix(event, params);
+
+			// we now need to warn potential app controller we need to load a new child.
+			// if the controller specifies the child then use it,
+			// otherwise call the container load method
+			this.emit("delite-display-load", event);
+			if (!child) {
+				child = { child: typeof dest === "string" ? this.ownerDocument.getElementById(dest) : dest };
+			}
+			return Promise.resolve(child);
 		}
 	});
 });
