@@ -129,7 +129,7 @@ define([
 
 				assert.strictEqual(ret.aroundCorner, "BL", "around corner, window.pageYOffset = " + window.pageYOffset);
 				assert.strictEqual(ret.corner, "TL", "popup's corner");
-				assert.strictEqual(popup.style.top, "120px", "underneath around node");
+				assert.strictEqual(Math.round(popup.style.top.replace("px", "")), 120, "underneath around node");
 				assert.strictEqual(Math.round(popup.style.left.replace("px", "")),
 						Math.round(aroundTop.getBoundingClientRect().left), "left sides aligned");
 			},
