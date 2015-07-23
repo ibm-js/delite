@@ -258,10 +258,6 @@ define([
 					this._set("foo", val);
 				},
 
-				preRender: function () {
-					this.instanceProp = 3;
-				},
-
 				anotherFunc: function () {
 				}
 			});

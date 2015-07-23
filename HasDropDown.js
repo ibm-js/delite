@@ -318,9 +318,6 @@ define([
 			}, this.buttonNode);
 
 			this.on("delite-deactivated", this._deactivatedHandler.bind(this));
-
-			// trigger initial setting of d-down-arrow class
-			this.notifyCurrentValue("dropDownPosition");
 		},
 
 		detachedCallback: function () {
