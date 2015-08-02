@@ -24,7 +24,7 @@ Example:
 
 ```js
 require([
-	"delite/register", "delite/Container", "acme/MyButtonWidget, "requirejs-domready/domReady!"
+	"delite/register", "delite/Container", "acme/MyButtonWidget", "requirejs-domready/domReady!"
 ], function(register, Container, MyButtonWidget){
 	var MyToolbar = register("my-toolbar", [Container], { });
 
