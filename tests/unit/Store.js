@@ -19,7 +19,7 @@ define([
 				d.resolve();
 			});
 			store.attachedCallback();
-			store.store = new Rest({ target: "/" });
+			store.source = new Rest({ target: "/" });
 			return d;
 		},
 */
@@ -40,21 +40,21 @@ define([
 				assert.strictEqual(store.renderItems.length, 2);
 				assert.deepEqual(store.renderItems[0], myData[0]);
 				assert.deepEqual(store.renderItems[1], myData[1]);
-				myStore.putSync({ id: "foo", name: "Foo2" });
+				mySource.putSync({ id: "foo", name: "Foo2" });
 				// this works because put is synchronous & same for add etc...
 				assert.strictEqual(store.renderItems.length, 2);
 				assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo2" });
 				assert.deepEqual(store.renderItems[1], { id: "bar", name: "Bar" });
 				store.deliver();
 				assert.strictEqual(refreshRenderingCallCount, 1, "after store.put");
-				myStore.addSync({ id: "fb", name: "FB" });
+				mySource.addSync({ id: "fb", name: "FB" });
 				assert.strictEqual(store.renderItems.length, 3);
 				assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo2" });
 				assert.deepEqual(store.renderItems[1], { id: "bar", name: "Bar" });
 				assert.deepEqual(store.renderItems[2], { id: "fb", name: "FB" });
 				store.deliver();
 				assert.strictEqual(refreshRenderingCallCount, 2, "after store.add");
-				myStore.removeSync("bar");
+				mySource.removeSync("bar");
 				assert.strictEqual(store.renderItems.length, 2);
 				assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo2" });
 				assert.deepEqual(store.renderItems[1], { id: "fb", name: "FB" });
@@ -62,15 +62,15 @@ define([
 				assert.strictEqual(refreshRenderingCallCount, 3, "after store.remove");
 			}));
 			// use empty model to easy comparison
-			var myStore = new M({ data: myData, model: null});
-			store.store = myStore;
+			var mySource = new M({ data: myData, model: null});
+			store.source = mySource;
 			return d;
 		},
 
 		NullStore: function () {
 			var d = this.async(1500);
 			var store = new C({
-				store: new M({ data: [{id: "foo", name: "Foo" }], model: null})
+				source: new M({ data: [{id: "foo", name: "Foo" }], model: null})
 			});
 			setTimeout(d.rejectOnError(function () {
 				store.on("query-success", d.callback(function () {
@@ -78,7 +78,7 @@ define([
 				}));
 
 				// Test the change store to null triggers a so-called query
-				store.store = null;
+				store.source = null;
 			}), 100);
 			return d;
 		},
@@ -97,23 +97,23 @@ define([
 				assert.deepEqual(store.renderItems[1], myData[1]);
 				// we destroy the store, we should not get any notification after that
 				store.destroy();
-				myStore.putSync({ id: "foo", name: "Foo2" });
+				mySource.putSync({ id: "foo", name: "Foo2" });
 				// this works because put is synchronous & same for add etc...
 				assert.strictEqual(store.renderItems.length, 2);
 				assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo" });
 				assert.deepEqual(store.renderItems[1], { id: "bar", name: "Bar" });
-				myStore.addSync({ id: "fb", name: "FB" });
+				mySource.addSync({ id: "fb", name: "FB" });
 				assert.strictEqual(store.renderItems.length, 2);
 				assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo" });
 				assert.deepEqual(store.renderItems[1], { id: "bar", name: "Bar" });
-				myStore.removeSync("bar");
+				mySource.removeSync("bar");
 				assert.strictEqual(store.renderItems.length, 2);
 				assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo" });
 				assert.deepEqual(store.renderItems[1], { id: "bar", name: "Bar" });
 			}));
 			// use empty model to easy comparison
-			var myStore = new M({ data: myData, model: null });
-			store.store = myStore;
+			var mySource = new M({ data: myData, model: null });
+			store.source = mySource;
 			return d;
 		},
 
@@ -129,20 +129,20 @@ define([
 				assert(store.renderItems instanceof Array);
 				assert.strictEqual(store.renderItems.length, 1);
 				assert.deepEqual(store.renderItems[0], myData[0]);
-				myStore.putSync({ id: "foo", name: "Foo2" });
+				mySource.putSync({ id: "foo", name: "Foo2" });
 				// this works because put is synchronous & same for add etc...
 				assert.strictEqual(store.renderItems.length, 1);
 				assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo2" });
-				myStore.addSync({ id: "fb", name: "FB" });
+				mySource.addSync({ id: "fb", name: "FB" });
 				assert.strictEqual(store.renderItems.length, 1);
 				assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo2" });
-				myStore.removeSync("bar");
+				mySource.removeSync("bar");
 				assert.strictEqual(store.renderItems.length, 1);
 				assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo2" });
 			}));
 			// use empty model to easy comparison
-			var myStore = new M({ data: myData, model: null });
-			store.store = myStore;
+			var mySource = new M({ data: myData, model: null });
+			store.source = mySource;
 			return d;
 		},
 
@@ -162,20 +162,20 @@ define([
 				// all of this makes no sense to test until we have range management implemented directly
 				// in delite/Store
 				/*
-				myStore.putSync({ id: "foo", name: "Foo2" });
+				mySource.putSync({ id: "foo", name: "Foo2" });
 				assert.strictEqual(store.renderItems.length, 1);
 				assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo2" });
-				myStore.addSync({ id: "fb", name: "FB" });
+				mySource.addSync({ id: "fb", name: "FB" });
 				assert.strictEqual(store.renderItems.length, 2);
 				assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo2" });
 				assert.deepEqual(store.renderItems[1], { id: "fb", name: "FB" });
-				myStore.removeSync("bar");
+				mySource.removeSync("bar");
 				assert.strictEqual(store.renderItems.length, 2);
 				*/
 			}));
 			// use empty model to easy comparison
-			var myStore = new M({ data: myData, model: null });
-			store.store = myStore;
+			var mySource = new M({ data: myData, model: null });
+			store.source = mySource;
 			return d;
 		},
 
@@ -194,26 +194,26 @@ define([
 				assert.strictEqual(store.renderItems.length, 2);
 				assert.deepEqual(store.renderItems[0], myData[0]);
 				assert.deepEqual(store.renderItems[1], myData[1]);
-				var item = myStore.getSync("foo");
+				var item = mySource.getSync("foo");
 				item.index = 2;
-				myStore.putSync(item);
+				mySource.putSync(item);
 				// this works because put is synchronous
 				assert.deepEqual(store.renderItems[0], { id: "bar", name: "Bar", index: 1 });
 				assert.deepEqual(store.renderItems[1], { id: "foo", name: "Foo", index: 2 });
-				item = myStore.getSync("foo");
+				item = mySource.getSync("foo");
 				item.index = 0;
-				myStore.putSync(item);
+				mySource.putSync(item);
 				assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo", index: 0 });
 				assert.deepEqual(store.renderItems[1], { id: "bar", name: "Bar", index: 1 });
 			}));
 			// use empty model to easy comparison
-			var myStore = new M({ data: myData, model: null });
-			store.store = myStore;
+			var mySource = new M({ data: myData, model: null });
+			store.source = mySource;
 			return d;
 		},
 
 		// TODO: re-enable when dstore will have re-introduced refresh event?
-		
+
 		/**
 		SetData: function () {
 			var d = this.async(1500);
@@ -231,7 +231,7 @@ define([
 					assert.deepEqual(store.renderItems[0], myData[0]);
 					assert.deepEqual(store.renderItems[1], myData[1]);
 					// this will issue the query again
-					myStore.setData([
+					mySource.setData([
 						{ id: "another", name: "Another" }
 					]);
 				} else {
@@ -242,8 +242,8 @@ define([
 			}));
 			store.attachedCallback();
 			// use empty model to easy comparison
-			var myStore = new M({ data: myData, model: null });
-			store.store = myStore;
+			var mySource = new M({ data: myData, model: null });
+			store.source = mySource;
 			return d;
 		},**/
 
@@ -252,4 +252,3 @@ define([
 		}
 	});
 });
-

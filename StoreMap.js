@@ -1,5 +1,6 @@
 /** @module delite/StoreMap */
-define(["dcl/dcl", "./Store"], function (dcl, Store) {
+define(["dcl/dcl", "requirejs-dplugins/Promise!", "./Store"],
+	function (dcl, Promise, Store) {
 
 	var getvalue = function (map, item, key, store) {
 		if (map[key + "Func"]) {
@@ -142,6 +143,7 @@ define(["dcl/dcl", "./Store"], function (dcl, Store) {
 				this.queryStoreAndInitItems(this._pendingQuery, true);
 				this._pendingQuery = null;
 			}
+
 		},
 
 		/**
@@ -151,13 +153,13 @@ define(["dcl/dcl", "./Store"], function (dcl, Store) {
 		 * @returns {Promise}		
 		 */
 		renderItemToItem: function (renderItem) {
-			var tmp = {}, store = this.store;
+			var tmp = {}, store = this._storeAdapter;
 			// special id case
-			tmp[store.idProperty] = renderItem.id;
+			store.setIdentity(tmp, renderItem.id);
 			for (var key in renderItem) {
 				setvalue(this, tmp, key, store, renderItem[key]);
 			}
-			return store.get(renderItem[store.idProperty]).then(function (item) {
+			return store.get(tmp.id).then(function (item) {
 				dcl.mix(item, tmp);
 				return item;
 			});
@@ -172,23 +174,22 @@ define(["dcl/dcl", "./Store"], function (dcl, Store) {
 		itemToRenderItem: function (item) {
 			var renderItem = {};
 			var mappedKeys = this._mappedKeys;
-			var store = this.store;
+			var store = this._storeAdapter;
 
 			// if we allow remap we need to store the initial item
 			// we need this to be enumerable for dealing with update case (where only enumerable
 			// properties are copied)
 			// we might need it in other context as well
 			renderItem.__item = item;
-
 			// special id case
-			var id = store.getIdentity(item);
+			var id = this.getIdentity(item);
 			// Warning: we are using private API from dstore/Store here so let's do that conditionally
 			// the purpose is to workaround the fact in some cases the store might miss the ID and we don't
 			// want to bother people about that.
-			if (id == null && store._setIdentity) {
-				store._setIdentity(item, Math.random());
+			if (id == null && store.setIdentity) {
+				store.setIdentity(item, Math.random());
 			}
-			renderItem.id = store.getIdentity(item);
+			renderItem.id = this.getIdentity(item);
 			// general mapping case
 			for (var i = 0; i < mappedKeys.length; i++) {
 				renderItem[mappedKeys[i]] = getvalue(this, item, mappedKeys[i], store);
@@ -200,7 +201,6 @@ define(["dcl/dcl", "./Store"], function (dcl, Store) {
 					}
 				}
 			}
-
 			return renderItem;
 		},
 
@@ -215,7 +215,7 @@ define(["dcl/dcl", "./Store"], function (dcl, Store) {
 			var mappedKeys = this._mappedKeys;
 			for (var i = 0; i < items.length; i++) {
 				for (var j = 0; j < mappedKeys.length; j++) {
-					items[i][mappedKeys[j]] = getvalue(this, items[i].__item, mappedKeys[j], this.store);
+					items[i][mappedKeys[j]] = getvalue(this, items[i].__item, mappedKeys[j], this.source);
 				}
 			}
 		}
