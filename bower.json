@@ -13,7 +13,7 @@
 	},
 	"devDependencies": {
 		"dojo": ">=1.9.1",
-		"dstore": "1.0.x",
+		"dstore": "1.1.x",
 		"platform": "Polymer/platform#~0.1.4",
 		"dijit": ">=1.9.1"
 	},
