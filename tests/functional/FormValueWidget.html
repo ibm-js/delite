@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+	<meta name="viewport"
+		  content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no"/>
+	<meta name="apple-mobile-web-app-capable" content="yes"/>
+	<title>FormValueWidget</title>
+
+	<!-- For testing purposes. Real applications should load the AMD loader directly -->
+	<script type="text/javascript" src="boilerplate.js"></script>
+
+	<style>
+		my-spinner {
+			border: solid gray 2px;
+			padding: 3px;
+			display: inline-block;
+			cursor: default;
+
+			-webkit-touch-callout: none;
+			-webkit-user-select: none;
+			-khtml-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+		}
+		my-spinner .button {
+			border: solid black 1px;
+			padding: 3px;
+			margin: 2px;
+			display: inline-block;
+		}
+	</style>
+	<script type="text/javascript">
+		var ready = false; // set to true when the test page is ready
+		require(["delite/register", "delite/Container", "delite/FormValueWidget", "delite/handlebars",
+				"requirejs-domready/domReady!"], function (register, Container, FormValueWidget, handlebars) {
+			register("my-spinner", [HTMLElement, FormValueWidget, Container], {
+				template: handlebars.compile(
+					"<template>" +
+					"<input style='display:none'>" +	// just for testing
+					"<span attach-point=focusNode class='value'>{{this.value}}</span>" +
+					"<span on-click=decrement class='button decrement'>-</span>" +
+					"<span on-click=increment class='button increment'>+</span>" +
+					"<span style='display:none' attach-point=containerNode></span>" +
+					"</template>"
+				),
+				postRender: function () {
+					// TODO: move this logic into FormValueWidget itself?
+					this.valueNode = this.containerNode.querySelector("input");
+					if (this.valueNode) {
+						this.value = this.valueNode.value;
+					} else {
+						this.valueNode = this.ownerDocument.createElement("input");
+						this.containerNode.appendChild(this.valueNode);
+					}
+				},
+				decrement: function () {
+					this.value--;
+				},
+				increment: function () {
+					this.value++;
+				}
+			});
+			register.deliver();
+			ready = true;
+		});
+	</script>
+</head>
+<body>
+<h1>FormValueWidget functional test</h1>
+
+<form id="form1">
+	<span id="spinner1_label">Spinner widget based on FormValueWidget:</span>
+	<my-spinner id="spinner1" aria-labelledby="spinner1_label"><input value="5"></my-spinner>
+
+	<br>
+	<input type="reset" id="resetB" name="reset">
+	<input type="submit" id="submitB">
+
+	<br>
+	Clicking the reset button should put the spinner's value back to 5
+</form>
+
+</body>

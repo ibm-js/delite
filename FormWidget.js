@@ -239,6 +239,35 @@ define([
 					HTMLElement.prototype.removeAttribute.call(this, attr.name);
 				}
 			}
+		},
+
+		attachedCallback: function () {
+			// If the widget is in a form, reset the initial value of the widget when the form is reset.
+			for (var form = this.parentNode; form; form = form.parentNode) {
+				if (/^form$/i.test(form.tagName)) {
+					this.on("reset", function () {
+						this.defer(function () {
+							this.afterFormResetCallback();
+						});
+					}.bind(this), form);
+					break;
+				}
+			}
+		},
+
+		/**
+		 * Callback after `<form>` containing this widget is reset.
+		 * By the time this callback executes, `this.valueNode.value` will have already been reset according to
+		 * the form's original value.
+		 *
+		 * @protected
+		 */
+		afterFormResetCallback: function () {
+			if (this.checked !== this.valueNode.checked) {
+				this.checked = this.valueNode.checked;
+			}
 		}
 	});
 });
+
+

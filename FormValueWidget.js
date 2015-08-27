@@ -132,6 +132,13 @@ define([
 		 * @function
 		 * @protected
 		 */
-		handleOnInput: genHandler("input", "_previousOnInputValue", "_onInputHandle")
+		handleOnInput: genHandler("input", "_previousOnInputValue", "_onInputHandle"),
+
+		afterFormResetCallback: function () {
+			console.log(this.id, "FormValueWidget#afterFormResetCallback");
+			if (this.value !== this.valueNode.value) {
+				this.value = this.valueNode.value;
+			}
+		}
 	});
 });
