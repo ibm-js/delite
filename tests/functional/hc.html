@@ -1,0 +1,36 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>high contrast detection test</title>
+	<script type="text/javascript" src="boilerplate.js"></script>
+	<script language="JavaScript" type="text/javascript">
+		require([
+			"delite/hc",
+			"requirejs-domready/domReady!"
+		], function (has) {
+			if (has("highcontrast")) {
+				result.innerHTML = "High contrast mode detected, text color = " + has("highcontrast");
+			} else {
+				result.innerHTML = "Not high contrast mode (or browser ignores OS high contrast mode setting)";
+			}
+		})
+	</script>
+</head>
+<body>
+<h1>High Contrast Detection Test</h1>
+<p>
+	Result: <span id="result"></span>.
+</p>
+<p>
+	On Windows, setting the OS to high-contrast mode will make IE and FF ignore the CSS settings for
+	text color and size, and use the OS's settings instead (typically white on black or black on white).
+	Note that on Chrome, the OS setting is ignored.
+</p>
+<p>
+	Text with CSS settings for color:
+	<span style="color: red">red</span>
+	<span style="color: green">green</span>
+	<span style="color: blue">blue</span>
+</p>
+</body>
+</html>
