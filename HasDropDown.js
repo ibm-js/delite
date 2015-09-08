@@ -273,8 +273,6 @@ define([
 		},
 
 		createdCallback: function () {
-			this.setAttribute("aria-haspopup", "true");
-
 			// set this.hovering when mouse is over widget so we can differentiate real mouse clicks from synthetic
 			// mouse clicks generated from JAWS upon keyboard events
 			this.on("pointerenter", function () {
@@ -298,6 +296,8 @@ define([
 		},
 
 		postRender: function () {
+			this.setAttribute("aria-haspopup", "true");
+
 			this.buttonNode = this.buttonNode || this.focusNode || this;
 			this.popupStateNode = this.popupStateNode || this.focusNode || this.buttonNode;
 
