@@ -42,19 +42,9 @@
 					"<span attach-point=focusNode class='value'>{{this.value}}</span>" +
 					"<span on-click=decrement class='button decrement'>-</span>" +
 					"<span on-click=increment class='button increment'>+</span>" +
-					"<span style='display:none' attach-point=containerNode></span>" +
+					"<span style='display:none' attach-point=containerNode></span>" +	// for this.valueNode <input>
 					"</template>"
 				),
-				postRender: function () {
-					// TODO: move this logic into FormValueWidget itself?
-					this.valueNode = this.containerNode.querySelector("input");
-					if (this.valueNode) {
-						this.value = this.valueNode.value;
-					} else {
-						this.valueNode = this.ownerDocument.createElement("input");
-						this.containerNode.appendChild(this.valueNode);
-					}
-				},
 				decrement: function () {
 					this.value--;
 				},
@@ -72,7 +62,7 @@
 
 <form id="form1">
 	<span id="spinner1_label">Spinner widget based on FormValueWidget:</span>
-	<my-spinner id="spinner1" aria-labelledby="spinner1_label"><input value="5"></my-spinner>
+	<my-spinner id="spinner1" aria-labelledby="spinner1_label"><input value="5" name="spinner1_name"></my-spinner>
 
 	<br>
 	<input type="reset" id="resetB" name="reset">

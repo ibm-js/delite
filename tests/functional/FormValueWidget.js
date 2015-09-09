@@ -17,6 +17,15 @@ define([
 					intern.config.WAIT_TIMEOUT, intern.config.POLL_INTERVAL));
 		},
 
+		creation: function () {
+			this.timeout = intern.config.TEST_TIMEOUT;
+			return this.remote.execute("return spinner1.value").then(function (value) {
+				assert.equal(value, 5, "original value");	// taken from the embedded <input>
+			}).execute("return spinner1.name").then(function (name) {
+				assert.strictEqual(name, "spinner1_name", "name");
+			});
+		},
+
 		reset: function () {
 			this.timeout = intern.config.TEST_TIMEOUT;
 			var environmentType = this.remote.environmentType;

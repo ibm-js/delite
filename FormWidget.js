@@ -98,6 +98,28 @@ define([
 		 * @default undefined
 		 */
 
+		_mapAttributes: dcl.superCall(function (sup) {
+			return function () {
+				var input = this.querySelector("input");
+				if (input) {
+					// Get value and name from embedded <input> node.
+					if (input.value) {
+						this.setAttribute("value", input.value);
+					}
+					if (input.name) {
+						this.setAttribute("name", input.name);
+					}
+				} else {
+					// Create this.valueNode as a convenience, but don't add to the DOM because that breaks widgets like
+					// deliteful/Checkbox that unconditionally create their own this.valueNode:
+					// You end up with two embedded <input> nodes.
+					input = this.ownerDocument.createElement("input");
+				}
+				this.valueNode = input;
+				return sup.call(this);
+			};
+		}),
+
 		refreshRendering: function (oldValues) {
 			// Handle disabled and tabIndex, across the tabStops and root node.
 			// No special processing is needed for tabStops other than just to refresh disabled and tabIndex.
