@@ -87,22 +87,20 @@ define([
 			return item;
 		},
 
-		preRender: function () {
-			// Get the data from the textContent and clear it
-			if (this.source === null && this.textContent !== "") {
-				this._saveData(this.textContent);
-				this.textContent = "";
-			}
-		},
-
-		attachedCallback: function () {
-			// Setting the source with the data got from the textContent (not done in preRender because the source
-			// is not send in the props list when it is modified there)
-			if (this._source) {
-				this.source = new ObservableArray();
-				for (var j = 0; j < this._source.length; j++) {
-					this.source[j] = new Observable(this._source[j]);
+		createdCallback: function () {
+			// Get the data from the textContent
+			if (this.textContent.trim()) {
+				var data = JSON.parse("[" + this.textContent + "]");
+				if (data.length) {
+					this.source = new ObservableArray();
+					for (var j = 0; j < data.length; j++) {
+						if (!data[j].id) {
+							data[j].id = Math.random();
+						}
+						this.source[j] = new Observable(data[j]);
+					}
 				}
+				this.textContent = "";
 			}
 		},
 
@@ -111,15 +109,6 @@ define([
 		 * @param text
 		 */
 		_saveData: function (text) {
-			var data = JSON.parse("[" + text + "]");
-			for (var j = 0; j < data.length; j++) {
-				if (!data[j].id) {
-					data[j].id = Math.random();
-				}
-			}
-			if (data.length !== 0) {
-				this._source = data;
-			}
 		},
 
 		/**
