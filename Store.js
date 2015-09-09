@@ -148,7 +148,7 @@ define([
 		 */
 		computeProperties: function (props, isAfterCreation) {
 			// If this call is upon widget creation but `this.store` is not available, don't bother querying store
-			if (("source" in props || "query" in props) && (this.store || !isAfterCreation)) {
+			if (("source" in props || "query" in props) && (this.source || !isAfterCreation)) {
 				this.queryStoreAndInitItems(this.processQueryResult);
 			}
 		},
