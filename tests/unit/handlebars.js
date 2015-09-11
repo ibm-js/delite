@@ -64,9 +64,9 @@ define([
 				// We support attach-point for most people, and data-attach-point for people that want to use
 				// an HTML5 validator.
 				template: handlebars.compile(
-						"<template attach-point='root,root2'>" +
+					"<template attach-point='root,root2'>" +
 						"<button data-attach-point='myButton, myButton2'>hi</button>" +
-						"</template>"
+					"</template>"
 				)
 			});
 
@@ -619,11 +619,11 @@ define([
 					this.sum = this.a + this.b;
 				},
 				template: handlebars.compile(
-						"<template>" +
-							"<handlebars-text text='{{a}}'></handlebars-text> + " +
-							"<handlebars-text text='{{b}}'></handlebars-text> = " +
-							"<handlebars-text text='{{sum}}'></handlebars-text>" +
-						"</template>"
+					"<template>" +
+						"<handlebars-text text='{{a}}'></handlebars-text> + " +
+						"<handlebars-text text='{{b}}'></handlebars-text> = " +
+						"<handlebars-text text='{{sum}}'></handlebars-text>" +
+					"</template>"
 				)
 			});
 
@@ -708,9 +708,9 @@ define([
 			var ClassConstWidget = register("handlebars-const-class", [HTMLElement, Widget], {
 				baseClass: "myBaseClass",
 				template: handlebars.compile(
-						"<template class='constClass'>" +
+					"<template class='constClass'>" +
 						"<span class='{{mySubClass}}'>hi</span>" +
-						"</template>"
+					"</template>"
 				)
 			});
 
@@ -718,9 +718,9 @@ define([
 				baseClass: "myBaseClass",
 				templateClass: "myTemplateClass1",
 				template: handlebars.compile(
-						"<template class='{{templateClass}}'>" +
+					"<template class='{{templateClass}}'>" +
 						"<span class='{{mySubClass}}'>hi</span>" +
-						"</template>"
+					"</template>"
 				)
 			});
 
@@ -728,8 +728,7 @@ define([
 			container.innerHTML = "<handlebars-const-class class='userDefinedClass'></handlebars-const-class>";
 			register.parse(container);
 			var cwdc = container.firstChild;
-			assert.strictEqual(cwdc.className, "userDefinedClass constClass myBaseClass",
-				"declarative const");
+			assert.strictEqual(cwdc.className, "userDefinedClass constClass myBaseClass", "declarative const");
 
 			// Test declarative with class={{foo}}
 			container.innerHTML = "<handlebars-var-class class='userDefinedClass'></handlebars-var-class>";
@@ -747,8 +746,7 @@ define([
 			var cwpc = new ClassConstWidget({
 				className: "userDefinedClass"
 			});
-			assert.strictEqual(cwpc.className, "constClass userDefinedClass myBaseClass",
-				"programmatic const");
+			assert.strictEqual(cwpc.className, "userDefinedClass constClass myBaseClass", "programmatic const");
 
 			// Test programmatic with class={{foo}}
 			var cwpv = new ClassVarWidget({
@@ -761,6 +759,96 @@ define([
 			cwpv.deliver();
 			assert.strictEqual(cwpv.className, "userDefinedClass myBaseClass myTemplateClass2",
 				"programmatic var, after update");
+		},
+
+		"destroying a template": function () {
+			// Testing that destroying a template will:
+			//		1. remove properties created by attach-point (both on root and sub-nodes)
+			//		2. remove listeners set up on root node
+			//		3. orphan all sub nodes created by the template
+
+			var TestWidget = register("handlebars-destroy", [HTMLElement, Widget], {
+				template: handlebars.compile(
+					"<template attach-point='root,root2' on-click='{{clickHandler}}'>" +
+					"<button data-attach-point='myButton, myButton2'>hi</button>" +
+					"</template>"
+				),
+				clicks: 0,
+				clickHandler: function () {
+					this.clicks++;
+				}
+			});
+
+			var node = new TestWidget();
+			container.appendChild(node);
+
+			assert.isDefined(node.root, "node.root set");
+			assert.isDefined(node.myButton2, "node.myButton2 set");
+			node.myButton.click();	// should bubble up to root element
+			assert.strictEqual(node.clicks, 1, "click handler set up");
+
+			node._templateHandle.destroy();
+
+			assert.isUndefined(node.root, "node.root deleted");
+			assert.isUndefined(node.myButton2, "node.myButton2 deleted");
+			assert.strictEqual(node.children.length, 0, "children detached");
+
+			// make sure click listener was removed
+			node.appendChild(document.createElement("button"));
+			node.firstChild.click();
+			assert.strictEqual(node.clicks, 1, "click listener removed");
+		},
+
+		"dynamically updating a template": function () {
+			// This is really a test of Widget, but putting it in this file since it uses the handlebars code
+
+			var TestWidget = register("dynamic-template", [HTMLElement, Widget], {
+				label: "my label",
+				reversed: false,
+				createdCallback: function () {
+					this.notifyCurrentValue("reversed");
+				},
+				computeProperties: function (props) {
+					if ("reversed" in props) {
+						this.template = this.reversed ?
+							handlebars.compile(
+								"<template on-click='{{clickHandler}}'>" +
+									"<input id={{widgetId}}_input type=checkbox data-attach-point=checkboxNode>" +
+									"<label for={{widgetId}}_input  data-attach-point=labelNode>{{label}}</label>" +
+								"</template>"
+							) :
+							handlebars.compile(
+								"<template on-click='{{clickHandler}}'>" +
+								"<label for={{widgetId}}_input  data-attach-point=labelNode>{{label}}</label>: " +
+								"<input id={{widgetId}}_input type=checkbox data-attach-point=checkboxNode>" +
+								"</template>"
+							);
+							
+					}
+				},
+				clicks: 0,
+				clickHandler: function () {
+					this.clicks++;
+				}
+			});
+
+			// Create widget and test that the "label: checkbox" template is used.
+			// Confirms that widget template can be defined in computeProperties() rather than in prototype.
+			var node = new TestWidget({
+				label: "normal"
+			});
+			container.appendChild(node);
+			assert.strictEqual(node.children[0], node.labelNode, "reversed=false, first child");
+			assert.strictEqual(node.children[1], node.checkboxNode, "reversed=false, second child");
+			assert.strictEqual(node.textContent.trim(), "normal:", "reversed=false, textContent");
+
+			// Then test that widget template can by dynamically changed.
+			node.reversed = true;
+			node.label = "reversed";
+			node.deliver();
+			assert.strictEqual(node.children[0], node.checkboxNode, "reversed=true, first child");
+			assert.strictEqual(node.children[1], node.labelNode, "reversed=true, second child");
+			assert.strictEqual(node.textContent.trim(), "reversed", "reversed=true, textContent");
 		},
 
 		teardown: function () {

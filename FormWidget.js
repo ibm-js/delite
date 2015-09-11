@@ -83,10 +83,6 @@ define([
 		 * @protected
 		 */
 
-		postRender: function () {
-			this.notifyCurrentValue("tabStops");
-		},
-
 		/**
 		 * A form element, typically an `<input>`, embedded within the widget, and likely hidden.
 		 * It is used to represent the widget's state/value during form submission.
@@ -250,7 +246,7 @@ define([
 			};
 		}),
 
-		createdCallback: function () {
+		postRender: function () {
 			// Move all initially specified aria- attributes to focus node(s).
 			var attr, idx = 0;
 			while ((attr = this.attributes[idx++])) {

@@ -22,9 +22,7 @@ define([
 	var DialogUnderlay = register("d-dialog-underlay", [HTMLElement, Widget],
 			/** @lends module:delite/DialogUnderlay# */ {
 
-		render: function () {
-			this.className = "d-dialog-underlay";
-		},
+		baseClass: "d-dialog-underlay",
 
 		createdCallback: register.after(function () {
 			// Automatically append the underlay to <body> on creation.

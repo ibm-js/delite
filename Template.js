@@ -18,7 +18,6 @@ define(["./register"], function (register) {
 	}
 
 	/**
-
 	 * Given an AST representation of the template, generates a function that:
 	 *
 	 * 1. generates DOM corresponding to the template
@@ -44,15 +43,14 @@ define(["./register"], function (register) {
 			this.buildText = [];	// code to build the initial DOM
 			this.attachText = [];	// code to run in attachedCallback()
 			this.detachText = [];	// code to run in detachedCallback()
+			this.destroyText = [];	// code to run in tear down template, removing listeners etc.
 			this.observeText = [];	// code to update the DOM when widget properties change
-			this.dependsOn = {};	// set of properties referenced in the template
 
 			this.generateNodeCode(rootNodeName || "this", createRootNode, tree);
 
 			// Generate text of function.
 			this.text = this.buildText.join("\n") + "\n" +
 				"return {\n" +
-					"\tdependencies: " + JSON.stringify(Object.keys(this.dependsOn)) + ",\n" +
 					"\tattach: function(){\n\t\t" +
 						this.attachText.join("\n\t\t") +
 					"\n\t},\n" +
@@ -61,7 +59,11 @@ define(["./register"], function (register) {
 					"\n\t},\n" +
 					"\trefresh: function(props){\n\t\t" +
 						this.observeText.join("\n\t\t") +
-					"\n\t}.bind(this)\n" +
+					"\n\t}.bind(this),\n" +
+					"\ndestroy: function(){\n" +
+						this.destroyText.join("\n\t\t") +
+						"\n\t\twhile(this.firstChild){ this.removeChild(this.firstChild); }\n" +
+					"\t}.bind(this)\n" +
 				"};\n";
 
 			/* jshint evil:true */
@@ -90,13 +92,14 @@ define(["./register"], function (register) {
 		 * @private
 		 */
 		generateWatchCode: function (dependencies, statement) {
-			this.observeText.push(
+			if (dependencies.length) {
+				this.observeText.push(
 					"if(" + dependencies.map(function (prop) {
-					return "'" + prop + "' in props";
-				}).join(" || ") + ")",
+						return "'" + prop + "' in props";
+					}).join(" || ") + ")",
 					"\t" + statement + ";"
-			);
-			dependencies.forEach(function (prop) { this.dependsOn[prop] = true; }, this);
+				);
+			}
 		},
 
 		/**
@@ -120,17 +123,14 @@ define(["./register"], function (register) {
 						js = child,
 						dependsOn = propertiesReferenced(js);
 
-					// Generate code to create DOM text node.  If the text contains property references, just
-					// leave it blank for now, and set the real value in refreshRendering().\
+					// Generate code to create DOM text node.
 					this.buildText.push(
-						"var " + textNodeName + " = document.createTextNode(" + (dependsOn.length ? "''" : js) + ");",
+						"var " + textNodeName + " = document.createTextNode(" + js + ");",
 						nodeName + ".appendChild(" + textNodeName + ");"
 					);
 
 					// watch for widget property changes and update DOM text node
-					if (dependsOn.length) {
-						this.generateWatchCode(dependsOn, textNodeName + ".nodeValue = " + js);
-					}
+					this.generateWatchCode(dependsOn, textNodeName + ".nodeValue = " + js);
 				}
 			}, this);
 		},
@@ -145,9 +145,10 @@ define(["./register"], function (register) {
 		 */
 		generateNodeCode: function (nodeName, createNode, templateNode) {
 			/* jshint maxcomplexity:15*/
+
 			// Helper string for setting up attach-point(s), ex: "this.foo = this.bar = ".
 			var ap = (templateNode.attachPoints || []).map(function (n) {
-				return  "this." + n + " = ";
+				return "this." + n + " = ";
 			}).join("");
 
 			// Create node
@@ -166,6 +167,11 @@ define(["./register"], function (register) {
 				this.buildText.push(ap + nodeName + ";");
 			}
 
+			// Setup code to delete attach points created above.
+			this.destroyText.push((templateNode.attachPoints || []).map(function (n) {
+				return "delete this." + n + ";\n";
+			}).join("").trim());
+
 			// Set attributes/properties
 			for (var attr in templateNode.attributes) {
 				var js = templateNode.attributes[attr],
@@ -176,26 +182,14 @@ define(["./register"], function (register) {
 
 				if (attr === "class" && !templateNode.xmlns) {
 					// Special path for class to not overwrite classes set by application or by other code.
-					if (dependsOn.length) {
-						// Value depends on widget properties that may not be set yet.
-						// Watch for changes to those widget properties and reflect them to the DOM.
-						this.generateWatchCode(dependsOn,
-								"this.setClassComponent('template', " + js + ", " + nodeName + ")");
-					} else {
-						// Value is a constant; set it during render().
-						this.buildText.push("this.setClassComponent('template', " + js + ", " + nodeName + ")");
-					}
+					this.buildText.push("this.setClassComponent('template', " + js + ", " + nodeName + ")");
+					this.generateWatchCode(dependsOn,
+							"this.setClassComponent('template', " + js + ", " + nodeName + ")");
 				} else {
-					if (dependsOn.length) {
-						// Value depends on widget properties that may not be set yet.
-						// Watch for changes to those widget properties and reflect them to the DOM.
-						this.generateWatchCode(dependsOn, propName ? nodeName + "." + propName + " = " + js :
-							"this.setOrRemoveAttribute(" + nodeName + ", '" + attr + "', " + js + ")");
-					} else {
-						// Value is a constant; set it during render().
-						this.buildText.push(propName ? nodeName + "." + propName + " = " + js :
-							nodeName + ".setAttribute('" + attr + "', " + js + ");");
-					}
+					this.buildText.push(propName ? nodeName + "." + propName + " = " + js + ";" :
+						nodeName + ".setAttribute('" + attr + "', " + js + ");");
+					this.generateWatchCode(dependsOn, propName ? nodeName + "." + propName + " = " + js :
+						"this.setOrRemoveAttribute(" + nodeName + ", '" + attr + "', " + js + ")");
 				}
 			}
 
@@ -205,13 +199,20 @@ define(["./register"], function (register) {
 				this.observeText.push(nodeName + ".deliver();");
 			}
 
-			// Setup connections
+			// Setup connections.
 			for (var type in templateNode.connects) {
 				var handler = templateNode.connects[type];
 				var callback = /^[a-zA-Z0-9_]+$/.test(handler) ?
 					"this." + handler + ".bind(this)" :		// standard case, connecting to a method in the widget
 					"function(event){" + handler + "}";	// connect to anon func, ex: on-click="g++;". used by dapp.
-				this.buildText.push("this.on('" + type + "', " + callback + ", " + nodeName  + ");");
+
+				if (nodeName === "this") {
+					// Special case, because on template teardown need to manually remove listeners.
+					this.buildText.push("var h_" + type + " = this.on('" + type + "', " + callback + ");");
+					this.destroyText.push("h_" + type + ".remove();");
+				} else {
+					this.buildText.push("this.on('" + type + "', " + callback + ", " + nodeName  + ");");
+				}
 			}
 
 			// Create descendant Elements and text nodes

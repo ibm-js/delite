@@ -2,10 +2,11 @@ define([
 	"intern!object",
 	"intern/chai!assert",
 	"delite/a11y",
+	"delite/handlebars",
 	"delite/register",
 	"delite/Widget",
 	"delite/Container"
-], function (registerSuite, assert, a11y, register, Widget, Container) {
+], function (registerSuite, assert, a11y, handlebars, register, Widget, Container) {
 	var container, PlainWidget, TestContainer, TestContained, html, zero, two, four;
 	/*jshint multistr: true */
 	html = "<label for='input'>before:</label><input id='input'/> \
@@ -246,7 +247,7 @@ define([
 			declarative: function () {
 				var container = document.createElement("div");
 				container.innerHTML = "<my-container-node>" +
-					"<span>child 1</span><span>child 2</span><span>child 3</span>" +
+					"<span>child 1</span> <span>child 2</span> <span>child 3</span>" +
 					"</my-container-node>";
 				document.body.appendChild(container);
 				register.parse(container);
@@ -260,6 +261,58 @@ define([
 				// cleanup
 				container.parentNode.removeChild(container);
 			}
+		},
+
+		"dynamically updating a template": function () {
+			register("dynamic-template-container", [HTMLElement, Container], {
+				label: "my label",
+				reversed: false,
+				createdCallback: function () {
+					this.notifyCurrentValue("reversed");
+				},
+				computeProperties: function (props) {
+					if ("reversed" in props) {
+						this.template = this.reversed ?
+							handlebars.compile(
+								"<template>" +
+									"<div data-attach-point=containerNode></div>" +
+									" <span data-attach-point=labelNode>{{label}}</span>" +
+								"</template>"
+							) :
+							handlebars.compile(
+								"<template>" +
+								"<span data-attach-point=labelNode>{{label}}</span>: " +
+								"<div data-attach-point=containerNode></div>" +
+								"</template>"
+							);
+					}
+				}
+			});
+
+			// Create widget and test that the "label: containerNode" template is used.
+			var container = document.createElement("div");
+			container.innerHTML = "<dynamic-template-container>" +
+					"<span>child 1</span> <span>child 2</span> <span>child 3</span>" +
+				"</dynamic-template-container>";
+			document.body.appendChild(container);
+			register.parse(container);
+			var myWidget = container.children[0];
+			assert.strictEqual(myWidget.children[0], myWidget.labelNode, "reversed=false, first child");
+			assert.strictEqual(myWidget.children[1], myWidget.containerNode, "reversed=false, second child");
+			assert.deepEqual(getStrings(myWidget.getChildren()), ["child 1", "child 2", "child 3"], "getChildren()");
+			assert.strictEqual(myWidget.textContent.trim(), "my label: child 1 child 2 child 3");
+
+			// Then test that children moved when widget template changed.
+			myWidget.reversed = true;
+			myWidget.label = "reversed";
+			myWidget.deliver();
+			assert.strictEqual(myWidget.children[0], myWidget.containerNode, "reversed=true, first child");
+			assert.strictEqual(myWidget.children[1], myWidget.labelNode, "reversed=true, second child");
+			assert.deepEqual(getStrings(myWidget.getChildren()), ["child 1", "child 2", "child 3"], "getChildren()");
+			assert.strictEqual(myWidget.textContent.trim(), "child 1 child 2 child 3 reversed");
+
+			// cleanup
+			container.parentNode.removeChild(container);
 		}
 	});
 });

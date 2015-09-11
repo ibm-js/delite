@@ -51,8 +51,9 @@ define([
 			before: function () {
 				// Save original markup to put into this.containerNode.
 				var srcDom = this._srcDom = this.ownerDocument.createDocumentFragment();
-				while (this.firstChild) {
-					srcDom.appendChild(this.firstChild);
+				var oldContainer = this.containerNode || this;
+				while (oldContainer.firstChild) {
+					srcDom.appendChild(oldContainer.firstChild);
 				}
 			},
 
@@ -70,7 +71,7 @@ define([
 
 		appendChild: dcl.superCall(function (sup) {
 			return function (child) {
-				if (this.created) {
+				if (this.rendered) {
 					var res = sup.call(this.containerNode, child);
 					this.onAddChild(child);
 					return res;
@@ -82,7 +83,7 @@ define([
 
 		insertBefore: dcl.superCall(function (sup) {
 			return function (newChild, refChild) {
-				if (this.created) {
+				if (this.rendered) {
 					var res = sup.call(this.containerNode, newChild, refChild);
 					this.onAddChild(newChild);
 					return res;

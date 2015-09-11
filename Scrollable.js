@@ -71,10 +71,6 @@ define([
 		 */
 		scrollableNode: null,
 
-		postRender: function () {
-			this.notifyCurrentValue("scrollDirection");
-		},
-
 		render: dcl.after(function () {
 			// Do it using after advice to give a chance to a custom widget to
 			// set the scrollableNode at latest in an overridden render().
@@ -90,8 +86,8 @@ define([
 				.on("selectstart", false);
 		}),
 
-		refreshRendering: function (props) {
-			if (props.scrollDirection) {
+		refreshRendering: function (oldVals) {
+			if ("scrollDirection" in oldVals) {
 				$(this.scrollableNode)
 					.toggleClass("d-scrollable", this.scrollDirection !== "none")
 					.toggleClass("d-scrollable-h", /^(both|horizontal)$/.test(this.scrollDirection))
