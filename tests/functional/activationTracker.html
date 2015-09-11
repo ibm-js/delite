@@ -59,12 +59,11 @@
 					// delite/focus gets confused if <body> gets focused, so need to add an extra <div> and focus that instead
 					var iframe = this.containerNode = this.ownerDocument.createElement("iframe");
 					this.appendChild(iframe);
-					iframe.src = 'javascript:\"<html><body><div contenteditable=true>hello world' +
+					iframe.onload = function () {
+						activationTracker.registerIframe(iframe);
+					};
+					iframe.src = 'javascript:\"<html><body><div contenteditable=true tabindex=0>hello world' +
 							'<br>hello world<br>hello world</div></body></html>\"';
-				},
-
-				postRender: function () {
-					activationTracker.registerIframe(this.containerNode);
 				},
 
 				focus: function () {
@@ -190,7 +189,7 @@
 	<h3>delite/activationTracker Automated Test</h3>
 
 	<label for="activeStack">Active stack:</label>
-	<input id="activeStack" style="width: 100%;" disabled>
+	<input id="activeStack" style="width: 100%;" disabled autocomplete="off">
 
 	<label for="activeStackChangeNotifications">Active stack notifications:</label>
 	<input id="activeStackChangeNotifications" disabled value="0">
