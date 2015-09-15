@@ -94,7 +94,7 @@ define([
 					}, this);
 
 					proto = Object.getPrototypeOf(proto);
-				} while (proto && proto.constructor !== this._baseElement);
+				} while (proto && proto !== this._baseElement.prototype);
 			}
 		},
 
@@ -118,7 +118,7 @@ define([
 				});
 
 				proto = Object.getPrototypeOf(proto);
-			} while (proto && proto.constructor !== this._baseElement);
+			} while (proto && proto !== this._baseElement.prototype);
 
 			return hash;
 		},

@@ -67,13 +67,9 @@ define(["requirejs-dplugins/has"], function (has) {
 			var node = document.createElement("div");
 			/* jshint camelcase: false */
 			/* jshint proto: true */
-			if (!node.__proto__) {
-				return false;
-			}
-			node.__proto__ = {};
+			return !!node.__proto__;
 			/* jshint camelcase: true */
 			/* jshint proto: false */
-			return !!node.attributes;
 		});
 
 		// Support for <template> elements (specifically, that their content is available via templateNode.content
