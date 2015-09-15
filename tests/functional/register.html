@@ -7,8 +7,11 @@
 		require.config({
 			baseUrl: "../../.."
 		});
-		require(["delite/register", "requirejs-domready/domReady!"], function (register) {
-			register("test-widget", [HTMLElement], {
+		require(["delite/register", "delite/CustomElement", "requirejs-domready/domReady!"],
+				function (register, CustomElement) {
+			// Include CustomElement to workaround https://github.com/uhop/dcl/issues/15, refs #259.
+			// Ideally this test shouldn't depend on anything besides register() itself.
+			register("test-widget", [HTMLElement, CustomElement], {
 				_createdCallbackCalled: false,
 				createdCallback: function () {
 					this._createdCallbackCalled = true;

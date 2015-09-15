@@ -47,7 +47,7 @@
 			});
 
 			// Child of my-grid
-			register("my-row", [HTMLElement], { });
+			register("my-row", [HTMLElement, Widget], { });
 
 			// Simple KeyNav widget that extends Container. descendantSelector is function.
 			var TestContainer = register("my-list", [HTMLElement, Container, KeyNav], {
