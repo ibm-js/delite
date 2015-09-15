@@ -8,7 +8,7 @@ define([
 	"./TabIndex",
 	"./KeyNav",
 	"./on",
-	"./polymer",
+	"./webcomponents",
 	"./popup",
 	"./register",
 	"./DojoParser"

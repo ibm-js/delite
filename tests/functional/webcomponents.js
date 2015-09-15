@@ -11,7 +11,7 @@ define([
 
 		"setup": function () {
 			return this.remote
-				.get(require.toUrl("./polymer.html"))
+				.get(require.toUrl("./webcomponents.html"))
 				.then(pollUntil("return ready || null;", [],
 					intern.config.WAIT_TIMEOUT, intern.config.POLL_INTERVAL))
 				.sleep(100);		// wait for refresh

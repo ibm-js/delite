@@ -14,9 +14,9 @@
 	"devDependencies": {
 		"dojo": ">=1.9.1",
 		"dstore": "1.1.x",
-		"platform": "Polymer/platform#~0.1.4",
-		"dijit": ">=1.9.1"
-	},
+		"dijit": ">=1.9.1",
+		"webcomponentsjs": "~0.7.12"
+    },
 	"keywords": [
 		"web-components",
 		"custom-elements"
