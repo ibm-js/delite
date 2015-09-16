@@ -21,7 +21,6 @@ define([
 			if (this.remote.environmentType.brokenSendKeys || !this.remote.environmentType.nativeEvents) {
 				return this.skip("no keyboard support");
 			}
-			this.timeout = intern.config.TEST_TIMEOUT;
 			return this.remote.execute("return document.activeElement.value")
 				.findById("focus")
 				.click()

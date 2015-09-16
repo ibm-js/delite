@@ -20,7 +20,6 @@ define([
 		// Test that on(node, "focusin", ...) works on browsers that don't support "focusin" natively.
 		// See also Widget.js tests.
 		"focusin, focusout shim": function () {
-			this.timeout = intern.config.TEST_TIMEOUT;
 			return this.remote
 				.findById("f1").click().end()
 				.findById("f2").click().end()
@@ -34,8 +33,6 @@ define([
 		// support it natively.
 		"event.key shim": {
 			"keydown, keyup": function () {
-				this.timeout = intern.config.TEST_TIMEOUT;
-
 				if (this.remote.environmentType.brokenSendKeys || !this.remote.environmentType.nativeEvents) {
 					return this.skip("no keyboard support");
 				}
@@ -96,8 +93,6 @@ define([
 					});
 			},
 			keypress: function () {
-				this.timeout = intern.config.TEST_TIMEOUT;
-
 				if (this.remote.environmentType.brokenSendKeys || !this.remote.environmentType.nativeEvents) {
 					return this.skip("no keyboard support");
 				}

@@ -19,7 +19,6 @@ define([
 
 		"basic menu drop down": {
 			mouse: function () {
-				this.timeout = intern.config.TEST_TIMEOUT;
 				var environmentType = this.remote.environmentType;
 				if (environmentType.browserName === "internet explorer") {
 					return this.skip("click() doesn't generate mousedown/mouseup, so popup won't open");
@@ -62,7 +61,6 @@ define([
 			},
 
 			keyboard: function () {
-				this.timeout = intern.config.TEST_TIMEOUT;
 				if (this.remote.environmentType.brokenSendKeys || !this.remote.environmentType.nativeEvents) {
 					return this.skip("no keyboard support");
 				}
@@ -103,7 +101,6 @@ define([
 
 			// Mouse down, slide to menu choice, mouse up: should execute menu choice and close menu.
 			"mouse - slide": function () {
-				this.timeout = intern.config.TEST_TIMEOUT;
 				if (this.remote.environmentType.browserName === "internet explorer") {
 					return this.skip("click() doesn't generate mousedown/mouseup, so popup won't open");
 				}
@@ -128,7 +125,6 @@ define([
 		},
 
 		"dropdown dialog": function () {
-			this.timeout = intern.config.TEST_TIMEOUT;
 			if (this.remote.environmentType.browserName === "internet explorer") {
 				return this.skip("click() doesn't generate mousedown/mouseup, so popup won't open");
 			}
@@ -197,7 +193,6 @@ define([
 
 		// Just to make sure that a non-focusable button can still open the drop down
 		"non focusable HasDropDown": function () {
-			this.timeout = intern.config.TEST_TIMEOUT;
 			if (this.remote.environmentType.browserName === "internet explorer") {
 				return this.skip("click() doesn't generate mousedown/mouseup, so popup won't open");
 			}
@@ -216,7 +211,6 @@ define([
 		},
 
 		"non focusable dropdown": function () {
-			this.timeout = intern.config.TEST_TIMEOUT;
 			if (this.remote.environmentType.brokenSendKeys || !this.remote.environmentType.nativeEvents) {
 				return this.skip("no keyboard support");
 			}
@@ -250,7 +244,6 @@ define([
 
 		"autowidth: false": {
 			"alignment - left": function () {
-				this.timeout = intern.config.TEST_TIMEOUT;
 				if (this.remote.environmentType.browserName === "internet explorer") {
 					return this.skip("click() doesn't generate mousedown/mouseup, so popup won't open");
 				}
@@ -277,7 +270,6 @@ define([
 			},
 
 			"alignment - right": function () {
-				this.timeout = intern.config.TEST_TIMEOUT;
 				if (this.remote.environmentType.browserName === "internet explorer") {
 					return this.skip("click() doesn't generate mousedown/mouseup, so popup won't open");
 				}
@@ -302,7 +294,6 @@ define([
 		},
 
 		"centered dialog": function () {
-			this.timeout = intern.config.TEST_TIMEOUT;
 			if (this.remote.environmentType.browserName === "internet explorer") {
 				return this.skip("click() doesn't generate mousedown/mouseup, so popup won't open");
 			}
@@ -340,7 +331,6 @@ define([
 		},
 
 		events: function () {
-			this.timeout = intern.config.TEST_TIMEOUT;
 			if (this.remote.environmentType.browserName === "internet explorer") {
 				return this.skip("click() doesn't generate mousedown/mouseup, so popup won't open");
 			}
@@ -366,7 +356,6 @@ define([
 
 		// Make sure that destroying a HasDropDown closes the popup
 		destroy: function () {
-			this.timeout = intern.config.TEST_TIMEOUT;
 			if (this.remote.environmentType.browserName === "internet explorer") {
 				return this.skip("click() doesn't generate mousedown/mouseup, so popup won't open");
 			}

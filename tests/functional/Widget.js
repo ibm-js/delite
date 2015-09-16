@@ -20,7 +20,6 @@ define([
 
 		on: {
 			focusin: function () {
-				this.timeout = intern.config.TEST_TIMEOUT;
 				return this.remote
 					.findById("before").click().end()
 					.findByCssSelector("my-content-pane input.first").click().end()
@@ -35,7 +34,6 @@ define([
 			},
 
 			focus: function () {
-				this.timeout = intern.config.TEST_TIMEOUT;
 				return this.remote
 					.findByCssSelector("my-combobox input").click().end()
 					.findById("focusEvents").getVisibleText().then(function (text) {

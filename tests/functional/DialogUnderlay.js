@@ -30,7 +30,6 @@ define([
 				return this.skip("firefox webdriver clicks elements behind the underlay, even though that " +
 					"doesn't happen in real life");
 			}
-			this.timeout = intern.config.TEST_TIMEOUT;
 			return this.remote
 				// First make sure that when the underlay isn't showing I can click the button and it executes.
 				.then(clickMainScreen(this.remote))

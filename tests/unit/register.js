@@ -327,9 +327,9 @@ define([
 					setTimeout(this.async().callback(function () {
 						assert.strictEqual(ap3.attachedCalls, 2, "ap3.attachedCalls");
 						assert.strictEqual(ap4.attachedCalls, 2, "ap4.attachedCalls");
-					}.bind(this)), 10);
-				}.bind(this)), 10);
-			}.bind(this)), 10);
+					}.bind(this)), 50);
+				}.bind(this)), 50);
+			}.bind(this)), 50);
 		},
 
 		// Test that deliver() synchronously upgrades widgets.

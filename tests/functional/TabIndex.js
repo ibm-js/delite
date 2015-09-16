@@ -18,7 +18,6 @@ define([
 		},
 
 		"default tab indices": function () {
-			this.timeout = intern.config.TEST_TIMEOUT;
 			if (this.remote.environmentType.brokenSendKeys || !this.remote.environmentType.nativeEvents) {
 				return this.skip("no keyboard support");
 			}
@@ -44,7 +43,6 @@ define([
 		},
 
 		"specified tab indices": function () {
-			this.timeout = intern.config.TEST_TIMEOUT;
 			if (this.remote.environmentType.brokenSendKeys || !this.remote.environmentType.nativeEvents) {
 				return this.skip("no keyboard support");
 			}
@@ -70,7 +68,6 @@ define([
 		},
 
 		"changed tab indices": function () {
-			this.timeout = intern.config.TEST_TIMEOUT;
 			if (this.remote.environmentType.brokenSendKeys || !this.remote.environmentType.nativeEvents) {
 				return this.skip("no keyboard support");
 			}

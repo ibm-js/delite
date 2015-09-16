@@ -18,7 +18,6 @@ define([
 		},
 
 		creation: function () {
-			this.timeout = intern.config.TEST_TIMEOUT;
 			return this.remote.execute("return spinner1.value").then(function (value) {
 				assert.equal(value, 5, "original value");	// taken from the embedded <input>
 			}).execute("return spinner1.name").then(function (name) {
@@ -27,7 +26,6 @@ define([
 		},
 
 		reset: function () {
-			this.timeout = intern.config.TEST_TIMEOUT;
 			var environmentType = this.remote.environmentType;
 			if (environmentType.browserName === "internet explorer") {
 				return this.skip("click() doesn't generate mousedown/mouseup, so popup won't open");

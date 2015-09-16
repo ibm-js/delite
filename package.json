@@ -3,13 +3,15 @@
 	"version": "0.8.0-beta",
 	"dependencies": {},
 	"devDependencies": {
-		"intern": "2.2.x",
+		"intern": "3.x",
+		"leadfoot": "1.x",
 		"grunt": "~0.4.2",
 		"grunt-contrib-jshint": "~0.6.3",
 		"grunt-contrib-less": "~0.8.3",
 		"grunt-contrib-uglify": "~0.2.2",
 		"jsdoc-amddcl": "git+https://github.com/ibm-js/jsdoc-amddcl#master",
-		"clean-css": "~2.2.6"
+		"clean-css": "~2.2.6",
+		"requirejs": "2.1.x"
 	},
 	"jsdocDependencies": [
 		"decor"

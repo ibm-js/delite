@@ -19,14 +19,15 @@ define({
 		// { browserName: "internet explorer", version: "9", platform: "Windows 7" },
 		{ browserName: "firefox", version: "31", platform: "Windows 7", name : "delite" },
 		{ browserName: "chrome", version: "36", platform: "Windows 7", name : "delite" },
-		{ browserName: "safari", version: "8", name : "delite" },
+		{ browserName: "safari", version: "8", name : "delite" }
 
-		// Mobile
-		{ platformName: "iOS", platformVersion: "7.1", browserName: "safari", deviceName: "iPhone Simulator",
-			"appium-version": "1.2.2", name: "delite" }
+		// iOS not working, see
+		// http://stackoverflow.com/questions/32727704/how-to-run-ios-browser-tests-on-saucelabs-from-intern-3
+		// { browserName: "iphone", platform: "OS X 10.10", version: "9.0", deviceName: "iPad Retina" },
 
-		// android not working (but not tested with intern 2 yet)
-		// , { browserName: "android", platform: "Android" }
+		//Android not working either, see
+		// http://stackoverflow.com/questions/32731948/cant-run-android-browser-tests-against-saucelabs-using-intern-3
+		// { browserName: "android", platform: "Linux", version: "5.1", deviceName: "Android Emulator" }
 	],
 
 	// Maximum number of simultaneous integration tests that should be executed on the remote WebDriver service
@@ -36,7 +37,7 @@ define({
 	tunnel: "SauceLabsTunnel",
 
 	// Maximum duration of a test, in milliseconds
-	TEST_TIMEOUT: 300000, // 5 minutes
+	defaultTimeout: 300000, // 5 minutes
 
 	// Maximum time to wait for something (pollUntil, etc...)
 	WAIT_TIMEOUT: 180000, // 3 minutes
@@ -44,12 +45,11 @@ define({
 	// Interval between two polling requests, in milliseconds (for pollUntil)
 	POLL_INTERVAL: 500, // 0.5 seconds
 
-	loader: {
-		baseUrl: typeof window !== "undefined" ? "../../.." : ".."
-	},
-	useLoader: {
+	basePath: "..",
+
+	loaders: {
 		"host-node": "requirejs",
-		"host-browser": "../../../requirejs/require.js"
+		"host-browser": "../../requirejs/require.js"
 	},
 
 	// Non-functional test suite(s) to run in each browser

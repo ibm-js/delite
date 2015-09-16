@@ -25,7 +25,6 @@ define([
 		},
 
 		"open popup on the edge of another widget": function () {
-			this.timeout = intern.config.TEST_TIMEOUT;
 			return this.remote
 				.findById("choiceDropDownButton")
 					.click()
@@ -46,7 +45,6 @@ define([
 		},
 
 		"close popup on the edge of another widget": function () {
-			this.timeout = intern.config.TEST_TIMEOUT;
 			return this.remote
 				.findById("stub-for-blurring")
 					.click()
@@ -61,7 +59,6 @@ define([
 
 		nested: {
 			"open around": function () {
-				this.timeout = intern.config.TEST_TIMEOUT;
 				return this.remote
 					.findById("showNestedMenuButton")
 						.click()
@@ -75,7 +72,6 @@ define([
 			},
 
 			open: function () {
-				this.timeout = intern.config.TEST_TIMEOUT;
 				return this.remote
 					.execute("nestedOpener._openPopup(nestedChoice1)")
 					.sleep(500)
@@ -87,7 +83,6 @@ define([
 			},
 
 			close: function () {
-				this.timeout = intern.config.TEST_TIMEOUT;
 				return this.remote
 					.findById("stub-for-blurring")
 						.click()
@@ -107,7 +102,6 @@ define([
 		},
 
 		"no hidden tab stops": function () {
-			this.timeout = intern.config.TEST_TIMEOUT;
 			return this.remote
 				.execute("return tabOrder()[0].id").then(function (value) {
 					assert.strictEqual(value, "inputAtStart");
@@ -118,7 +112,6 @@ define([
 		},
 
 		"x/y placement": function () {
-			this.timeout = intern.config.TEST_TIMEOUT;
 			return this.remote
 				.execute("window.scrollTo(0, 0);")	// avoid spurious error due to scroll
 				.findById("openAt1015Button")
@@ -137,7 +130,6 @@ define([
 
 		"orient callback": {
 			setup: function () {
-				this.timeout = intern.config.TEST_TIMEOUT;
 				return this.remote
 					.findById("tooltipDropDownButton")
 						.click()
@@ -148,7 +140,6 @@ define([
 			},
 
 			around: function () {
-				this.timeout = intern.config.TEST_TIMEOUT;
 				return this.remote
 					.execute("return tooltip.orientCalls.length").then(function (value) {
 						assert.notStrictEqual(value, 0, "tooltipGlobal.orientCalls.length");
@@ -164,7 +155,6 @@ define([
 			},
 
 			at: function () {
-				this.timeout = intern.config.TEST_TIMEOUT;
 				return this.remote
 					.execute("tooltip.orientCalls = [];")
 					.findById("openTooltipAt1015Button")
@@ -191,7 +181,6 @@ define([
 
 		scrollbar: {
 			at: function () {
-				this.timeout = intern.config.TEST_TIMEOUT;
 				return this.remote
 					.findById("openLotsOfChoicesPopupButton")
 						.click()
@@ -213,7 +202,6 @@ define([
 			},
 
 			around: function () {
-				this.timeout = intern.config.TEST_TIMEOUT;
 				return this.remote
 					.findById("tallChoiceDropDownButton")
 						.click()

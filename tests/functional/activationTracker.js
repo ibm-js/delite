@@ -25,8 +25,6 @@ define([
 		},
 
 		basic: function () {
-			this.timeout = intern.config.TEST_TIMEOUT;
-
 			var environmentType = this.remote.environmentType;
 
 			return this.remote
@@ -81,8 +79,6 @@ define([
 		},
 
 		keyboard: function () {
-			this.timeout = intern.config.TEST_TIMEOUT;
-
 			if (this.remote.environmentType.brokenSendKeys || !this.remote.environmentType.nativeEvents) {
 				return this.skip("no keyboard support");
 			}
@@ -118,8 +114,6 @@ define([
 		},
 
 		dropdown: function () {
-			this.timeout = intern.config.TEST_TIMEOUT;
-
 			var environmentType = this.remote.environmentType;
 
 			return this.remote
