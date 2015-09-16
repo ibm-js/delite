@@ -179,6 +179,20 @@ define([
 			assert.strictEqual(myList.firstChild.getAttribute("foo"), "a.b('c,d')", "single quotes prop");
 			assert.strictEqual(myList.firstChild.getAttribute("bar"), "\\\"hello\"", "double quotes, backslash prop");
 			assert.strictEqual(myList.firstChild.textContent, "\"\\bill'\\\n\twas \n\there'", "node text");
+
+			// Also check that a template can contain JSON (even though it's probably not a good idea).
+			// The }} should have no effect since there's no {{.
+			var TestJson = register("handlebars-json", [HTMLElement, Widget], {
+				template: handlebars.compile(
+					"<template>" +
+						"<div attr=\"{name: {first: 'john', last: 'doe'}}\"></div>" +
+						"<span>hello</span>" +
+					"</template>")
+			});
+			var myJson = new TestJson();
+
+			assert.strictEqual(myJson.children[0].getAttribute("attr"), "{name: {first: 'john', last: 'doe'}}", "json");
+			assert.strictEqual(myJson.children[1].textContent, "hello", "parsing after json");
 		},
 
 		"attach-event": {

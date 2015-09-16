@@ -49,30 +49,32 @@ define(["./Template", "require", "requirejs-dplugins/Promise!"], function (Templ
 	 * @returns {string} like "'hello' + this.foo + 'world'"
 	 */
 	function toJs(text, convertUndefinedToBlank) {
-		var inVar, parts = [];
+		var pos = 0, length = text.length, insideBraces = false, parts = [];
 
-		(text || "").split(/({{|}})/).forEach(function (str) {
-			if (str === "{{") {
-				inVar = true;
-			} else if (str === "}}") {
-				inVar = false;
-			} else if (inVar) {
-				// it's a property or a JS expression
+		while (pos < length) {
+			var bracesIndex = text.indexOf(insideBraces ? "}}" : "{{", pos),
+				str = text.substring(pos, bracesIndex === -1 ? length : bracesIndex);
+			if (insideBraces) {
+				// str is a property name or a JS expression.
 				var prop = str.trim();
 				if (/this\./.test(prop)) {
 					// JS expression (ex: this.selectionMode === "multiple")
-					parts.push("(" + str + ")");
+					parts.push("(" + prop + ")");
 				} else {
 					// Property (ex: selectionMode) or path (ex: item.foo)
 					parts.push(convertUndefinedToBlank ? "(this." + prop + "== null ? '' : this." + prop + ")" :
 						"this." + prop);
 				}
-			} else if (str) {
+			} else {
 				// string literal, single quote it and escape special characters
-				parts.push("'" +
-					str.replace(/(['\\])/g, "\\$1").replace(/\n/g, "\\n").replace(/\t/g, "\\t") + "'");
+				if (str) {
+					parts.push("'" +
+						str.replace(/(['\\])/g, "\\$1").replace(/\n/g, "\\n").replace(/\t/g, "\\t") + "'");
+				}
 			}
-		});
+			pos = bracesIndex === -1 ? length : bracesIndex + 2;
+			insideBraces = !insideBraces;
+		}
 
 		return parts.join(" + ");
 	}
