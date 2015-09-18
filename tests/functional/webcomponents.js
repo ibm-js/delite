@@ -7,7 +7,7 @@ define([
 ], function (require, intern, registerSuite, assert, pollUntil) {
 
 	registerSuite({
-		name: "polymer compatibility test",
+		name: "webcomponents polyfill compatibility test",
 
 		"setup": function () {
 			return this.remote
