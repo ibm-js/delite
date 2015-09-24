@@ -182,7 +182,7 @@ define([
 		scrollbar: {
 			at: function () {
 				return this.remote
-					.execute("openLotsOfChoicesPopupButton.scrollIntoView()")
+					.execute("openLotsOfChoicesPopupButton.scrollIntoView();")
 					.findById("openLotsOfChoicesPopupButton")
 						.click()
 						.end()

@@ -10,8 +10,7 @@ define([
 	function clickMainScreen(remote) {
 		return function () {
 			if (remote.environmentType.touchEnabled) {
-				// Not supported on iOS yet!
-				// return remote.pressFinger(5, 5);
+				return remote.pressFinger(15, 15).releaseFinger(15, 15);
 			}
 			return remote.findByCssSelector("h1").moveMouseTo().clickMouseButton().end();
 		};
@@ -41,6 +40,7 @@ define([
 					.end()
 
 				// Now show the underlay, and try to click the button again
+				.execute("showUnderlay.scrollIntoView();")
 				.findById("showUnderlay")
 					.click()
 					.end()
@@ -53,6 +53,7 @@ define([
 					.end()
 
 				// Now hide the underlay, and try to click the button again
+				.execute("hideUnderlay.scrollIntoView();")
 				.findById("hideUnderlay")
 					.click()
 					.end()

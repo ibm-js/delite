@@ -305,18 +305,14 @@ define([
 				.isDisplayed().then(function (visible) {
 					assert(visible, "visible");
 				})
-				.execute("return document.activeElement.tagName.toLowerCase()").then(function (tag) {
+				.execute("return document.activeElement.tagName.toLowerCase();").then(function (tag) {
 					assert.strictEqual(tag, "input", "focus moved to dialog's <input>");
 				})
-				.execute(function () {
-					var dialog = document.querySelector(".centered-dialog");
-					return {
-						// Use delite/Viewport to get size because window.innerWidth not quite right on iOS7.1.
-						// It returns 304 instead of 320.
-						viewport: require("delite/Viewport").getEffectiveBox(),
-						dropDownRect: dialog.getBoundingClientRect()
-					};
-				}).then(function (ret) {
+				// Use delite/Viewport to get size because window.innerWidth not quite right on iOS7.1.
+				// It returns 304 instead of 320.
+				.execute("return { viewport: require('delite/Viewport').getEffectiveBox(), "
+					+ "dropDownRect: document.querySelector('.centered-dialog').getBoundingClientRect() };")
+				.then(function (ret) {
 					var viewport = ret.viewport,
 						popupCoords = ret.dropDownRect;
 

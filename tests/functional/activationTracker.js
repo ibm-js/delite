@@ -117,6 +117,7 @@ define([
 			var environmentType = this.remote.environmentType;
 
 			return this.remote
+				.execute("document.getElementById('dropdownButton').scrollIntoView();")
 				.findById("dropdownButton").click().end()
 				.findByCssSelector("fake-popup")
 					.isDisplayed().then(function (visible) {

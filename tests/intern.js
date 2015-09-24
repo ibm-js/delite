@@ -14,20 +14,15 @@ define({
 	// OnDemand. Options that will be permutated are browserName, version, platform, and platformVersion; any other
 	// capabilities options specified for an environment will be copied as-is
 	environments: [
-		{ browserName: "internet explorer", version: "11", platform: "Windows 8.1", name : "delite" },
-		{ browserName: "internet explorer", version: "10", platform: "Windows 8", name : "delite" },
+		{ browserName: "internet explorer", version: "11", platform: "Windows 8.1", name: "delite" },
+		{ browserName: "internet explorer", version: "10", platform: "Windows 8", name: "delite" },
 		// { browserName: "internet explorer", version: "9", platform: "Windows 7" },
-		{ browserName: "firefox", version: "31", platform: "Windows 7", name : "delite" },
-		{ browserName: "chrome", version: "36", platform: "Windows 7", name : "delite" },
-		{ browserName: "safari", version: "8", name : "delite" }
+		{ browserName: "firefox", version: "31", platform: "Windows 7", name: "delite" },
+		{ browserName: "chrome", version: "36", platform: "Windows 7", name: "delite" },
+		{ browserName: "safari", version: "8", name: "delite" },
 
-		// iOS not working, see
-		// http://stackoverflow.com/questions/32727704/how-to-run-ios-browser-tests-on-saucelabs-from-intern-3
-		// { browserName: "iphone", platform: "OS X 10.10", version: "9.0", deviceName: "iPad Retina" },
-
-		//Android not working either, see
-		// http://stackoverflow.com/questions/32731948/cant-run-android-browser-tests-against-saucelabs-using-intern-3
-		// { browserName: "android", platform: "Linux", version: "5.1", deviceName: "Android Emulator" }
+		//{ browserName: "iphone", platform: "OS X 10.10", version: "9.0", deviceName: "iPad Retina", name: "delite" },
+		{ browserName: "android", platform: "Linux", version: "5.1", deviceName: "Android Emulator", name: "delite" }
 	],
 
 	// Maximum number of simultaneous integration tests that should be executed on the remote WebDriver service

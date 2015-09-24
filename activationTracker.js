@@ -32,7 +32,6 @@ define([
 	var lastPointerDownOrFocusInTime;
 
 	var ActivationTracker = dcl(Evented, /** @lends module:delite/activationTracker */ {
-
 		/**
 		 * List of currently active widgets (focused widget and its ancestors).
 		 * @property {Element[]} activeStack
@@ -145,7 +144,7 @@ define([
 				clearTimeout(this._clearActiveWidgetsTimer);
 			}
 
-			if (now < lastPointerDownOrFocusInTime + 100) {
+			if (now < lastPointerDownOrFocusInTime + 500) {
 				// This blur event is coming late (after the call to _pointerDownOrFocusHandler() rather than before.
 				// So let _pointerDownOrFocusHandler() handle setting the widget stack.
 				// See https://bugs.dojotoolkit.org/ticket/17668
@@ -167,10 +166,6 @@ define([
 		 * @private
 		 */
 		_pointerDownOrFocusHandler: function (node, by) {
-			// Keep track of most recent focusin or pointerdown event.
-			lastPointerDownOrFocusInTime = (new Date()).getTime();
-			lastPointerDownOrFocusInNode = node;
-
 			if (this._clearActiveWidgetsTimer) {
 				// forget the recent blur event
 				clearTimeout(this._clearActiveWidgetsTimer);
@@ -206,6 +201,10 @@ define([
 			}
 
 			this._setStack(newStack, by);
+
+			// Keep track of most recent focusin or pointerdown event.
+			lastPointerDownOrFocusInTime = (new Date()).getTime();
+			lastPointerDownOrFocusInNode = node;
 		},
 
 		/**

@@ -1,8 +1,9 @@
 define([
 	"require",
+	"requirejs-dplugins/Promise!",
 	"intern!object",
 	"intern/chai!assert"
-], function (localRequire, registerSuite, assert) {
+], function (localRequire, Promise, registerSuite, assert) {
 
 	function getStyles() {
 		// summary:
@@ -28,15 +29,13 @@ define([
 
 		"common.css": {
 			"test common.css loaded": function () {
-				var d = new this.async(1000);
-				// Load one module that use delite/theme! to load common.css
-				localRequire([
-					"./resources/TestThemeWidget1"
-				], d.callback(function () {
+				return new Promise(function (resolve) {
+					// Load module that uses delite/theme! to indirectly load common.css.
+					localRequire(["./resources/TestThemeWidget1"], resolve);
+				}).then(function () {
 					// common_css should be automatically loaded. It defines class d-reset (themes/common/classes.less)
 					assert.strictEqual(getStyles().match(/d-reset/g).length, 1, "common is loaded");
-				}));
-				return d;
+				});
 			},
 
 			"d-hidden": function () {
@@ -55,9 +54,7 @@ define([
 		},
 
 		layers: function () {
-			var d = this.async(10000);
 			var layer = "delite/tests/unit/themes/{{theme}}/layer.css";
-
 			require.config({
 				config: {
 					"delite/theme": {
@@ -69,14 +66,12 @@ define([
 				}
 			});
 
-			localRequire([
-				"delite/theme!./themes/{{theme}}/Button.css"
-			], d.callback(function () {
+			return new Promise(function (resolve) {
+				localRequire(["delite/theme!./themes/{{theme}}/Button.css"], resolve);
+			}).then(function () {
 				// layer.css should be loaded instead of Button.css
 				assert.strictEqual(getStyles().match(/deliteBootstrapLayer/g).length, 1, "layer.css inserted once");
-			}));
-
-			return d;
+			});
 		},
 
 		teardown: function () {

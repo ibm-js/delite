@@ -35,6 +35,7 @@ define([
 
 			focus: function () {
 				return this.remote
+					.execute("document.querySelector('my-combobox').scrollIntoView();")
 					.findByCssSelector("my-combobox input").click().end()
 					.findById("focusEvents").getVisibleText().then(function (text) {
 						assert.strictEqual(text, "1", "focus events");
