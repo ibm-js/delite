@@ -24,7 +24,7 @@ define([
 	}, true);
 
 	/**
-	 * Arguments to delite/popup#open() method.
+	 * Arguments to `delite/popup#open()` method.
 	 * @typedef {Object} module:delite/popup.OpenArgs
 	 * @property {module:delite/Widget} popup - The Widget to display.
 	 * @property {module:delite/Widget} parent - The button etc. that is displaying this popup.
@@ -36,29 +36,34 @@ define([
 	 * (Specify this *or* `around` parameter.)
 	 * @property {string[]} orient - When the `around` parameter is specified, `orient` should be a
 	 * list of positions to try, ex. `[ "below", "above" ]`
-	 * delite/popup.open() tries to position the popup according to each specified position, in order,
+	 * `delite/popup.open()` tries to position the popup according to each specified position, in order,
 	 * until the popup appears fully within the viewport.  The default value is `["below", "above"]`.
-	 * When an (x,y) position is specified rather than an around node, orient is either
+	 * When an `(x,y)` position is specified rather than an `around` node, `orient` is either
 	 * "R" or "L".  R (for right) means that it tries to put the popup to the right of the mouse,
 	 * specifically positioning the popup's top-right corner at the mouse position, and if that doesn't
 	 * fit in the viewport, then it tries, in order, the bottom-right corner, the top left corner,
 	 * and the top-right corner.
 	 *
-	 * Alternately, orient can be an array `["center"]`, which pops up the specified node in the center of
+	 * Alternately, `orient` can be an array `["center"]`, which pops up the specified node in the center of
 	 * the viewport, like a dialog.  It will shrink the size of the node if necessary, in which case the node
 	 * must be designed so that scrolling occurs in the right place.
 	 *
 	 * @property {Function} onCancel - Callback when user has canceled the popup by:
-	 * 1. hitting ESC or
-	 * 2. by using the popup widget's proprietary cancel mechanism (like a cancel button in a dialog);
-	 * i.e. whenever popupWidget.onCancel() is called, args.onCancel is called
+	 *
+	 * 1. hitting ESC or TAB key
+	 * 2. using the popup widget's proprietary cancel mechanism (like a cancel button in a dialog),
+	 * causing the widget to emit a "cancel" event
+	 *
+	 * @property {Function} onExecute - Callback when user has executed the popup
+	 * by using the popup widget's proprietary execute mechanism (like an OK button in a dialog, or clicking a choice
+	 * in a dropdown list), causing the widget to emit an "execute" or "change" event.
 	 * @property {Function} onClose - Callback whenever this popup is closed.
 	 * @property {Position} padding - Adding a buffer around the opening position.
 	 * This is only used when `around` is not set.
-	 * @property {number} maxHeight
-	 * The max height for the popup.  Any popup taller than this will have scrollbars.
-	 * Set to Infinity for no max height.  Default is to limit height to available space in viewport,
-	 * above or below the aroundNode or specified x/y position.
+	 * @property {number} maxHeight - The maximum height for the popup.
+	 * Any popup taller than this will have scroll bars.
+	 * Set to `Infinity` for no max height.  Default is to limit height to available space in viewport,
+	 * above or below the `aroundNode` or specified `x/y` position.
 	 */
 
 	/**
@@ -331,17 +336,10 @@ define([
 			// provide default escape and tab key handling
 			// (this will work for any widget, not just menu)
 			var onKeyDown = function (evt) {
-				if (evt.key === "Esc" && args.onCancel) {
+				if ((evt.key === "Esc" || evt.key === "Tab") && args.onCancel) {
 					evt.stopPropagation();
 					evt.preventDefault();
 					args.onCancel();
-				} else if (evt.key === "Tab") {
-					evt.stopPropagation();
-					evt.preventDefault();
-					var topPopup = this.getTopPopup();
-					if (topPopup.onCancel) {
-						topPopup.onCancel();
-					}
 				}
 			}.bind(this);
 			wrapper.addEventListener("keydown", onKeyDown);
@@ -351,27 +349,17 @@ define([
 				}
 			});
 
-			// watch for cancel/execute events on the popup and notify the caller
-			if (args.onCancel) {
-				handlers.push(widget.on("cancel", args.onCancel));
-			}
-
+			// Watch for cancel/execute events on the popup and notify the caller.
 			// Simple widgets like a Calendar will emit "change" events, whereas complex widgets like
 			// a TooltipDialog/Menu will emit "execute" events.  No way to tell which event the widget will
 			// emit, so listen for both.
-			//
-			// If there's a hierarchy of menus and the user clicks on a nested menu, the callback
-			// registered for the top menu should get the execute event.  At least, that's how it worked in dijit.
-			var executeHandler = function () {
-				var topPopup = this.getTopPopup();
-				if (topPopup.onExecute) {
-					topPopup.onExecute();
-				}
-			}.bind(this);
-			handlers.push(
-				widget.on("change", executeHandler),
-				widget.on("execute", executeHandler)
-			);
+			if (args.onCancel) {
+				handlers.push(widget.on("cancel", args.onCancel));
+			}
+			if (args.onExecute) {
+				handlers.push(widget.on("execute", args.onExecute));
+				handlers.push(widget.on("change", args.onExecute));
+			}
 
 			var stackEntry = Object.create(args);
 			stackEntry.wrapper = wrapper;

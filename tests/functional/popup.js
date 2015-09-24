@@ -123,7 +123,7 @@ define([
 					assert.strictEqual(pos.left, 10, "popup x coord " + JSON.stringify(pos));
 					assert.strictEqual(pos.top, 15, "popup y coord " + JSON.stringify(pos));
 				})
-				.findById("closeAt1015Button")
+				.findById("xyPopup")
 					.click()
 					.end();
 		},
@@ -173,7 +173,7 @@ define([
 						assert.strictEqual(value.corner, "TL", "popup corner");
 						assert.strictEqual(value.aroundCorner, "BR", "aroundNode corner");
 					})
-					.findById("closeTooltipAt1015Button")
+					.findById("tooltip")
 						.click()
 						.end();
 			}
@@ -182,6 +182,7 @@ define([
 		scrollbar: {
 			at: function () {
 				return this.remote
+					.execute("openLotsOfChoicesPopupButton.scrollIntoView()")
 					.findById("openLotsOfChoicesPopupButton")
 						.click()
 						.end()
@@ -195,7 +196,7 @@ define([
 						assert.isTrue(value[0] < value[1], "lotsOfChoicesPopup popup not shorter than viewport " +
 							value[0] + ", " + value[1]);
 					})
-					.findById("closeLotsOfChoicesPopupButton")
+					.findById("lotsOfChoicesPopup")
 						.click()
 						.end();
 

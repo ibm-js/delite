@@ -120,22 +120,29 @@ require([
 
 	// A trivial popup widget
 	var SimplePopup = register("simple-popup", [HTMLElement, Widget], {
+		createdCallback: function () {
+			// on click, emit execute event so that popup closes
+			this.on("click", this._clickHandler.bind(this));
+		},
+
 		render: function () {
 			this.textContent = "i'm a popup";
+		},
 
-			// on click, emit execute event so that popup closes
-			this.on("click", this.emit.bind(this, "execute"));
+		_clickHandler: function (evt) {
+			console.log("clicked " + evt.target.innerHTML);
+			this.emit("execute");
 		}
 	});
 
 	// A popup with an orient() method to adjust arrows
-	var Tooltip = register("test-tooltip", [HTMLElement, Widget], {
-		render: function () {
-			this.textContent = "i'm a tooltip";
+	var Tooltip = register("test-tooltip", [HTMLElement, SimplePopup], {
+		createdCallback: function () {
+			this.orientCalls = [];
 		},
 
-		postRender: function () {
-			this.orientCalls = [];
+		render: function () {
+			this.textContent = "i'm a tooltip";
 		},
 
 		orient: function (node, aroundCorner, corner, spaceAvailable, aroundNodeCoords) {
@@ -150,7 +157,7 @@ require([
 	});
 
 	// A list of values; select a value by pressing an entry in the list.
-	var SimpleChoiceWidget = register("simple-choice-widget", [HTMLElement, Widget], {
+	var SimpleChoiceWidget = register("simple-choice-widget", [HTMLElement, SimplePopup], {
 		choice1: "1",
 		choice2: "2",
 		choice3: "3",
@@ -161,19 +168,11 @@ require([
 			for (var i = 1; i < 4; i++) {
 				this.innerHTML += "<div>choice #" + this["choice" + i] + "</div>";
 			}
-
-			// on click, emit execute event so that popup closes
-			this.on("click", this._clickHandler.bind(this));
-		},
-
-		_clickHandler: function (evt) {
-			console.log("clicked " + evt.target.innerHTML);
-			this.emit("execute");
 		}
 	});
 
 	// A list of values; select a value by pressing an entry in the list.
-	var LotsOfChoicesWidget = register("lots-of-choices-widget", [HTMLElement, Widget], {
+	var LotsOfChoicesWidget = register("lots-of-choices-widget", [HTMLElement, SimplePopup], {
 		length: 100,
 
 		render: function () {
@@ -182,9 +181,6 @@ require([
 			for (var i = 0; i < this.length; i++) {
 				this.innerHTML += "<div>choice #" + i + "</div>";
 			}
-
-			// on click, emit execute event so that popup closes
-			this.on("click", this._clickHandler.bind(this));
 		},
 
 		_clickHandler: function (evt) {
@@ -391,11 +387,15 @@ require([
 			popup: xyPopup,
 			orient: 'R',
 			x: 10,
-			y: 15
+			y: 15,
+			onExecute: function () {
+				popupUtil.close(xyPopup);
+			},
+			onCancel: function () {
+				popupUtil.close(xyPopup);
+			}
+
 		});
-	};
-	closeAt1015 = function () {
-		popupUtil.close(xyPopup);
 	};
 
 	// For testing orient() callback
@@ -410,29 +410,35 @@ require([
 			popup: tooltip,
 			orient: 'R',
 			x: 10,
-			y: 15
+			y: 15,
+			onExecute: function () {
+				popupUtil.close(tooltip);
+			},
+			onCancel: function () {
+				popupUtil.close(tooltip);
+			}
+
 		});
-	};
-	closeTooltipAt1015 = function () {
-		popupUtil.close(tooltip);
 	};
 
 	// Functions for testing scrolling
 	openLotsOfChoicesPopup = function () {
-		lotsOfChoicesPopup = new LotsOfChoicesWidget({id: 'tallPopup1'});
+		lotsOfChoicesPopup = new LotsOfChoicesWidget({id: 'lotsOfChoicesPopup'});
 		openRet = popupUtil.open({
 			popup: lotsOfChoicesPopup,
 			orient: 'R',
 			x: 10,
-			y: 15
+			y: 15,
+			onExecute: function () {
+				popupUtil.close(lotsOfChoicesPopup);
+			},
+			onCancel: function () {
+				popupUtil.close(lotsOfChoicesPopup);
+			}
 		});
-	};
-	closeLotsOfChoicesPopup = function () {
-		popupUtil.close(lotsOfChoicesPopup);
 	};
 
 	ready = true;
-
 });
 
 </script>
@@ -469,24 +475,13 @@ require([
 	<button type="button" onclick="openAt1015();" id="openAt1015Button">
 		Open popup at (10,15)
 	</button>
-	<button type="button" onclick="closeAt1015();" id="closeAt1015Button">
-		Close popup at (10,15)
-	</button>
-	<br>
 
 	<button type="button" onclick="openTooltipAt1015();" id="openTooltipAt1015Button">
 		Open tooltip at (10,15)
 	</button>
-	<button type="button" onclick="closeTooltipAt1015();" id="closeTooltipAt1015Button">
-		Close tooltip at (10,15)
-	</button>
-	<br>
 
 	<button type="button" onclick="openLotsOfChoicesPopup();" id="openLotsOfChoicesPopupButton">
 		Open lots of choices popup at (10,15)
-	</button>
-	<button type="button" onclick="closeLotsOfChoicesPopup();" id="closeLotsOfChoicesPopupButton">
-		Close lots of choices popup at (10,15)
 	</button>
 </div>
 
