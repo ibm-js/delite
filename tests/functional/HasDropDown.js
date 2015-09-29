@@ -21,7 +21,12 @@ define([
 			mouse: function () {
 				var environmentType = this.remote.environmentType;
 				if (environmentType.browserName === "internet explorer") {
+					// https://github.com/theintern/leadfoot/issues/17
 					return this.skip("click() doesn't generate mousedown/mouseup, so popup won't open");
+				}
+				if (environmentType.platformName === "iOS") {
+					// https://github.com/theintern/leadfoot/issues/61
+					return this.skip("click() doesn't generate touchstart/touchend, so popup won't open");
 				}
 				return this.remote.findById("input")
 						.click()
@@ -36,10 +41,6 @@ define([
 						.execute("return document.activeElement.getAttribute('index')").then(function (index) {
 							// shouldn't focus drop down since it's a mouse click
 							// and dropdown has focusOnPointerOpen=false
-							if (!environmentType.mouseEnabled) {
-								// TODO: this assert() fails on iOS (not sure why) so disabling for now
-								return;
-							}
 							assert.notStrictEqual(index, "1", "focus didn't move to drop down");
 						})
 						.execute(function () {
@@ -102,9 +103,11 @@ define([
 			// Mouse down, slide to menu choice, mouse up: should execute menu choice and close menu.
 			"mouse - slide": function () {
 				if (this.remote.environmentType.browserName === "internet explorer") {
+					// https://github.com/theintern/leadfoot/issues/17
 					return this.skip("click() doesn't generate mousedown/mouseup, so popup won't open");
 				}
-				if (!this.remote.environmentType.mouseEnabled) {
+				// note: check specifically for iOS to workaround https://github.com/theintern/leadfoot/issues/62
+				if (!this.remote.environmentType.mouseEnabled || this.remote.environmentType.platformName === "iOS") {
 					return this.skip("touch device, skipping mouse specific test");
 				}
 				return this.remote.findById("dd")
@@ -125,9 +128,16 @@ define([
 		},
 
 		"dropdown dialog": function () {
-			if (this.remote.environmentType.browserName === "internet explorer") {
+			var environmentType = this.remote.environmentType;
+			if (environmentType.browserName === "internet explorer") {
+				// https://github.com/theintern/leadfoot/issues/17
 				return this.skip("click() doesn't generate mousedown/mouseup, so popup won't open");
 			}
+			if (environmentType.platformName === "iOS") {
+				// https://github.com/theintern/leadfoot/issues/61
+				return this.skip("click() doesn't generate touchstart/touchend, so popup won't open");
+			}
+
 			return this.remote.findByCssSelector("button[is=delayed-drop-down-button]")
 					.click()
 					.end()
@@ -193,9 +203,16 @@ define([
 
 		// Just to make sure that a non-focusable button can still open the drop down
 		"non focusable HasDropDown": function () {
-			if (this.remote.environmentType.browserName === "internet explorer") {
+			var environmentType = this.remote.environmentType;
+			if (environmentType.browserName === "internet explorer") {
+				// https://github.com/theintern/leadfoot/issues/17
 				return this.skip("click() doesn't generate mousedown/mouseup, so popup won't open");
 			}
+			if (environmentType.platformName === "iOS") {
+				// https://github.com/theintern/leadfoot/issues/61
+				return this.skip("click() doesn't generate touchstart/touchend, so popup won't open");
+			}
+
 			return this.remote.findById("ndd")
 					.click()
 					.end()
@@ -244,9 +261,16 @@ define([
 
 		"autowidth: false": {
 			"alignment - left": function () {
-				if (this.remote.environmentType.browserName === "internet explorer") {
+				var environmentType = this.remote.environmentType;
+				if (environmentType.browserName === "internet explorer") {
+					// https://github.com/theintern/leadfoot/issues/17
 					return this.skip("click() doesn't generate mousedown/mouseup, so popup won't open");
 				}
+				if (environmentType.platformName === "iOS") {
+					// https://github.com/theintern/leadfoot/issues/61
+					return this.skip("click() doesn't generate touchstart/touchend, so popup won't open");
+				}
+
 				return this.remote.findById("nawl")
 						.click()
 						.end()
@@ -270,9 +294,16 @@ define([
 			},
 
 			"alignment - right": function () {
-				if (this.remote.environmentType.browserName === "internet explorer") {
+				var environmentType = this.remote.environmentType;
+				if (environmentType.browserName === "internet explorer") {
+					// https://github.com/theintern/leadfoot/issues/17
 					return this.skip("click() doesn't generate mousedown/mouseup, so popup won't open");
 				}
+				if (environmentType.platformName === "iOS") {
+					// https://github.com/theintern/leadfoot/issues/61
+					return this.skip("click() doesn't generate touchstart/touchend, so popup won't open");
+				}
+
 				return this.remote.findById("nawr")
 					.click()
 					.execute(function () {
@@ -294,10 +325,16 @@ define([
 		},
 
 		"centered dialog": function () {
-			if (this.remote.environmentType.browserName === "internet explorer") {
+			var environmentType = this.remote.environmentType;
+			if (environmentType.browserName === "internet explorer") {
+				// https://github.com/theintern/leadfoot/issues/17
 				return this.skip("click() doesn't generate mousedown/mouseup, so popup won't open");
 			}
-			var browserName = this.remote.environmentType.browserName;
+			if (environmentType.platformName === "iOS") {
+				// https://github.com/theintern/leadfoot/issues/61
+				return this.skip("click() doesn't generate touchstart/touchend, so popup won't open");
+			}
+
 			return this.remote.findById("show-dialog-button")
 				.click()
 				.end()
@@ -316,7 +353,7 @@ define([
 					var viewport = ret.viewport,
 						popupCoords = ret.dropDownRect;
 
-					if (!/iphone|iOS/.test(browserName)) {
+					if (environmentType.platformName !== "iOS") {
 						// not setup to test vertical centering when virtual keyboard displayed
 						assert(Math.abs(viewport.h / 2 - popupCoords.top - popupCoords.height / 2) < 1,
 							"centered vertically");
@@ -327,9 +364,16 @@ define([
 		},
 
 		events: function () {
-			if (this.remote.environmentType.browserName === "internet explorer") {
+			var environmentType = this.remote.environmentType;
+			if (environmentType.browserName === "internet explorer") {
+				// https://github.com/theintern/leadfoot/issues/17
 				return this.skip("click() doesn't generate mousedown/mouseup, so popup won't open");
 			}
+			if (environmentType.platformName === "iOS") {
+				// https://github.com/theintern/leadfoot/issues/61
+				return this.skip("click() doesn't generate touchstart/touchend, so popup won't open");
+			}
+
 			return this.remote
 				.findById("eventsButton")
 					.click()
@@ -352,9 +396,16 @@ define([
 
 		// Make sure that destroying a HasDropDown closes the popup
 		destroy: function () {
-			if (this.remote.environmentType.browserName === "internet explorer") {
+			var environmentType = this.remote.environmentType;
+			if (environmentType.browserName === "internet explorer") {
+				// https://github.com/theintern/leadfoot/issues/17
 				return this.skip("click() doesn't generate mousedown/mouseup, so popup won't open");
 			}
+			if (environmentType.platformName === "iOS") {
+				// https://github.com/theintern/leadfoot/issues/61
+				return this.skip("click() doesn't generate touchstart/touchend, so popup won't open");
+			}
+
 			return this.remote.findById("dd")
 					.click()
 					.end()

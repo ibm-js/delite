@@ -26,10 +26,6 @@ define([
 		},
 
 		reset: function () {
-			var environmentType = this.remote.environmentType;
-			if (environmentType.browserName === "internet explorer") {
-				return this.skip("click() doesn't generate mousedown/mouseup, so popup won't open");
-			}
 			return this.remote.findByCssSelector("my-spinner .increment")
 					.click()
 					.end()

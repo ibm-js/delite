@@ -9,10 +9,12 @@ define([
 
 	function clickMainScreen(remote) {
 		return function () {
-			if (remote.environmentType.touchEnabled) {
+			// note: check specifically for iOS to workaround https://github.com/theintern/leadfoot/issues/62
+			if (remote.environmentType.touchEnabled || remote.environmentType.platformName === "iOS") {
 				return remote.pressFinger(15, 15).releaseFinger(15, 15);
+			} else {
+				return remote.findByCssSelector("h1").moveMouseTo().clickMouseButton().end();
 			}
-			return remote.findByCssSelector("h1").moveMouseTo().clickMouseButton().end();
 		};
 	}
 
@@ -28,6 +30,9 @@ define([
 			if (this.remote.environmentType.browserName === "firefox") {
 				return this.skip("firefox webdriver clicks elements behind the underlay, even though that " +
 					"doesn't happen in real life");
+			}
+			if (this.remote.environmentType.platformName === "iOS") {
+				return this.skip("pressFinger(15, 15) not supported on iOS yet");
 			}
 			return this.remote
 				// First make sure that when the underlay isn't showing I can click the button and it executes.

@@ -21,7 +21,7 @@ define({
 		{ browserName: "chrome", version: "36", platform: "Windows 7", name: "delite" },
 		{ browserName: "safari", version: "8", name: "delite" },
 
-		//{ browserName: "iphone", platform: "OS X 10.10", version: "9.0", deviceName: "iPad Retina", name: "delite" },
+		{ browserName: "iphone", platform: "OS X 10.10", version: "9.0", deviceName: "iPad Retina", name: "delite" },
 		{ browserName: "android", platform: "Linux", version: "5.1", deviceName: "Android Emulator", name: "delite" }
 	],
 

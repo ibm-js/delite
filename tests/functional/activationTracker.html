@@ -188,6 +188,8 @@
 <body>
 	<h3>delite/activationTracker Automated Test</h3>
 
+	Debug output:
+	<div id="logDiv"></div>
 	<label for="activeStack">Active stack:</label>
 	<input id="activeStack" style="width: 100%;" disabled autocomplete="off">
 
@@ -198,8 +200,8 @@
 
 	<label>Form widget:</label><br>
 	<form id="form" is="fake-form">
-		<label for="first">First input: </label><input id="first"/><br>
-		<label for="second">Second input: </label><input id="second"/><br>
+		<label for="first">First input: </label><input id="first"><br>
+		<label for="second">Second input: </label><input id="second"><br>
 
 		<fieldset id=fieldset1 is="fake-fieldset">
 			<legend>Fieldset widget</legend>
@@ -211,7 +213,7 @@
 				<option>list</option>
 			</fake-combobox>
 			<label for="plain">Plain input:</label>
-			<input id=plain value=plain/>
+			<input id=plain value=plain>
 		</fieldset>
 
 		<label>Editor widget:</label>

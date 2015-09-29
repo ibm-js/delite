@@ -44,14 +44,14 @@ define([
 					// shouldn't have any more events besides the original.
 					assert.strictEqual(log.trim(), "form activated", "log #2");
 				}).end()
-				.findById("combobox").click().end()	// focus combobox
+				.findByCssSelector("#combobox input").click().end()	// focus combobox
 				.findById("activeStack").getProperty("value").then(function (activeStack) {
 					assert.strictEqual(activeStack, "form, fieldset1, combobox", "activeStack #3");
 				}).end()
 				.findById("log").getProperty("value").then(function (log) {
 					assert.strictEqual(log.trim(), "form activated\nfieldset1 activated\ncombobox activated", "log #3");
 				}).end()
-				.findById("combobox").click().end()	// focus combobox again to check for duplicate notifications
+				.findByCssSelector("#combobox input").click().end()	// combobox again, to check for dup notifications
 				.findById("activeStackChangeNotifications").getProperty("value").then(function (changes) {
 					assert.strictEqual(changes, "2", "activeStack changes #1");
 				}).end()
@@ -72,6 +72,11 @@ define([
 						// click() doesn't generate pointerdown event on IE10+ and neither does
 						// moveMouseTo().pressMouseButton(1).releaseMouseButton(1).
 						// see https://github.com/theintern/leadfoot/issues/17.
+						return;
+					}
+					if (environmentType.platformName === "iOS") {
+						// click() doesn't generate touchstart on iOS, see
+						// https://github.com/theintern/leadfoot/issues/61
 						return;
 					}
 					assert.strictEqual(activeStack, "form, fieldset2, spinner", "activeStack #5");
@@ -130,6 +135,11 @@ define([
 						// click() doesn't generate pointerdown event on IE10+ and neither does
 						// moveMouseTo().pressMouseButton(1).releaseMouseButton(1).
 						// see https://github.com/theintern/leadfoot/issues/17.
+						return;
+					}
+					if (environmentType.platformName === "iOS") {
+						// click() doesn't generate touchstart on iOS, see
+						// https://github.com/theintern/leadfoot/issues/61
 						return;
 					}
 					assert.strictEqual(activeStack, "form, dropdownButton, popup", "activeStack #1");
