@@ -241,11 +241,12 @@ define([
 			}
 
 			if (this._openDropDownPromise) {
-				// Focus the drop down once it opens, unless it's a menu.
-				// !this.hovering condition checks if this is a fake mouse event caused by the user typing
+				// Test if this is a fake mouse event caused by the user typing
 				// SPACE/ENTER while using JAWS.  Jaws converts the SPACE/ENTER key into mousedown/mouseup events.
-				// If this.hovering is false then it's presumably actually a keyboard event.
-				this._focusDropDownOnOpen(!this.hovering);
+				var keyboard = e.pointerType === "mouse" && !this.hovering;
+
+				// Focus the drop down once it opens, unless it's a menu.
+				this._focusDropDownOnOpen(keyboard);
 			} else {
 				// The drop down arrow icon probably can't receive focus, but widget itself should get focus.
 				// defer() needed to make it work on IE (test DateTextBox)
