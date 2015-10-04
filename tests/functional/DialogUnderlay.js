@@ -31,8 +31,8 @@ define([
 				return this.skip("firefox webdriver clicks elements behind the underlay, even though that " +
 					"doesn't happen in real life");
 			}
-			if (this.remote.environmentType.platformName === "iOS") {
-				return this.skip("pressFinger(15, 15) not supported on iOS yet");
+			if (this.remote.environmentType.touchEnabled || this.remote.environmentType.platformName === "iOS") {
+				return this.skip("pressFinger() not supported on iOS, and doesn't generate click event on android");
 			}
 			return this.remote
 				// First make sure that when the underlay isn't showing I can click the button and it executes.
