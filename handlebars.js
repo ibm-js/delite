@@ -33,10 +33,14 @@
  *
  * @module delite/handlebars
  */
-define(["./Template", "require", "requirejs-dplugins/Promise!"], function (Template, require, Promise) {
-
-	// Text plugin to load the templates and do the build.
-	var textPlugin = "requirejs-text/text";
+define([
+	"module",
+	"require",
+	"requirejs-dplugins/has",
+	"requirejs-dplugins/Promise!",
+	"requirejs-text/text",
+	"./Template"
+], function (module, require, has, Promise, textPlugin, Template) {
 
 	/**
 	 * Given a string like "hello {{foo}} world", generate JS code to output that string,
@@ -274,7 +278,7 @@ define(["./Template", "require", "requirejs-dplugins/Promise!"], function (Templ
 		},
 
 		/**
-		 * Similar to compile() but before compile then template, loads the modules specified in the
+		 * Similar to compile() but before compiling the template, loads the modules specified in the
 		 * template via the `requires=...` attribute.
 		 * @param {string} templateText - See module description for details on template format.
 		 * @param {Function} require - AMD's require() method.
@@ -307,37 +311,49 @@ define(["./Template", "require", "requirejs-dplugins/Promise!"], function (Templ
 		 * when doing a build.
 		 * @private
 		 */
-		load: function (mid, require, onload, loaderConfig) {
-			require([textPlugin + "!" + mid], function (templateText) {
-				// The build only needs the call to requirejs-text/text to work.
-				if (loaderConfig.isBuild) {
-					onload();
-					return;
-				}
-
+		load: function (mid, require, onload) {
+			textPlugin.load(mid, require, function (templateText) {
 				this.requireAndCompile(templateText, require).then(onload);
 			}.bind(this));
-		},
-
-		/**
-		 * Build function to delegate template inlining to requirejs-text/text.
-		 * @param {string} pluginName - This module id.
-		 * @param {string} moduleName - Absolute path to the resource.
-		 * @param {Function} write - A function to be called with a string of output to
-		 * write to the optimized file. This function also contains a property function,
-		 * write.asModule(moduleName, text).
-		 * @param {Object} loaderConfig - Configuration object from the loader. `requirejs-text/text`
-		 * needs `loaderConfig.inlineText === true` to work.
-		 * @private
-		 */
-		write: function (pluginName, moduleName, write, loaderConfig) {
-			// Requirejs-text is not listed in the dependency list so it is not
-			// included in the layer. At build time requirejs works synchronously so
-			// there is no callback.
-			var text = require(textPlugin);
-			text.write(textPlugin, moduleName, write, loaderConfig);
 		}
 	};
+
+	if (has("builder")) {
+		var fs = require("fs");
+		var jsdom = require("jsdom").jsdom;
+
+		// Info about the MID being currently processed
+		var templateText, templateRequires;
+
+		handlebars.load = function (mid, require, onload) {
+			templateText = fs.readFileSync(require.toUrl(mid), "utf8");
+			onload();
+		};
+
+		// Inline the template text and list of dependencies into the layer file.
+		// Alternately we could pre-compile the template and inline the compiled method into the layer file.
+		// That would save CPU but it's about 60% more bytes (after gzip).
+		handlebars.write = function (pluginName, moduleName, write) {
+			var dom = jsdom(templateText),
+				template = dom.querySelector("template"),
+				requiresAttr = template.getAttribute("requires") || template.getAttribute("data-requires");
+			templateRequires = requiresAttr ? requiresAttr.split(/,\s*/) : [];
+			template.removeAttribute("requires");
+			template.removeAttribute("data-requires");
+
+			var moduleRequires = [module.id].concat(templateRequires);
+			var moduleText = "define(" + JSON.stringify(moduleRequires) +  ", function(handlebars){\n" +
+				"\treturn handlebars.compile(" + JSON.stringify(template.outerHTML) + ");\n" +
+				"});";
+			write.asModule(pluginName + "!" + moduleName, moduleText);
+		};
+
+		// Notify builder to take dependencies specified in requires="..." attribute, and inline them into the layer.
+		handlebars.addModules = function (pluginName, resource, addModules) {
+			addModules(templateRequires);
+
+		};
+	}
 
 	return handlebars;
 });
