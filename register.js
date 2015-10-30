@@ -8,7 +8,7 @@ define([
 ], function (advise, dcl, schedule, domReady, has) {
 	"use strict";
 
-	var doc = typeof document !== "undefined" && document;	// "typeof document" check so module loads in NodeJS
+	var doc = has("builder") ? require("jsdom").jsdom("") : document;
 
 	// Set to true after the page finishes loading and the parser runs.  Any widgets declared after initialParseComplete
 	// instantiated in a separate code path.
@@ -56,7 +56,7 @@ define([
 	 * @returns {Element} The DOMNode
 	 */
 	function createElement(tag) {
-		if (/-/.test(tag) && !(tag in registry)) {
+		if (/-/.test(tag) && !(tag in registry) && !has("builder")) {
 			// Try to help people that have templates with custom elements but they forgot to do requires="..."
 			console.warn("register.createElement(): undefined tag '" + tag +
 				"', did you forget requires='...' in your template?");

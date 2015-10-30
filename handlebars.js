@@ -9,9 +9,6 @@
  * Both functions are meant
  * to be run in the context of the widget, so that properties are available through `this`.
  *
- * Could also theoretically be used by a build-tool to precompile templates, assuming you loaded
- * [jsdom](https://github.com/tmpvar/jsdom) to provide methods like `document.createElement()`.
- *
  * Template has a format like:
  *
  * ```html
@@ -93,6 +90,7 @@ define([
 		 * @private
 		 */
 		parse: function (templateNode, xmlns) {
+			/* jshint maxcomplexity:15 */
 			// Get tag name, reversing the tag renaming done in toDom()
 			var tag = templateNode.hasAttribute("is") ? templateNode.getAttribute("is") :
 					templateNode.tagName.replace(/^template-/i, "").toLowerCase(),
@@ -126,14 +124,24 @@ define([
 				}
 			}
 
-			return {
-				tag: tag,
-				xmlns: xmlns,
-				attributes: attributes,
-				connects: connects,
-				children: handlebars.parseChildren(templateNode, xmlns),
-				attachPoints: attachPoints
-			};
+			// Process children.
+			var children = handlebars.parseChildren(templateNode, xmlns);
+
+			// Return AST structure pruning empty arrays etc.  Minimizes size of serialized object.
+			function hasMembers(obj) {
+				/* jshint unused: false */
+				for (var key in obj) {
+					return true;
+				}
+				return false;
+			}
+			var ret = { tag: tag };
+			if (xmlns) { ret.xmlns = xmlns; }
+			if (hasMembers(attributes)) { ret.attributes = attributes; }
+			if (hasMembers(connects)) { ret.connects = connects; }
+			if (children.length) { ret.children = children; }
+			if (hasMembers(attachPoints)) { ret.attachPoints = attachPoints; }
+			return ret;
 		},
 
 		/**
@@ -210,21 +218,17 @@ define([
 			return children.slice(0, lastRealNode + 1); // slice() removes trailing whitespace nodes
 		},
 
-
 		/**
-		 * Given a template string, returns the DOM tree representing that template.
-		 * Will only run in a browser, or in node.js with https://github.com/tmpvar/jsdom.
-		 * @param {string} templateText - HTML text for template.
-		 * @returns {Element} Root element of tree
+		 * Neutralize custom element tags.
+		 * Rename all the elements in the template so that:
+		 * 1. browsers with native document.createElement() support don't start instantiating custom elements
+		 *    in the template, creating internal nodes etc.
+		 * 2. prevent <select size={{size}}> from converting to <select size=0> on webkit
+		 * 3. prevent <img src={{foo}}> from starting an XHR for a URL called {{foo}} (webkit, maybe other browsers)
+		 * Regex will not match <!-- comment -->.
 		 * @private
 		 */
-		toDom: function (templateText) {
-			// Rename all the elements in the template so that:
-			// 1. browsers with native document.createElement() support don't start instantiating custom elements
-			//    in the template, creating internal nodes etc.
-			// 2. prevent <select size={{size}}> from converting to <select size=0> on webkit
-			// 3. prevent <img src={{foo}}> from starting an XHR for a URL called {{foo}} (webkit, maybe other browsers)
-			// Regex will not match <!-- comment -->.
+		neutralizeTags: function (templateText) {
 			templateText = templateText.replace(
 				/(<\/? *)([-a-zA-Z0-9]+)/g, "$1template-$2");
 
@@ -234,6 +238,18 @@ define([
 				/* jshint maxlen:200 */
 				/<template-(area|base|br|col|command|embed|hr|img|input|keygen|link|meta|param|source|track|wbr)([^>]*?)\/?>/g,
 				"<template-$1$2></template-$1>");
+
+			return templateText;
+		},
+
+		/**
+		 * Given a template string, returns the DOM tree representing that template.  Will only run in a browser.
+		 * @param {string} templateText - HTML text for template.
+		 * @returns {Element} Root element of tree
+		 * @private
+		 */
+		toDom: function (templateText) {
+			templateText = handlebars.neutralizeTags(templateText);
 
 			// Create DOM tree from template.
 			// If template contains SVG nodes then parse as XML, to preserve case of attributes like viewBox.
@@ -330,20 +346,19 @@ define([
 			onload();
 		};
 
-		// Inline the template text and list of dependencies into the layer file.
-		// Alternately we could pre-compile the template and inline the compiled method into the layer file.
-		// That would save CPU but it's about 60% more bytes (after gzip).
+		// Inline the template AST and list of dependencies into the layer file.
 		handlebars.write = function (pluginName, moduleName, write) {
-			var dom = jsdom(templateText),
-				template = dom.querySelector("template"),
+			var dom = jsdom(handlebars.neutralizeTags(templateText)),
+				template = dom.querySelector("template-template"),
 				requiresAttr = template.getAttribute("requires") || template.getAttribute("data-requires");
 			templateRequires = requiresAttr ? requiresAttr.split(/,\s*/) : [];
 			template.removeAttribute("requires");
 			template.removeAttribute("data-requires");
 
-			var moduleRequires = [module.id].concat(templateRequires);
-			var moduleText = "define(" + JSON.stringify(moduleRequires) +  ", function(handlebars){\n" +
-				"\treturn handlebars.compile(" + JSON.stringify(template.outerHTML) + ");\n" +
+			var moduleRequires = ["delite/Template"].concat(templateRequires);
+			var tree = handlebars.parse(template);
+			var moduleText = "define(" + JSON.stringify(moduleRequires) + ", function(Template){\n" +
+				"\treturn (new Template(" + JSON.stringify(tree) + ")).func;\n" +
 				"});";
 			write.asModule(pluginName + "!" + moduleName, moduleText);
 		};
@@ -351,7 +366,6 @@ define([
 		// Notify builder to take dependencies specified in requires="..." attribute, and inline them into the layer.
 		handlebars.addModules = function (pluginName, resource, addModules) {
 			addModules(templateRequires);
-
 		};
 	}
 
