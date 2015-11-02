@@ -60,7 +60,7 @@ define(["./register"], function (register) {
 					"\trefresh: function(props){\n\t\t" +
 						this.observeText.join("\n\t\t") +
 					"\n\t}.bind(this),\n" +
-					"\ndestroy: function(){\n" +
+					"\tdestroy: function(){\n" +
 						this.destroyText.join("\n\t\t") +
 						"\n\t\twhile(this.firstChild){ this.removeChild(this.firstChild); }\n" +
 					"\t}.bind(this)\n" +
@@ -182,7 +182,7 @@ define(["./register"], function (register) {
 
 				if (attr === "class" && !templateNode.xmlns) {
 					// Special path for class to not overwrite classes set by application or by other code.
-					this.buildText.push("this.setClassComponent('template', " + js + ", " + nodeName + ")");
+					this.buildText.push("this.setClassComponent('template', " + js + ", " + nodeName + ");");
 					this.generateWatchCode(dependsOn,
 							"this.setClassComponent('template', " + js + ", " + nodeName + ")");
 				} else {
