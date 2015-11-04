@@ -43,6 +43,8 @@ An object representing a DOM Element will look like:
 
 The children of an Element are other Elements, or plain text (see next section).
 
+All properties except for `tag` are optional.
+
 Note that the widget root node itself already exists, and is not created by the template.
 However, the template can still set attributes and event listeners on the root node.
 

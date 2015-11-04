@@ -144,7 +144,7 @@ define(["./register"], function (register) {
 		 * @private
 		 */
 		generateNodeCode: function (nodeName, createNode, templateNode) {
-			/* jshint maxcomplexity:15*/
+			/* jshint maxcomplexity:16 */
 
 			// Helper string for setting up attach-point(s), ex: "this.foo = this.bar = ".
 			var ap = (templateNode.attachPoints || []).map(function (n) {
@@ -215,8 +215,10 @@ define(["./register"], function (register) {
 				}
 			}
 
-			// Create descendant Elements and text nodes
-			this.generateNodeChildrenCode(nodeName, templateNode.children);
+			// Create descendant Elements and text nodes.
+			if (templateNode.children) {
+				this.generateNodeChildrenCode(nodeName, templateNode.children);
+			}
 		}
 	});
 
