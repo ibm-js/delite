@@ -1,14 +1,16 @@
 /** @module delite/register */
 define([
+	"module",
 	"dcl/advise",
 	"dcl/dcl",
 	"decor/schedule",
 	"requirejs-domready/domReady",	// loading as a function, not as a plugin
 	"./features"
-], function (advise, dcl, schedule, domReady, has) {
+], function (module, advise, dcl, schedule, domReady, has) {
 	"use strict";
 
-	var doc = has("builder") ? require("jsdom").jsdom("") : document;
+	var doc = has("builder") ? require.nodeRequire(require.getNodePath(require.toUrl(module.id).replace(/[^\/]*$/,
+		"node_modules/jsdom"))).jsdom("") : document;
 
 	// Set to true after the page finishes loading and the parser runs.  Any widgets declared after initialParseComplete
 	// instantiated in a separate code path.
