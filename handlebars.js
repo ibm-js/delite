@@ -9,9 +9,6 @@
  * Both functions are meant
  * to be run in the context of the widget, so that properties are available through `this`.
  *
- * Could also theoretically be used by a build-tool to precompile templates, assuming you loaded
- * [jsdom](https://github.com/tmpvar/jsdom) to provide methods like `document.createElement()`.
- *
  * Template has a format like:
  *
  * ```html
@@ -33,10 +30,14 @@
  *
  * @module delite/handlebars
  */
-define(["./Template", "require", "requirejs-dplugins/Promise!"], function (Template, require, Promise) {
-
-	// Text plugin to load the templates and do the build.
-	var textPlugin = "requirejs-text/text";
+define([
+	"module",
+	"require",
+	"requirejs-dplugins/has",
+	"requirejs-dplugins/Promise!",
+	"requirejs-text/text",
+	"./Template"
+], function (module, moduleRequire, has, Promise, textPlugin, Template) {
 
 	/**
 	 * Given a string like "hello {{foo}} world", generate JS code to output that string,
@@ -206,21 +207,17 @@ define(["./Template", "require", "requirejs-dplugins/Promise!"], function (Templ
 			return children.slice(0, lastRealNode + 1); // slice() removes trailing whitespace nodes
 		},
 
-
 		/**
-		 * Given a template string, returns the DOM tree representing that template.
-		 * Will only run in a browser, or in node.js with https://github.com/tmpvar/jsdom.
-		 * @param {string} templateText - HTML text for template.
-		 * @returns {Element} Root element of tree
+		 * Neutralize custom element tags.
+		 * Rename all the elements in the template so that:
+		 * 1. browsers with native document.createElement() support don't start instantiating custom elements
+		 *    in the template, creating internal nodes etc.
+		 * 2. prevent <select size={{size}}> from converting to <select size=0> on webkit
+		 * 3. prevent <img src={{foo}}> from starting an XHR for a URL called {{foo}} (webkit, maybe other browsers)
+		 * Regex will not match <!-- comment -->.
 		 * @private
 		 */
-		toDom: function (templateText) {
-			// Rename all the elements in the template so that:
-			// 1. browsers with native document.createElement() support don't start instantiating custom elements
-			//    in the template, creating internal nodes etc.
-			// 2. prevent <select size={{size}}> from converting to <select size=0> on webkit
-			// 3. prevent <img src={{foo}}> from starting an XHR for a URL called {{foo}} (webkit, maybe other browsers)
-			// Regex will not match <!-- comment -->.
+		neutralizeTags: function (templateText) {
 			templateText = templateText.replace(
 				/(<\/? *)([-a-zA-Z0-9]+)/g, "$1template-$2");
 
@@ -230,6 +227,18 @@ define(["./Template", "require", "requirejs-dplugins/Promise!"], function (Templ
 				/* jshint maxlen:200 */
 				/<template-(area|base|br|col|command|embed|hr|img|input|keygen|link|meta|param|source|track|wbr)([^>]*?)\/?>/g,
 				"<template-$1$2></template-$1>");
+
+			return templateText;
+		},
+
+		/**
+		 * Given a template string, returns the DOM tree representing that template.  Will only run in a browser.
+		 * @param {string} templateText - HTML text for template.
+		 * @returns {Element} Root element of tree
+		 * @private
+		 */
+		toDom: function (templateText) {
+			templateText = handlebars.neutralizeTags(templateText);
 
 			// Create DOM tree from template.
 			// If template contains SVG nodes then parse as XML, to preserve case of attributes like viewBox.
@@ -274,7 +283,7 @@ define(["./Template", "require", "requirejs-dplugins/Promise!"], function (Templ
 		},
 
 		/**
-		 * Similar to compile() but before compile then template, loads the modules specified in the
+		 * Similar to compile() but before compiling the template, loads the modules specified in the
 		 * template via the `requires=...` attribute.
 		 * @param {string} templateText - See module description for details on template format.
 		 * @param {Function} require - AMD's require() method.
@@ -307,37 +316,51 @@ define(["./Template", "require", "requirejs-dplugins/Promise!"], function (Templ
 		 * when doing a build.
 		 * @private
 		 */
-		load: function (mid, require, onload, loaderConfig) {
-			require([textPlugin + "!" + mid], function (templateText) {
-				// The build only needs the call to requirejs-text/text to work.
-				if (loaderConfig.isBuild) {
-					onload();
-					return;
-				}
-
+		load: function (mid, require, onload) {
+			textPlugin.load(mid, require, function (templateText) {
 				this.requireAndCompile(templateText, require).then(onload);
 			}.bind(this));
-		},
-
-		/**
-		 * Build function to delegate template inlining to requirejs-text/text.
-		 * @param {string} pluginName - This module id.
-		 * @param {string} moduleName - Absolute path to the resource.
-		 * @param {Function} write - A function to be called with a string of output to
-		 * write to the optimized file. This function also contains a property function,
-		 * write.asModule(moduleName, text).
-		 * @param {Object} loaderConfig - Configuration object from the loader. `requirejs-text/text`
-		 * needs `loaderConfig.inlineText === true` to work.
-		 * @private
-		 */
-		write: function (pluginName, moduleName, write, loaderConfig) {
-			// Requirejs-text is not listed in the dependency list so it is not
-			// included in the layer. At build time requirejs works synchronously so
-			// there is no callback.
-			var text = require(textPlugin);
-			text.write(textPlugin, moduleName, write, loaderConfig);
 		}
 	};
+
+	if (has("builder")) {
+		var fs = require.nodeRequire("fs"),
+			jsdom = require.nodeRequire(require.getNodePath(require.toUrl(module.id).replace(/[^\/]*$/,
+				"node_modules/jsdom"))).jsdom;
+
+		// Info about the MID being currently processed
+		var templateText, templateRequires;
+
+		handlebars.load = function (mid, require, onload) {
+			templateText = fs.readFileSync(require.toUrl(mid), "utf8");
+			onload();
+		};
+
+		// Inline the template function and list of dependencies into the layer file.
+		handlebars.write = function (pluginName, moduleName, write) {
+			var dom = jsdom(handlebars.neutralizeTags(templateText)),
+				template = dom.querySelector("template-template"),
+				requiresAttr = template.getAttribute("requires") || template.getAttribute("data-requires");
+			templateRequires = requiresAttr && requiresAttr.split(/,\s*/);
+			template.removeAttribute("requires");
+			template.removeAttribute("data-requires");
+
+			var tree = handlebars.parse(template);
+			var funcText = (new Template(tree)).func.toString();
+			var moduleText = "define(" + (templateRequires ? JSON.stringify(templateRequires) + ", " : "") +
+				"function(){\n" +
+				"\treturn " + funcText + ";" +
+				"});";
+			write.asModule(pluginName + "!" + moduleName, moduleText);
+		};
+
+		// Notify builder to take dependencies specified in requires="..." attribute, and inline them into the layer.
+		handlebars.addModules = function (pluginName, resource, addModules) {
+			if (templateRequires) {
+				addModules(templateRequires);
+			}
+		};
+	}
 
 	return handlebars;
 });
