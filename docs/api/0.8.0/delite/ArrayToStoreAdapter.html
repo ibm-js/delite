@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Module: delite/ArrayToStoreAdapter</title>
+
+    <script src="../scripts/prettify/prettify.js"> </script>
+    <script src="../scripts/prettify/lang-css.js"> </script>
+    <style>
+        [inherited] {
+            display: none;
+        }
+
+        [inherited-show] {
+            display: block;
+        }
+    </style>
+    <script>
+        function toggleInherited(event) {
+            var shouldShow = event.type !== "DOMContentLoaded" && !document.querySelector("[inherited][inherited-show]");
+            Array.prototype.forEach.call(document.querySelectorAll("dl"), function (elem) {
+                var inherited = elem.querySelectorAll("[inherited]");
+                Array.prototype.forEach.call(inherited, function (elem) {
+                    if (shouldShow) {
+                        elem.setAttribute("inherited-show", "");
+                    } else {
+                        elem.removeAttribute("inherited-show");
+                    }
+                });
+                if (inherited.length > 0) {
+                    var header = elem.previousElementSibling;
+                    if (header.tagName === "H3") {
+                        header.style.display = parseInt(document.defaultView.getComputedStyle(elem).height) > 0 ? "" : "none";
+                    }
+                }
+            });
+            if (event.type !== "DOMContentLoaded") {
+                event.target.innerHTML = (shouldShow ? "Hide" : "Show") + " inherited";
+            } else if (!document.querySelector("[inherited]")) {
+                var toggleLink = document.getElementById("toggleinherited");
+                if (toggleLink) {
+                    toggleLink.style.display = "none";
+                }
+            }
+        }
+        window.addEventListener("DOMContentLoaded", toggleInherited);
+    </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="../styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="../styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Module: delite/ArrayToStoreAdapter</h1>
+
+    
+
+
+
+<section>
+
+<header>
+    <h2>
+    delite/ArrayToStoreAdapter
+    </h2>
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+        
+<dt>
+    
+    <h4 class="name" id="module:delite/ArrayToStoreAdapter">require(["delite/ArrayToStoreAdapter"], function (ArrayToStoreAdapter) { <br/>&nbsp;&nbsp;<span class="type-signature"></span>new ArrayToStoreAdapter<span class="signature">()</span><span class="type-signature"></span>;<br/> });</h4>
+    
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>An adapter to use an array in the source of delite/Store.js.
+Created to keep a commun interface with the use of dstore/Store instead of an array.</p>
+<p>The arguments to pass to the constructor are:</p>
+<ul>
+<li>source: Array - the array represented by the adapter.</li>
+<li>query: the query filter to apply to the source.</li>
+<li>processQueryResult: function to apply to the source</li>
+</ul>
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="../ArrayToStoreAdapter.js.html">delite/ArrayToStoreAdapter.js</a>, <a href="../ArrayToStoreAdapter.js.html#line10">line 10</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+    
+
+    
+        
+
+        
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+
+    <a id="toggleinherited" href="#" onclick="toggleInherited(event)">Show inherited</a>
+
+    
+        <h3 class="subsection-title">Members</h3>
+
+        <dl>
+            
+            
+<dt>
+    <h4 class="name" id="track"><span class="type-signature">&lt;readonly> </span>track<span class="type-signature"> :boolean</span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>Indicates if the source is observable.</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">boolean</span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-default">Default Value:</dt>
+    <dd class="tag-default"><ul class="dummy">
+            <li>false</li>
+        </ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="../ArrayToStoreAdapter.js.html">delite/ArrayToStoreAdapter.js</a>, <a href="../ArrayToStoreAdapter.js.html#line48">line 48</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+</dd>
+
+        </dl>
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        <dl>
+            
+            
+<dt>
+    
+    <h4 class="name" id="deliver"><span class="type-signature"></span>deliver<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Synchronously emit add/update/delete events for all recent changes.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="../ArrayToStoreAdapter.js.html">delite/ArrayToStoreAdapter.js</a>, <a href="../ArrayToStoreAdapter.js.html#line290">line 290</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+            
+<dt>
+    
+    <h4 class="name" id="discardChanges"><span class="type-signature"></span>discardChanges<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Discard recent change records.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="../ArrayToStoreAdapter.js.html">delite/ArrayToStoreAdapter.js</a>, <a href="../ArrayToStoreAdapter.js.html#line302">line 302</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+            
+<dt>
+    
+    <h4 class="name" id="fetch"><span class="type-signature"></span>fetch<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Perform the fetch operation on the collection.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="../ArrayToStoreAdapter.js.html">delite/ArrayToStoreAdapter.js</a>, <a href="../ArrayToStoreAdapter.js.html#line334">line 334</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+            
+<dt>
+    
+    <h4 class="name" id="fetchRange"><span class="type-signature"></span>fetchRange<span class="signature">(args)</span><span class="type-signature"></span></h4>
+    
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Perform the fetchRange operation on the collection.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>args</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>contains the start index and the end index of the fetch.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="../ArrayToStoreAdapter.js.html">delite/ArrayToStoreAdapter.js</a>, <a href="../ArrayToStoreAdapter.js.html#line342">line 342</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+            
+<dt>
+    
+    <h4 class="name" id="get"><span class="type-signature"></span>get<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Retrieve an object in the data by its identity.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="../ArrayToStoreAdapter.js.html">delite/ArrayToStoreAdapter.js</a>, <a href="../ArrayToStoreAdapter.js.html#line366">line 366</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+            
+<dt>
+    
+    <h4 class="name" id="getIdentity"><span class="type-signature"></span>getIdentity<span class="signature">(item)</span><span class="type-signature"> &rarr; {*}</span></h4>
+    
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Returns the identity of an item.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>item</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The item.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="../ArrayToStoreAdapter.js.html">delite/ArrayToStoreAdapter.js</a>, <a href="../ArrayToStoreAdapter.js.html#line380">line 380</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">*</span>
+
+
+    </dd>
+</dl>
+
+        
+
+    
+</dd>
+
+        
+            
+            
+<dt>
+    
+    <h4 class="name" id="setIdentity"><span class="type-signature"></span>setIdentity<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Set the identity of an object.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="../ArrayToStoreAdapter.js.html">delite/ArrayToStoreAdapter.js</a>, <a href="../ArrayToStoreAdapter.js.html#line359">line 359</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+            
+<dt>
+    
+    <h4 class="name" id="untrack"><span class="type-signature"></span>untrack<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Stop observing the array and its items.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="../ArrayToStoreAdapter.js.html">delite/ArrayToStoreAdapter.js</a>, <a href="../ArrayToStoreAdapter.js.html#line315">line 315</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        </dl>
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="../delite/a11y.html">delite/a11y</a></li><li><a href="../delite/a11yclick.html">delite/a11yclick</a></li><li><a href="../delite/activationTracker.html">delite/activationTracker</a></li><li><a href="../delite/ArrayToStoreAdapter.html">delite/ArrayToStoreAdapter</a></li><li><a href="../delite/BackgroundIframe.html">delite/BackgroundIframe</a></li><li><a href="../delite/Bidi.html">delite/Bidi</a></li><li><a href="../delite/Container.html">delite/Container</a></li><li><a href="../delite/CssState.html">delite/CssState</a></li><li><a href="../delite/CustomElement.html">delite/CustomElement</a></li><li><a href="../delite/Dialog.html">delite/Dialog</a></li><li><a href="../delite/DialogUnderlay.html">delite/DialogUnderlay</a></li><li><a href="../delite/DisplayContainer.html">delite/DisplayContainer</a></li><li><a href="../delite/DstoreToStoreAdapter.html">delite/DstoreToStoreAdapter</a></li><li><a href="../delite/FormValueWidget.html">delite/FormValueWidget</a></li><li><a href="../delite/FormWidget.html">delite/FormWidget</a></li><li><a href="../delite/handlebars.html">delite/handlebars</a></li><li><a href="../delite/HasDropDown.html">delite/HasDropDown</a></li><li><a href="../delite/hc.html">delite/hc</a></li><li><a href="../delite/KeyNav.html">delite/KeyNav</a></li><li><a href="../delite/on.html">delite/on</a></li><li><a href="../delite/place.html">delite/place</a></li><li><a href="../delite/popup.html">delite/popup</a></li><li><a href="../delite/register.html">delite/register</a></li><li><a href="../delite/Scrollable.html">delite/Scrollable</a></li><li><a href="../delite/Selection.html">delite/Selection</a></li><li><a href="../delite/Store.html">delite/Store</a></li><li><a href="../delite/StoreMap.html">delite/StoreMap</a></li><li><a href="../delite/Template.html">delite/Template</a></li><li><a href="../delite/theme.html">delite/theme</a></li><li><a href="../delite/uacss.html">delite/uacss</a></li><li><a href="../delite/Viewport.html">delite/Viewport</a></li><li><a href="../delite/Widget.html">delite/Widget</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha7</a> on Fri Nov 13 2015 12:17:07 GMT+0100 (Romance Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="../scripts/linenumber.js"> </script>
+</body>
+</html>
