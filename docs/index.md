@@ -36,6 +36,7 @@ Specifically, it's based on the following concepts:
 * [a11yclick](a11yclick.md) - allow keyboard "click" (via ENTER or SPACE) on custom DOM nodes
 * [handlebars!](handlebars.md) - plugin to compile reactive templates for use in widgets
 * [hc!](hc.md) - tests if OS is in high contrast mode
+* [on](on.md) - set up event listener on an Element
 * [place](place.md) - low level module for placing a popup or dropdown at a certain position
 * [popup](popup.md) - popup manager
 * [register](register.md) - utility module for declaring new custom element types

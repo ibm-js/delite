@@ -384,7 +384,7 @@ define([
 				e.stopPropagation();
 				e.preventDefault();
 			} else if (!this.opened &&
-				(e.key === "Down" ||
+				(e.key === "ArrowDown" ||
 					// ignore unmodified SPACE if KeyNav has search in progress
 					((e.key === "Enter" || (e.key === "Spacebar" &&
 						(!this._searchTimer || (e.ctrlKey || e.altKey || e.metaKey)))) &&

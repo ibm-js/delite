@@ -39,12 +39,13 @@ define([
 	  * 
 	  * To use this mixin, the subclass must:
 	  *
-	  * - Implement one method for each keystroke that subclass wants to handle, with names based on the key names
-	  *   defined by https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key.  For example, `DOWN_ARROW` -->
-	  *   `downKeyHandler()`.
-	  *   The method takes two parameters: the events, and the currently navigated node.
+	  * - Implement one method for each keystroke that the subclass wants to handle.
+	  *   The methods for up and down arrow keys are `upKeyHandler() and `downKeyHandler()`.
 	  *   For BIDI support, the left and right arrows are handled specially, mapped to the `previousKeyHandler()`
 	  *   and `nextKeyHandler()` methods in LTR mode, or reversed in RTL mode.
+	  *   Otherwise, the method name is based on the key names
+	  *   defined by https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key, for example `homeKeyHandler()`.
+	  *   The method takes two parameters: the event, and the currently navigated node.
 	  *   Most subclasses will want to implement either `previousKeyHandler()`
 	  *   and `nextKeyHandler()`, or `downKeyHandler()` and `upKeyHandler()`.
 	  * - Set all navigable descendants' initial tabIndex to "-1"; both initial descendants and any
@@ -412,7 +413,7 @@ define([
 		_keynavKeyDownHandler: function (evt) {
 			// Ignore left, right, home, end, and space on <input> controls
 			if (takesInput(evt.target) &&
-				(evt.key === "Left" || evt.key === "Right" ||
+				(evt.key === "ArrowLeft" || evt.key === "ArrowRight" ||
 					evt.key === "Home" || evt.key === "End" || evt.key === "Spacebar")) {
 				return;
 			}
@@ -442,11 +443,15 @@ define([
 			// Get name of method to call
 			var methodName;
 			switch (evt.key) {
-			case "Left":
+			case "ArrowLeft":
 				methodName = this.effectiveDir === "rtl" ? "nextKeyHandler" : "previousKeyHandler";
 				break;
-			case "Right":
+			case "ArrowRight":
 				methodName = this.effectiveDir === "rtl" ? "previousKeyHandler" : "nextKeyHandler";
+				break;
+			case "ArrowUp":
+			case "ArrowDown":
+				methodName = evt.key.charAt(5).toLowerCase() + evt.key.substr(6) + "KeyHandler";
 				break;
 			default:
 				methodName = evt.key.charAt(0).toLowerCase() + evt.key.substr(1) + "KeyHandler";

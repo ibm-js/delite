@@ -17,7 +17,7 @@ define(function () {
 			capture = true;
 		}
 
-		// Shim support for event.key, and fix some wrong event.key values on FF and Android 4.2.
+		// Shim support for Event.key, and fix some wrong/outdated Event.key values
 		if (/^key(down|press|up)$/.test(type)) {
 			var origFunc = callback;
 			callback = function (event) {
@@ -33,6 +33,14 @@ define(function () {
 					// fix for FF 34
 					" ": "Spacebar",
 
+					// fix for old key names, see https://www.w3.org/Bugs/Public/show_bug.cgi?id=22084
+					"Apps": "ContextMenu",
+					"Left": "ArrowLeft",
+					"Down": "ArrowDown",
+					"Right": "ArrowRight",
+					"Up": "ArrowUp",
+					"Del": "Delete",
+
 					// fix for Android 4.2
 					"U+00007F": "Backspace"
 				}[key] || key.replace(/^U\+0*(.*)$/, function (all, hexString) {
@@ -46,7 +54,9 @@ define(function () {
 
 				if (event.key !== fixedKey) {
 					// A simple "event.key = fixedKey" doesn't work on FF31 (for " " --> "Spacebar" conversion).
-					Object.defineProperty(event, "key", {value: fixedKey, enumerable: true});
+					// And Object.defineProperty(event, "key", {value: fixedKey}); (for "Down" --> "ArrowDown")
+					// doesn't work on IE.
+					Object.defineProperty(event, "key", {get: function () { return fixedKey; }});
 				}
 
 				origFunc(event);

@@ -40,10 +40,10 @@ define([
 				return this.remote.execute("document.getElementById('key').focus();")
 					.pressKeys(keys.ARROW_DOWN)
 					.execute("return keydown_log.value;").then(function (log) {
-						assert.strictEqual(log, "Down");
+						assert.strictEqual(log, "ArrowDown");
 					})
 					.execute("return keyup_log.value;").then(function (log) {
-						assert.strictEqual(log, "Down");
+						assert.strictEqual(log, "ArrowDown");
 					})
 					.pressKeys(keys.TAB)
 					.execute("return keydown_log.value;").then(function (log) {

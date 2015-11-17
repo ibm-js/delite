@@ -97,9 +97,9 @@
 					this.on("keydown", function (evt) {
 						if(evt.key === "Enter" || evt.key === "Spacebar") {
 							this.emit("change");
-						} else if(evt.key === "Down" ) {
+						} else if(evt.key === "ArrowDown" ) {
 							this.focus((this.selected && this.selected.nextSibling) || this.firstChild);
-						} else if(evt.key === "Up" ) {
+						} else if(evt.key === "ArrowUp" ) {
 							this.focus((this.selected && this.selected.previousSibling) || this.lastChild);
 						}
 					}.bind(this));
@@ -142,10 +142,10 @@
 					if(evt.key === "Enter" || evt.key === "Spacebar") {
 						this.emit("change");
 						this.selected.className = "";
-					} else if(evt.key === "Down" ) {
+					} else if(evt.key === "ArrowDown" ) {
 						this._select(this.selected.nextSibling || this.firstChild);
 						return false;
-					} else if(evt.key === "Up" ) {
+					} else if(evt.key === "ArrowUp" ) {
 						this._select(this.selected.previousSibling || this.lastChild);
 						return false;
 					}
