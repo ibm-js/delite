@@ -1,6 +1,6 @@
 {
 	"name": "delite",
-	"version": "0.8.0",
+	"version": "0.8.1",
 	"devDependencies": {
 		"intern": "3.0.x",
 		"jsdom": "7.x",
