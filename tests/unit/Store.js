@@ -8,21 +8,20 @@ define([
 	var M = declare([Memory, Trackable], {});
 	registerSuite({
 		name: "Store",
-/*
-// commented out until https://github.com/ibm-js/delite/issues/93 fixed
-		"Error" : function () {
-			var d = this.async(2000);
+
+		"Error": function () {
+			var d = this.async(10000);	// SauceLabs takes 2-5 seconds for bogus URL to generate a 404 error
 			var store = new C();
-			var callbackCalled = false;
 			store.on("query-error", function () {
 				// should fire before the timeout
-				d.resolve();
+				d.resolve(true);
 			});
-			store.attachedCallback();
-			store.source = new Rest({ target: "/" });
+			store.on("query-success", function () {
+				d.reject(new Error("got query-success, should get query-error"));
+			});
+			store.source = new Rest({ target: "/foo" });	// bogus URL, should throw error
 			return d;
 		},
-*/
 
 		Updates: function () {
 			var d = this.async(1500);
