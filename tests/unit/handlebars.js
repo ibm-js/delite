@@ -3,15 +3,17 @@ define([
 	"intern!object",
 	"intern/chai!assert",
 	"requirejs-dplugins/Promise!",
+	"requirejs-dplugins/jquery!attributes/classes",	// hasClass()
 	"delite/handlebars",
 	"delite/register",
 	"delite/Widget",
 	"delite/handlebars!./templates/HandlebarsButton.html",
 	"delite/theme!"		// to get CSS rules for d-hidden
-], function (require, registerSuite, assert, Promise, handlebars, register, Widget, buttonHBTmpl) {
-	var container, myButton;
-	registerSuite({
+], function (require, registerSuite, assert, Promise, $, handlebars, register, Widget, buttonHBTmpl) {
 
+	var container, myButton;
+
+	registerSuite({
 		name: "handlebars",
 
 		setup: function () {
@@ -281,6 +283,27 @@ define([
 				assert.isFalse(myComplexWidget.attached, "myComplexWidget widget was detached");
 				assert.isFalse(headingWidget.attached, "heading widget was detached");
 				assert.isFalse(buttonWidget.attached, "button widget was detached");
+			},
+
+			"class attr for widgets in templates": function () {
+				register("handlebars-embedded-widget", [HTMLElement, Widget], {
+					template: handlebars.compile(
+						"<template class='foo'></template>"
+					)
+				});
+				register("handlebars-test-app", [HTMLElement, Widget], {
+					template: handlebars.compile(
+						"<template><handlebars-embedded-widget class=bar></handlebars-embedded-widget></template>"
+					)
+				});
+
+				var widget = document.createElement("handlebars-test-app");
+				container.appendChild(widget);
+				register.parse(container);
+
+				var embeddedWidget = widget.querySelector("handlebars-embedded-widget");
+				assert($(embeddedWidget).hasClass("foo"), "has original foo class");
+				assert($(embeddedWidget).hasClass("bar"), "has user specified bar class");
 			},
 
 			buttons: function () {

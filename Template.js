@@ -182,9 +182,10 @@ define(["./register"], function (register) {
 
 				if (attr === "class" && !templateNode.xmlns) {
 					// Special path for class to not overwrite classes set by application or by other code.
-					this.buildText.push("this.setClassComponent('template', " + js + ", " + nodeName + ");");
+					this.buildText.push("this.setClassComponent('template'+this.widgetId, " + js + ", " + nodeName +
+						");");
 					this.generateWatchCode(dependsOn,
-							"this.setClassComponent('template', " + js + ", " + nodeName + ")");
+							"this.setClassComponent('template'+this.widgetId, " + js + ", " + nodeName + ")");
 				} else {
 					this.buildText.push(propName ? nodeName + "." + propName + " = " + js + ";" :
 						nodeName + ".setAttribute('" + attr + "', " + js + ");");
