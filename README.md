@@ -42,5 +42,4 @@ Then install dependencies with bower (or manually from github if you prefer to):
 
 See the [introductory blog post](http://ibm-js.github.io/2014/07/18/delite-and-deliteful.html) to get started.
 
-Then see the [delite website](http://ibm-js.github.io/delite/) including the
-[documentation section](http://ibm-js.github.io/delite/docs/master/index.html).
+Then see the [delite website](http://ibm-js.github.io/delite/) including the documentation section.
