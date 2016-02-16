@@ -15,8 +15,6 @@ define({
 	// capabilities options specified for an environment will be copied as-is
 	environments: [
 		{ browserName: "internet explorer", version: "11", platform: "Windows 8.1", name: "delite" },
-		{ browserName: "internet explorer", version: "10", platform: "Windows 8", name: "delite" },
-		// { browserName: "internet explorer", version: "9", platform: "Windows 7" },
 		{ browserName: "firefox", version: "42", platform: "Windows 7", name: "delite" },
 		{ browserName: "chrome", version: "36", platform: "Windows 7", name: "delite" },
 		{ browserName: "safari", version: "8", name: "delite" },
