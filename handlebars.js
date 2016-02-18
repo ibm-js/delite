@@ -90,6 +90,7 @@ define([
 		 * @private
 		 */
 		parse: function (templateNode, xmlns) {
+			/* jshint maxcomplexity:15 */
 			// Get tag name, reversing the tag renaming done in toDom()
 			var tag = templateNode.hasAttribute("is") ? templateNode.getAttribute("is") :
 					templateNode.tagName.replace(/^template-/i, "").toLowerCase(),
@@ -123,14 +124,24 @@ define([
 				}
 			}
 
-			return {
-				tag: tag,
-				xmlns: xmlns,
-				attributes: attributes,
-				connects: connects,
-				children: handlebars.parseChildren(templateNode, xmlns),
-				attachPoints: attachPoints
-			};
+			// Process children.
+			var children = handlebars.parseChildren(templateNode, xmlns);
+
+			// Return AST structure pruning empty arrays etc.  Minimizes size of serialized object.
+			function hasMembers(obj) {
+				/* jshint unused: false */
+				for (var key in obj) {
+					return true;
+				}
+				return false;
+			}
+			var ret = { tag: tag };
+			if (xmlns) { ret.xmlns = xmlns; }
+			if (hasMembers(attributes)) { ret.attributes = attributes; }
+			if (hasMembers(connects)) { ret.connects = connects; }
+			if (children.length) { ret.children = children; }
+			if (hasMembers(attachPoints)) { ret.attachPoints = attachPoints; }
+			return ret;
 		},
 
 		/**
@@ -336,29 +347,26 @@ define([
 			onload();
 		};
 
-		// Inline the template function and list of dependencies into the layer file.
+		// Inline the template AST and list of dependencies into the layer file.
 		handlebars.write = function (pluginName, moduleName, write) {
 			var dom = jsdom(handlebars.neutralizeTags(templateText)),
 				template = dom.querySelector("template-template"),
 				requiresAttr = template.getAttribute("requires") || template.getAttribute("data-requires");
-			templateRequires = requiresAttr && requiresAttr.split(/,\s*/);
+			templateRequires = requiresAttr ? requiresAttr.split(/,\s*/) : [];
 			template.removeAttribute("requires");
 			template.removeAttribute("data-requires");
 
+			var moduleRequires = ["delite/Template"].concat(templateRequires);
 			var tree = handlebars.parse(template);
-			var funcText = (new Template(tree)).func.toString();
-			var moduleText = "define(" + (templateRequires ? JSON.stringify(templateRequires) + ", " : "") +
-				"function(){\n" +
-				"\treturn " + funcText + ";" +
+			var moduleText = "define(" + JSON.stringify(moduleRequires) + ", function(Template){\n" +
+				"\treturn (new Template(" + JSON.stringify(tree) + ")).func;\n" +
 				"});";
 			write.asModule(pluginName + "!" + moduleName, moduleText);
 		};
 
 		// Notify builder to take dependencies specified in requires="..." attribute, and inline them into the layer.
 		handlebars.addModules = function (pluginName, resource, addModules) {
-			if (templateRequires) {
-				addModules(templateRequires);
-			}
+			addModules(templateRequires);
 		};
 	}
 
