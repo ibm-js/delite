@@ -336,7 +336,7 @@ define([
 			// provide default escape and tab key handling
 			// (this will work for any widget, not just menu)
 			var onKeyDown = function (evt) {
-				if ((evt.key === "Esc" || evt.key === "Tab") && args.onCancel) {
+				if ((evt.key === "Escape" || evt.key === "Tab") && args.onCancel) {
 					evt.stopPropagation();
 					evt.preventDefault();
 					args.onCancel();

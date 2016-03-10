@@ -379,7 +379,7 @@ define([
 					return;
 				}
 			}
-			if (dropDown && this.opened && e.key === "Esc") {
+			if (dropDown && this.opened && e.key === "Escape") {
 				this.closeDropDown();
 				e.stopPropagation();
 				e.preventDefault();

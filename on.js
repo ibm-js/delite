@@ -28,7 +28,7 @@ define(function () {
 					"U+0020": "Spacebar",
 					"U+0008": "Backspace",
 					"U+0009": "Tab",
-					"U+001B": "Esc",
+					"U+001B": "Escape",
 
 					// fix for FF 34
 					" ": "Spacebar",
@@ -40,6 +40,7 @@ define(function () {
 					"Right": "ArrowRight",
 					"Up": "ArrowUp",
 					"Del": "Delete",
+					"Esc": "Escape",
 
 					// fix for Android 4.2
 					"U+00007F": "Backspace"

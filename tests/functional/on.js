@@ -54,7 +54,7 @@ define([
 					})
 					.pressKeys(keys.ESCAPE)
 					.execute("return keydown_log.value;").then(function (log) {
-						assert.strictEqual(log, "Esc");
+						assert.strictEqual(log, "Escape");
 					})
 					.pressKeys(" ")
 					.execute("return keydown_log.value;").then(function (log) {
