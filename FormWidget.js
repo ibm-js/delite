@@ -133,7 +133,6 @@ define([
 			// To keep things simple, if anything has changed then reapply all the properties.
 			if ("tabStops" in oldValues || "tabIndex" in oldValues || "disabled" in oldValues || "alt" in oldValues) {
 				this.forEachFocusNode(function (node) {
-					node.disabled = this.disabled;
 					if (this.disabled) {
 						node.tabIndex = "-1";				// backup plan in case next line of code ineffective
 						node.removeAttribute("tabindex");	// works for <div> etc. but not <input>
@@ -141,7 +140,16 @@ define([
 						node.tabIndex = this._get("tabIndex");
 					}
 					node.alt = this.alt;
-					node.setAttribute("aria-disabled", "" + this.disabled);	// let JAWS know
+
+					// Set the disabled property for native elements like <input>, and also custom elements with a
+					// disabled property.  Note that on IE every element has a disabled property, so it's hard to
+					// test if it's real or not.
+					node.disabled = this.disabled;
+
+					// Set aria-disabled attribute if necessary, but try to avoid setting it redundantly.
+					if (!(/^(button|input|select|textarea|optgroup|option|fieldset)$/i.test(node.tagName))) {
+						node.setAttribute("aria-disabled", "" + this.disabled);
+					}
 				});
 			}
 

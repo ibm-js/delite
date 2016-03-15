@@ -67,8 +67,12 @@ define([
 
 				myWidget.disabled = true;
 				myWidget.deliver();
+
+				// since valueNode and focusNode are <input>, the disabled property should be set
 				assert(myWidget.valueNode.disabled, "disabled set on valueNode");
 				assert(myWidget.focusNode.disabled, "disabled set on focusNode");
+				assert.isFalse(myWidget.valueNode.hasAttribute("aria-disabled"), "no aria-disabled on valueNode");
+				assert.isFalse(myWidget.focusNode.hasAttribute("aria-disabled"), "no aria-disabled on focusNode");
 
 				myWidget.disabled = false;
 				myWidget.deliver();
@@ -187,24 +191,28 @@ define([
 					"aria-label added to field1");
 				assert.strictEqual(myWidget.field2.getAttribute("aria-label"), "label 2",
 					"aria-label added to field2");
+			},
 
-				// disabled
-				myWidget = new FormWidgetTest();
+			"#disabled": function () {
+				var myWidget = new FormWidgetTest();
 
 				myWidget.disabled = true;
 				myWidget.deliver();
-				assert(myWidget.valueNode.disabled, "disabled set on valueNode");
-				assert(myWidget.field1.disabled, "disabled set on field1");
-				assert(myWidget.field2.disabled, "disabled set on field2");
+
+				// Since field1 and field2 are <span>, the "aria-disabled" attribute should be set,
+				// but the "disabled" property should be set on the <input>.
+				assert.strictEqual(myWidget.field1.getAttribute("aria-disabled"), "true", "aria-disabled on field1");
+				assert.strictEqual(myWidget.field2.getAttribute("aria-disabled"), "true", "aria-disabled on field2");
+				assert.strictEqual(myWidget.valueNode.disabled, true, "valueNode disabled prop");
 
 				myWidget.disabled = false;
 				myWidget.deliver();
-				assert.isFalse(myWidget.valueNode.disabled, "disabled not set on valueNode");
-				assert.isFalse(myWidget.field1.disabled, "disabled not set on field1");
-				assert.isFalse(myWidget.field2.disabled, "disabled not set on field2");
-
+				assert.strictEqual(myWidget.field1.getAttribute("aria-disabled"), "false", "aria-disabled on field1");
+				assert.strictEqual(myWidget.field2.getAttribute("aria-disabled"), "false", "aria-disabled on field2");
+				assert.strictEqual(myWidget.valueNode.disabled, false, "valueNode disabled prop");
 			},
-			
+
+
 			"change #tabStops": function () {
 				var myWidget = new FormWidgetTest();
 				myWidget.tabStops = "field3, field4";
