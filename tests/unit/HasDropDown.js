@@ -59,17 +59,38 @@ define([
 
 		// Note: most of the HasDropDown tests are in tests/functional
 
-		detach: function () {
+		basic: function () {
 			// basic drop down with menu
 			var sdd = new SimpleDropDownButton({
 				id: "dd",
-				label: "show menu - ltr",
+				label: "basic",
+				dropDownConstructor: Menu,
+				focusOnPointerOpen: false	// traditionally you only focus drop down menus when opened by the keyboard
+			}).placeAt(container);
+			assert.strictEqual(sdd.getAttribute("aria-expanded"), "false", "aria-expanded initial");
+
+			return sdd.openDropDown().then(function () {
+				var popup = document.getElementById("dd_popup");
+				assert(helpers.isVisible(popup), "visible");
+				assert.strictEqual(sdd.getAttribute("aria-expanded"), "true", "aria-expanded after open");
+
+				sdd.closeDropDown();
+				assert.isFalse(helpers.isVisible(popup), "not visible");
+				assert.strictEqual(sdd.getAttribute("aria-expanded"), "false", "aria-expanded after close");
+			});
+		},
+
+		detach: function () {
+			// basic drop down with menu
+			var sdd = new SimpleDropDownButton({
+				id: "dd2",
+				label: "detach",
 				dropDownConstructor: Menu,
 				focusOnPointerOpen: false	// traditionally you only focus drop down menus when opened by the keyboard
 			}).placeAt(container);
 
 			return sdd.openDropDown().then(function () {
-				var popup = document.getElementById("dd_popup");
+				var popup = document.getElementById("dd2_popup");
 				assert(helpers.isVisible(popup), "visible");
 
 				sdd.closeDropDown();

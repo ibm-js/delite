@@ -302,6 +302,8 @@ define([
 			this.buttonNode = this.buttonNode || this.focusNode || this;
 			this.popupStateNode = this.popupStateNode || this.focusNode || this.buttonNode;
 
+			this.popupStateNode.setAttribute("aria-expanded", "false");
+
 			this._HasDropDownListeners = [
 				// basic listeners
 				this.on("pointerdown", this._dropDownPointerDownHandler.bind(this), this.buttonNode),
