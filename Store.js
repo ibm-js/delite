@@ -121,19 +121,18 @@ define([
 			return renderItems;
 		},
 
-		/**
-		 * If the store parameters are invalidated, queries the store, creates the render items and calls initItems() 
-		 * when ready. If an error occurs a 'query-error' event will be fired.
-		 * @param props
-		 * @param isAfterCreation
-		 * @protected
-		 */
-		computeProperties: function (props, isAfterCreation) {
-			// If this call is upon widget creation but `this.store` is not available, don't bother querying store
+		computeProperties: dcl.after(function (args) {
+			// Runs after the subclass computeProperties() methods run and possibly set this.query and this.source.
+			// If this call is upon widget creation but `this.source` is not available, don't bother querying store.
+			// If the store parameters are invalidated, queries the store, creates the render items
+			// and calls initItems() when ready.  If an error occurs a 'query-error' event will be fired.
+			// If this call is upon widget creation but `this.store` is not available, don't bother querying store.
+
+			var props = args[0], isAfterCreation = args[1];
 			if (("source" in props || "query" in props) && (this.source || !isAfterCreation)) {
 				this.queryStoreAndInitItems(this.processQueryResult);
 			}
-		},
+		}),
 
 		/**
 		 * Queries the store, creates the render items and calls initItems() when ready. If an error occurs

@@ -145,6 +145,49 @@ define([
 			return d;
 		},
 
+		"set query in subclass": function () {
+			// This test confirms that the subclass computeProperties() method can set this.query,
+			// and Store will wait until after that to run the query against the store.
+
+			var MyStoreSubclass = register("my-store-subclass", [HTMLElement, Widget, Store], {
+				idToQuery: "place holder",
+
+				createdCallback: function () {
+					this.storeQueries = [];
+				},
+
+				computeProperties: function (oldVals) {
+					if ("idToQuery" in oldVals) {
+						this.query = {
+							id: this.idToQuery
+						};
+					}
+				},
+
+				queryStoreAndInitItems: dcl.superCall(function (sup) {
+					return function () {
+						this.storeQueries.push(this.query);
+						sup.apply(this, arguments);
+					};
+				})
+			});
+
+			var myStore = new MyStoreSubclass({
+				source: new M({
+					data: [
+						{ id: "foo", name: "Foo" },
+						{ id: "bar", name: "Bar" }
+					],
+					model: null
+				}),
+				idToQuery: "foo"
+			});
+
+			// The new MyStoreSubclass() automatically calls deliver(), so the query has already executed.
+			// Now make sure that it just executed once.
+			assert.deepEqual(myStore.storeQueries, [{ id: "foo" }]);
+		},
+
 		StoreFuncRange: function () {
 			var d = this.async(15000);
 			var store = new C();
