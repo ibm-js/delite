@@ -291,10 +291,7 @@ define([
 		// If the document has already been parsed then do a supplementary sweep for this new custom element.
 		if (initialParseComplete && !has("document-register-element")) {
 			unobserve();	// pause listening for added/deleted nodes
-			var node, idx = 0, nodes = doc.querySelectorAll(selector);
-			while ((node = nodes[idx++])) {
-				upgrade(node, true);
-			}
+			parse(doc, selector);
 			observe();	// resume listening for added/deleted nodes
 		}
 
@@ -407,10 +404,14 @@ define([
 	 *
 	 * @function module:delite/register.parse
 	 * @param {Element} [root] DOM node to parse from.
+	 * @param {String} [selector] The selector to use to detect custom elements.  Defaults to selector
+	 * for all registered custom elements.
 	 */
-	function parse(root) {
-		if (!has("document-register-element") && selectors.length) {
-			var node, idx = 0, nodes = (root || doc).querySelectorAll(selectors.join(", "));
+	function parse(root, selector) {
+		if (has("document-register-element")) { return; }
+		selector = selector || selectors.join(", ");
+		if (selector) {
+			var node, idx = 0, nodes = (root || doc).querySelectorAll(selector);
 			while ((node = nodes[idx++])) {
 				upgrade(node, true);
 			}
@@ -477,6 +478,9 @@ define([
 	 */
 	function unobserve() {
 		if (observer) {
+			// TODO: This method is supposed to pause listening for DOM updates,
+			// but I suspect disconnect() also throws away records
+			// for any mutations that have already occurred.   Those records need to be saved or processed.
 			observer.disconnect();
 		}
 	}
