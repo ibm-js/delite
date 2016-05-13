@@ -66,7 +66,7 @@ define([
 		buttonNode: null,
 
 		/**
-		 * The node to set the `aria-expanded` class on.
+		 * The node to set the `aria-owns` etc. on.
 		 * Can be set in a template via a `attach-point` assignment.
 		 * If missing, then `this.focusNode` or `this.buttonNode` (if `focusNode` is missing) will be used.
 		 * @member {Element}
@@ -301,8 +301,6 @@ define([
 
 			this.buttonNode = this.buttonNode || this.focusNode || this;
 			this.popupStateNode = this.popupStateNode || this.focusNode || this.buttonNode;
-
-			this.popupStateNode.setAttribute("aria-expanded", "false");
 
 			this._HasDropDownListeners = [
 				// basic listeners
@@ -557,7 +555,6 @@ define([
 				$(this._popupStateNode).addClass("d-drop-down-open");
 				this.opened = true;
 
-				this.popupStateNode.setAttribute("aria-expanded", "true");
 				this.popupStateNode.setAttribute("aria-owns", dropDown.id);
 
 				// Set aria-labelledby on dropdown if it's not already set to something more meaningful
@@ -608,7 +605,6 @@ define([
 			}
 
 			if (this.opened) {
-				this.popupStateNode.setAttribute("aria-expanded", "false");
 				if (focus && this.focus) {
 					this.focus();
 				}

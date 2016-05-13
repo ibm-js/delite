@@ -67,16 +67,13 @@ define([
 				dropDownConstructor: Menu,
 				focusOnPointerOpen: false	// traditionally you only focus drop down menus when opened by the keyboard
 			}).placeAt(container);
-			assert.strictEqual(sdd.getAttribute("aria-expanded"), "false", "aria-expanded initial");
 
 			return sdd.openDropDown().then(function () {
 				var popup = document.getElementById("dd_popup");
 				assert(helpers.isVisible(popup), "visible");
-				assert.strictEqual(sdd.getAttribute("aria-expanded"), "true", "aria-expanded after open");
 
 				sdd.closeDropDown();
 				assert.isFalse(helpers.isVisible(popup), "not visible");
-				assert.strictEqual(sdd.getAttribute("aria-expanded"), "false", "aria-expanded after close");
 			});
 		},
 
