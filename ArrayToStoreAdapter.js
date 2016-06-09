@@ -332,7 +332,7 @@ define([
 		 * Perform the fetch operation on the collection.
 		 */
 		fetch: function () {
-			return Promise.resolve(this.data);
+			return this.data;
 		},
 
 		/**
@@ -349,7 +349,7 @@ define([
 				this.emit("_new-query-asked", evt);
 				return promise;
 			} else {
-				return Promise.resolve(res);
+				return res;
 			}
 		},
 
