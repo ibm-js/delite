@@ -8,6 +8,18 @@ define([
 ], function (dcl, Evented, ObservableArray, Observable, Promise) {
 
 	/**
+	 * Returns a thenable on some static data, but unlike Promise, it executes synchronously.
+	 */
+	function syncThenable(data) {
+		return {
+			then: function (resolve) {
+				var res = resolve(data);
+				return res && res.then ? res : syncThenable(res);
+			}
+		};
+	}
+
+	/**
 	 * An adapter to use an array in the source of delite/Store.js.
 	 * Created to keep a commun interface with the use of dstore/Store instead of an array.
 	 *
@@ -332,7 +344,7 @@ define([
 		 * Perform the fetch operation on the collection.
 		 */
 		fetch: function () {
-			return this.data;
+			return syncThenable(this.data);
 		},
 
 		/**
@@ -349,7 +361,7 @@ define([
 				this.emit("_new-query-asked", evt);
 				return promise;
 			} else {
-				return res;
+				return syncThenable(res);
 			}
 		},
 

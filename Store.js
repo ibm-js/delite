@@ -202,15 +202,9 @@ define([
 		 * @protected
 		 */
 		processCollection: function (collection) {
-			var items = this.fetch(collection);
-			var querySuccess = function (items) {
+			return this.fetch(collection).then(function (items) {
 				return this.initItems(items.map(this.itemToRenderItem.bind(this)));
-			}.bind(this);
-			if (items && items.then) {
-				return items.then(querySuccess, this._queryError.bind(this));
-			} else {
-				return querySuccess(items);
-			}
+			}.bind(this), this._queryError.bind(this));
 		},
 
 		/**

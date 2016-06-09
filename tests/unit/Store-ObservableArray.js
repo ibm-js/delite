@@ -1,7 +1,7 @@
 define([
 	"intern!object",
 	"intern/chai!assert", "dcl/dcl", "dojo/_base/declare", "delite/register", "delite/Widget", "delite/Store",
-	"decor/Observable", "decor/ObservableArray", "dstore/Filter",
+	"decor/Observable", "decor/ObservableArray", "dstore/Filter"
 ], function (registerSuite, assert, dcl, declare, register, Widget, Store,
 			 Observable, ObservableArray, Filter) {
 	var C = register("test-store-observablearray", [HTMLElement, Widget, Store]);
@@ -429,11 +429,16 @@ define([
 				return collection.fetchRange({start: 0, end: 3});
 			};
 			store.on("new-query-asked", function (evt) {
-				evt.setPromise([
-					{ id: "foo", name: "Foo" },
-					{ id: "bar", name: "Bar" },
-					{ id: "bar2", name: "Bar2" }
-				].slice(evt.start, evt.end));
+				evt.setPromise({
+					then: function (resolve) {
+						var arr = [
+							{ id: "foo", name: "Foo" },
+							{ id: "bar", name: "Bar" },
+							{ id: "bar2", name: "Bar2" }
+						];
+						resolve(arr.slice(evt.start, evt.end));
+					}
+				});
 			});
 			store.source = new ObservableArray({ id: "foo", name: "Foo" },
 				{ id: "bar", name: "Bar" });
