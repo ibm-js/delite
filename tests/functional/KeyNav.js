@@ -193,9 +193,38 @@ define([
 				.findByCssSelector("#keyboardCust > input")
 					.click()
 					.pressKeys("a b c")	// sending space to input shouldn't call registered handler for space key
+					.execute("return myInput.value")
+					.then(function (value) {
+						assert.strictEqual(value, "a b c", "typing into input");
+					})
 					.execute("return spaces.textContent")
 					.then(function (value) {
 						assert.strictEqual(value, "0", "no handler callbacks yet");
+					})
+					.end()
+				.findByCssSelector("#keyboardCust > button")
+					.click()
+					.pressKeys(" ")	// sending space to <button> shouldn't call registered handler for space key
+					.pressKeys(keys.ENTER)	// likewise for enter key
+					.execute("return spaces.textContent")
+					.then(function (value) {
+						assert.strictEqual(value, "0", "<button>: no handler callbacks yet");
+					})
+					.execute("return myButton.innerHTML")
+					.then(function (value) {
+						assert.strictEqual(value, "3 clicks", "mouse click and 2 keyboard clicks on <button>");
+					})
+					.end()
+				.findByCssSelector("#keyboardCust > a")
+					.click()
+					.pressKeys(keys.ENTER)	// sending Enter to <a> should click it, not be processed by KeyNav
+					.execute("return myAnchor.innerHTML")
+					.then(function (value) {
+						assert.strictEqual(value, "2 clicks", "mouse click and enter keyboard click on <a>");
+					})
+					.execute("return spaces.textContent")
+					.then(function (value) {
+						assert.strictEqual(value, "0", "<a>: no handler callbacks yet");
 					})
 					.end()
 				.pressKeys(keys.ARROW_DOWN)

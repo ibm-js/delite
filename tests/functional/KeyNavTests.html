@@ -151,6 +151,20 @@
 				combobox_dropdown_current_node.textContent = (evt.newValue ? evt.newValue.textContent : "undefined");
 			});
 
+            // Setup listeners so every time the <button> or <a> is clicked its label changes.
+            var numButtonClicks = 0;
+            myButton.onclick = function (evt) {
+                numButtonClicks++;
+                myButton.innerHTML =  numButtonClicks + " " + (numButtonClicks === 1 ? "click" : "clicks");
+            };
+
+            var numAnchorClicks = 0;
+            myAnchor.onclick = function (evt) {
+                numAnchorClicks++;
+                myAnchor.innerHTML =  numAnchorClicks + " " + (numAnchorClicks === 1 ? "click" : "clicks");
+                evt.preventDefault();
+            };
+
 			// Set global variable to signal that the test page is ready
 			ready = true;
 		})
@@ -262,7 +276,9 @@
 	<h3>Test for keyboard search with spaces and setting for handler for SPACE key</h3>
 	<input id="keyboardInputCust" type="text" tabindex="9" value="input before keyboard">
 	<my-list-cust id="keyboardCust" spaceCountNodeId="spaces" tabIndex="9">
-		<input>
+		<input id="myInput">
+        <button id="myButton">0 clicks</button>
+        <a id="myAnchor" href="#">0 clicks</a>
 		<my-list-item value="AL">Alabama</my-list-item>
 		<my-list-item value="AK">Alaska</my-list-item>
 		<my-list-item value="AZ">Arizona</my-list-item>

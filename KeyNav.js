@@ -33,6 +33,15 @@ define([
 	}
 
 	/**
+	 * Return true if node is "clickable" via keyboard space / enter key
+	 * @param {Element} node
+	 * @returns {boolean}
+	 */
+	function keyboardClickable(node) {
+		return !node.readOnly && /^(button|a)$/i.test(node.nodeName);
+	}
+
+	/**
 	  * A mixin to allow arrow key and letter key navigation of child Elements.
 	  * It can be used by delite/Container based widgets with a flat list of children,
 	  * or more complex widgets like a Tree.
@@ -406,18 +415,33 @@ define([
 		},
 
 		/**
-		 * When a key is pressed, if it's an arrow key etc. then it's handled here.
+		 * Called when keydown.  Ignores key events inside <input>, <button>, etc.,
+		 * and passes the other events to the _processKeyDown() method.
 		 * @param {Event} evt
 		 * @private
 		 */
 		_keynavKeyDownHandler: function (evt) {
-			// Ignore left, right, home, end, and space on <input> controls
+			// Ignore left, right, home, end, and space on <input> controls.
 			if (takesInput(evt.target) &&
 				(evt.key === "ArrowLeft" || evt.key === "ArrowRight" ||
-					evt.key === "Home" || evt.key === "End" || evt.key === "Spacebar")) {
+				evt.key === "Home" || evt.key === "End" || evt.key === "Spacebar")) {
 				return;
 			}
 
+			// Ignore space and enter on <button> elements.
+			if (keyboardClickable(evt.target) && (evt.key === "Enter" || evt.key === "Spacebar")) {
+				return;
+			}
+
+			this._processKeyDown(evt);
+		},
+
+		/**
+		 * Called when there's a keydown event that should be handled by the KeyNav class.
+		 * @param evt
+		 * @private
+		 */
+		_processKeyDown: function (evt) {
 			if (evt.key === "Spacebar" && this._searchTimer && !(evt.ctrlKey || evt.altKey || evt.metaKey)) {
 				// If the user types some string like "new york", interpret the space as part of the search rather
 				// than to perform some action, even if there is a key handler method defined.
