@@ -13,7 +13,7 @@ define([
 			container = document.createElement("div");
 			document.body.appendChild(container);
 		},
-		
+
 		"single focusNode": {
 			setup: function () {
 				FormWidgetTest = register("form-widget-test", [HTMLElement, FormWidget], {
@@ -78,6 +78,35 @@ define([
 				myWidget.deliver();
 				assert.isFalse(myWidget.valueNode.disabled, "disabled not set on valueNode");
 				assert.isFalse(myWidget.focusNode.disabled, "disabled not set on focusNode");
+			},
+
+			"#required": function () {
+				var myWidget = new FormWidgetTest();
+
+				myWidget.required = true;
+				myWidget.deliver();
+
+				// since valueNode and focusNode are <input>, the required property should be set
+				assert(myWidget.valueNode.required, "required set on valueNode");
+				assert(myWidget.focusNode.required, "required set on focusNode");
+				assert.isFalse(myWidget.valueNode.hasAttribute("aria-required"),
+					"aria-required on valueNode unnecessarily");
+				assert.isFalse(myWidget.focusNode.hasAttribute("aria-required"),
+					"aria-required on focusNode unnecessarily");
+
+				myWidget.required = false;
+				myWidget.deliver();
+				assert.isFalse(myWidget.valueNode.required, "required not set on valueNode");
+				assert.isFalse(myWidget.focusNode.required, "required not set on focusNode");
+			},
+
+			"#inputID": function () {
+				var myWidget = new FormWidgetTest({id : "widget-id"});
+
+				myWidget.deliver();
+
+				// Id should be set for the first tabbable input node.
+				assert.strictEqual(myWidget.focusNode.id, "widget-id-input", "Id not set correctly on focus node");
 			},
 
 			"#tabIndex": function () {
@@ -210,6 +239,25 @@ define([
 				assert.strictEqual(myWidget.field1.getAttribute("aria-disabled"), "false", "aria-disabled on field1");
 				assert.strictEqual(myWidget.field2.getAttribute("aria-disabled"), "false", "aria-disabled on field2");
 				assert.strictEqual(myWidget.valueNode.disabled, false, "valueNode disabled prop");
+			},
+
+			"#required": function () {
+				var myWidget = new FormWidgetTest();
+
+				myWidget.required = true;
+				myWidget.deliver();
+
+				// Since field1 and field2 are <span>, the "aria-required" attribute should be set,
+				// but the "required" property should be set on the <input>.
+				assert.strictEqual(myWidget.field1.getAttribute("aria-required"), "true", "aria-required on field1");
+				assert.strictEqual(myWidget.field2.getAttribute("aria-required"), "true", "aria-required on field2");
+				assert.strictEqual(myWidget.valueNode.required, true, "valueNode required prop");
+
+				myWidget.required = false;
+				myWidget.deliver();
+				assert.strictEqual(myWidget.field1.getAttribute("aria-required"), "false", "aria-required on field1");
+				assert.strictEqual(myWidget.field2.getAttribute("aria-required"), "false", "aria-required on field2");
+				assert.strictEqual(myWidget.valueNode.required, false, "valueNode required prop");
 			},
 
 
