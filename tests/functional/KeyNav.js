@@ -190,43 +190,56 @@ define([
 				return this.skip("no keyboard support");
 			}
 			return this.remote
-				.findByCssSelector("#keyboardCust > input")
+				.findByCssSelector("#keyboardInputCust")
 					.click()
-					.pressKeys("a b c")	// sending space to input shouldn't call registered handler for space key
-					.execute("return myInput.value")
-					.then(function (value) {
-						assert.strictEqual(value, "a b c", "typing into input");
-					})
-					.execute("return spaces.textContent")
-					.then(function (value) {
-						assert.strictEqual(value, "0", "no handler callbacks yet");
-					})
 					.end()
-				.findByCssSelector("#keyboardCust > button")
-					.click()
-					.pressKeys(" ")	// sending space to <button> shouldn't call registered handler for space key
-					.pressKeys(keys.ENTER)	// likewise for enter key
-					.execute("return spaces.textContent")
-					.then(function (value) {
-						assert.strictEqual(value, "0", "<button>: no handler callbacks yet");
-					})
-					.execute("return myButton.innerHTML")
-					.then(function (value) {
-						assert.strictEqual(value, "3 clicks", "mouse click and 2 keyboard clicks on <button>");
-					})
-					.end()
-				.findByCssSelector("#keyboardCust > a")
-					.click()
-					.pressKeys(keys.ENTER)	// sending Enter to <a> should click it, not be processed by KeyNav
-					.execute("return myAnchor.innerHTML")
-					.then(function (value) {
-						assert.strictEqual(value, "2 clicks", "mouse click and enter keyboard click on <a>");
-					})
-					.execute("return spaces.textContent")
-					.then(function (value) {
-						assert.strictEqual(value, "0", "<a>: no handler callbacks yet");
-					})
-					.end()
+
+				.pressKeys(keys.TAB)// enters KeyNav, navigates to <input>
+				.execute("return document.activeElement.id;")
+				.then(function (value) {
+					assert.strictEqual(value, "myInput", "focused on <input>");
+				})
+				.pressKeys("a b c")	// sending space to input shouldn't call registered handler for space key
+				.execute("return myInput.value")
+				.then(function (value) {
+					assert.strictEqual(value, "a b c", "typing into input");
+				})
+				.execute("return spaces.textContent")
+				.then(function (value) {
+					assert.strictEqual(value, "0", "<input>: no handler callbacks");
+				})
+
+				.pressKeys(keys.ARROW_DOWN)		// navigate to <button>
+				.execute("return document.activeElement.id;")
+				.then(function (value) {
+					assert.strictEqual(value, "myButton", "focused on <button>");
+				})
+				.pressKeys(" ")	// sending space to <button> shouldn't call registered handler for space key
+				.pressKeys(keys.ENTER)	// likewise for enter key
+				.execute("return spaces.textContent")
+				.then(function (value) {
+					assert.strictEqual(value, "0", "<button>: no handler callbacks");
+				})
+				.execute("return myButton.innerHTML")
+				.then(function (value) {
+					assert.strictEqual(value, "2 clicks", "keyboard clicks on <button>");
+				})
+
+				.pressKeys(keys.ARROW_DOWN)	// navigate to <a>
+				.execute("return document.activeElement.id;")
+				.then(function (value) {
+					assert.strictEqual(value, "myAnchor", "focused on <a>");
+				})
+				.pressKeys(keys.ENTER)	// sending Enter to <a> should click it, not be processed by KeyNav
+				.execute("return myAnchor.innerHTML")
+				.then(function (value) {
+					assert.strictEqual(value, "1 click", "keyboard click on <a>");
+				})
+				.execute("return spaces.textContent")
+				.then(function (value) {
+					assert.strictEqual(value, "0", "<a>: no handler callbacks");
+				})
+
 				.pressKeys(keys.ARROW_DOWN)
 				.pressKeys("new m")// similarly, handler shouldn't be called for space within a searchstring
 				.execute("return document.activeElement.textContent")
