@@ -31,6 +31,7 @@ define([
 		 */
 		alt: "",
 
+		
 		/**
 		 * Corresponds to the native HTML `<input>` element's attribute.
 		 *
@@ -64,6 +65,7 @@ define([
 		 * @default "focusNode"
 		 */
 		tabStops: "focusNode",
+		
 
 		/**
 		 * If set to true, the widget will not respond to user input and will not be included in form submission.
@@ -73,7 +75,16 @@ define([
 		 * @default false
 		 */
 		disabled: false,
-
+		
+		
+		/**
+		 * sets the required value of the focus nodes, and their aria required attribute if they do not support 
+		 * the required attribute.
+		 * @member {boolean}
+		 * @default false
+		 */
+		required: false,
+		
 		/**
 		 * For widgets with a single tab stop, the Element within the widget, often an `<input>`,
 		 * that gets the focus.  Widgets with multiple tab stops, such as a range slider, should set `tabStops`
@@ -116,9 +127,10 @@ define([
 			};
 		}),
 
+		/*jshint maxcomplexity:14*/
 		refreshRendering: function (oldValues) {
-			// Handle disabled and tabIndex, across the tabStops and root node.
-			// No special processing is needed for tabStops other than just to refresh disabled and tabIndex.
+			// Handle disabled, required and tabIndex, across the tabStops and root node.
+			// No special processing is needed for tabStops other than just to refresh disabled, required and tabIndex.
 
 			// If the tab stops have changed then start by removing the tabIndex from all the old tab stops.
 			if ("tabStops" in oldValues) {
@@ -131,7 +143,14 @@ define([
 
 			// Set tabIndex etc. for all tabbable nodes.
 			// To keep things simple, if anything has changed then reapply all the properties.
-			if ("tabStops" in oldValues || "tabIndex" in oldValues || "disabled" in oldValues || "alt" in oldValues) {
+			if ("tabStops" in oldValues || "tabIndex" in oldValues || "disabled" in oldValues
+				|| "alt" in oldValues || "required" in oldValues || "id" in oldValues) {
+				var inputIdUnset = true;
+				var inputId;
+				if ("id" in oldValues && this.id) {
+					inputId = this.id + "-input";
+				}
+				
 				this.forEachFocusNode(function (node) {
 					if (this.disabled) {
 						node.tabIndex = "-1";				// backup plan in case next line of code ineffective
@@ -145,14 +164,24 @@ define([
 					// disabled property.  Note that on IE every element has a disabled property, so it's hard to
 					// test if it's real or not.
 					node.disabled = this.disabled;
+					node.required = this.required;
 
-					// Set aria-disabled attribute if necessary, but try to avoid setting it redundantly.
+					// Set aria-disabled and required but try to avoid setting it redundantly.
 					if (!(/^(button|input|select|textarea|optgroup|option|fieldset)$/i.test(node.tagName))) {
 						node.setAttribute("aria-disabled", "" + this.disabled);
+						node.setAttribute("aria-required", "" + this.required);
+					}
+					
+					//set the focus nodes input id
+					if (/^(input|textarea|select|button|keygen)$/i.test(node.tagName) && inputId && inputIdUnset) {
+						inputIdUnset = false;
+						if (!node.id) {
+							node.id = inputId;
+						}
 					}
 				});
 			}
-
+			
 			// Set properties on valueNode.
 			var valueNode = this.valueNode !== this && this.valueNode;
 			if (valueNode) {
@@ -164,6 +193,9 @@ define([
 				}
 				if ("name" in oldValues) {
 					valueNode.name = this.name;
+				}
+				if ("required" in oldValues) {
+					valueNode.required = this.required;
 				}
 			}
 		},
