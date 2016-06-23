@@ -59,7 +59,7 @@ define([
 		/**
 		 * The button/icon/node to click to display the drop down.
 		 * Can be set in a template via a `attach-point` assignment.
-		 * If missing, then either `this.focusNode` or `this.domNode` (if `focusNode` is also missing) will be used.
+		 * If missing, then either `this.focusNode` or `this` (if `focusNode` is also missing) will be used.
 		 * @member {Element}
 		 * @protected
 		 */
@@ -77,7 +77,7 @@ define([
 		/**
 		 * The node to display the popup around.
 		 * Can be set in a template via a `attach-point` assignment.
-		 * If missing, then `this.domNode` will be used.
+		 * If missing, then `this` will be used.
 		 * @member {Element}
 		 * @protected
 		 */

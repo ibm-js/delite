@@ -22,13 +22,13 @@ define([
 			//		protected
 
 			var elems = a11y._getTabNavigable(this.containerNode);
-			this._firstFocusItem = elems.lowest || elems.first || this.closeButtonNode || this.domNode;
+			this._firstFocusItem = elems.lowest || elems.first || this.closeButtonNode || this;
 			this._lastFocusItem = elems.last || elems.highest || this._firstFocusItem;
 		},
 
 		_dialogKeyDownHandler: function (/*Event*/ evt) {
 			if (evt.key === "Tab") {
-				this._getFocusItems(this.domNode);
+				this._getFocusItems(this);
 				var node = evt.target;
 				if (this._firstFocusItem === this._lastFocusItem) {
 					// don't move focus anywhere, but don't allow browser to move focus off of dialog either

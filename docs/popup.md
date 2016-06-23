@@ -39,7 +39,7 @@ define(["delite/popup"], function(popup){
 	popup.open({
 		parent: this,
 		popup: dropDown,
-		around: this.domNode,
+		around: this,
 		orient: ["below-centered", "above-centered"],
 		onExecute: function(){
 			popup.close(dropDown);
