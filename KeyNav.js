@@ -151,7 +151,7 @@ define([
 			return this;
 		},
 
-		createdCallback: function () {
+		postRender: function () {
 			this.on("keypress", this._keynavKeyPressHandler.bind(this), this.keyNavRootNode);
 			this.on("keydown", this._keynavKeyDownHandler.bind(this), this.keyNavRootNode);
 			this.on("click", function (evt) {
@@ -586,7 +586,7 @@ define([
 		 * @protected
 		 */
 		getNext: function (child, dir) {
-			var root = this, origChild = child;
+			var root = this.keyNavRootNode || this, origChild = child;
 			function dfsNext(node) {
 				if (node.firstElementChild) { return node.firstElementChild; }
 				while (node !== root) {

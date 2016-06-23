@@ -11,12 +11,13 @@
 		var ready = false; // set to true when the test page is ready
 		require([
 			"delite/a11yclick",
+			"delite/handlebars",
 			"delite/register",
 			"delite/Widget",
 			"delite/Container",
 			"delite/KeyNav",
 			"requirejs-domready/domReady!"
-		], function (a11yclick, register, Widget, Container, KeyNav) {
+		], function (a11yclick, handlebars, register, Widget, Container, KeyNav) {
 			// Complex KeyNav subclass with string descendantSelector
 			register("my-grid", [HTMLElement, KeyNav], {
 				// Specifies which descendants can be navigated to
@@ -115,6 +116,32 @@
 				}
 			});
 
+			register("my-key-nav-root", [HTMLElement, Container, KeyNav], {
+				template: handlebars.compile(
+					"<template>" +
+					"<button>before button</button>" +
+					"<div class='knrn' attach-point='keyNavRootNode, containerNode'></div>" +
+					"<button>after button</button>" +
+					"</template>"
+				),
+
+				descendantSelector: function (child) {
+					return child.parentNode === this.keyNavRootNode;
+				},
+				downKeyHandler: function () {
+					var nextChild = this.getNext(this.navigatedDescendant, 1);
+					if (nextChild) {
+						this.navigateTo(nextChild);
+					}
+				},
+				upKeyHandler: function () {
+					var previousChild = this.getNext(this.navigatedDescendant, -1);
+					if (previousChild) {
+						this.navigateTo(previousChild);
+					}
+				}
+			});
+
 			// Test declarative creation
 			register.deliver();
 
@@ -187,12 +214,12 @@
 		}
 
 		/* Container KeyNav subclass */
-		my-list, my-list-cust {
+		my-list, my-list-cust, my-key-nav-root {
 			display: table;
 			border: gray dotted medium;
 		}
 
-		my-list > *, my-list-cust > * {
+		my-list > *, my-list-cust > *, my-key-nav-root > .knrn > * {
 			margin: 3px;
 			border: solid #ccc;
 			display: block;
@@ -307,6 +334,22 @@
 	previous navigated node: <span id="combobox_dropdown_previous_node"></span>
 	<br>
 	current navigated node: <span id="combobox_dropdown_current_node"></span>
+
+	<h3>keyNavRootNode</h3>
+	<p>Tab key should go to first button, then inner list, then last button.</p>
+	<input id="keynavroot_before">
+	<my-key-nav-root id="keynavroot">
+		<my-list-item value="AL">Alabama</my-list-item>
+		<my-list-item value="AK">Alaska</my-list-item>
+		<my-list-item value="AZ">Arizona</my-list-item>
+		<my-list-item value="AR">Arkansas</my-list-item>
+		<my-list-item value="CA">California</my-list-item>
+		<my-list-item value="NH">New Hampshire</my-list-item>
+		<my-list-item value="NJ">New Jersey</my-list-item>
+		<my-list-item value="NM">New Mexico</my-list-item>
+		<my-list-item value="NY">New York</my-list-item>
+	</my-key-nav-root>
+	<input id="keynavroot_after">
 
 </body>
 </html>
