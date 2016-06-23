@@ -57,6 +57,36 @@ define([
 					.end();
 		},
 
+		"centered popup": function () {
+			return this.remote
+				.findById("showCenteredDialogButton")
+					.click()
+					.end()
+				.findById("centeredDialog")
+					.isDisplayed(function (err, displayed) {
+						assert.isTrue(displayed, "centeredDialog popup visible");
+					})
+					.end()
+				.findByCssSelector("d-dialog-underlay")
+					.isDisplayed(function (err, displayed) {
+						assert.isTrue(displayed, "d-dialog-underlay visible");
+					})
+					.end()
+				.findByCssSelector("#centeredDialog .ok-button")
+					.click()	// close popup
+					.end()
+				.findById("centeredDialog")
+					.isDisplayed(function (err, displayed) {
+						assert.isFalse(displayed, "centeredDialog popup hidden");
+					})
+					.end()
+				.findByCssSelector("d-dialog-underlay") // underlay should either be detached or set as display: none
+					.isDisplayed(function (err, displayed) {	// currently, it's set as display: none
+						assert.isFalse(displayed, "d-dialog-underlay hidden");
+					})
+					.end();
+		},
+
 		nested: {
 			"open around": function () {
 				return this.remote

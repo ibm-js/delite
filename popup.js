@@ -6,11 +6,12 @@ define([
 	"dcl/advise",
 	"dcl/dcl",
 	"./BackgroundIframe",
+	"./DialogUnderlay",
 	"./features", // has("config-bgIframe")
 	"./place",
 	"./Viewport",
 	"./theme!" // d-popup class
-], function (advise, dcl, BackgroundIframe, has, place, Viewport) {
+], function (advise, dcl, BackgroundIframe, DialogUnderlay, has, place, Viewport) {
 
 	function isDocLtr(doc) {
 		return !(/^rtl$/i).test(doc.body.dir || doc.documentElement.dir);
@@ -365,8 +366,30 @@ define([
 			stackEntry.wrapper = wrapper;
 			stackEntry.handlers = handlers;
 			stack.push(stackEntry);
+
+			// If popup is centered, then create or move underlay.
+			this._adjustUnderlay();
 		},
 
+		/**
+		 * Create, move, or hide the DialogUnderlay depending on what popups are shown (or were just hidden).
+		 */
+		_adjustUnderlay: function () {
+			var stack = this._stack;
+			for (var i = stack.length - 1; i >= 0; i--) {
+				var popup = stack[i];
+				if (popup.orient[0] === "center") {
+					// There's at least one centered dialog being shown.  Put the DialogUnderlay right behind the
+					// top centered dialog.
+					DialogUnderlay.show(null, parseInt(popup.wrapper.style.zIndex, 10) - 1);
+					return;
+				}
+			}
+
+			// There are no centered dialogs being shown, so hide the DialogUnderlay.
+			DialogUnderlay.hide();
+		},
+		
 		/**
 		 * Size or resize the popup specified by args.
 		 * @param {module:delite/popup.OpenArgs} args
@@ -495,6 +518,10 @@ define([
 				clearTimeout(this._aroundMoveListener);
 				this._firstAroundNode = this._firstAroundPosition = this._aroundMoveListener = null;
 			}
+
+			// Close underlay, or if there's still another centered popup open, then adjust underlay
+			// to be behind that popup.
+			this._adjustUnderlay();
 		}
 	});
 

@@ -15,7 +15,7 @@ define([
 	 *
 	 * Normally this widget should not be instantiated directly, but rather shown and hidden via
 	 * `DialogUnderlay.show()` and `DialogUnderlay.hide()`.  And usually the module is not accessed directly
-	 * at all, since the underlay is shown and hidden by the Dialog.
+	 * at all, since the underlay is shown and hidden by `delite/popup`.
 	 *
 	 * @class module:delite/DialogUnderlay
 	 */
@@ -92,7 +92,7 @@ define([
 
 	/**
 	 * Static method to display the underlay with the given attributes set.  If the underlay is already displayed,
-	 * then adjust it's attributes as specified.
+	 * then adjust its attributes as specified.
 	 * @memberof module:delite/DialogUnderlay
 	 * @param {Object} attrs - The parameters to create DialogUnderlay with.
 	 * @param {number} zIndex - z-index of the underlay.

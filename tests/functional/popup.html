@@ -238,6 +238,7 @@ require([
 			this.appendChild(document.createElement("br"));
 
 			var button = this.ownerDocument.createElement("button");
+			button.className = "ok-button";
 			button.innerHTML = "OK";
 			button.onclick = this.emit.bind(this, "execute");
 			this.appendChild(button);
