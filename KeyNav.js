@@ -6,7 +6,7 @@ define([
 	"./Widget",
 	"./activationTracker"	// delite-deactivated event when focus removed from KeyNav and logical descendants
 ], function (dcl, $, has, Widget) {
-	
+
 	/**
 	 * Dispatched after the user has selected a different descendant, by clicking, arrow keys,
 	 * or keyboard search.
@@ -45,7 +45,7 @@ define([
 	  * A mixin to allow arrow key and letter key navigation of child Elements.
 	  * It can be used by delite/Container based widgets with a flat list of children,
 	  * or more complex widgets like a Tree.
-	  * 
+	  *
 	  * To use this mixin, the subclass must:
 	  *
 	  * - Implement one method for each keystroke that the subclass wants to handle.
@@ -127,6 +127,16 @@ define([
 		descendantSelector: null,
 
 		/**
+		 * The node to receive the KeyNav behavior.
+		 * Can be set in a template via a `attach-point` assignment.
+		 * If missing, then `this.containerNode` or `this` will be used.
+		 * If set, then subclass must set the tabIndex on this node rather than the root node.
+		 * @member {Element}
+		 * @protected
+		 */
+		keyNavContainerNode: null,
+
+		/**
 		 * Figure out effective target of this event, either a navigable node, or this widget itself.
 		 * Note that for subclasses like a Tree, one navigable node could be a descendant of another.
 		 * @param {Event} evt
@@ -141,15 +151,20 @@ define([
 			return this;
 		},
 
-		createdCallback: function () {
-			this.on("keypress", this._keynavKeyPressHandler.bind(this));
-			this.on("keydown", this._keynavKeyDownHandler.bind(this));
+		postRender: function () {
+			// If keyNavContainerNode unspecified, set to default value.
+			if (!this.keyNavContainerNode) {
+				this.keyNavContainerNode = this.containerNode || this;
+			}
+
+			this.on("keypress", this._keynavKeyPressHandler.bind(this), this.keyNavContainerNode);
+			this.on("keydown", this._keynavKeyDownHandler.bind(this), this.keyNavContainerNode);
 			this.on("click", function (evt) {
 				var target = this._getTargetElement(evt);
 				if (target !== this) {
 					this._descendantNavigateHandler(target, evt);
 				}
-			});
+			}.bind(this), this.keyNavContainerNode);
 
 			this.on("delite-deactivated", function () {
 				if (this.focusDescendants) {
@@ -166,7 +181,7 @@ define([
 						this._descendantNavigateHandler(target, evt);
 					}
 				}
-			}.bind(this));
+			}.bind(this), this.keyNavContainerNode);
 
 			// Setup function to check which child nodes are navigable.
 			if (typeof this.descendantSelector === "string") {
@@ -183,8 +198,9 @@ define([
 
 		attachedCallback: function () {
 			// If the user hasn't specified a tabindex declaratively, then set to default value.
-			if (this.focusDescendants && !this.hasAttribute("tabindex")) {
-				this.tabIndex = "0";
+			var container = this.keyNavContainerNode;
+			if (this.focusDescendants && !container.hasAttribute("tabindex")) {
+				container.tabIndex = "0";
 			}
 		},
 
@@ -228,7 +244,7 @@ define([
 		 * @protected
 		 */
 		navigateToFirst: function (triggerEvent) {
-			this.navigateTo(this.getNext(this, 1), triggerEvent);
+			this.navigateTo(this.getNext(this.keyNavContainerNode, 1), triggerEvent);
 		},
 
 		/**
@@ -240,7 +256,7 @@ define([
 		 * @protected
 		 */
 		navigateToLast: function (triggerEvent) {
-			this.navigateTo(this.getNext(this, -1), false, triggerEvent);
+			this.navigateTo(this.getNext(this.keyNavContainerNode, -1), false, triggerEvent);
 		},
 
 		/**
@@ -260,7 +276,7 @@ define([
 				// For IE focus outline to appear, must set tabIndex before focus.
 				// If this._savedTabIndex is set, use it instead of this.tabIndex, because it means
 				// the container's tabIndex has already been changed to -1.
-				child.tabIndex = "_savedTabIndex" in this ? this._savedTabIndex : this.tabIndex;
+				child.tabIndex = "_savedTabIndex" in this ? this._savedTabIndex : this.keyNavContainerNode.tabIndex;
 				child.focus(last ? "end" : "start");
 
 				// _descendantNavigateHandler() will be called automatically from child's focus event.
@@ -292,8 +308,8 @@ define([
 			// When the container gets focus by being tabbed into, or a descendant gets focus by being clicked,
 			// remove the container's tabIndex so that tab or shift-tab
 			// will go to the fields after/before the container, rather than the container itself
-			this._savedTabIndex = this.tabIndex;
-			this.removeAttribute("tabindex");
+			this._savedTabIndex = this.keyNavContainerNode.tabIndex;
+			this.keyNavContainerNode.removeAttribute("tabindex");
 
 			this.focus();
 		},
@@ -304,13 +320,13 @@ define([
 		 * @private
 		 */
 		_keynavDeactivatedHandler: function () {
-			// then restore the container's tabIndex so that user can tab to it again.
-			// Note that using _onBlur() so that this doesn't happen when focus is shifted
+			// Restore the container's tabIndex so that user can tab to it again.
+			// Note: using _keynavDeactivatedHandler so that doesn't execute when focus is shifted
 			// to one of my child widgets (typically a popup)
 
 			// TODO: Consider changing this to blur whenever the container blurs, to be truthful that there is
 			// no focused child at that time.
-			this.setAttribute("tabindex", this._savedTabIndex);
+			this.keyNavContainerNode.setAttribute("tabindex", this._savedTabIndex);
 			delete this._savedTabIndex;
 			if (this.navigatedDescendant) {
 				this.navigatedDescendant.tabIndex = "-1";
@@ -336,9 +352,10 @@ define([
 					}
 
 					// If container still has tabIndex setting then remove it; instead we'll set tabIndex on child
+					var container = this.keyNavContainerNode;
 					if (!("_savedTabIndex" in this)) {
-						this._savedTabIndex = this.tabIndex;
-						this.removeAttribute("tabindex");
+						this._savedTabIndex = container.tabIndex;
+						container.removeAttribute("tabindex");
 					}
 
 					child.tabIndex = this._savedTabIndex;
@@ -368,10 +385,10 @@ define([
 		 * If multiple characters are typed where each keystroke happens within
 		 * multiCharSearchDuration of the previous keystroke,
 		 * search for nodes matching all the keystrokes.
-		 * 
+		 *
 		 * For example, typing "ab" will search for entries starting with
 		 * "ab" unless the delay between "a" and "b" is greater than `multiCharSearchDuration`.
-		 * 
+		 *
 		 * @member {number} KeyNav#multiCharSearchDuration
 		 * @default 1000
 		 */
@@ -380,7 +397,7 @@ define([
 		/**
 		 * When a key is pressed that matches a child item,
 		 * this method is called so that a widget can take appropriate action if necessary.
-		 * 
+		 *
 		 * @param {Element} item
 		 * @param {Event} evt
 		 * @param {string} searchString
@@ -399,7 +416,7 @@ define([
 		 * - -1: a high priority match  and stop searching
 		 * - 0: not a match
 		 * - 1: a match but keep looking for a higher priority match
-		 * 
+		 *
 		 * @param {Element} item
 		 * @param {string} searchString
 		 * @returns {number}
@@ -575,21 +592,21 @@ define([
 		 * @protected
 		 */
 		getNext: function (child, dir) {
-			var root = this, origChild = child;
+			var container = this.keyNavContainerNode, origChild = child;
 			function dfsNext(node) {
 				if (node.firstElementChild) { return node.firstElementChild; }
-				while (node !== root) {
+				while (node !== container) {
 					if (node.nextElementSibling) { return node.nextElementSibling; }
 					node = node.parentNode;
 				}
-				return root;	// loop around, plus corner case when no children
+				return container;	// loop around, plus corner case when no children
 			}
 			function dfsLast(node) {
 				while (node.lastElementChild) { node = node.lastElementChild; }
 				return node;
 			}
 			function dfsPrev(node) {
-				return node === root ? dfsLast(root) : // loop around, plus corner case when no children
+				return node === container ? dfsLast(container) : // loop around, plus corner case when no children
 					(node.previousElementSibling && dfsLast(node.previousElementSibling)) || node.parentNode;
 			}
 			while (true) {

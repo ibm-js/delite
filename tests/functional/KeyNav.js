@@ -362,6 +362,51 @@ define([
 						})
 						.end();
 			}
+		},
+
+		"container node": function () {
+			if (this.remote.environmentType.brokenSendKeys || !this.remote.environmentType.nativeEvents) {
+				return this.skip("no keyboard support");
+			}
+			return this.remote
+				.findById("keynavroot_before").click().end()
+				.pressKeys(keys.TAB)
+				.execute("return document.activeElement.textContent.trim();").then(function (text) {
+					assert.strictEqual(text, "before button");
+				})
+				.pressKeys(keys.TAB)
+				.execute("return document.activeElement.textContent.trim();").then(function (text) {
+					assert.strictEqual(text, "Alabama");
+				})
+				.pressKeys(keys.ARROW_DOWN)
+				.execute("return document.activeElement.textContent.trim();").then(function (text) {
+					assert.strictEqual(text, "Alaska");
+				})
+				.pressKeys(keys.TAB)
+				.execute("return document.activeElement.textContent.trim();").then(function (text) {
+					assert.strictEqual(text, "after button");
+				})
+				.pressKeys(keys.TAB)
+				.execute("return document.activeElement.id;").then(function (id) {
+					assert.strictEqual(id, "keynavroot_after");
+				})
+				.pressKeys(keys.SHIFT + keys.TAB)		// start holding down shift key and press tab
+				.execute("return document.activeElement.textContent.trim();").then(function (text) {
+					assert.strictEqual(text, "after button");
+				})
+				.pressKeys(keys.TAB)	// effectively shift-tab,
+				.execute("return document.activeElement.textContent.trim();").then(function (text) {
+					assert.strictEqual(text, "Alabama");
+				})
+				.pressKeys(keys.ARROW_DOWN)
+				.execute("return document.activeElement.textContent.trim();").then(function (text) {
+					assert.strictEqual(text, "Alaska");
+				})
+				.pressKeys(keys.TAB)		// effectively shift-tab
+				.execute("return document.activeElement.textContent.trim();").then(function (text) {
+					assert.strictEqual(text, "before button");
+				})
+				.pressKeys(keys.SHIFT);	// release the shift key
 		}
 	});
 });
