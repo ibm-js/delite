@@ -360,7 +360,10 @@ define([
 					}
 					assert(Math.abs(viewport.w / 2 - popupCoords.left - popupCoords.width / 2) < 1,
 						"centered horizontally, " + viewport.w + ", " + popupCoords.width + ", " + popupCoords.left);
-				});
+				})
+				.findByCssSelector(".centered-dialog button[type=submit]")
+					.click()	// close dialog, otherwise next test will fail
+					.end();
 		},
 
 		events: function () {
