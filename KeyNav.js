@@ -244,7 +244,7 @@ define([
 		 * @protected
 		 */
 		navigateToFirst: function (triggerEvent) {
-			this.navigateTo(this.getNext(this, 1), triggerEvent);
+			this.navigateTo(this.getNext(this.keyNavContainerNode, 1), triggerEvent);
 		},
 
 		/**
@@ -256,7 +256,7 @@ define([
 		 * @protected
 		 */
 		navigateToLast: function (triggerEvent) {
-			this.navigateTo(this.getNext(this, -1), false, triggerEvent);
+			this.navigateTo(this.getNext(this.keyNavContainerNode, -1), false, triggerEvent);
 		},
 
 		/**
