@@ -129,12 +129,12 @@ define([
 		/**
 		 * The node to receive the KeyNav behavior.
 		 * Can be set in a template via a `attach-point` assignment.
-		 * If missing, then `this` will be used.
+		 * If missing, then `this.containerNode` or `this` will be used.
 		 * If set, then subclass must set the tabIndex on this node rather than the root node.
 		 * @member {Element}
 		 * @protected
 		 */
-		keyNavRootNode: null,
+		keyNavContainerNode: null,
 
 		/**
 		 * Figure out effective target of this event, either a navigable node, or this widget itself.
@@ -152,14 +152,19 @@ define([
 		},
 
 		postRender: function () {
-			this.on("keypress", this._keynavKeyPressHandler.bind(this), this.keyNavRootNode);
-			this.on("keydown", this._keynavKeyDownHandler.bind(this), this.keyNavRootNode);
+			// If keyNavContainerNode unspecified, set to default value.
+			if (!this.keyNavContainerNode) {
+				this.keyNavContainerNode = this.containerNode || this;
+			}
+			
+			this.on("keypress", this._keynavKeyPressHandler.bind(this), this.keyNavContainerNode);
+			this.on("keydown", this._keynavKeyDownHandler.bind(this), this.keyNavContainerNode);
 			this.on("click", function (evt) {
 				var target = this._getTargetElement(evt);
 				if (target !== this) {
 					this._descendantNavigateHandler(target, evt);
 				}
-			}.bind(this), this.keyNavRootNode);
+			}.bind(this), this.keyNavContainerNode);
 
 			this.on("delite-deactivated", function () {
 				if (this.focusDescendants) {
@@ -176,7 +181,7 @@ define([
 						this._descendantNavigateHandler(target, evt);
 					}
 				}
-			}.bind(this), this.keyNavRootNode);
+			}.bind(this), this.keyNavContainerNode);
 
 			// Setup function to check which child nodes are navigable.
 			if (typeof this.descendantSelector === "string") {
@@ -193,7 +198,7 @@ define([
 
 		attachedCallback: function () {
 			// If the user hasn't specified a tabindex declaratively, then set to default value.
-			var container = this.keyNavRootNode || this;
+			var container = this.keyNavContainerNode;
 			if (this.focusDescendants && !container.hasAttribute("tabindex")) {
 				container.tabIndex = "0";
 			}
@@ -271,7 +276,7 @@ define([
 				// For IE focus outline to appear, must set tabIndex before focus.
 				// If this._savedTabIndex is set, use it instead of this.tabIndex, because it means
 				// the container's tabIndex has already been changed to -1.
-				child.tabIndex = "_savedTabIndex" in this ? this._savedTabIndex : this.tabIndex;
+				child.tabIndex = "_savedTabIndex" in this ? this._savedTabIndex : this.keyNavContainerNode.tabIndex;
 				child.focus(last ? "end" : "start");
 
 				// _descendantNavigateHandler() will be called automatically from child's focus event.
@@ -303,8 +308,8 @@ define([
 			// When the container gets focus by being tabbed into, or a descendant gets focus by being clicked,
 			// remove the container's tabIndex so that tab or shift-tab
 			// will go to the fields after/before the container, rather than the container itself
-			this._savedTabIndex = this.tabIndex;
-			this.removeAttribute("tabindex");
+			this._savedTabIndex = this.keyNavContainerNode.tabIndex;
+			this.keyNavContainerNode.removeAttribute("tabindex");
 
 			this.focus();
 		},
@@ -321,8 +326,7 @@ define([
 
 			// TODO: Consider changing this to blur whenever the container blurs, to be truthful that there is
 			// no focused child at that time.
-			var container = this.keyNavRootNode || this;
-			container.setAttribute("tabindex", this._savedTabIndex);
+			this.keyNavContainerNode.setAttribute("tabindex", this._savedTabIndex);
 			delete this._savedTabIndex;
 			if (this.navigatedDescendant) {
 				this.navigatedDescendant.tabIndex = "-1";
@@ -348,8 +352,8 @@ define([
 					}
 
 					// If container still has tabIndex setting then remove it; instead we'll set tabIndex on child
-					var container = this.keyNavRootNode || this;
-					if (!("_savedTabIndex" in container)) {
+					var container = this.keyNavContainerNode;
+					if (!("_savedTabIndex" in this)) {
 						this._savedTabIndex = container.tabIndex;
 						container.removeAttribute("tabindex");
 					}
@@ -588,7 +592,7 @@ define([
 		 * @protected
 		 */
 		getNext: function (child, dir) {
-			var container = this.keyNavRootNode || this, origChild = child;
+			var container = this.keyNavContainerNode, origChild = child;
 			function dfsNext(node) {
 				if (node.firstElementChild) { return node.firstElementChild; }
 				while (node !== container) {

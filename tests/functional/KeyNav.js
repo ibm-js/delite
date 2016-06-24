@@ -365,6 +365,9 @@ define([
 		},
 
 		keynavroot: function () {
+			if (this.remote.environmentType.brokenSendKeys || !this.remote.environmentType.nativeEvents) {
+				return this.skip("no keyboard support");
+			}
 			return this.remote
 				.findById("keynavroot_before").click().end()
 				.pressKeys(keys.TAB)
