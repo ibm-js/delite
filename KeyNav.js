@@ -193,9 +193,9 @@ define([
 
 		attachedCallback: function () {
 			// If the user hasn't specified a tabindex declaratively, then set to default value.
-			var root = this.keyNavRootNode || this;
-			if (this.focusDescendants && !root.hasAttribute("tabindex")) {
-				root.tabIndex = "0";
+			var container = this.keyNavRootNode || this;
+			if (this.focusDescendants && !container.hasAttribute("tabindex")) {
+				container.tabIndex = "0";
 			}
 		},
 
@@ -321,7 +321,8 @@ define([
 
 			// TODO: Consider changing this to blur whenever the container blurs, to be truthful that there is
 			// no focused child at that time.
-			this.setAttribute("tabindex", this._savedTabIndex);
+			var container = this.keyNavRootNode || this;
+			container.setAttribute("tabindex", this._savedTabIndex);
 			delete this._savedTabIndex;
 			if (this.navigatedDescendant) {
 				this.navigatedDescendant.tabIndex = "-1";
@@ -347,9 +348,10 @@ define([
 					}
 
 					// If container still has tabIndex setting then remove it; instead we'll set tabIndex on child
-					if (!("_savedTabIndex" in this)) {
-						this._savedTabIndex = this.tabIndex;
-						this.removeAttribute("tabindex");
+					var container = this.keyNavRootNode || this;
+					if (!("_savedTabIndex" in container)) {
+						this._savedTabIndex = container.tabIndex;
+						container.removeAttribute("tabindex");
 					}
 
 					child.tabIndex = this._savedTabIndex;
@@ -586,21 +588,21 @@ define([
 		 * @protected
 		 */
 		getNext: function (child, dir) {
-			var root = this.keyNavRootNode || this, origChild = child;
+			var container = this.keyNavRootNode || this, origChild = child;
 			function dfsNext(node) {
 				if (node.firstElementChild) { return node.firstElementChild; }
-				while (node !== root) {
+				while (node !== container) {
 					if (node.nextElementSibling) { return node.nextElementSibling; }
 					node = node.parentNode;
 				}
-				return root;	// loop around, plus corner case when no children
+				return container;	// loop around, plus corner case when no children
 			}
 			function dfsLast(node) {
 				while (node.lastElementChild) { node = node.lastElementChild; }
 				return node;
 			}
 			function dfsPrev(node) {
-				return node === root ? dfsLast(root) : // loop around, plus corner case when no children
+				return node === container ? dfsLast(container) : // loop around, plus corner case when no children
 					(node.previousElementSibling && dfsLast(node.previousElementSibling)) || node.parentNode;
 			}
 			while (true) {

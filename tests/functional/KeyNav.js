@@ -386,6 +386,21 @@ define([
 				.pressKeys(keys.TAB)
 				.execute("return document.activeElement.id;").then(function (id) {
 					assert.strictEqual(id, "keynavroot_after");
+				})
+				.pressKeys(keys.SHIFT + keys.TAB)		// start holding down shift key
+				.execute("return document.activeElement.textContent.trim();").then(function (text) {
+					assert.strictEqual(text, "after button");
+				})
+				.execute("return document.activeElement.textContent.trim();").then(function (text) {
+					assert.strictEqual(text, "Alaska");
+				})
+				.pressKeys(keys.ARROW_DOWN)
+				.execute("return document.activeElement.textContent.trim();").then(function (text) {
+					assert.strictEqual(text, "Arizona");
+				})
+				.pressKeys(keys.TAB)
+				.execute("return document.activeElement.textContent.trim();").then(function (text) {
+					assert.strictEqual(text, "before button");
 				});
 		}
 	});
