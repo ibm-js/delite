@@ -378,7 +378,7 @@ define([
 			var stack = this._stack;
 			for (var i = stack.length - 1; i >= 0; i--) {
 				var popup = stack[i];
-				if (popup.orient[0] === "center") {
+				if (popup.orient && popup.orient[0] === "center") {
 					// There's at least one centered dialog being shown.  Put the DialogUnderlay right behind the
 					// top centered dialog.
 					DialogUnderlay.show(null, parseInt(popup.wrapper.style.zIndex, 10) - 1);
