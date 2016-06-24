@@ -127,6 +127,16 @@ define([
 		descendantSelector: null,
 
 		/**
+		 * The node to receive the KeyNav behavior.
+		 * Can be set in a template via a `attach-point` assignment.
+		 * If missing, then `this` will be used.
+		 * If set, then subclass must set the tabIndex on this node rather than the root node.
+		 * @member {Element}
+		 * @protected
+		 */
+		keyNavRootNode: null,
+
+		/**
 		 * Figure out effective target of this event, either a navigable node, or this widget itself.
 		 * Note that for subclasses like a Tree, one navigable node could be a descendant of another.
 		 * @param {Event} evt
@@ -141,15 +151,15 @@ define([
 			return this;
 		},
 
-		createdCallback: function () {
-			this.on("keypress", this._keynavKeyPressHandler.bind(this));
-			this.on("keydown", this._keynavKeyDownHandler.bind(this));
+		postRender: function () {
+			this.on("keypress", this._keynavKeyPressHandler.bind(this), this.keyNavRootNode);
+			this.on("keydown", this._keynavKeyDownHandler.bind(this), this.keyNavRootNode);
 			this.on("click", function (evt) {
 				var target = this._getTargetElement(evt);
 				if (target !== this) {
 					this._descendantNavigateHandler(target, evt);
 				}
-			});
+			}.bind(this), this.keyNavRootNode);
 
 			this.on("delite-deactivated", function () {
 				if (this.focusDescendants) {
@@ -166,7 +176,7 @@ define([
 						this._descendantNavigateHandler(target, evt);
 					}
 				}
-			}.bind(this));
+			}.bind(this), this.keyNavRootNode);
 
 			// Setup function to check which child nodes are navigable.
 			if (typeof this.descendantSelector === "string") {
@@ -183,8 +193,9 @@ define([
 
 		attachedCallback: function () {
 			// If the user hasn't specified a tabindex declaratively, then set to default value.
-			if (this.focusDescendants && !this.hasAttribute("tabindex")) {
-				this.tabIndex = "0";
+			var root = this.keyNavRootNode || this;
+			if (this.focusDescendants && !root.hasAttribute("tabindex")) {
+				root.tabIndex = "0";
 			}
 		},
 
@@ -304,8 +315,8 @@ define([
 		 * @private
 		 */
 		_keynavDeactivatedHandler: function () {
-			// then restore the container's tabIndex so that user can tab to it again.
-			// Note that using _onBlur() so that this doesn't happen when focus is shifted
+			// Restore the container's tabIndex so that user can tab to it again.
+			// Note: using _keynavDeactivatedHandler so that doesn't execute when focus is shifted
 			// to one of my child widgets (typically a popup)
 
 			// TODO: Consider changing this to blur whenever the container blurs, to be truthful that there is
@@ -575,7 +586,7 @@ define([
 		 * @protected
 		 */
 		getNext: function (child, dir) {
-			var root = this, origChild = child;
+			var root = this.keyNavRootNode || this, origChild = child;
 			function dfsNext(node) {
 				if (node.firstElementChild) { return node.firstElementChild; }
 				while (node !== root) {
