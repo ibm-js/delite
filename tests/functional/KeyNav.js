@@ -362,6 +362,31 @@ define([
 						})
 						.end();
 			}
+		},
+
+		keynavroot: function () {
+			return this.remote
+				.findById("keynavroot_before").click().end()
+				.pressKeys(keys.TAB)
+				.execute("return document.activeElement.textContent.trim();").then(function (text) {
+					assert.strictEqual(text, "before button");
+				})
+				.pressKeys(keys.TAB)
+				.execute("return document.activeElement.textContent.trim();").then(function (text) {
+					assert.strictEqual(text, "Alabama");
+				})
+				.pressKeys(keys.ARROW_DOWN)
+				.execute("return document.activeElement.textContent.trim();").then(function (text) {
+					assert.strictEqual(text, "Alaska");
+				})
+				.pressKeys(keys.TAB)
+				.execute("return document.activeElement.textContent.trim();").then(function (text) {
+					assert.strictEqual(text, "after button");
+				})
+				.pressKeys(keys.TAB)
+				.execute("return document.activeElement.id;").then(function (id) {
+					assert.strictEqual(id, "keynavroot_after");
+				});
 		}
 	});
 });

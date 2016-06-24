@@ -119,9 +119,9 @@
 			register("my-key-nav-root", [HTMLElement, Container, KeyNav], {
 				template: handlebars.compile(
 					"<template>" +
-					"<button>before button</button>" +
+					"<div role='button' tabindex='0'>before button</div>" +
 					"<div class='knrn' attach-point='keyNavRootNode, containerNode'></div>" +
-					"<button>after button</button>" +
+					"<div role='button' tabindex='0'>after button</div>" +
 					"</template>"
 				),
 
@@ -219,7 +219,7 @@
 			border: gray dotted medium;
 		}
 
-		my-list > *, my-list-cust > *, my-key-nav-root > .knrn > * {
+		my-list > *, my-list-cust > *, my-key-nav-root > [role=button], my-key-nav-root > .knrn > * {
 			margin: 3px;
 			border: solid #ccc;
 			display: block;
