@@ -116,11 +116,11 @@
 				}
 			});
 
-			register("my-key-nav-root", [HTMLElement, Container, KeyNav], {
+			register("my-container-node", [HTMLElement, Container, KeyNav], {
 				template: handlebars.compile(
 					"<template>" +
 					"<div role='button' tabindex='0'>before button</div>" +
-					"<div class='knrn' tabindex='0' attach-point='keyNavRootNode, containerNode'></div>" +
+					"<div class='knrn' tabindex='0' attach-point='containerNode'></div>" +
 					"<div role='button' tabindex='0'>after button</div>" +
 					"</template>"
 				),
@@ -128,12 +128,14 @@
 				descendantSelector: function (child) {
 					return child.parentNode === this.keyNavRootNode;
 				},
+
 				downKeyHandler: function () {
 					var nextChild = this.getNext(this.navigatedDescendant, 1);
 					if (nextChild) {
 						this.navigateTo(nextChild);
 					}
 				},
+
 				upKeyHandler: function () {
 					var previousChild = this.getNext(this.navigatedDescendant, -1);
 					if (previousChild) {
@@ -214,12 +216,12 @@
 		}
 
 		/* Container KeyNav subclass */
-		my-list, my-list-cust, my-key-nav-root {
+		my-list, my-list-cust, my-container-node {
 			display: table;
 			border: gray dotted medium;
 		}
 
-		my-list > *, my-list-cust > *, my-key-nav-root > [role=button], my-key-nav-root > .knrn > * {
+		my-list > *, my-list-cust > *, my-container-node > [role=button], my-container-node > .knrn > * {
 			margin: 3px;
 			border: solid #ccc;
 			display: block;
@@ -338,7 +340,7 @@
 	<h3>keyNavRootNode</h3>
 	<p>Tab key should go to first button, then inner list, then last button.</p>
 	<input id="keynavroot_before">
-	<my-key-nav-root id="keynavroot">
+	<my-container-node id="keynavroot">
 		<my-list-item value="AL">Alabama</my-list-item>
 		<my-list-item value="AK">Alaska</my-list-item>
 		<my-list-item value="AZ">Arizona</my-list-item>
@@ -348,7 +350,7 @@
 		<my-list-item value="NJ">New Jersey</my-list-item>
 		<my-list-item value="NM">New Mexico</my-list-item>
 		<my-list-item value="NY">New York</my-list-item>
-	</my-key-nav-root>
+	</my-container-node>
 	<input id="keynavroot_after">
 
 </body>
