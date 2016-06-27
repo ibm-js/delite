@@ -335,18 +335,20 @@ define([
 						.getVisibleText().then(function (value) {
 							assert.strictEqual(value, "Alaska", "got navigation event (cur)");
 						})
-						.end()
-					.findByCssSelector("#combobox_dropdown > *:nth-child(5)")
-						.click()
-						.end()
-					.findById("combobox_dropdown_current_node")
-						.getVisibleText().then(function (value) {
-							assert.strictEqual(value, "California", "got navigation event from click");
-						})
 						.end();
 			},
 
 			mouse: function () {
+				var environmentType = this.remote.environmentType;
+				if (environmentType.browserName === "internet explorer") {
+					// https://github.com/theintern/leadfoot/issues/17
+					return this.skip("click() doesn't generate mousedown, so navigation won't work");
+				}
+				if (environmentType.platformName === "iOS") {
+					// https://github.com/theintern/leadfoot/issues/61
+					return this.skip("click() doesn't generate touchstart, so navigation won't work");
+				}
+
 				return this.remote.execute("document.body.scrollTop = 10000; combobox.focus();")
 					.findById("unfocusable_NJ")
 						.click()

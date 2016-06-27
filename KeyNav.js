@@ -4,7 +4,8 @@ define([
 	"requirejs-dplugins/jquery!attributes/classes",	// addClass(), removeClass()
 	"./features",
 	"./Widget",
-	"./activationTracker"	// delite-deactivated event when focus removed from KeyNav and logical descendants
+	"./activationTracker",	// delite-deactivated event when focus removed from KeyNav and logical descendants
+	"dpointer/events"		// so can just monitor for "pointerdown"
 ], function (dcl, $, has, Widget) {
 
 	/**
@@ -159,7 +160,10 @@ define([
 
 			this.on("keypress", this._keynavKeyPressHandler.bind(this), this.keyNavContainerNode);
 			this.on("keydown", this._keynavKeyDownHandler.bind(this), this.keyNavContainerNode);
-			this.on("click", function (evt) {
+
+			// Navigation occurs on pointerdown, to match behavior of native elements.
+			// Normally this handler isn't needed as it's redundant w/the focusin event.
+			this.on("pointerdown", function (evt) {
 				var target = this._getTargetElement(evt);
 				if (target !== this) {
 					this._descendantNavigateHandler(target, evt);
