@@ -365,7 +365,7 @@ define([
 		 * @private
 		 */
 		_dropDownKeyDownHandler: function (e) {
-			/* jshint maxcomplexity:14 */
+			/* jshint maxcomplexity:18 */
 
 			if (this.disabled || this.readOnly) {
 				return;
