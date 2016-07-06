@@ -123,5 +123,57 @@ define([
 		}
 	};
 
+	// Stack representing the currently displayed dialogs with underlays.
+	var ds = [];
+
+	/**
+	 * Call when new dialog (that needs an underlay) is shown.
+	 * Displays the underlay, or if already displayed then adjusts it for this new dialog.
+	 * @param dialog
+	 * @memberof module:delite/DialogUnderlay
+	 */
+	DialogUnderlay.showFor = function (dialog) {
+		if (ds.indexOf(dialog) >= 0) {
+			return;
+		}
+		var zIndex = +getComputedStyle(dialog).zIndex;
+		DialogUnderlay.show(null, zIndex - 1);
+		ds.push(dialog);
+	};
+
+	/**
+	 * Call when a dialog with an underlay is hidden.
+	 * Hides the underlay, or if there are remaining dialogs on the page,
+	 * then adjusts underlay for the new top dialog.
+	 * @param dialog
+	 * @memberof module:delite/DialogUnderlay
+	 */
+	DialogUnderlay.hideFor = function (dialog) {
+		if (ds[ds.length - 1] === dialog) {
+			// Removing the top (or only) dialog in the stack.
+
+			ds.pop();
+
+			var pd = ds[ds.length - 1];	// the new active dialog
+
+			// Adjust underlay
+			if (pd) {
+				// Popping back to previous dialog, adjust underlay.
+				var zIndex = +getComputedStyle(pd).zIndex;
+				DialogUnderlay.show(null, zIndex - 1);
+			} else {
+				// Returning to original page.  Hide the underlay.
+				DialogUnderlay.hide();
+			}
+		} else {
+			// Removing a dialog out of order (#9944, #10705).
+			// Don't need to mess with underlay or z-index or anything.
+			var idx = ds.indexOf(dialog);
+			if (idx !== -1) {
+				ds.splice(idx, 1);
+			}
+		}
+	};
+
 	return DialogUnderlay;
 });
