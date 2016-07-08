@@ -9,8 +9,7 @@ define([
 ], function (module, advise, dcl, schedule, domReady, has) {
 	"use strict";
 
-	var doc = has("builder") ? require.nodeRequire(require.getNodePath(require.toUrl(module.id).replace(/[^\/]*$/,
-		"node_modules/jsdom"))).jsdom("") : document;
+	var doc = has("builder") ? require.nodeRequire("jsdom").jsdom("") : document;
 
 	// Set to true after the page finishes loading and the parser runs.  Any widgets declared after initialParseComplete
 	// instantiated in a separate code path.

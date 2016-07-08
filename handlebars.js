@@ -331,8 +331,7 @@ define([
 
 	if (has("builder")) {
 		var fs = require.nodeRequire("fs"),
-			jsdom = require.nodeRequire(require.getNodePath(require.toUrl(module.id).replace(/[^\/]*$/,
-				"node_modules/jsdom"))).jsdom;
+			jsdom = require.nodeRequire("jsdom").jsdom;
 
 		// Info about the MID being currently processed
 		var templateText, templateRequires;
