@@ -32,19 +32,19 @@ define([
 				var node = evt.target;
 				if (this._firstFocusItem === this._lastFocusItem) {
 					// don't move focus anywhere, but don't allow browser to move focus off of dialog either
-					evt.stopPropagation();
 					evt.preventDefault();
 				} else if (node === this._firstFocusItem && evt.shiftKey) {
 					// if we are shift-tabbing from first focusable item in dialog, send focus to last item
 					this._lastFocusItem.focus();
-					evt.stopPropagation();
 					evt.preventDefault();
 				} else if (node === this._lastFocusItem && !evt.shiftKey) {
 					// if we are tabbing from last focusable item in dialog, send focus to first item
 					this._firstFocusItem.focus();
-					evt.stopPropagation();
 					evt.preventDefault();
 				}
+
+				// In any case, call stopPropagation() so the popup.js doesn't see the TAB and close the Dialog.
+				evt.stopPropagation();
 			}
 		}
 	});
