@@ -14,14 +14,14 @@ define([
 			this.on("keydown", this._dialogKeyDownHandler.bind(this));
 		},
 
+		/**
+		 * Finds focusable items in dialog,
+		 * and sets `this._firstFocusItem` and `this._lastFocusItem`.
+		 *
+		 * @protected
+		 */
 		_getFocusItems: function () {
-			// summary:
-			//		Finds focusable items in dialog,
-			//		and sets this._firstFocusItem and this._lastFocusItem
-			// tags:
-			//		protected
-
-			var elems = a11y._getTabNavigable(this.containerNode);
+			var elems = a11y._getTabNavigable(this);
 			this._firstFocusItem = elems.lowest || elems.first || this.closeButtonNode || this;
 			this._lastFocusItem = elems.last || elems.highest || this._firstFocusItem;
 		},
