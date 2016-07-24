@@ -48,7 +48,8 @@
   height: inherit;
   width: inherit;
 }
-.d-tooltip-dialog-popup {
+.d-tooltip-dialog-popup,
+.d-date-picker-popup {
   -webkit-box-shadow: none;
   -moz-box-shadow: none;
   box-shadow: none;

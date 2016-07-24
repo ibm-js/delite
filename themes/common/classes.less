@@ -63,7 +63,8 @@
 	width: inherit;
 }
 
-.d-tooltip-dialog-popup {
-	// exception popups: do not use a shadow on these because they aren't rectangular
+.d-tooltip-dialog-popup, .d-date-picker-popup {
+	// exception popups: do not use a shadow on these because they aren't rectangular,
+	// or the box shadow doesn't look right.
 	.box-shadow(none);
 }
