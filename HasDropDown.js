@@ -637,6 +637,9 @@ define([
 				});
 			}
 
+			// Avoid complaint about aria-owns pointing to hidden element.
+			this.popupStateNode.removeAttribute("aria-owns");
+
 			this._previousDropDown = this._currentDropDown;
 			delete this._currentDropDown;
 		}
