@@ -798,6 +798,28 @@ define([
 				"programmatic var, after update");
 		},
 
+		"style": function () {
+			// Style attribute is tricky to begin with because the value is stored in style.cssText,
+			// but IE11 has the additional issue that it ignores style attributes with replacement vars.
+
+			var StyleWidget = register("handlebars-style", [HTMLElement, Widget], {
+				baseClass: "myBaseClass",
+				height: 10,
+				template: handlebars.compile(
+					"<template>" +
+					"<div style='height: {{height}}px'>hi</div>" +
+					"</template>"
+				)
+			});
+
+			var sw = new StyleWidget({});
+			assert.strictEqual(sw.children[0].style.height, "10px");
+
+			sw.height = 20;
+			sw.deliver();
+			assert.strictEqual(sw.children[0].style.height, "20px");
+		},
+
 		"destroying a template": function () {
 			// Testing that destroying a template will:
 			//		1. remove properties created by attach-point (both on root and sub-nodes)

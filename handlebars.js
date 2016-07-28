@@ -104,7 +104,7 @@ define([
 			var attributes = {}, connects = {}, attachPoints;
 			var i = 0, item, attrs = templateNode.attributes;
 			while ((item = attrs[i++])) {
-				var name = item.name, value = item.value;
+				var name = item.name.replace("template-", ""), value = item.value;
 				if (value || typeof elem[name.toLowerCase()] === "boolean") {
 					switch (name) {
 					case "xmlns":
@@ -233,6 +233,10 @@ define([
 				/* jshint maxlen:200 */
 				/<template-(area|base|br|col|command|embed|hr|img|input|keygen|link|meta|param|source|track|wbr)([^>]*?)\/?>/g,
 				"<template-$1$2></template-$1>");
+
+			// Also rename style attribute, because IE will drop style="..." if the ... is an illegal value
+			// like "height: {{foo}}px".
+			templateText = templateText.replace(/style=/g, "template-style=");
 
 			return templateText;
 		},
