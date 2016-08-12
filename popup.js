@@ -124,13 +124,19 @@ define([
 		},
 
 		/**
-		 * Reposition all the popups due to viewport size change.
+		 * Reposition all the popups. It may need to be called when popup's content changes.
+		 * @param {boolean} measureSize force to calculate natural height and width of the popup.
 		 * @private
+		 * @fires module:delite/popup#delite-repositioned
 		 */
-		_repositionAll: function () {
+		_repositionAll: function (measureSize) {
 			this._stack.forEach(function (args) {
-				this._size(args);
+				this._size(args, measureSize);
 				this._position(args);
+				var nativeEvent = args.popup.ownerDocument.createEvent("HTMLEvents");
+				nativeEvent.initEvent("delite-repositioned", true, true);
+				nativeEvent.args = args;
+				args.popup.dispatchEvent(nativeEvent);
 			}, this);
 		},
 
@@ -362,6 +368,10 @@ define([
 				handlers.push(widget.on("change", args.onExecute));
 			}
 
+			handlers.push(widget.on("delite-size-change", function () {
+				this._repositionAll(true);
+			}.bind(this)));
+
 			var stackEntry = Object.create(args);
 			stackEntry.wrapper = wrapper;
 			stackEntry.handlers = handlers;
@@ -422,10 +432,6 @@ define([
 
 				wrapper.style.height = args._naturalHeight > maxHeight ? maxHeight + "px" : "auto";
 			}
-
-			// Workaround for android < 4.4 bug where popup overflows from wrapper.
-			// Probably this code can be removed when/if we get rid of the wrapper div.
-			widget.style.height = wrapper.style.height;
 		},
 
 		/**
