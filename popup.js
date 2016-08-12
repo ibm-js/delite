@@ -180,6 +180,21 @@ define([
 		},
 
 		/**
+		 * Recalculates the popups's size and position for the given widget.
+		 * Useful when the content of the widget can change dinamically.
+		 * @param  {[type]} widget widget's container.
+		 */
+		redraw: function (widget) {
+			var args = this._stack.filter(function(popup) {
+				return popup.wrapper._popupParent === widget;
+			})[0];
+			if (args) {
+				this._size(args, true);
+				this._position(args);
+			}
+		},
+
+		/**
 		 * Moves the popup widget off-screen.  Do not use this method to hide popups when not in use, because
 		 * that will create an accessibility issue: the offscreen popup will still be in the tabbing order.
 		 * @param {module:delite/Widget} widget
@@ -366,6 +381,28 @@ define([
 			stackEntry.wrapper = wrapper;
 			stackEntry.handlers = handlers;
 			stack.push(stackEntry);
+
+			// If popup is centered, then create or move underlay.
+			this._adjustUnderlay();
+		},
+
+		/**
+		 * Create, move, or hide the DialogUnderlay depending on what popups are shown (or were just hidden).
+		 */
+		_adjustUnderlay: function () {
+			var stack = this._stack;
+			for (var i = stack.length - 1; i >= 0; i--) {
+				var popup = stack[i];
+				if (popup.orient && popup.orient[0] === "center") {
+					// There's at least one centered dialog being shown.  Put the DialogUnderlay right behind the
+					// top centered dialog.
+					DialogUnderlay.show(null, parseInt(popup.wrapper.style.zIndex, 10) - 1);
+					return;
+				}
+			}
+
+			// There are no centered dialogs being shown, so hide the DialogUnderlay.
+			DialogUnderlay.hide();
 		},
 
 		/**
@@ -444,7 +481,6 @@ define([
 			// position the wrapper node
 			if (orient[0] === "center") {
 				place.center(wrapper);
-				DialogUnderlay.showFor(wrapper);
 			} else {
 				var layoutFunc = widget.orient ? widget.orient.bind(widget) : null;
 				return around ?
@@ -487,7 +523,6 @@ define([
 
 				// Hide the widget and its wrapper unless it has already been destroyed in above onClose() etc.
 				this.hide(widget);
-				DialogUnderlay.hideFor(widget._popupWrapper);
 
 				if (onClose) {
 					onClose();
@@ -498,6 +533,10 @@ define([
 				clearTimeout(this._aroundMoveListener);
 				this._firstAroundNode = this._firstAroundPosition = this._aroundMoveListener = null;
 			}
+
+			// Close underlay, or if there's still another centered popup open, then adjust underlay
+			// to be behind that popup.
+			this._adjustUnderlay();
 		}
 	});
 
