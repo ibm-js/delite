@@ -459,10 +459,6 @@ define([
 
 				wrapper.style.height = args._naturalHeight > maxHeight ? maxHeight + "px" : "auto";
 			}
-
-			// Workaround for android < 4.4 bug where popup overflows from wrapper.
-			// Probably this code can be removed when/if we get rid of the wrapper div.
-			widget.style.height = wrapper.style.height;
 		},
 
 		/**
