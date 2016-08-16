@@ -185,7 +185,7 @@ define([
 		 * @param  {[type]} widget widget's container.
 		 */
 		redraw: function (widget) {
-			var args = this._stack.filter(function(popup) {
+			var args = this._stack.filter(function (popup) {
 				return popup.wrapper._popupParent === widget;
 			})[0];
 			if (args) {
