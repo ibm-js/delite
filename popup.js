@@ -128,9 +128,9 @@ define([
 		 * @private
 		 * @fires module:delite/popup#delite-repositioned
 		 */
-		_repositionAll: function () {
+		_repositionAll: function (measureSize) {
 			this._stack.forEach(function (args) {
-				this._size(args);
+				this._size(args, measureSize);
 				this._position(args);
 				this.emit("delite-repositioned", {args: args});
 			}, this);
@@ -364,7 +364,9 @@ define([
 				handlers.push(widget.on("change", args.onExecute));
 			}
 
-			handlers.push(widget.on("delite-size-change", this._repositionAll.bind(this));
+			handlers.push(widget.on("delite-size-change", function () {
+				this._repositionAll(true);
+			}.bind(this)));
 
 			var stackEntry = Object.create(args);
 			stackEntry.wrapper = wrapper;
