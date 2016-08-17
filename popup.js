@@ -124,13 +124,15 @@ define([
 		},
 
 		/**
-		 * Reposition all the popups due to viewport size change.
+		 * Reposition all the popups. It may need to be called when popup's content changes.
 		 * @private
+		 * @fires module:delite/popup#delite-repositioned
 		 */
 		_repositionAll: function () {
 			this._stack.forEach(function (args) {
 				this._size(args);
 				this._position(args);
+				this.emit("delite-repositioned", {args: args});
 			}, this);
 		},
 
@@ -177,21 +179,6 @@ define([
 			}
 
 			return wrapper;
-		},
-
-		/**
-		 * Recalculates the popups's size and position for the given widget.
-		 * Useful when the content of the widget can change dinamically.
-		 * @param  {[type]} widget widget's container.
-		 */
-		redraw: function (widget) {
-			var args = this._stack.filter(function (popup) {
-				return popup.wrapper._popupParent === widget;
-			})[0];
-			if (args) {
-				this._size(args, true);
-				this._position(args);
-			}
 		},
 
 		/**
@@ -376,6 +363,8 @@ define([
 				handlers.push(widget.on("execute", args.onExecute));
 				handlers.push(widget.on("change", args.onExecute));
 			}
+
+			handlers.push(widget.on("delite-size-change", this._repositionAll.bind(this));
 
 			var stackEntry = Object.create(args);
 			stackEntry.wrapper = wrapper;
