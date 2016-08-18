@@ -132,11 +132,10 @@ define([
 			this._stack.forEach(function (args) {
 				this._size(args, measureSize);
 				this._position(args);
-				// this.emit("delite-repositioned", {args: args})
-				var nativeEvent = args.parent.ownerDocument.createEvent("HTMLEvents");
+				var nativeEvent = args.popup.ownerDocument.createEvent("HTMLEvents");
 				nativeEvent.initEvent("delite-repositioned", true, true);
 				nativeEvent.args = args;
-				args.parent.dispatchEvent(nativeEvent);
+				args.popup.dispatchEvent(nativeEvent);
 			}, this);
 		},
 
