@@ -125,6 +125,7 @@ define([
 
 		/**
 		 * Reposition all the popups. It may need to be called when popup's content changes.
+		 * @param {boolean} measureSize force to calculate natural height and width of the popup.
 		 * @private
 		 * @fires module:delite/popup#delite-repositioned
 		 */
