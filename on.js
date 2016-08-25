@@ -10,8 +10,10 @@ define(function () {
 	return function (node, type, callback) {
 		var capture = false;
 
-		// Shim support for focusin/focusout.
-		var captures = { focusin: "focus", focusout: "blur" };
+		// Shim support for focusin/focusout where necessary.
+		// Don't shim on IE since IE supports focusin/focusout natively, and conversely
+		// focus and blur events have a problem that relatedTarget isn't set.
+		var captures = "onfocusin" in node ? {} : { focusin: "focus", focusout: "blur" };
 		if (type in captures) {
 			type = captures[type];
 			capture = true;

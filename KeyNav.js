@@ -4,7 +4,6 @@ define([
 	"requirejs-dplugins/jquery!attributes/classes",	// addClass(), removeClass()
 	"./features",
 	"./Widget",
-	"./activationTracker",	// delite-deactivated event when focus removed from KeyNav and logical descendants
 	"dpointer/events"		// so can just monitor for "pointerdown"
 ], function (dcl, $, has, Widget) {
 
@@ -161,31 +160,9 @@ define([
 			this.on("keypress", this._keynavKeyPressHandler.bind(this), this.keyNavContainerNode);
 			this.on("keydown", this._keynavKeyDownHandler.bind(this), this.keyNavContainerNode);
 
-			// Navigation occurs on pointerdown, to match behavior of native elements.
-			// Normally this handler isn't needed as it's redundant w/the focusin event.
-			this.on("pointerdown", function (evt) {
-				var target = this._getTargetElement(evt);
-				if (target !== this) {
-					this._descendantNavigateHandler(target, evt);
-				}
-			}.bind(this), this.keyNavContainerNode);
-
-			this.on("delite-deactivated", function () {
-				if (this.focusDescendants) {
-					this._keynavDeactivatedHandler();
-				}
-			}.bind(this));
-
-			this.on("focusin", function (evt) {
-				if (this.focusDescendants) {
-					var target = this._getTargetElement(evt);
-					if (target === this) {
-						this._keynavFocusHandler(evt);
-					} else {
-						this._descendantNavigateHandler(target, evt);
-					}
-				}
-			}.bind(this), this.keyNavContainerNode);
+			this.on("pointerdown", this.pointerdownHandler.bind(this), this.keyNavContainerNode);
+			this.on("focusin", this.focusinHandler.bind(this), this.keyNavContainerNode);
+			this.on("focusout", this.focusoutHandler.bind(this), this.keyNavContainerNode);
 
 			// Setup function to check which child nodes are navigable.
 			if (typeof this.descendantSelector === "string") {
@@ -205,6 +182,88 @@ define([
 			var container = this.keyNavContainerNode;
 			if (this.focusDescendants && !container.hasAttribute("tabindex")) {
 				container.tabIndex = "0";
+			}
+		},
+
+		/**
+		 * Called on pointerdown event (on container or child of container).
+		 * Navigation occurs on pointerdown, to match behavior of native elements.
+		 * Normally this handler isn't needed as it's redundant w/the focusin event.
+		 */
+		pointerdownHandler: function (evt) {
+			var target = this._getTargetElement(evt);
+			if (target && target !== this) {
+				this._descendantNavigateHandler(target, evt);
+			}
+		},
+
+		/**
+		 * Called on focus of container or child of container.
+		 */
+		focusinHandler: function (evt) {
+			var container = this.keyNavContainerNode;
+			if (this.focusDescendants) {
+				if (evt.target === this || evt.target === container) {
+					// Ignore spurious focus event:
+					// On IE, clicking the scrollbar of a select dropdown moves focus from the focused child item to me
+					if (!this.navigatedDescendant) {
+						this.focus();
+					}
+				} else {
+					// When container's descendant gets focus,
+					// remove the container's tabIndex so that tab or shift-tab
+					// will go to the fields after/before the container, rather than the container itself.
+					// Also avoids Safari and Firefox problems with nested focusable elements.
+					if (container.hasAttribute("tabindex")) {
+						this._savedTabIndex = container.tabIndex;
+						container.removeAttribute("tabindex");
+					}
+
+					// Also adjust tabIndex for navigable descendant (i.e. one that matches descendantSelector):
+					// 1. If the navigable descendant itself is focused, then set tabIndex=0 so that tab and
+					//    shift-tab work right.
+					// 2. If a descendant of the navigable descendant is focused, the clear the tabIndex, to
+					//    prevented unwanted tab stop and to avoid Safari/Firefox nested focus problems.
+					// When focus is moved outside the navigable descendant, focusoutHandler() resets its
+					// tabIndex to -1.
+					var navigatedDescendant = this._getTargetElement(evt);
+					if (navigatedDescendant !== this) {
+						if (evt.target === navigatedDescendant) {
+							navigatedDescendant.tabIndex = this._savedTabIndex;
+						} else {
+							navigatedDescendant.removeAttribute("tabindex");
+						}
+						this._descendantNavigateHandler(navigatedDescendant, evt);
+					}
+				}
+			}
+		},
+
+		/**
+		 * Called on blur of container or child of container.
+		 */
+		focusoutHandler: function (evt) {
+			if (this.focusDescendants) {
+				if (this.navigatedDescendant) {
+					if (this.navigatedDescendant.contains(evt.relatedTarget)) {
+						// If focus has moved inside of the navigable descendant, then clear the
+						// navigable descendant's tabindex, to prevent extraneous tab stop and to
+						// avoid Safari and Firefox problem with nested focusable elements.
+						this.navigatedDescendant.removeAttribute("tabindex");
+					} else if (this.navigatedDescendant !== evt.relatedTarget) {
+						// If focus has moved outside of the navigable descendant, then set its
+						// tabIndex back to -1, for future time when navigable descendant is clicked.
+						this.navigatedDescendant.tabIndex = "-1";
+						$(this.navigatedDescendant).removeClass("d-active-descendant");
+						this.navigatedDescendant = null;
+					}
+				}
+
+				// If focus has moved outside of container, then restore container's tabindex.
+				if ("_savedTabIndex" in this && !this.keyNavContainerNode.contains(evt.relatedTarget)) {
+					this.keyNavContainerNode.setAttribute("tabindex", this._savedTabIndex);
+					delete this._savedTabIndex;
+				}
 			}
 		},
 
@@ -290,55 +349,6 @@ define([
 		},
 
 		/**
-		 * Handler for when the container itself gets focus.
-		 * Called only when `this.focusDescendants` is true.
-		 * Initially the container itself has a tabIndex, but when it gets focus, switch focus to first child.
-		 *
-		 * @param {Event} evt
-		 * @private
-		 */
-		_keynavFocusHandler: function () {
-			// Note that we can't use the delite-activated event because switching focus from that
-			// event handler confuses the activationTracker.js code (because it recursively triggers the
-			// delite-activated event).  Also, delite-activated would fire when focus went
-			// directly to a child widget due to mouse click.
-
-			// Ignore spurious focus event:
-			// On IE, clicking the scrollbar of a select dropdown moves focus from the focused child item to me
-			if (this.navigatedDescendant) {
-				return;
-			}
-
-			// When the container gets focus by being tabbed into, or a descendant gets focus by being clicked,
-			// remove the container's tabIndex so that tab or shift-tab
-			// will go to the fields after/before the container, rather than the container itself
-			this._savedTabIndex = this.keyNavContainerNode.tabIndex;
-			this.keyNavContainerNode.removeAttribute("tabindex");
-
-			this.focus();
-		},
-
-		/**
-		 * Handler for when focus is moved away the container, and its descendant (popup) widgets.
-		 * Called only when `this.focusDescendants` is true.
-		 * @private
-		 */
-		_keynavDeactivatedHandler: function () {
-			// Restore the container's tabIndex so that user can tab to it again.
-			// Note: using _keynavDeactivatedHandler so that doesn't execute when focus is shifted
-			// to one of my child widgets (typically a popup)
-
-			// TODO: Consider changing this to blur whenever the container blurs, to be truthful that there is
-			// no focused child at that time.
-			this.keyNavContainerNode.setAttribute("tabindex", this._savedTabIndex);
-			delete this._savedTabIndex;
-			if (this.navigatedDescendant) {
-				this.navigatedDescendant.tabIndex = "-1";
-				this.navigatedDescendant = null;
-			}
-		},
-
-		/**
 		 * Called when a child is navigated to, either by user clicking it, or programatically by arrow key handling
 		 * code.  It marks that the specified child is the navigated one.
 		 * @param {Element} child
@@ -349,24 +359,9 @@ define([
 		 */
 		_descendantNavigateHandler: function (child, triggerEvent) {
 			if (child && child !== this.navigatedDescendant) {
-				if (this.focusDescendants) {
-					if (this.navigatedDescendant && !this.navigatedDescendant._destroyed) {
-						// mark that the previously focusable node is no longer focusable
-						this.navigatedDescendant.tabIndex = "-1";
-					}
-
-					// If container still has tabIndex setting then remove it; instead we'll set tabIndex on child
-					var container = this.keyNavContainerNode;
-					if (!("_savedTabIndex" in this)) {
-						this._savedTabIndex = container.tabIndex;
-						container.removeAttribute("tabindex");
-					}
-
-					child.tabIndex = this._savedTabIndex;
-				}
-
 				if (this.navigatedDescendant) {
 					$(this.navigatedDescendant).removeClass("d-active-descendant");
+					this.navigatedDescendant.tabIndex = "-1";
 				}
 
 				this.emit("keynav-child-navigated", {
