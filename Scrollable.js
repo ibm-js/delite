@@ -1,7 +1,7 @@
 /** @module delite/Scrollable */
 define([
 	"dcl/dcl",
-	"requirejs-dplugins/jquery!css,attributes/classes,effects,event",	// css(), toggleClass(), animate(), on()
+	"requirejs-dplugins/jquery!attributes/classes,effects",	// toggleClass()
 	"./Widget",
 	"./theme!./Scrollable/themes/{{theme}}/Scrollable.css"
 ], function (dcl, $, Widget) {
@@ -77,13 +77,6 @@ define([
 			if (!this.scrollableNode) {
 				this.scrollableNode = this; // If unspecified, defaults to 'this'.
 			}
-
-			// Disable text selection in scrollable node as per
-			// http://stackoverflow.com/questions/2700000/how-to-disable-text-selection-using-jquery
-			this.scrollableNode.setAttribute("unselectable", "on");
-			$(this.scrollableNode)
-				.css("user-select", "none") // maps to WebkitUserSelect, etc.
-				.on("selectstart", false);
 		}),
 
 		refreshRendering: function (oldVals) {
