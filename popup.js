@@ -25,6 +25,12 @@ define([
 	}, true);
 
 	/**
+	 * Dispatched on a popup after the popup is shown.
+	 * @event module:delite/popup#popup-after-show
+	 */
+
+
+	/**
 	 * Arguments to `delite/popup#open()` method.
 	 * @typedef {Object} module:delite/popup.OpenArgs
 	 * @property {module:delite/Widget} popup - The Widget to display.
@@ -277,7 +283,11 @@ define([
 		open: function (args) {
 			this._prepareToOpen(args);
 			this._size(args, true);
-			return this._position(args);
+			var position = this._position(args);
+
+			args.popup.emit("popup-after-show", position);
+
+			return position;
 		},
 
 		/**
