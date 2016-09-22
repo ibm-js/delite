@@ -28,6 +28,16 @@
 [d-visible=false] {
   visibility: hidden !important;
 }
+.d-offscreen {
+  visibility: hidden;
+  position: absolute;
+  top: -9999px;
+  left: -9999px;
+}
+[dir=rtl] .d-offscreen {
+  left: auto;
+  right: -9999px;
+}
 .d-popup {
   position: absolute;
   background-color: white;

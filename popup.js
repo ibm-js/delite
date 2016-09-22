@@ -5,13 +5,14 @@
 define([
 	"dcl/advise",
 	"dcl/dcl",
+	"requirejs-dplugins/jquery!attributes/classes",	// addClass(), removeClass(), hasClass()
 	"./BackgroundIframe",
 	"./DialogUnderlay",
 	"./features", // has("config-bgIframe")
 	"./place",
 	"./Viewport",
 	"./theme!" // d-popup class
-], function (advise, dcl, BackgroundIframe, DialogUnderlay, has, place, Viewport) {
+], function (advise, dcl, $, BackgroundIframe, DialogUnderlay, has, place, Viewport) {
 
 	function isDocLtr(doc) {
 		return !(/^rtl$/i).test(doc.body.dir || doc.documentElement.dir);
@@ -184,6 +185,16 @@ define([
 				wrapper.appendChild(widget);
 				widget.attachedCallback();
 
+				// Original popup widget might be hidden (so user doesn't see it prematurely).
+				// Clear that CSS now.  The wrapper itself is hidden.
+				if (widget.style.display === "none") {
+					widget.style.display = "";
+				}
+				if (widget.style.visibility === "hidden") {
+					widget.style.visibility = "";
+				}
+				$(widget).removeClass("d-hidden d-invisible d-offscreen");
+
 				widget._popupWrapper = wrapper;
 				advise.after(widget, "destroy", destroyWrapper);
 			}
@@ -200,19 +211,9 @@ define([
 		moveOffScreen: function (widget) {
 			// Create wrapper if not already there, then besides setting visibility:hidden,
 			// move it out of the viewport, see #5776, #10111, #13604
-			var wrapper = this._createWrapper(widget),
-				style = wrapper.style,
-				ltr = isDocLtr(widget.ownerDocument);
-
-			// TODO: move to CSS class (d-offscreen?), but need to know direction of widget or at least page
-			dcl.mix(style, {
-				visibility: "hidden",
-				top: "-9999px",
-				display: ""
-			});
-			style[ltr ? "left" : "right"] = "-9999px";
-			style[ltr ? "right" : "left"] = "auto";
-
+			var wrapper = this._createWrapper(widget);
+			wrapper.style.display = "";
+			$(wrapper).addClass("d-offscreen");
 			return wrapper;
 		},
 

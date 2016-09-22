@@ -43,6 +43,17 @@
 	visibility: hidden !important;
 }
 
+.d-offscreen {
+	visibility: hidden;
+	position: absolute;
+	top: -9999px;
+	left: -9999px;
+	[dir=rtl] & {
+		left: auto;
+		right: -9999px;
+	}
+}
+
 // Popup items have a wrapper div (d-popup) with the real popup inside, and maybe an iframe too
 .d-popup {
 	position: absolute;
