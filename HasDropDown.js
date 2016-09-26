@@ -604,6 +604,8 @@ define([
 		 * @fires module:delite/HasDropDown#delite-after-hide
 		 */
 		closeDropDown: function (focus) {
+			var dropdown = this._currentDropDown;
+
 			if (this._cancelPendingDisplay) {
 				this._cancelPendingDisplay();
 			}
@@ -622,17 +624,25 @@ define([
 				}
 
 				this.emit("delite-before-hide", {
-					child: this._currentDropDown,
+					child: dropdown,
 					cancelable: false
 				});
 
-				popup.close(this._currentDropDown);
+				popup.close(dropdown);
 				this.opened = false;
 
-				this._currentDropDown.style.cssText = this._currentDropDown._originalStyle;
+				// Restore original height/width etc.  But don't put back display:none.
+				// That is handled by the popup wrapper.
+				dropdown.style.cssText = dropdown._originalStyle;
+				if (dropdown.style.display === "none") {
+					dropdown.style.display = "";
+				}
+				if (dropdown.style.visibility === "hidden") {
+					dropdown.style.visibility = "";
+				}
 
 				this.emit("delite-after-hide", {
-					child: this._currentDropDown,
+					child: dropdown,
 					cancelable: false
 				});
 			}
