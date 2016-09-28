@@ -42,24 +42,21 @@
 <script type="text/javascript">
 	require([
 		"doh/runner",
-		"dojo/dom", "dojo/dom-geometry", "dojo/window",
-		"../../place", "dojo/parser", "requirejs-domready/domReady!"
-	], function (doh, dom, domGeometry, winUtils, place, parser) {
-
-		parser.parse();
-
+		"dojo/dom-geometry",
+		"delite/place", "requirejs-domready/domReady!"
+	], function (doh, domGeometry, place) {
 		// The around nodes
-		var aroundOne = dom.byId("around1"),
-				aroundTwo = dom.byId("around2"),
-				aroundThree = dom.byId("around3"),
-				abs1 = dom.byId("absAround1"),
-				abs2 = dom.byId("absAround2"),
-				abs3 = dom.byId("absAround3");
+		var aroundOne = document.getElementById("around1"),
+				aroundTwo = document.getElementById("around2"),
+				aroundThree = document.getElementById("around3"),
+				abs1 = document.getElementById("absAround1"),
+				abs2 = document.getElementById("absAround2"),
+				abs3 = document.getElementById("absAround3");
 
 		// The popup (aka dropdown)
-		var popup = dom.byId("popup"),
-				pp,
-				ret;
+		var popup = document.getElementById("popup"),
+			pp,
+			ret;
 
 		doh.register("aroundOne", [
 			function plain() {
@@ -79,7 +76,7 @@
 			},
 			function aroundOneScrolled() {
 				// Programatically scroll to the right
-				dom.byId("clip1").scrollLeft = 50;
+				document.getElementById("clip1").scrollLeft = 50;
 
 				// Same tests as before
 				place.around(popup, aroundOne, [
@@ -98,7 +95,7 @@
 			},
 			function aroundOneScrollbar() {
 				// Show scroll bar
-				dom.byId("clip1").style.overflow = "scroll";
+				document.getElementById("clip1").style.overflow = "scroll";
 
 				// Same tests as before
 				place.around(popup, aroundOne, [
@@ -206,8 +203,8 @@
 
 </script>
 </head>
-<body class="claro" dir="ltr">
-<h1>Dijit Place Clipping Unit Test</h1>
+<body dir="ltr">
+<h1>Delite/place Clipping Unit Test</h1>
 
 <!-- the popup "widget" -->
 <div id="popup">
