@@ -1,0 +1,50 @@
+<html>
+<head>
+	<title>dojo/sniff test</title>
+	<style>
+		table {
+			border-collapse: collapse;
+		}
+		td {
+			padding: 2px;
+			border:  1px solid black;
+		}
+
+		.d-webkit td.webkit::after,
+		.d-chrome td.chrome::after,
+		.d-safari td.safari::after,
+		.d-edge td.edge::after,
+		.d-ie td.ie::after,
+		.d-ff td.ff::after,
+		.d-ios td.ios::after,
+		.d-android td.android::after {
+			content: "\2713"
+		}
+	</style>
+	<script type="text/javascript" src="boilerplate.js"></script>
+	<script language="JavaScript" type="text/javascript">
+		var ready = false; // set to true when the test page is ready
+		require([
+			"delite/uacss",
+			"requirejs-domready/domReady!"
+		], function () {
+			// Set global variable to signal that the test page is ready
+			ready = true;
+		})
+	</script>
+
+</head>
+<body>
+<h1>delite/uacss results</h1>
+<table>
+	<tr><td>webkit</td><td class="webkit"></td></tr>
+	<tr><td>chrome</td><td class="chrome"></td></tr>
+	<tr><td>safari</td><td class="safari"></td></tr>
+	<tr><td>edge</td><td class="edge"></td></tr>
+	<tr><td>ie</td><td class="ie"></td></tr>
+	<tr><td>ff</td><td class="ff"></td></tr>
+	<tr><td>ios</td><td class="ios"></td></tr>
+	<tr><td>android</td><td class="android"></td></tr>
+</table>
+</body>
+</html>

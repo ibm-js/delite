@@ -33,18 +33,19 @@ There are several different features that are detected and classes that are adde
 
 Browser and version:
 
+* `d-edge`
 * `d-ie`
     * also, `d-ie-9`, `d-ie-10`, `d-ie-11` etc.
 * `d-safari`
 * `d-chrome`
-* `d-ff-31` etc. - firefox version; no `d-ff` class though, use `d-gecko` for that
+* `d-ff`
+    * `d-ff-31` etc.
 * `d-ios`
 * `d-android`
 
 Browser category:
 
 * `d-webkit` - chrome, safari, etc.
-* `d-gecko` - firefox
 
 
 ## See Also

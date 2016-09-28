@@ -7,6 +7,9 @@ define([
 		name: "uacss",
 
 		uacss: function () {
+			if (has("edge")) {
+				assert(/d-edge/.test(document.body.className), "edge");
+			}
 			if (has("ie")) {
 				assert(/d-ie/.test(document.body.className), "ie");
 				assert(/d-ie-[1-9]/.test(document.body.className), "ie version");
