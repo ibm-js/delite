@@ -373,18 +373,10 @@ define([
 			var dropDown = this._currentDropDown, target = e.target;
 			if (dropDown && this.opened) {
 				// Forward the keystroke to the dropdown widget.
-				// Can't use dropDown.emit() though because deliteful/List (the dropdown for deliteful/Combobox)
+				// deliteful/List (the dropdown for deliteful/Combobox)
 				// listens for events on List#containerNode rather than the List root node.
-				var eventCopy = this.ownerDocument.createEvent("HTMLEvents");
-				eventCopy.initEvent("keydown", true, true);
-				for (var i in e) {
-					if (!(i in eventCopy)) {
-						eventCopy[i] = e[i];
-					}
-				}
-
 				var forwardNode = dropDown.keyNavContainerNode || dropDown.containerNode || dropDown;
-				if (forwardNode.dispatchEvent(eventCopy) === false) {
+				if (dropDown.emit("keydown", e, forwardNode) === false) {
 					/* false return code means that the drop down handled the key */
 					e.stopPropagation();
 					e.preventDefault();

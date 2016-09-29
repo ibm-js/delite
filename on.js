@@ -7,7 +7,7 @@ define(function () {
 	 * @param {Function} callback - Callback function.
 	 * @returns {Object} Handle with `remove()` method to cancel the listener.
 	 */
-	return function (node, type, callback) {
+	var on = function (node, type, callback) {
 		var capture = false;
 
 		// Shim support for focusin/focusout where necessary.
@@ -74,4 +74,36 @@ define(function () {
 			}
 		};
 	};
+
+
+	/**
+	 * Emits a synthetic event of specified type, based on eventObj.
+	 * @param {Element} node - Element to emit event on.
+	 * @param {string} type - Name of event.
+	 * @param {Object} [eventObj] - Properties to mix in to emitted event.  Can also contain
+	 * `bubbles` and `cancelable` properties to control how the event is emitted.
+	 * @returns {boolean} True if the event was *not* canceled, false if it was canceled.
+	 * @example
+	 * myWidget.emit("query-success", {});
+	 * @protected
+	 */
+	on.emit = function (node, type, eventObj) {
+		eventObj = eventObj || {};
+		var bubbles = "bubbles" in eventObj ? eventObj.bubbles : true;
+		var cancelable = "cancelable" in eventObj ? eventObj.cancelable : true;
+
+		// Note: can't use jQuery.trigger() because it doesn't work with addEventListener(),
+		// see http://bugs.jquery.com/ticket/11047.
+		var nativeEvent = node.ownerDocument.createEvent("HTMLEvents");
+		nativeEvent.initEvent(type, bubbles, cancelable);
+		for (var i in eventObj) {
+			if (!(i in nativeEvent)) {
+				nativeEvent[i] = eventObj[i];
+			}
+		}
+
+		return node.dispatchEvent(nativeEvent);
+	};
+
+	return on;
 });

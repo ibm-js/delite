@@ -404,26 +404,14 @@ define([
 		 * @param {string} type - Name of event.
 		 * @param {Object} [eventObj] - Properties to mix in to emitted event.  Can also contain
 		 * `bubbles` and `cancelable` properties to control how the event is emitted.
+		 * @param {Element} [node] - Element to emit event on, defaults to `this`.
 		 * @returns {boolean} True if the event was *not* canceled, false if it was canceled.
 		 * @example
 		 * myWidget.emit("query-success", {});
 		 * @protected
 		 */
-		emit: function (type, eventObj) {
-			eventObj = eventObj || {};
-			var bubbles = "bubbles" in eventObj ? eventObj.bubbles : true;
-			var cancelable = "cancelable" in eventObj ? eventObj.cancelable : true;
-
-			// Note: can't use jQuery.trigger() because it doesn't work with addEventListener(),
-			// see http://bugs.jquery.com/ticket/11047
-			var nativeEvent = this.ownerDocument.createEvent("HTMLEvents");
-			nativeEvent.initEvent(type, bubbles, cancelable);
-			for (var i in eventObj) {
-				if (!(i in nativeEvent)) {
-					nativeEvent[i] = eventObj[i];
-				}
-			}
-			return this.dispatchEvent(nativeEvent);
+		emit: function (type, eventObj, node) {
+			on.emit(node || this, type, eventObj);
 		},
 
 		/**

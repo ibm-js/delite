@@ -9,10 +9,11 @@ define([
 	"./BackgroundIframe",
 	"./DialogUnderlay",
 	"./features", // has("config-bgIframe")
+	"./on",
 	"./place",
 	"./Viewport",
 	"./theme!" // d-popup class
-], function (advise, dcl, $, BackgroundIframe, DialogUnderlay, has, place, Viewport) {
+], function (advise, dcl, $, BackgroundIframe, DialogUnderlay, has, on, place, Viewport) {
 
 	function isDocLtr(doc) {
 		return !(/^rtl$/i).test(doc.body.dir || doc.documentElement.dir);
@@ -140,10 +141,7 @@ define([
 			this._stack.forEach(function (args) {
 				this._size(args, measureSize);
 				this._position(args);
-				var nativeEvent = args.popup.ownerDocument.createEvent("HTMLEvents");
-				nativeEvent.initEvent("delite-repositioned", true, true);
-				nativeEvent.args = args;
-				args.popup.dispatchEvent(nativeEvent);
+				on.emit(args.popup, "delite-repositioned", {args: args});
 			}, this);
 		},
 
