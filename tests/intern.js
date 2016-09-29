@@ -17,9 +17,9 @@ define({
 		{ browserName: "internet explorer", version: "11", platform: "Windows 8.1", name: "delite" },
 		{ browserName: "firefox", version: "45", platform: "Windows 7", name: "delite" },
 		{ browserName: "chrome", version: "36", platform: "Windows 7", name: "delite" },
-		{ browserName: "safari", version: "8", name: "delite" },
+		{ browserName: "safari", version: "9", name: "delite" },
 
-		{ browserName: "iphone", platform: "OS X 10.10", version: "9.0", deviceName: "iPad Retina", name: "delite" },
+		{ browserName: "iphone", platform: "OS X 10.10", version: "9.3", deviceName: "iPad Retina", name: "delite" },
 		{ browserName: "android", platform: "Linux", version: "5.1", deviceName: "Android Emulator", name: "delite" }
 	],
 

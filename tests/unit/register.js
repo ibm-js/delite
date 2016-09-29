@@ -37,9 +37,10 @@ define([
 
 		// Declare and instantiate a simple widget
 		simple: function () {
-			if (has("ios") >= 8 || has("safari") >= 8) {
-				return this.skip("fails on safari and ios due to https://github.com/uhop/dcl/issues/15");
+			if (has("safari") < 10) {
+				return this.skip("fails on old safari and ios due to https://github.com/uhop/dcl/issues/15");
 			}
+
 			TestWidget = register("test-simple-widget", [HTMLElement], {
 				foo: 3,
 				createdCallback: function () {
