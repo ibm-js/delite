@@ -1,16 +1,16 @@
 /**
- * Tracks which widgets are currently "active".
- * A widget is considered active if it or a descendant widget has focus,
- * or if a non-focusable node of this widget or a descendant was the most recent node
+ * Tracks which nodes are currently "active".
+ * A node is considered active if it or a descendant node has focus,
+ * or if a non-focusable descendant was the most recent node
  * to get a touchstart/mousedown/pointerdown event.
  *
- * Emits non-bubbling `delite-activated` and `delite-deactivated` events on widgets
+ * Emits non-bubbling `delite-activated` and `delite-deactivated` events on nodes
  * as they become active, or stop being active, as defined above.
  *
- * Call `activationTracker.on("active-widget-stack", callback)` to track the stack of currently active widgets.
+ * Call `activationTracker.on("active-stack", callback)` to track the stack of currently active nodes.
  *
  * Call `activationTracker.on("deactivated", func)` or `activationTracker.on("activated", ...)` to monitor when
- * when widgets become active/inactive.
+ * when nodes become active/inactive.
  *
  * @module delite/activationTracker
  * */
@@ -19,9 +19,10 @@ define([
 	"dcl/dcl",
 	"requirejs-dplugins/jquery!attributes/classes",	// hasClass()
 	"decor/Evented",
+	"./on",
 	"dpointer/events",		// so can just monitor for "pointerdown"
 	"requirejs-domready/domReady!"
-], function (advise, dcl, $, Evented) {
+], function (advise, dcl, $, Evented, on) {
 
 	// Time of the last touch/mouse and focusin events
 	var lastPointerDownTime;
@@ -188,10 +189,11 @@ define([
 						// need to do this trick instead). window.frameElement is supported in IE/FF/Webkit
 						node = node.ownerDocument.defaultView.frameElement;
 					} else {
-						// if this node is the root node of a widget, then add widget id to stack,
-						// except ignore clicks on disabled widgets (actually focusing a disabled widget still works,
-						// to support MenuItem)
-						if (node.render && !(by === "mouse" && node.disabled)) {
+						// Ignore clicks on disabled widgets (actually focusing a disabled widget still works,
+						// to support MenuItem).
+						if (by === "mouse" && node.disabled) {
+							newStack = [];
+						} else {
 							newStack.unshift(node);
 						}
 						node = node.parentNode;
@@ -246,8 +248,8 @@ define([
 		},
 
 		/**
-		 * The stack of active widgets has changed.  Send out appropriate events and records new stack.
-		 * @param {module:delite/Widget[]} newStack - Array of widgets, starting from the top (outermost) widget.
+		 * The stack of active nodes has changed.  Send out appropriate events and record new stack.
+		 * @param {Element} newStack - Array of nodes, starting from the top (outermost) node.
 		 * @param {string} by - "mouse" if the focus/pointerdown was caused by a mouse down event.
 		 * @private
 		 */
@@ -260,26 +262,22 @@ define([
 			}
 
 			this.activeStack = newStack;
-			this.emit("active-widget-stack", newStack);
+			this.emit("active-stack", newStack);
 
-			var widget, i;
+			var node, i;
 
-			// for all elements that have gone out of focus, set focused=false
+			// for all elements that have become deactivated
 			for (i = lastOldIdx; i >= 0 && oldStack[i] !== newStack[i]; i--) {
-				widget = oldStack[i];
-				if (widget) {
-					widget.emit("delite-deactivated", {bubbles: false, by: by});
-					this.emit("deactivated", widget, by);
-				}
+				node = oldStack[i];
+				on.emit(node, "delite-deactivated", {bubbles: false, by: by});
+				this.emit("deactivated", node, by);
 			}
 
-			// for all element that have come into focus, set focused=true
+			// for all elements that have become activated
 			for (i++; i <= lastNewIdx; i++) {
-				widget = newStack[i];
-				if (widget) {
-					widget.emit("delite-activated", {bubbles: false, by: by});
-					this.emit("activated", widget, by);
-				}
+				node = newStack[i];
+				on.emit(node, "delite-activated", {bubbles: false, by: by});
+				this.emit("activated", node, by);
 			}
 		}
 	});

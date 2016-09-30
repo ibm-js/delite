@@ -153,8 +153,8 @@
 			//////////////////////////////////////////////////////
 
 
-			activationTracker.on("active-widget-stack", function (fs) {
-				var as = fs.map(function(elem){ return elem.id; }).join(", ");
+			activationTracker.on("active-stack", function (fs) {
+				var as = fs.map(function(elem){ return elem.id || elem.tagName.toLowerCase(); }).join(", ");
 				console.log("New active stack: " + as);
 				activeStack.value = as;
 				activeStackChangeNotifications.value = +activeStackChangeNotifications.value + 1;
