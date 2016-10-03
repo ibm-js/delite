@@ -40,34 +40,14 @@ define([
 		activeStack: [],
 
 		/**
-		 * Registers listeners on the specified iframe so that any pointerdown
-		 * or focus event on that iframe (or anything in it) is reported
-		 * as a focus/pointerdown event on the `<iframe>` itself.
+		 * Registers listeners on the specified window to detect when the user has
+		 * touched / mouse-downed / focused somewhere.  This is called automatically.
 		 *
-		 * In dijit this was only used by editor; perhaps it should be removed.
-		 *
-		 * @param {HTMLIframeElement} iframe
-		 * @returns {Object} Handle with `remove()` method to deregister.
-		 */
-		registerIframe: function (iframe) {
-			return this.registerWin(iframe.contentWindow, iframe);
-		},
-
-		/**
-		 * Registers listeners on the specified window (either the main
-		 * window or an iframe's window) to detect when the user has touched / mouse-downed /
-		 * focused somewhere.
-		 *
-		 * Users should call registerIframe() instead of this method.
-		 *
-		 * @param {Window} [targetWindow] - If specified this is the window associated with the iframe,
-		 *       i.e. iframe.contentWindow.
-		 * @param {Element} [effectiveNode] - If specified, report any focus events inside targetWindow as
-		 *       an event on effectiveNode, rather than on evt.target.
+		 * @param {Window} [targetWindow]
 		 * @returns {Object} Handle with `remove()` method to deregister.
 		 * @private
 		 */
-		registerWin: function (targetWindow, effectiveNode) {
+		registerWin: function (targetWindow) {
 			// Listen for blur and focus events on targetWindow's document.
 			var _this = this,
 				doc = targetWindow.document,
@@ -83,7 +63,7 @@ define([
 
 				lastPointerDownTime = (new Date()).getTime();
 
-				_this._pointerDownOrFocusHandler(effectiveNode || evt.target, "mouse");
+				_this._pointerDownOrFocusHandler(evt.target, "mouse");
 			}
 
 			function focusHandler(evt) {
@@ -99,11 +79,11 @@ define([
 					return;
 				}
 
-				_this._focusHandler(effectiveNode || evt.target);
+				_this._focusHandler(evt.target);
 			}
 
 			function blurHandler(evt) {
-				_this._blurHandler(effectiveNode || evt.target);
+				_this._blurHandler(evt.target);
 			}
 
 			if (body) {

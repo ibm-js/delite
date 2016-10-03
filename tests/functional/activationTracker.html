@@ -56,18 +56,12 @@
 
 			register("fake-editor", [HTMLElement, Widget], {
 				render: function () {
-					// delite/focus gets confused if <body> gets focused, so need to add an extra <div> and focus that instead
-					var iframe = this.containerNode = this.ownerDocument.createElement("iframe");
-					this.appendChild(iframe);
-					iframe.onload = function () {
-						activationTracker.registerIframe(iframe);
-					};
-					iframe.src = 'javascript:\"<html><body><div contenteditable=true tabindex=0>hello world' +
-							'<br>hello world<br>hello world</div></body></html>\"';
+					this.innerHTML='<div contenteditable=true tabindex=0>hello world' +
+							'<br>hello world<br>hello world</div>';
 				},
 
 				focus: function () {
-					this.containerNode.contentDocument.body.firstChild.focus();
+					this.firstChild.focus();
 				}
 			});
 

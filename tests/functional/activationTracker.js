@@ -68,11 +68,9 @@ define([
 				.findById("activeStackChangeNotifications").getProperty("value").then(function (changes) {
 					assert.strictEqual(changes, "3", "activeStack changes #4");
 				}).end()
-				.findByCssSelector("#editor iframe").click().end()
+				.findByCssSelector("#editor div").click().end()
 				.findById("activeStack").getProperty("value").then(function (activeStack) {
-					// Safari doesn't add iframe to the list.  Squelch the error for now.
-					if (environmentType.browserName === "safari") { return; }
-					assert.strictEqual(activeStack, "form, editor, iframe", "activeStack #4");
+					assert.strictEqual(activeStack, "form, editor, div", "activeStack #4");
 				}).end()
 				.findById("log").getProperty("value").then(function (log) {
 					assert.strictEqual(log.trim(), "form activated\nfieldset1 activated\ncombobox activated\n" +
