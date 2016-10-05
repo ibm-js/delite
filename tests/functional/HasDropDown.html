@@ -32,14 +32,15 @@
 		require([
 			"requirejs-dplugins/Promise!",
 			"delite/register",
+			"delite/Dialog",
 			"delite/HasDropDown",
 			"delite/Widget",
 			"dpointer/events",	// since I'm using touch-action
 			"requirejs-domready/domReady!"
-		], function (Promise, register, HasDropDown, Widget) {
+		], function (Promise, register, Dialog, HasDropDown, Widget) {
 
 			// A trivial popup widget
-			var SimpleDialog = register("simple-dialog", [HTMLElement, Widget], {
+			var SimpleDialog = register("simple-dialog", [HTMLElement, Dialog], {
 				render: function () {
 					// enable fast click, so testing code doesn't to wait 300ms for submit/cancel buttons to take effect
 					this.setAttribute("touch-action", "none");
@@ -292,10 +293,6 @@
 				label: "events drop down button",
 				id: "eventsButton"
 			}).placeAt(document.body);
-			var el = document.createElement("span");
-			el.id = "eventsLog";
-			el.innerHTML = "<br><br>Events on \"events drop down button\": ";
-			document.body.appendChild(el);
 			document.addEventListener("delite-display-load", function (evt) {
 				evt.setChild({
 					child: new SimpleDialog({
@@ -311,9 +308,21 @@
 				"delite-after-hide"
 			].forEach(function (type) {
 				eddb.on(type, function (evt) {
-					el.textContent += evt.type + " ";
+					eventsLog.innerHTML += "<br>" + evt.type;
 				});
 			});
+
+			// Use HasDropDown to setup dropdown behavior on an arbitrary node.
+			var simpleButton = document.createElement("button");
+			simpleButton.id = "behavior-button";
+			document.body.appendChild(simpleButton);
+			simpleButton.innerHTML = "dropdown via behavior";
+			simpleButton.type = "button";
+			new HasDropDown.HasDropDownCustomElement({
+				id: "behavioral-has-drop-down",
+				anchorNode: simpleButton,
+				dropDownConstructor: SimpleDialog
+			}).placeAt(document.body);
 
 			// Set global variable to signal that the test page is ready
 			ready = true;
@@ -322,5 +331,10 @@
 </head>
 <body>
 	<input id=input value="for focus testing">
+
+	<div style="position: absolute; bottom: 0">
+		Events on "events drop down button":
+		<div id="eventsLog"></div>
+	</div>
 </body>
 </html>

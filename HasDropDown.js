@@ -5,10 +5,11 @@ define([
 	"requirejs-dplugins/jquery!attributes/classes",	// addClass(), removeClass(), hasClass()
 	"./place",
 	"./popup",
+	"./register",
 	"./Widget",
 	"./activationTracker",		// for delite-deactivated event
 	"dpointer/events"		// so can just monitor for "pointerdown"
-], function (dcl, Promise, $, place, popup, Widget) {
+], function (dcl, Promise, $, place, popup, register, Widget) {
 	
 	/**
 	 * Dispatched before popup widget is shown.
@@ -55,33 +56,27 @@ define([
 	 * @mixin module:delite/HasDropDown
 	 * @augments module:delite/Widget
 	 */
-	return dcl(Widget, /** @lends module:delite/HasDropDown# */ {
-		/**
-		 * The button/icon/node to click to display the drop down.
-		 * Can be set in a template via a `attach-point` assignment.
-		 * If missing, then either `this.focusNode` or `this` (if `focusNode` is also missing) will be used.
-		 * @member {Element}
-		 * @protected
-		 */
-		buttonNode: null,
-
-		/**
-		 * The node to set the `aria-owns` etc. on.
-		 * Can be set in a template via a `attach-point` assignment.
-		 * If missing, then `this.focusNode` or `this.buttonNode` (if `focusNode` is missing) will be used.
-		 * @member {Element}
-		 * @protected
-		 */
-		popupStateNode: null,
-
+	var HasDropDown = dcl(Widget, /** @lends module:delite/HasDropDown# */ {
 		/**
 		 * The node to display the popup around.
-		 * Can be set in a template via a `attach-point` assignment.
+		 * Can be set in a template via a `attach-point` assignment,
+		 * or set to a node non-descendant node, in order to set up dropdown-opening behavior on an arbitrary node.
 		 * If missing, then `this` will be used.
 		 * @member {Element}
 		 * @protected
 		 */
-		aroundNode: null,
+		anchorNode: null,
+
+		/**
+		 * The button/icon/node to click to display the drop down.
+		 * Useful for widgets like Combobox which contain an `<input>` and a
+		 * down arrow icon, and only clicking the icon should open the drop down.
+		 * If undefined, click handler set up on `this.anchorNode` (if defined),
+		 * or otherwise on `this`.
+		 * @member {Element}
+		 * @protected
+		 */
+		buttonNode: null,
 
 		/**
 		 * The widget to display as a popup.  Applications/subwidgets should *either*:
@@ -273,19 +268,6 @@ define([
 			}.bind(this));
 		},
 
-		createdCallback: function () {
-			// set this.hovering when mouse is over widget so we can differentiate real mouse clicks from synthetic
-			// mouse clicks generated from JAWS upon keyboard events
-			this.on("pointerenter", function () {
-				this.hovering = true;
-			}.bind(this));
-			this.on("pointerleave", function () {
-				this.hovering = false;
-			}.bind(this));
-
-			this.on("delite-deactivated", this._deactivatedHandler.bind(this));
-		},
-
 		preRender: function () {
 			// Remove old listeners if we are re-rendering, just in case some of the listeners were put onto
 			// the root node.  We don't want to make duplicate listeners.
@@ -297,16 +279,28 @@ define([
 		},
 
 		postRender: function () {
-			this.setAttribute("aria-haspopup", "true");
+			this.anchorNode = this.anchorNode || this;
+			this.buttonNode = this.buttonNode || this.anchorNode;
+			this.popupStateNode = this.focusNode || this.buttonNode;
 
-			this.buttonNode = this.buttonNode || this.focusNode || this;
-			this.popupStateNode = this.popupStateNode || this.focusNode || this.buttonNode;
+			this.popupStateNode.setAttribute("aria-haspopup", "true");
 
 			this._HasDropDownListeners = [
 				// basic listeners
 				this.on("pointerdown", this._dropDownPointerDownHandler.bind(this), this.buttonNode),
-				this.on("keydown", this._dropDownKeyDownHandler.bind(this), this.focusNode || this),
-				this.on("keyup", this._dropDownKeyUpHandler.bind(this), this.focusNode || this),
+				this.on("keydown", this._dropDownKeyDownHandler.bind(this), this.focusNode || this.anchorNode),
+				this.on("keyup", this._dropDownKeyUpHandler.bind(this), this.focusNode || this.anchorNode),
+
+				this.on("delite-deactivated", this._deactivatedHandler.bind(this), this.anchorNode),
+
+				// set this.hovering when mouse is over widget so we can differentiate real mouse clicks from synthetic
+				// mouse clicks generated from JAWS upon keyboard events
+				this.on("pointerenter", function () {
+					this.hovering = true;
+				}.bind(this), this.anchorNode),
+				this.on("pointerleave", function () {
+					this.hovering = false;
+				}.bind(this), this.anchorNode),
 
 				// Avoid phantom click on android [and maybe iOS] where touching the button opens a centered dialog, but
 				// then there's a phantom click event on the dialog itself, possibly closing it.
@@ -418,7 +412,7 @@ define([
 		},
 
 		_deactivatedHandler: function () {
-			// Called when focus has shifted away from this widget and it's dropdown
+			// Called when focus has shifted away from this widget and its dropdown.
 
 			// Close dropdown but don't focus my <input>.  User may have focused somewhere else (ex: clicked another
 			// input), and even if they just clicked a blank area of the screen, focusing my <input> will unwantedly
@@ -505,7 +499,7 @@ define([
 				delete this._cancelPendingDisplay;
 
 				this._currentDropDown = dropDown;
-				var aroundNode = this.aroundNode || this,
+				var anchorNode = this.anchorNode,
 					self = this;
 
 				this.emit("delite-before-show", {
@@ -521,9 +515,9 @@ define([
 				dropDown._originalStyle = dropDown.style.cssText;
 
 				var retVal = popup.open({
-					parent: this,
+					parent: anchorNode,
 					popup: dropDown,
-					around: aroundNode,
+					around: anchorNode,
 					orient: this.dropDownPosition,
 					maxHeight: this.maxHeight,
 					onExecute: function () {
@@ -533,21 +527,21 @@ define([
 						self.closeDropDown(true);
 					},
 					onClose: function () {
-						$(self._popupStateNode).removeClass("d-drop-down-open");
+						$(self.popupStateNode).removeClass("d-drop-down-open");
 						this.opened = false;
 					}
 				});
 
 				// Set width of drop down if necessary, so that dropdown width + width of scrollbar (from popup wrapper)
-				// matches width of aroundNode.  Don't do anything for when dropDownPosition=["center"] though,
+				// matches width of anchorNode.  Don't do anything for when dropDownPosition=["center"] though,
 				// in which case popup.open() doesn't return a value.
 				if (retVal && (this.forceWidth ||
-						(this.autoWidth && aroundNode.offsetWidth > dropDown._popupWrapper.offsetWidth))) {
-					var widthAdjust = aroundNode.offsetWidth - dropDown._popupWrapper.offsetWidth;
-					dropDown._popupWrapper.style.width = aroundNode.offsetWidth + "px";
+						(this.autoWidth && anchorNode.offsetWidth > dropDown._popupWrapper.offsetWidth))) {
+					var widthAdjust = anchorNode.offsetWidth - dropDown._popupWrapper.offsetWidth;
+					dropDown._popupWrapper.style.width = anchorNode.offsetWidth + "px";
 
 					// Workaround apparent iOS bug where width: inherit on dropdown apparently not working.
-					dropDown.style.width = aroundNode.offsetWidth + "px";
+					dropDown.style.width = anchorNode.offsetWidth + "px";
 
 					// If dropdown is right-aligned then compensate for width change by changing horizontal position
 					if (retVal.corner[1] === "R") {
@@ -556,14 +550,14 @@ define([
 					}
 				}
 
-				$(this._popupStateNode).addClass("d-drop-down-open");
+				$(this.popupStateNode).addClass("d-drop-down-open");
 				this.opened = true;
 
 				this.popupStateNode.setAttribute("aria-owns", dropDown.id);
 
 				// Set aria-labelledby on dropdown if it's not already set to something more meaningful
 				if (dropDown.getAttribute("role") !== "presentation" && !dropDown.getAttribute("aria-labelledby")) {
-					dropDown.setAttribute("aria-labelledby", this.id);
+					dropDown.setAttribute("aria-labelledby", this.anchorNode.id);
 				}
 
 				this.emit("delite-after-show", {
@@ -646,4 +640,13 @@ define([
 			delete this._currentDropDown;
 		}
 	});
+
+	/**
+	 * Widget to setup HasDropDown behavior on an arbitrary Element or Custom Element.
+	 * @class module:delite/HasDropDown.HasDropDownCustomElement
+	 * @augments module:delite/Widget
+	 */
+	HasDropDown.HasDropDownCustomElement = register("d-has-drop-down", [HTMLElement, HasDropDown], {});
+
+	return HasDropDown;
 });

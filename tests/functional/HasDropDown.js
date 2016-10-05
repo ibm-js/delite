@@ -391,10 +391,44 @@ define([
 					.end()
 				.findById("eventsLog")
 					.getVisibleText().then(function (text) {
-						assert.strictEqual(text.trim(), "Events on \"events drop down button\": delite-display-load " +
-							"delite-before-show delite-after-show delite-before-hide delite-after-hide");
+						assert.strictEqual(text.trim(), "delite-display-load\n" +
+							"delite-before-show\ndelite-after-show\ndelite-before-hide\ndelite-after-hide");
 					})
 					.end();
+		},
+
+		// Test that HasDropDown can be used to apply dropdown behavior to a random node.
+		behavior: function () {
+			var environmentType = this.remote.environmentType;
+			if (environmentType.browserName === "internet explorer") {
+				// https://github.com/theintern/leadfoot/issues/17
+				return this.skip("click() doesn't generate mousedown/mouseup, so popup won't open");
+			}
+			if (environmentType.platformName === "iOS") {
+				// https://github.com/theintern/leadfoot/issues/61
+				return this.skip("click() doesn't generate touchstart/touchend, so popup won't open");
+			}
+
+			return this.remote.findById("behavior-button")
+				.click()
+				.end()
+				.findByCssSelector("[aria-labelledby=behavior-button]")
+				.isDisplayed().then(function (visible) {
+					assert(visible, "visible");
+				})
+				.execute("return document.activeElement.tagName.toLowerCase()").then(function (tag) {
+					assert.strictEqual(tag, "input", "focus moved to dialog's <input>");
+				})
+				.end()
+				// test close by clicking another node on the screen
+				.findById("input")
+				.click()
+				.end()
+				.findByCssSelector("[aria-labelledby=behavior-button]")
+				.isDisplayed().then(function (visible) {
+					assert(!visible, "hidden");
+				})
+				.end();
 		},
 
 		// Make sure that destroying a HasDropDown closes the popup

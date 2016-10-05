@@ -40,22 +40,16 @@ of the drop-down (see "Dynamic & lazy-loading drop-downs", below).
 
 Note: All of these properties can only be set *before* `Widget#render()` is called.
 
+### anchorNode
+
+If specified, this defines a node to set up the dropdown-opening behavior on,
+rather than the HasDropDown node itself.
+When the dropdown is opened, it is positioned relative to this node.
+
 ### buttonNode
 
-
-By default, `delite/HasDropDown` will use either `focusNode` or `domNode` as the element to click to display the drop-down.
-If you want to use a specific element to click to display the drop-down instead, attach that element to `buttonNode`.
-
-### popupStateNode
-
-When a drop-down is opened, a CSS class `d-drop-down-open` attribute is added to indicate that the drop-down is open.
-By default, these changes apply to `focusNode`, or `buttonNode` if there is no `focusNode`.
-Attaching an element to `popupStateNode` will cause these changes to occur on that element instead.
-
-### aroundNode
-
-When the drop-down is opened, it is positioned based on the location of `domNode`.
-Attaching an element to `aroundNode` will cause the drop-down to be positioned relative to that element instead.
+Useful for Combobox type widgets where the dropdown should only be opened by clicking a down arrow icon
+inside of the widget, rather than anywhere on the widget.
 
 ## Dynamic & lazy-loading drop-downs
 
