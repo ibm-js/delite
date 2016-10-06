@@ -31,6 +31,10 @@ define([
 	 * @event module:delite/popup#popup-after-show
 	 */
 
+	/**
+	 * Dispatched on a popup before it's hidden.
+	 * @event module:delite/popup#popup-before-hide
+	 */
 
 	/**
 	 * Arguments to `delite/popup#open()` method.
@@ -241,6 +245,8 @@ define([
 		 * @param {module:delite/Widget} widget
 		 */
 		hide: function (widget) {
+			widget.emit("popup-before-hide");
+
 			// Create wrapper if not already there
 			var wrapper = this._createWrapper(widget);
 
@@ -282,7 +288,9 @@ define([
 		open: function (args) {
 			this._prepareToOpen(args);
 			this._size(args, true);
-			var position = this._position(args);
+			var position = this._position(args) || {};
+
+			position.around = args.around;
 
 			args.popup.emit("popup-after-show", position);
 
