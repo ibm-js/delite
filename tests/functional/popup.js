@@ -30,7 +30,7 @@ define([
 					.click()
 					.end()
 				.findById("choiceDropDown")
-					.isDisplayed(function (err, displayed) {
+					.isDisplayed().then(function (displayed) {
 						assert.isTrue(displayed, "choiceDropDown popup visible");
 					})
 					.end()
@@ -51,7 +51,7 @@ define([
 					.end()
 				.sleep(500)
 				.findById("choiceDropDown")
-					.isDisplayed(function (err, displayed) {
+					.isDisplayed().then(function (displayed) {
 						assert.isFalse(displayed, "choiceDropDown popup not visible");
 					})
 					.end();
@@ -63,12 +63,12 @@ define([
 					.click()
 					.end()
 				.findById("centeredDialog")
-					.isDisplayed(function (err, displayed) {
+					.isDisplayed().then(function (displayed) {
 						assert.isTrue(displayed, "centeredDialog popup visible");
 					})
 					.end()
 				.findByCssSelector("d-dialog-underlay")
-					.isDisplayed(function (err, displayed) {
+					.isDisplayed().then(function (displayed) {
 						assert.isTrue(displayed, "d-dialog-underlay visible");
 					})
 					.end()
@@ -76,12 +76,12 @@ define([
 					.click()	// close popup
 					.end()
 				.findById("centeredDialog")
-					.isDisplayed(function (err, displayed) {
+					.isDisplayed().then(function (displayed) {
 						assert.isFalse(displayed, "centeredDialog popup hidden");
 					})
 					.end()
 				.findByCssSelector("d-dialog-underlay") // underlay should either be detached or set as display: none
-					.isDisplayed(function (err, displayed) {	// currently, it's set as display: none
+					.isDisplayed().then(function (displayed) {	// currently, it's set as display: none
 						assert.isFalse(displayed, "d-dialog-underlay hidden");
 					})
 					.end();
@@ -95,7 +95,7 @@ define([
 						.end()
 					.sleep(500)
 					.findById("nestedOpener")
-						.isDisplayed(function (err, displayed) {
+						.isDisplayed().then(function (displayed) {
 							assert.isTrue(displayed, "nestedOpener popup wasn't visible");
 						})
 						.end();
@@ -106,7 +106,7 @@ define([
 					.execute("nestedOpener._openPopup(nestedChoice1)")
 					.sleep(500)
 					.findById("nestedChoice1")
-						.isDisplayed(function (err, displayed) {
+						.isDisplayed().then(function (displayed) {
 							assert.isTrue(displayed, "nestedChoice1 popup wasn't visible");
 						})
 						.end();
@@ -119,12 +119,12 @@ define([
 						.end()
 					.sleep(500)
 					.findById("nestedChoice1")
-						.isDisplayed(function (err, displayed) {
+						.isDisplayed().then(function (displayed) {
 							assert.isFalse(displayed, "nestedChoice1 popup hidden");
 						})
 						.end()
 					.findById("nestedOpener")
-						.isDisplayed(function (err, displayed) {
+						.isDisplayed().then(function (displayed) {
 							assert.isFalse(displayed, "nestedOpener popup hidden");
 						})
 						.end();
@@ -244,6 +244,45 @@ define([
 						assert.isTrue(value[2] < value[1], "tallChoiceDropDown wrapper is not shorter than viewport");
 						assert.isTrue(value[0] < value[1], "tallChoiceDropDown popup is not shorter than the viewport");
 					});
+			}
+		},
+
+		"change events": {
+			"change event from dropdown closes dropdown": function () {
+				return this.remote
+					.findById("showDatePickerButton")
+						.click()
+						.end()
+					.findById("myDatePicker")
+						.isDisplayed().then(function (displayed) {
+							assert.isTrue(displayed, "DatePicker popup visible");
+						})
+						.click()
+						.isDisplayed().then(function (displayed) {
+							assert.isFalse(displayed, "DatePicker popup hidden");
+						})
+						.end();
+			},
+
+			"change event from dropdown descendant doesn't close dropdown": function () {
+				return this.remote
+					.findById("showSimpleDialogButton")
+						.click()
+						.end()
+					.findById("simpleDialog")
+						.isDisplayed().then(function (displayed) {
+							assert.isTrue(displayed, "Dialog visible");
+						})
+						.findByCssSelector("#simpleDialog input:nth-of-type(1)")
+							.type("hello")
+							.end()
+						.findByCssSelector("#simpleDialog input:nth-of-type(2)")
+							.click()
+							.end()
+						.isDisplayed().then(function (displayed) {
+							assert.isTrue(displayed, "Dialog still visible");
+						})
+						.end();
 			}
 		}
 	});

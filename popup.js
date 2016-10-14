@@ -382,7 +382,13 @@ define([
 			}
 			if (args.onExecute) {
 				handlers.push(widget.on("execute", args.onExecute));
-				handlers.push(widget.on("change", args.onExecute));
+				handlers.push(widget.on("change", function (event) {
+					// Ignore change events from nodes inside the widget (for example, typing into an <input>),
+					// but if the widget itself emits a change event then...
+					if (event.target === widget) {
+						args.onExecute();
+					}
+				}));
 			}
 
 			handlers.push(widget.on("delite-size-change", function () {

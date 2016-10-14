@@ -135,6 +135,31 @@ require([
 		}
 	});
 
+	// A popup that emits a change event, like a DatePicker.
+	var DatePicker = register("my-date-picker", [HTMLElement, Widget], {
+		createdCallback: function () {
+			// on click, emit execute event so that popup closes
+			this.on("click", this._clickHandler.bind(this));
+		},
+
+		render: function () {
+			this.innerHTML = [
+				"Jan 2016",
+				"S M T W T F S".replace(/([A-Z])/g, "$1&nbsp;"),
+				"01 02 03 04 05 06 07",
+				"08 09 10 11 12 13 14",
+				"15 16 17 18 19 20 21",
+				"22 23 24 25 26 27 28",
+				"29 30 31"
+			].join("<br>");
+		},
+
+		_clickHandler: function (evt) {
+			console.log("clicked " + evt.target.innerHTML);
+			this.emit("change");
+		}
+	});
+
 	// A popup with an orient() method to adjust arrows
 	var Tooltip = register("test-tooltip", [HTMLElement, SimplePopup], {
 		createdCallback: function () {
@@ -221,6 +246,7 @@ require([
 			this.innerHTML +=
 				"<div>" + this.title + "</div>" +
 				"<input>" +
+				"<input>" +
 				"<br>";
 
 			// Widget to show menus.
@@ -255,6 +281,15 @@ require([
 			popup: new SimpleChoiceWidget({
 				id: "choiceFromDialog"
 			})
+		})
+	}).placeAt("widgets");
+
+	// Create a button that displays the date picker
+	new SimpleDropDownButton({
+		id: "showDatePickerButton",
+		label: "show date picker",
+		popup: new DatePicker({
+			id: "myDatePicker"
 		})
 	}).placeAt("widgets");
 
