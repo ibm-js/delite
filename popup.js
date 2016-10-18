@@ -286,12 +286,18 @@ define([
 		 * popup.open({parent: this, popup: menuWidget, around: this, onClose: function(){...}});
 		 */
 		open: function (args) {
+			// Size and position the popup.
 			this._prepareToOpen(args);
 			this._size(args, true);
-			var position = this._position(args) || {};
+			var position = this._position(args);
 
-			position.around = args.around;
-
+			// Emit event on popup.
+			var event = {
+				around: args.around
+			};
+			if (position) {
+				dcl.mix(event, position);
+			}
 			args.popup.emit("popup-after-show", position);
 
 			return position;
