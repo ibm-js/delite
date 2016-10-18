@@ -13,7 +13,16 @@ define([
 			return this.remote
 				.get(require.toUrl("./popup.html"))
 				.then(pollUntil("return ready || null;", [],
-					intern.config.WAIT_TIMEOUT, intern.config.POLL_INTERVAL));
+					intern.config.WAIT_TIMEOUT, intern.config.POLL_INTERVAL))
+				.setFindTimeout(5000);
+		},
+
+		afterEach: function () {
+			// Try to make sure that all popups are closed.
+			return this.remote
+				.findById("stub-for-blurring")
+				.click()
+				.end();
 		},
 
 		"repeat move off screen": function () {
@@ -87,48 +96,38 @@ define([
 					.end();
 		},
 
-		nested: {
-			"open around": function () {
-				return this.remote
-					.findById("showNestedMenuButton")
-						.click()
-						.end()
-					.sleep(500)
-					.findById("nestedOpener")
-						.isDisplayed().then(function (displayed) {
-							assert.isTrue(displayed, "nestedOpener popup wasn't visible");
-						})
-						.end();
-			},
-
-			open: function () {
-				return this.remote
-					.execute("nestedOpener._openPopup(nestedChoice1)")
-					.sleep(500)
-					.findById("nestedChoice1")
-						.isDisplayed().then(function (displayed) {
-							assert.isTrue(displayed, "nestedChoice1 popup wasn't visible");
-						})
-						.end();
-			},
-
-			close: function () {
-				return this.remote
-					.findById("stub-for-blurring")
-						.click()
-						.end()
-					.sleep(500)
-					.findById("nestedChoice1")
-						.isDisplayed().then(function (displayed) {
-							assert.isFalse(displayed, "nestedChoice1 popup hidden");
-						})
-						.end()
-					.findById("nestedOpener")
-						.isDisplayed().then(function (displayed) {
-							assert.isFalse(displayed, "nestedOpener popup hidden");
-						})
-						.end();
-			}
+		nested: function () {
+			return this.remote
+				.findById("showNestedMenuButton")
+					.click()
+					.end()
+				.sleep(500)
+				.findById("nestedOpener")
+					.isDisplayed().then(function (displayed) {
+						assert.isTrue(displayed, "nestedOpener popup wasn't visible");
+					})
+					.end()
+				.execute("nestedOpener._openPopup(nestedChoice1)")
+				.sleep(500)
+				.findById("nestedChoice1")
+					.isDisplayed().then(function (displayed) {
+						assert.isTrue(displayed, "nestedChoice1 popup wasn't visible");
+					})
+					.end()
+				.findById("stub-for-blurring")
+					.click()
+					.end()
+				.sleep(500)
+				.findById("nestedChoice1")
+					.isDisplayed().then(function (displayed) {
+						assert.isFalse(displayed, "nestedChoice1 popup hidden");
+					})
+					.end()
+				.findById("nestedOpener")
+					.isDisplayed().then(function (displayed) {
+						assert.isFalse(displayed, "nestedOpener popup hidden");
+					})
+					.end();
 		},
 
 		"no hidden tab stops": function () {
