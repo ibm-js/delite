@@ -37,6 +37,19 @@ define([
 	 */
 
 	/**
+	 * Dispatched on a popup after the popup is shown or when it is repositioned
+	 * due to the size of its content changing.
+	 * @event module:delite/popup#popup-after-position
+	 */
+
+	/**
+	 * Dispatched on a popup after the popup is repositioned
+	 * due to the size of its content changing.
+	 * TODO: remove this?
+	 * @event module:delite/popup#delite-repositioned
+	 */
+
+	/**
 	 * Arguments to `delite/popup#open()` method.
 	 * @typedef {Object} module:delite/popup.OpenArgs
 	 * @property {module:delite/Widget} popup - The Widget to display.
@@ -292,13 +305,9 @@ define([
 			var position = this._position(args);
 
 			// Emit event on popup.
-			var event = {
+			args.popup.emit("popup-after-show", {
 				around: args.around
-			};
-			if (position) {
-				dcl.mix(event, position);
-			}
-			args.popup.emit("popup-after-show", position);
+			});
 
 			return position;
 		},
@@ -482,11 +491,21 @@ define([
 				DialogUnderlay.showFor(wrapper);
 			} else {
 				var layoutFunc = widget.orient ? widget.orient.bind(widget) : null;
-				return around ?
+				var position = around ?
 					place.around(wrapper, around, orient, ltr, layoutFunc) :
 					place.at(wrapper, args, orient === "R" ? ["TR", "BR", "TL", "BL"] : ["TL", "BL", "TR", "BR"],
 						args.padding, layoutFunc);
+
+				// Emit event telling popup that it was [re]positioned.
+				var event = {
+					around: around
+				};
+				dcl.mix(event, position);
+				widget.emit("popup-after-position", event);
+
+				return position;
 			}
+
 		},
 
 		/**

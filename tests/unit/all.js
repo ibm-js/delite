@@ -10,6 +10,7 @@ define([
 	"./Container",
 	"./a11y",
 	"./place",
+	"./popup",
 	"./uacss",
 	"./Selection",
 	"./StoreMap",
