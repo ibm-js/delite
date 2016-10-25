@@ -1,0 +1,119 @@
+<!DOCTYPE HTML><html>
+<head>
+	<title>delite/activationTracker automated test</title>
+
+	<script type="text/javascript" src="boilerplate.js"></script>
+
+	<style>
+		menu-bar {
+			display: block;
+			border: solid black 1px;
+		}
+		menu-bar-item {
+			display: inline-block;
+			padding: 2px 10px;
+		}
+
+		popup-menu {
+			display: block;
+		}
+		menu-item, popup-menu-item {
+			display: block;
+			border: solid black 1px;
+			padding: 2px 10px;
+		}
+	</style>
+	<script type="text/javascript">
+		ready = false;
+
+		require([
+			"dcl/dcl",
+			"delite/HasDropDown",
+			"delite/register",
+			"delite/Widget",
+			"requirejs-domready/domReady!"
+		], function (dcl, HasDropDown, register, Widget) {
+			/**
+			 * A menu bar.  Contains <menu-item>'s and <popup-menu-item>'s.
+			 */
+			register("menu-bar", [HTMLElement, Widget], {});
+
+			/**
+			 * A menu item in the menu bar.  Sset dropDown property with menu to show.
+			 */
+			register("menu-bar-item", [HTMLElement, HasDropDown], {
+				openOnHover: true,
+				dropDownPosition: ["below", "above"]
+			});
+
+			/**
+			 * A menu.  Contains <menu-item>'s and <popup-menu-item>'s.
+			 */
+			register("popup-menu", [HTMLElement, Widget], {});
+
+			/**
+			 * A menu item that spawns another menu.  Set dropDown property to menu to show.
+			 */
+			register("popup-menu-item", [HTMLElement, HasDropDown], {
+				openOnHover: true,
+				dropDownPosition: ["after", "before"]
+			});
+			
+			register.deliver();
+
+			ready = true;
+		});
+	</script>
+</head>
+<body>
+	<h3 id="header">Test for opening popups by hover</h3>
+
+	<menu-bar id="menubar">
+		<menu-bar-item id="fileMenuItem" dropDown="fileMenu">File</menu-bar-item>
+		<menu-bar-item id="editMenuItem" dropDown="editMenu">Edit</menu-bar-item>
+		<menu-bar-item id="viewMenuItem" dropDown="viewMenu">View</menu-bar-item>
+	</menu-bar>
+
+	<popup-menu id="fileMenu" style="display: none">
+		<menu-item>New</menu-item>
+		<menu-item>Open</menu-item>
+		<popup-menu-item id="recentsMenuItem" dropDown="recentsMenu">Open Recent &gt;</popup-menu-item>
+		<popup-menu-item id="favoritesMenuItem" dropDown="favoritesMenu">Favorites &gt;</popup-menu-item>
+	</popup-menu>
+
+	<popup-menu id="recentsMenu" style="display: none">
+		<menu-item>Recent #1</menu-item>
+		<menu-item>Recent #2</menu-item>
+		<menu-item>Recent #3</menu-item>
+	</popup-menu>
+
+	<popup-menu id="favoritesMenu" style="display: none">
+		<menu-item>Favorite #1</menu-item>
+		<menu-item>Favorite #2</menu-item>
+		<menu-item>Favorite #3</menu-item>
+	</popup-menu>
+
+	<popup-menu id="editMenu" style="display: none">
+		<menu-item>Cut</menu-item>
+		<menu-item>Copy</menu-item>
+		<menu-item>Paste</menu-item>
+		<popup-menu-item dropDown="findMenu">Find &gt;</popup-menu-item>
+	</popup-menu>
+
+	<popup-menu id="findMenu" style="display: none">
+		<menu-item>Find</menu-item>
+		<menu-item>Find / Replace</menu-item>
+		<menu-item>Find in all files</menu-item>
+	</popup-menu>
+
+	<popup-menu id="viewMenu" style="display: none">
+		<popup-menu-item dropDown="zoomMenu">Zoom &gt;</popup-menu-item>
+	</popup-menu>
+
+	<popup-menu id="zoomMenu" style="display: none">
+		<menu-item>50%</menu-item>
+		<menu-item>100%</menu-item>
+		<menu-item>200%</menu-item>
+	</popup-menu>
+</body>
+</html>
