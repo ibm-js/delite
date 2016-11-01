@@ -426,32 +426,34 @@ define([
 		_size: function (args, measureSize) {
 			/* jshint maxcomplexity:13 */
 			var widget = args.popup,
-				wrapper = widget._popupWrapper,
 				around = args.around,
 				orient = args.orient || ["below", "below-alt", "above", "above-alt"],
 				viewport = Viewport.getEffectiveBox(widget.ownerDocument);
 
 			if (measureSize) {
 				// Get natural size of popup (i.e. when not squashed to fit within viewport).  First, remove any
-				// previous size restriction set on wrapper.  Note that setting wrapper's height and width to "auto"
+				// previous size restriction set on popup.  Note that setting popups's height and width to "auto"
 				// erases scroll position, so should only be done when popup is first shown, before user has scrolled.
-				wrapper.style.height = "auto";
+				widget.style.height = "auto";
 				if (orient[0] === "center") {
 					// Don't set width to "auto" when orient!=center because it interferes with HasDropDown's
 					// autoWidth/forceWidth.
 					// TODO: maybe this if() check is no longer necessary to due to parent if(measureSize)
-					wrapper.style.width = "auto";
+					widget.style.width = "auto";
 				}
 
-				args._naturalHeight = widget.offsetHeight;
-				args._naturalWidth = widget.offsetWidth;
+				var cs = getComputedStyle(widget),
+					verticalMargin = parseFloat(cs.marginTop) + parseFloat(cs.marginBottom),
+					horizontalMargin = parseFloat(cs.marginLeft) + parseFloat(cs.marginRight);
+				args._naturalHeight = widget.offsetHeight + verticalMargin;
+				args._naturalWidth = widget.offsetWidth + horizontalMargin;
 			}
 
 			if (orient[0] === "center") {
 				// Limit height and width so dialog fits within viewport.
-				wrapper.style.height = args._naturalHeight > viewport.h * 0.9 ? Math.floor(viewport.h * 0.9) + "px" :
+				widget.style.height = args._naturalHeight > viewport.h * 0.9 ? Math.floor(viewport.h * 0.9) + "px" :
 					"auto";
-				wrapper.style.width = args._naturalWidth > viewport.w * 0.9 ? Math.floor(viewport.w * 0.9) + "px" :
+				widget.style.width = args._naturalWidth > viewport.w * 0.9 ? Math.floor(viewport.w * 0.9) + "px" :
 					"auto";
 			} else {
 				// Limit height to space available in viewport either above or below aroundNode (whichever side has
@@ -468,7 +470,7 @@ define([
 						(aroundPos.top + aroundPos.height)));
 				}
 
-				wrapper.style.height = args._naturalHeight > maxHeight ? maxHeight + "px" : "auto";
+				widget.style.height = args._naturalHeight > maxHeight ? maxHeight - verticalMargin + "px" : "auto";
 			}
 		},
 

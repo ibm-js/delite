@@ -547,15 +547,13 @@ define([
 					}
 				});
 
-				// Set width of drop down if necessary, so that dropdown width + width of scrollbar (from popup wrapper)
+				// Set width of drop down if necessary, so that dropdown width [including scrollbar]
 				// matches width of anchorNode.  Don't do anything for when dropDownPosition=["center"] though,
 				// in which case popup.open() doesn't return a value.
 				if (retVal && (this.forceWidth ||
-						(this.autoWidth && anchorNode.offsetWidth > dropDown._popupWrapper.offsetWidth))) {
+						(this.autoWidth && anchorNode.offsetWidth > dropDown.offsetWidth))) {
 					var widthAdjust = anchorNode.offsetWidth - dropDown._popupWrapper.offsetWidth;
-					dropDown._popupWrapper.style.width = anchorNode.offsetWidth + "px";
 
-					// Workaround apparent iOS bug where width: inherit on dropdown apparently not working.
 					dropDown.style.width = anchorNode.offsetWidth + "px";
 
 					// If dropdown is right-aligned then compensate for width change by changing horizontal position
