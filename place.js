@@ -22,26 +22,6 @@ define([
 	 */
 
 	/**
-	 * Function on popup widget to adjust it based on what position it's being displayed in,
-	 * relative to anchor node.
-	 * @callback module:delite/place.LayoutFunc
-	 * @param {Element} node - The DOM node for the popup widget.
-	 * @param {string} aroundCorner - Corner of the anchor node, one of:
-	 * - "BL" - bottom left
-	 * - "BR" - bottom right
-	 * - "TL" - top left
-	 * - "TR" - top right
-	 * @param {string} nodeCorner - Corner of the popup node, one of:
-	 * - "BL" - bottom left
-	 * - "BR" - bottom right
-	 * - "TL" - top left
-	 * - "TR" - top right
-	 * @param {Object} size - `{w: 20, h: 30}` type object specifying size of the popup.
-	 * @returns {number} Optional.  Amount that the popup needed to be modified to fit in the space provided.
-	 * If no value is returned, it's assumed that the popup fit completely without modification.
-	 */
-
-	/**
 	 * Meta-data about the position chosen for a popup node.
 	 * Specifies the corner of the anchor node and the corner of the popup node that touch each other,
 	 * plus sizing data.
@@ -70,18 +50,10 @@ define([
 	 * @param {Element} node
 	 * @param {Array} choices - Array of objects like `{corner: "TL", pos: {x: 10, y: 20} }`.
 	 * This example says to put the top-left corner of the node at (10,20).
-	 * @param {module:delite/place.LayoutFunc} [layoutNode] - Widgets like tooltips are displayed differently an
-	 * have different dimensions based on their orientation relative to the parent.
-	 * This adjusts the popup based on orientation.
-	 * It also passes in the available size for the popup, which is useful for tooltips to
-	 * tell them that their width is limited to a certain amount.  layoutNode() may return a value
-	 * expressing how much the popup had to be modified to fit into the available space.
-	 * This is used to determine what the best placement is.
-	 * @param {module:delite/place.Rectangle} aroundNodeCoords - Size and position of aroundNode.
 	 * @returns {module:delite/place.ChosenPosition} Best position to place node.
 	 * @private
 	 */
-	function _placeAt(node, choices, layoutNode, aroundNodeCoords) {
+	function _placeAt(node, choices) {
 		// get {l: 10, t: 10, w: 100, h:100} type obj representing position of
 		// viewport over document
 		var view = Viewport.getEffectiveBox(node.ownerDocument),
@@ -117,14 +89,6 @@ define([
 			// Clear left/right position settings set earlier so they don't interfere with calculations,
 			// specifically when layoutNode() (a.k.a. Tooltip.orient()) measures natural width of Tooltip
 			style.left = style.right = "auto";
-
-			// configure node to be displayed in given position relative to button
-			// (need to do this in order to get an accurate size for the node, because
-			// a tooltip's size changes based on position, due to triangle)
-			if (layoutNode) {
-				var res = layoutNode(node, choice.aroundCorner, corner, spaceAvailable, aroundNodeCoords);
-				overflow = typeof res === "undefined" ? 0 : res;
-			}
 
 			// get node's size
 			var oldDisplay = style.display;
@@ -176,14 +140,8 @@ define([
 			return !overflow;
 		});
 
-		// In case the best position is not the last one we checked, need to call
-		// layoutNode() again.
-		if (best.overflow && layoutNode) {
-			layoutNode(node, best.aroundCorner, best.corner, best.spaceAvailable, aroundNodeCoords);
-		}
-
-		// And then position the node.  Do this last, after the layoutNode() above
-		// has sized the node, due to browser quirks when the viewport is scrolled
+		// And then position the node.  Do this last,
+		// due to browser quirks when the viewport is scrolled
 		// (specifically that a Tooltip will shrink to fit as though the window was
 		// scrolled to the left).
 
@@ -234,7 +192,6 @@ define([
 		 * - "TR" - top right
 		 * @param {module:delite/place.Position} [padding] - Optional param to set padding, to put some buffer
 		 * around the element you want to position.  Defaults to zero.
-		 * @param {module:delite/place.LayoutFunc} [layoutNode]
 		 * @returns {module:delite/place.ChosenPosition} Position node was placed at.
 		 * @example
 		 * // Try to place node's top right corner at (10,20).
@@ -242,7 +199,7 @@ define([
 		 * // bottom left corner at (10,20).
 		 * place.at(node, {x: 10, y: 20}, ["TR", "BL"])
 		 */
-		at: function (node, pos, corners, padding, layoutNode) {
+		at: function (node, pos, corners, padding) {
 			var choices = corners.map(function (corner) {
 				var c = {
 					corner: corner,
@@ -256,7 +213,7 @@ define([
 				return c;
 			});
 
-			return _placeAt(node, choices, layoutNode);
+			return _placeAt(node, choices);
 		},
 
 		/**
@@ -283,9 +240,6 @@ define([
 		 * - below-alt: drop down goes below anchor node, right sides aligned
 		 * @param {boolean} leftToRight - True if widget is LTR, false if widget is RTL.
 		 * Affects the behavior of "above" and "below" positions slightly.
-		 * @param {module:delite/place.LayoutFunc} [layoutNode] - Widgets like tooltips are displayed differently and
-		 * have different dimensions based on their orientation relative to the parent.
-		 * This adjusts the popup based on orientation.
 		 * @returns {module:delite/place.ChosenPosition} Position node was placed at.
 		 * @example
 		 * // Try to position node such that node's top-left corner is at the same position
@@ -295,7 +249,7 @@ define([
 		 * // (i.e., put node above aroundNode, with right edges aligned)
 		 * place.around(node, aroundNode, {'BL':'TL', 'TR':'BR'});
 		 */
-		around: function (node, anchor, positions, leftToRight, layoutNode) {
+		around: function (node, anchor, positions, leftToRight) {
 			/* jshint maxcomplexity:12 */
 
 			// If around is a DOMNode (or DOMNode id), convert to coordinates.
@@ -425,7 +379,7 @@ define([
 				}
 			});
 
-			var position = _placeAt(node, choices, layoutNode, {w: width, h: height});
+			var position = _placeAt(node, choices);
 			position.aroundNodePos = aroundNodePos;
 
 			return position;

@@ -157,7 +157,7 @@ define([
 					.end();
 		},
 
-		"orient callback": {
+		"popup-after-position event": {
 			setup: function () {
 				return this.remote
 					.findById("tooltipDropDownButton")
@@ -170,10 +170,10 @@ define([
 
 			around: function () {
 				return this.remote
-					.execute("return tooltip.orientCalls.length").then(function (value) {
-						assert.notStrictEqual(value, 0, "tooltipGlobal.orientCalls.length");
+					.execute("return tooltip.popupAfterPositionEvents.length").then(function (value) {
+						assert.strictEqual(value, 1, "popupAfterPositionEvents.length");
 					})
-					.execute("return tooltip.orientCalls.pop();").then(function (final) {
+					.execute("return tooltip.popupAfterPositionEvents.pop();").then(function (final) {
 						assert.strictEqual(final.corner, "TL", "popup corner");
 						assert.strictEqual(final.aroundCorner, "BL", "aroundNode corner");
 					})
@@ -185,14 +185,14 @@ define([
 
 			at: function () {
 				return this.remote
-					.execute("tooltip.orientCalls = [];")
+					.execute("tooltip.popupAfterPositionEvents = [];")
 					.findById("openTooltipAt1015Button")
 						.click()
 						.end()
-					.execute("return tooltip.orientCalls.length").then(function (value) {
-						assert.notStrictEqual(value, 0, "tooltip.orientCalls.length");
+					.execute("return tooltip.popupAfterPositionEvents.length").then(function (value) {
+						assert.strictEqual(value, 1, "popupAfterPositionEvents.length");
 					})
-					.execute("return tooltip.orientCalls.pop()").then(function (value) {
+					.execute("return tooltip.popupAfterPositionEvents.pop()").then(function (value) {
 						// The final call to orient(), as well as the call to onOpen(), should have been for the final
 						// position of the node, where corner == TL and aroundCorner == BR (they are caddy-corner).
 						assert.strictEqual(value.corner, "TL", "popup corner");

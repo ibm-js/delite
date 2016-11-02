@@ -160,23 +160,23 @@ require([
 		}
 	});
 
-	// A popup with an orient() method to adjust arrows
+	// A popup with a listener on the popup-after-position event to adjust arrows.
 	var Tooltip = register("test-tooltip", [HTMLElement, SimplePopup], {
 		createdCallback: function () {
-			this.orientCalls = [];
+			this.popupAfterPositionEvents = [];
+			this.on("popup-after-position", this.orient.bind(this));
 		},
 
 		render: function () {
 			this.textContent = "i'm a tooltip";
 		},
 
-		orient: function (node, aroundCorner, corner, spaceAvailable, aroundNodeCoords) {
-			this.orientCalls.push({
-				node: node,
-				aroundCorner: aroundCorner,
-				corner: corner,
-				spaceAvailable: spaceAvailable,
-				aroundNodeCoords: aroundNodeCoords
+		orient: function (evt) {
+			this.popupAfterPositionEvents.push({
+				aroundCorner: evt.aroundCorner,
+				corner: evt.corner,
+				spaceAvailable: evt.spaceAvailable,
+				aroundNodeCoords: evt.aroundNodeCoords
 			});
 		}
 	});

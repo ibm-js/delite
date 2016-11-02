@@ -40,6 +40,17 @@ define([
 	 * Dispatched on a popup after the popup is shown or when it is repositioned
 	 * due to the size of its content changing.
 	 * @event module:delite/popup#popup-after-position
+	 * @property {string} aroundCorner - Corner of the anchor node, one of:
+	 * - "BL" - bottom left
+	 * - "BR" - bottom right
+	 * - "TL" - top left
+	 * - "TR" - top right
+	 * @property {string} nodeCorner - Corner of the popup node, one of:
+	 * - "BL" - bottom left
+	 * - "BR" - bottom right
+	 * - "TL" - top left
+	 * - "TR" - top right
+	 * @property {Object} size - `{w: 20, h: 30}` type object specifying size of the popup.
 	 */
 
 	/**
@@ -492,11 +503,10 @@ define([
 				place.center(wrapper);
 				DialogUnderlay.showFor(wrapper);
 			} else {
-				var layoutFunc = widget.orient ? widget.orient.bind(widget) : null;
 				var position = around ?
-					place.around(wrapper, around, orient, ltr, layoutFunc) :
+					place.around(wrapper, around, orient, ltr) :
 					place.at(wrapper, args, orient === "R" ? ["TR", "BR", "TL", "BL"] : ["TL", "BL", "TR", "BR"],
-						args.padding, layoutFunc);
+						args.padding);
 
 				// Emit event telling popup that it was [re]positioned.
 				var event = {

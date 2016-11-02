@@ -51,29 +51,6 @@ define([
 				assert.strictEqual(ret.w, 75, "it's 75px wide");
 			},
 
-			atTooltip: function () {
-				// Same as above test except that shape of drop down changes depending on where it's positioned.
-				// Simulates tooltip placement (tooltip shape changes b/c of the arrow).
-
-				function layoutNode(node, aroundCorner, nodeCorner) {
-					node.style.width = (nodeCorner === "TL" ? "80px" : "75px");
-				}
-
-				scrollTo(0);
-				var ret = place.at(
-					popup,
-					{x: 10, y: 7},		// center of aroundNode
-					["TR", "BR", "BL", "TL"],
-					{x: 5, y: 5},		// half of width and height of aroundNode
-					layoutNode
-				);
-
-				assert.strictEqual(ret.corner, "TL", "popup's corner");
-				assert.strictEqual(ret.aroundCorner, "BR", "around corner");
-				assert.strictEqual(popup.style.width, "80px", "layout node width");
-				popup.style.width = "75px";
-			},
-
 			atTR: function () {
 				// Place popup at top right... place.at() should choose the top-right corner, because
 				// any of the other corner would make the popup go partially off the screen
@@ -132,31 +109,6 @@ define([
 				assert.strictEqual(Math.round(popup.style.top.replace("px", "")), 120, "underneath around node");
 				assert.strictEqual(Math.round(popup.style.left.replace("px", "")),
 						Math.round(aroundTop.getBoundingClientRect().left), "left sides aligned");
-			},
-
-			aroundTooltip: function () {
-				// Same as above test except that shape of drop down changes depending on where it's positioned.
-				// Simulates tooltip placement (tooltip shape changes b/c of the arrow).
-				// Should pick the third choice this time
-
-				function layoutNode(node, aroundCorner, nodeCorner) {
-					node.style.width = (nodeCorner === "TL" ? "5000px" : "75px");
-				}
-
-				scrollTo(100);
-				var ret = place.around(popup, aroundTop, [
-					"above",	// aroundTop's top-left corner with the popup's bottom-left corner (fails)
-					"below",	// aroundTop's bottom-left corner with the popup's top-left corner (works)
-					"below-alt"	// aroundTop's bottom-right corner with the popup's top-right corner (works)
-				], true, layoutNode);
-
-				assert.strictEqual(ret.aroundCorner, "BR", "around corner");
-				assert.strictEqual(ret.corner, "TR", "popup's corner");
-				assert.strictEqual(popup.style.top, "120px", "underneath around node");
-
-				var aroundPos = aroundTop.getBoundingClientRect(),
-					popupPos = popup.getBoundingClientRect();
-				assert.strictEqual(Math.round(aroundPos.right), Math.round(popupPos.right), "right sides aligned");
 			},
 
 			aroundB: function () {
