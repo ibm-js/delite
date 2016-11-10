@@ -529,6 +529,17 @@ define([
 
 				dropDown._originalStyle = dropDown.style.cssText;
 
+				// Set width of drop down if necessary, so that dropdown width [including scrollbar]
+				// matches width of anchorNode.  Don't do anything for when dropDownPosition=["center"] though,
+				// in which case popup.open() doesn't return a value.
+				if (this.dropDownPosition[0] !== "center") {
+					if (this.forceWidth) {
+						dropDown.style.width = anchorNode.offsetWidth + "px";
+					} else if (this.autoWidth) {
+						dropDown.style.minWidth = anchorNode.offsetWidth + "px";
+					}
+				}
+
 				var retVal = popup.open({
 					parent: anchorNode,
 					popup: dropDown,
@@ -546,22 +557,6 @@ define([
 						this.opened = false;
 					}
 				});
-
-				// Set width of drop down if necessary, so that dropdown width [including scrollbar]
-				// matches width of anchorNode.  Don't do anything for when dropDownPosition=["center"] though,
-				// in which case popup.open() doesn't return a value.
-				if (retVal && (this.forceWidth ||
-						(this.autoWidth && anchorNode.offsetWidth > dropDown.offsetWidth))) {
-					var widthAdjust = anchorNode.offsetWidth - dropDown._popupWrapper.offsetWidth;
-
-					dropDown.style.width = anchorNode.offsetWidth + "px";
-
-					// If dropdown is right-aligned then compensate for width change by changing horizontal position
-					if (retVal.corner[1] === "R") {
-						dropDown._popupWrapper.style.left =
-							(dropDown._popupWrapper.style.left.replace("px", "") - widthAdjust) + "px";
-					}
-				}
 
 				$(this.popupStateNode).addClass("d-drop-down-open");
 				this.opened = true;
