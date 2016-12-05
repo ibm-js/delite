@@ -144,6 +144,20 @@ define([
 				});
 		},
 
+		"activationTracker integration": function () {
+			if (this.remote.environmentType.brokenSendKeys || !this.remote.environmentType.nativeEvents) {
+				return this.skip("no keyboard support");
+			}
+			return this.remote
+				.findById("keyboardInput").click().end()
+				.pressKeys(keys.TAB)
+				.execute("return document.activeElement.activateLog.join(', ')").then(function (value) {
+					// Test for bug where child would get a delite-deactivated event immediately after the
+					// delite-activated event.
+					assert.strictEqual(value, "activated");
+				});
+		},
+
 		"multi char search with spaces": function () {
 			if (this.remote.environmentType.brokenSendKeys || !this.remote.environmentType.nativeEvents) {
 				return this.skip("no keyboard support");

@@ -16,6 +16,7 @@
 			"delite/Widget",
 			"delite/Container",
 			"delite/KeyNav",
+			"delite/activationTracker",
 			"requirejs-domready/domReady!"
 		], function (a11yclick, handlebars, register, Widget, Container, KeyNav) {
 			// Complex KeyNav subclass with string descendantSelector
@@ -109,10 +110,19 @@
 
 			// Child of TestContainer
 			register("my-list-item", [HTMLElement, Widget], {
-				postRender: function () {
+				createdCallback: function () {
 					// With help of delite/a11yclick, convert SPACE/ENTER key to click event.
 					a11yclick(this);
 					this.tabIndex = "-1";
+
+					// Keep log of the delite-activated and delite-deactivated events I receive.
+					this.activateLog = [];
+					this.on("delite-activated", function () {
+						this.activateLog.push("activated");
+					}.bind(this));
+					this.on("delite-deactivated", function () {
+						this.activateLog.push("deactivated");
+					}.bind(this));
 				}
 			});
 

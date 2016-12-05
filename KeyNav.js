@@ -207,7 +207,9 @@ define([
 					// Ignore spurious focus event:
 					// On IE, clicking the scrollbar of a select dropdown moves focus from the focused child item to me
 					if (!this.navigatedDescendant) {
-						this.focus();
+						// Focus the first child but do it on a delay so that activationTracker sees my "focus"
+						// event before seeing the "focus" event on the child widget.
+						this.defer(this.focus);
 					}
 				} else {
 					// When container's descendant gets focus,
