@@ -246,18 +246,25 @@ define([
 		 */
 		focusoutHandler: function (evt) {
 			if (this.focusDescendants) {
-				if (this.navigatedDescendant) {
-					if (this.navigatedDescendant.contains(evt.relatedTarget)) {
+				// Note: don't use this.navigatedDescendant because it may or may not have already been
+				// updated to point to the new descendant, depending on if navigation was by mouse
+				// or keyboard.
+				var previouslyNavigatedDescendant = this._getTargetElement(evt);
+				if (previouslyNavigatedDescendant && previouslyNavigatedDescendant !== this.keyNavContainerNode) {
+					if (previouslyNavigatedDescendant.contains(evt.relatedTarget)) {
 						// If focus has moved inside of the navigable descendant, then clear the
 						// navigable descendant's tabindex, to prevent extraneous tab stop and to
 						// avoid Safari and Firefox problem with nested focusable elements.
-						this.navigatedDescendant.removeAttribute("tabindex");
-					} else if (this.navigatedDescendant !== evt.relatedTarget) {
-						// If focus has moved outside of the navigable descendant, then set its
+						previouslyNavigatedDescendant.removeAttribute("tabindex");
+					} else if (previouslyNavigatedDescendant !== evt.relatedTarget) {
+						// If focus has moved outside of the previously navigated descendant, then set its
 						// tabIndex back to -1, for future time when navigable descendant is clicked.
-						this.navigatedDescendant.tabIndex = "-1";
-						$(this.navigatedDescendant).removeClass("d-active-descendant");
-						this.navigatedDescendant = null;
+						previouslyNavigatedDescendant.tabIndex = "-1";
+						$(previouslyNavigatedDescendant).removeClass("d-active-descendant");
+
+						if (this.navigatedDescendant === previouslyNavigatedDescendant) {
+							this.navigatedDescendant = null;
+						}
 					}
 				}
 

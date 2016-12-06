@@ -21,7 +21,7 @@ define([
 			if (this.remote.environmentType.brokenSendKeys || !this.remote.environmentType.nativeEvents) {
 				return this.skip("no keyboard support");
 			}
-			return this.remote.execute("return document.activeElement.value")
+			return this.remote
 				.findById("focus")
 				.click()
 				.execute("return document.activeElement.value")
@@ -66,6 +66,30 @@ define([
 				.then(function (value) {
 					assert.strictEqual(value, "seven",
 						"tabbed past INPUT to programmatic KeyNav with tabindex=5 setting");
+				});
+		},
+
+		"tabIndex with mouse": function () {
+			return this.remote
+				.findById("focus").click().end()
+				.execute("return document.activeElement.value").then(function (value) {
+					assert.strictEqual(value, "input before grid", "<input> before <my-grid>");
+				})
+				.findById("apple").click().end()
+				.execute("return document.activeElement.id").then(function (value) {
+					assert.strictEqual(value, "apple", "focus");
+				})
+				.execute("return [].slice.call(document.querySelectorAll('my-grid my-cell'))" +
+					".map(function(node){return node.tabIndex})").then(function (value) {
+					assert.deepEqual(value, [0, -1, -1, -1, -1, -1, -1, -1], "tabindexes #1");
+				})
+				.findById("banana").click().end()
+				.execute("return document.activeElement.id").then(function (value) {
+					assert.strictEqual(value, "banana", "focus");
+				})
+				.execute("return [].slice.call(document.querySelectorAll('my-grid my-cell'))" +
+					".map(function(node){return node.tabIndex})").then(function (value) {
+					assert.deepEqual(value, [-1, 0, -1, -1, -1, -1, -1, -1], "tabindexes #2");
 				});
 		},
 
@@ -168,7 +192,7 @@ define([
 				.pressKeys(keys.TAB)
 				.execute("return document.activeElement.textContent")
 				.then(function (value) {
-					assert.strictEqual(value, "Alabama", "clicked Alabama");
+					assert.strictEqual(value, "Alabama", "navigated to Alabama");
 				})
 				.execute("return clicks.textContent")
 				.then(function (value) {
