@@ -80,7 +80,6 @@ define([
 		 *
 		 * When set to false:
 		 *
-		 * - All navigable descendants must specify an id.
 		 * - Navigable descendants shouldn't have any tabIndex (as opposed to having tabIndex=-1).
 		 * - The focused element should specify `aria-owns` to point to this KeyNav Element.
 		 * - The focused Element must be kept synced so that `aria-activedescendant` points to the currently
