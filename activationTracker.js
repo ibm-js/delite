@@ -358,7 +358,7 @@ define([
 				// Set timer so that if node remains hovered, we send a delite-hover-activated event.
 				hoveredNode.hoverActivateTimer = setTimeout(function () {
 					delete hoveredNode.hoverActivateTimer;
-					on.emit(hoveredNode, "delite-hover-activated");
+					on.emit(hoveredNode, "delite-hover-activated", {bubbles: false});
 				}.bind(this), this.hoverDelay);
 			}
 		},
@@ -377,7 +377,7 @@ define([
 				unhoveredNode.hoverDeactivateTimer = setTimeout(function () {
 					delete unhoveredNode.hoverDeactivateTimer;
 					unhoveredNode.hoverActivated = false;
-					on.emit(unhoveredNode, "delite-hover-deactivated");
+					on.emit(unhoveredNode, "delite-hover-deactivated", {bubbles: false});
 				}.bind(this), this.hoverDelay);
 			}
 		}
