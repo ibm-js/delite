@@ -157,6 +157,65 @@ define([
 					}
 					assert.strictEqual(activeStack, "form, dropdownButton, popup", "activeStack #1");
 				}).end();
+		},
+
+		hover: function () {
+			// note: check specifically for iOS to workaround https://github.com/theintern/leadfoot/issues/62
+			if (!this.remote.environmentType.mouseEnabled || this.remote.environmentType.platformName === "iOS") {
+				return this.skip("touch device, skipping mouse specific test");
+			}
+
+			return this.remote
+				.execute("document.getElementById('hoverDropdownButton').scrollIntoView();")
+				.findByCssSelector("#hoverDropdownButton span:nth-child(1)").moveMouseTo().end()
+				.sleep(1000)
+				.execute("return document.getElementById('hoverDropdownButton').log").then(function (log) {
+					assert.deepEqual(log, [
+						"this delite-hover-activated",
+						"child 1 delite-hover-activated"
+					], "button hovered");
+				})
+				.findById("hoverPopup").isDisplayed().then(function (visible) {
+					assert(visible, "popup visible");
+				}).end()
+				.findByCssSelector("#hoverDropdownButton span:nth-child(2)").moveMouseTo().end()
+				.sleep(1000)
+				.execute("return document.getElementById('hoverDropdownButton').log").then(function (log) {
+					assert.deepEqual(log, [
+						"this delite-hover-activated",
+						"child 1 delite-hover-activated",
+						"child 1 delite-hover-deactivated",
+						"child 2 delite-hover-activated"
+					], "checking delite-hover-activated doesn't bubble to root node");
+				})
+				.findById("hoverPopup").isDisplayed().then(function (visible) {
+					assert(visible, "popup still visible");
+				}).moveMouseTo().end()
+				.sleep(1000)
+				.execute("return document.getElementById('hoverDropdownButton').log").then(function (log) {
+					assert.deepEqual(log, [
+						"this delite-hover-activated",
+						"child 1 delite-hover-activated",
+						"child 1 delite-hover-deactivated",
+						"child 2 delite-hover-activated",
+						"child 2 delite-hover-deactivated",
+						"popup delite-hover-activated"
+					], "hover stack works with popups");
+				})
+				.findById("clearButton").moveMouseTo().end()
+				.sleep(1000)
+				.execute("return document.getElementById('hoverDropdownButton').log").then(function (log) {
+					assert.deepEqual(log, [
+						"this delite-hover-activated",
+						"child 1 delite-hover-activated",
+						"child 1 delite-hover-deactivated",
+						"child 2 delite-hover-activated",
+						"child 2 delite-hover-deactivated",
+						"popup delite-hover-activated",
+						"popup delite-hover-deactivated",
+						"this delite-hover-deactivated"
+					], "everything unhovered");
+				});
 		}
 	});
 });

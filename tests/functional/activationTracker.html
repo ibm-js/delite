@@ -86,12 +86,7 @@
 			/**
 			 * A trivial popup widget.
 			 */
-			var PopupWidget = register("fake-popup", [HTMLElement, Widget], {
-				render: function () {
-					this.id = "popup";
-					this.textContent = "i'm a popup";
-				}
-			});
+			var PopupWidget = register("fake-popup", [HTMLElement, Widget], {});
 
 			/**
 			 * A button that shows a popup.
@@ -100,7 +95,10 @@
 				postRender: function () {
 					this.on("click", this._clickHandler.bind(this));
 					this.on("delite-deactivated", this._deactivatedHandler.bind(this));
-					this.popup = new PopupWidget();
+					this.popup = new PopupWidget({
+						id: "popup",
+						textContent: "I'm a popup."
+					});
 				},
 
 				_clickHandler: function () {
@@ -140,6 +138,93 @@
 				_deactivatedHandler: function () {
 					console.log(this.id + ": close popup due to blur");
 					this.closePopup();
+				}
+			});
+
+			/**
+			 * A button that shows a popup on hover.
+			 */
+			register("fake-hover-dropdown-button", [HTMLElement, Widget], {
+				createdCallback: function () {
+					this.log = [];
+				},
+
+				addToLog: function (text) {
+					 console.log(text);
+					 this.log.push(text);
+				},
+
+				render: function () {
+					this.style.cssText = "border: dotted gray 2px; padding: 2px;";
+					this.innerHTML = "<span style='border: solid red 1px;'>open on</span> " +
+						"<span style='border: solid blue 1px;'>hover</span>";
+
+					this.popup = new PopupWidget({
+						id: "hoverPopup",
+						textContent: "Hover popup"
+					});
+				},
+
+				postRender: function () {
+					this.on("delite-hover-activated", function () {
+						this.addToLog("this delite-hover-activated");
+						this._openPopup();
+					}.bind(this));
+					this.on("delite-hover-deactivated", function () {
+						this.addToLog("this delite-hover-deactivated");
+						this.closePopup();
+					}.bind(this));
+
+					Array.prototype.forEach.call(this.children, function (child, i) {
+						this.on("delite-hover-activated", function () {
+							this.addToLog("child " + (i+1) + " delite-hover-activated");
+						}.bind(this), child);
+						this.on("delite-hover-deactivated", function () {
+							this.addToLog("child " + (i+1) + " delite-hover-deactivated");
+						}.bind(this), child);
+
+					}.bind(this));
+
+					this.popup.on("delite-hover-activated", function () {
+						this.addToLog("popup delite-hover-activated");
+					}.bind(this));
+					this.popup.on("delite-hover-deactivated", function () {
+						this.addToLog("popup delite-hover-deactivated");
+					}.bind(this));
+				},
+
+				_clickHandler: function () {
+					this._openPopup();
+				},
+
+				_openPopup: function () {
+					var self = this;
+
+					popupUtil.open({
+						popup: this.popup,
+						parent: this,
+						around: this,
+						orient: ["above"],
+						onCancel: function () {
+							console.log(self.id + ": cancel of child");
+						},
+						onExecute: function () {
+							console.log(self.id + ": execute of child");
+
+							// allow click w/out closing popup
+							// popupUtil.close(self.popup);
+							// self.open = false;
+						}
+					});
+
+					this.open = true;
+				},
+
+				closePopup: function () {
+					if (this.open) {
+						popupUtil.close(this.popup);
+						this.open = false;
+					}
 				}
 			});
 
@@ -225,6 +310,8 @@
 		<button id="dropdownButton" type="button" is="fake-dropdown-button">show dropdown</button>
 		<button tabIndex="-1" id="minusOne" type="button">non tab-navigable button</button>
 		<button id="disabledButton" type="button" disabled>disabled button</button>
+
+		<fake-hover-dropdown-button id="hoverDropdownButton"></fake-hover-dropdown-button>
 	</form>
 	<label for="log">Log:</label> <textarea id="log" disabled></textarea>
 	<button id="clearButton" type="button" onclick="clearLog();">clear log</button>
