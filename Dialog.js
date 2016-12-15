@@ -14,6 +14,14 @@ define([
 			this.on("keydown", this._dialogKeyDownHandler.bind(this));
 		},
 
+		focus: function () {
+			// Focus on first field.
+			this._getFocusItems();
+			if (this._firstFocusItem && this._firstFocusItem !== this) {
+				this._firstFocusItem.focus();
+			}
+		},
+
 		/**
 		 * Finds focusable items in dialog,
 		 * and sets `this._firstFocusItem` and `this._lastFocusItem`.

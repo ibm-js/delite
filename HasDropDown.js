@@ -613,8 +613,8 @@ define([
 			}
 
 			if (this.opened) {
-				if (focus && this.focus) {
-					this.focus();
+				if (focus && this.anchorNode.focus) {
+					this.anchorNode.focus();
 				}
 
 				this.emit("delite-before-hide", {

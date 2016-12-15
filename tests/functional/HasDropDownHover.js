@@ -78,6 +78,25 @@ define([
 						assert(!visible, "file menu hidden");
 					}).end();
 			}
+		},
+
+		behavior: {
+			a11y: function () {
+				return this.remote
+					.findById("inputBeforeBehaviorButton").click().end()
+					.pressKeys(keys.TAB)
+					.execute("return document.activeElement.id;").then(function (id) {
+						assert.strictEqual(id, "behaviorButton", "tabbed to button");
+					})
+					.pressKeys(keys.ENTER)
+					.findById("behaviorTooltip").isDisplayed().then(function (visible) {
+						assert(visible, "tooltip visible");
+					}).end()
+					.pressKeys(keys.ESCAPE)
+					.execute("return document.activeElement.id;").then(function (id) {
+						assert.strictEqual(id, "behaviorButton", "focus returned to button");
+					});
+			}
 		}
 	});
 });
