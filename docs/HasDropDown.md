@@ -40,7 +40,7 @@ of the drop-down (see "Dynamic & lazy-loading drop-downs", below).
 
 Note: All of these properties can only be set *before* `Widget#render()` is called.
 
-### anchorNode
+### behaviorNode
 
 If specified, this defines a node to set up the dropdown-opening behavior on,
 rather than the HasDropDown node itself.

@@ -58,20 +58,18 @@ define([
 	 */
 	var HasDropDown = dcl(Widget, /** @lends module:delite/HasDropDown# */ {
 		/**
-		 * The node to display the popup around.
-		 * Can be set in a template via a `attach-point` assignment,
-		 * or set to a node non-descendant node, in order to set up dropdown-opening behavior on an arbitrary node.
-		 * If missing, then `this` will be used.
+		 * If specified, defines a node to set up the dropdown-opening behavior on,
+		 * rather than the HasDropDown node itself.
 		 * @member {Element}
 		 * @protected
 		 */
-		anchorNode: null,
+		behaviorNode: null,
 
 		/**
 		 * The button/icon/node to click to display the drop down.
 		 * Useful for widgets like Combobox which contain an `<input>` and a
 		 * down arrow icon, and only clicking the icon should open the drop down.
-		 * If undefined, click handler set up on `this.anchorNode` (if defined),
+		 * If undefined, click handler set up on `this.behaviorNode` (if defined),
 		 * or otherwise on `this`.
 		 * @member {Element}
 		 * @protected
@@ -287,8 +285,8 @@ define([
 		},
 
 		postRender: function () {
-			this.anchorNode = this.anchorNode || this;
-			this.buttonNode = this.buttonNode || this.anchorNode;
+			this.behaviorNode = this.behaviorNode || this;
+			this.buttonNode = this.buttonNode || this.behaviorNode;
 			this.popupStateNode = this.focusNode || this.buttonNode;
 
 			this.popupStateNode.setAttribute("aria-haspopup", "true");
@@ -296,19 +294,19 @@ define([
 			this._HasDropDownListeners = [
 				// basic listeners
 				this.on("pointerdown", this._dropDownPointerDownHandler.bind(this), this.buttonNode),
-				this.on("keydown", this._dropDownKeyDownHandler.bind(this), this.focusNode || this.anchorNode),
-				this.on("keyup", this._dropDownKeyUpHandler.bind(this), this.focusNode || this.anchorNode),
+				this.on("keydown", this._dropDownKeyDownHandler.bind(this), this.focusNode || this.behaviorNode),
+				this.on("keyup", this._dropDownKeyUpHandler.bind(this), this.focusNode || this.behaviorNode),
 
-				this.on("delite-deactivated", this._deactivatedHandler.bind(this), this.anchorNode),
+				this.on("delite-deactivated", this._deactivatedHandler.bind(this), this.behaviorNode),
 
 				// set this.hovering when mouse is over widget so we can differentiate real mouse clicks from synthetic
 				// mouse clicks generated from JAWS upon keyboard events
 				this.on("pointerenter", function () {
 					this.hovering = true;
-				}.bind(this), this.anchorNode),
+				}.bind(this), this.behaviorNode),
 				this.on("pointerleave", function () {
 					this.hovering = false;
-				}.bind(this), this.anchorNode),
+				}.bind(this), this.behaviorNode),
 
 				// Avoid phantom click on android [and maybe iOS] where touching the button opens a centered dialog, but
 				// then there's a phantom click event on the dialog itself, possibly closing it.
@@ -514,7 +512,7 @@ define([
 				delete this._cancelPendingDisplay;
 
 				this._currentDropDown = dropDown;
-				var anchorNode = this.anchorNode,
+				var behaviorNode = this.behaviorNode,
 					self = this;
 
 				this.emit("delite-before-show", {
@@ -530,20 +528,20 @@ define([
 				dropDown._originalStyle = dropDown.style.cssText;
 
 				// Set width of drop down if necessary, so that dropdown width [including scrollbar]
-				// matches width of anchorNode.  Don't do anything for when dropDownPosition=["center"] though,
+				// matches width of behaviorNode.  Don't do anything for when dropDownPosition=["center"] though,
 				// in which case popup.open() doesn't return a value.
 				if (this.dropDownPosition[0] !== "center") {
 					if (this.forceWidth) {
-						dropDown.style.width = anchorNode.offsetWidth + "px";
+						dropDown.style.width = behaviorNode.offsetWidth + "px";
 					} else if (this.autoWidth) {
-						dropDown.style.minWidth = anchorNode.offsetWidth + "px";
+						dropDown.style.minWidth = behaviorNode.offsetWidth + "px";
 					}
 				}
 
 				var retVal = popup.open({
-					parent: anchorNode,
+					parent: behaviorNode,
 					popup: dropDown,
-					around: anchorNode,
+					around: behaviorNode,
 					orient: this.dropDownPosition,
 					maxHeight: this.maxHeight,
 					onExecute: function () {
@@ -565,7 +563,7 @@ define([
 
 				// Set aria-labelledby on dropdown if it's not already set to something more meaningful
 				if (dropDown.getAttribute("role") !== "presentation" && !dropDown.getAttribute("aria-labelledby")) {
-					dropDown.setAttribute("aria-labelledby", this.anchorNode.id);
+					dropDown.setAttribute("aria-labelledby", this.behaviorNode.id);
 				}
 
 				this.emit("delite-after-show", {
@@ -613,8 +611,8 @@ define([
 			}
 
 			if (this.opened) {
-				if (focus && this.anchorNode.focus) {
-					this.anchorNode.focus();
+				if (focus && this.behaviorNode.focus) {
+					this.behaviorNode.focus();
 				}
 
 				this.emit("delite-before-hide", {
