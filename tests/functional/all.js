@@ -5,6 +5,7 @@ define([
 	"./DialogUnderlay",
 	"./FormValueWidget",
 	"./HasDropDown",
+	"./HasDropDownHover",
 	"./TabIndex",
 	"./KeyNav",
 	"./on",

@@ -27,18 +27,23 @@
 			border: solid black 1px;
 			padding: 2px 10px;
 		}
+
+		closeButton {
+			float: right;
+		}
 	</style>
 	<script type="text/javascript">
 		ready = false;
 
 		require([
 			"dcl/dcl",
+			"delite/Container",
 			"delite/Dialog",
 			"delite/HasDropDown",
 			"delite/register",
 			"delite/Widget",
 			"requirejs-domready/domReady!"
-		], function (dcl, Dialog, HasDropDown, register, Widget) {
+		], function (dcl, Container, Dialog, HasDropDown, register, Widget) {
 			/**
 			 * A menu bar.  Contains <menu-item>'s and <popup-menu-item>'s.
 			 */
@@ -66,7 +71,17 @@
 			});
 
 			// A popup with a listener on the popup-after-position event to adjust arrows.
-			var TooltipDialog = register("test-tooltip-dialog", [HTMLElement, Dialog], {});
+			var TooltipDialog = register("test-tooltip-dialog", [HTMLElement, Container, Dialog], {
+				render: function () {
+					this.innerHTML = "<div class='closeButton'>[x]</div><div>My tooltip</div></div><div></div>";
+					this.containerNode = this.children[2];
+					this.on("click", this.closeButtonClickHandler.bind(this), this.children[0]);
+				},
+
+				closeButtonClickHandler: function () {
+					this.emit("cancel");
+				}
+			});
 
 			register.deliver();
 

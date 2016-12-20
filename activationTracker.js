@@ -52,6 +52,9 @@ define([
 	var lastPointerDownTime;
 	var lastFocusinTime;
 
+	// Time of last touchend event.  Tells us if the mouseover event is real or emulated.
+	var lastTouchendTime;
+
 	// Last node that got pointerdown or focusin event, and the time it happened.
 	var lastPointerDownOrFocusInNode;
 	var lastPointerDownOrFocusInTime;
@@ -123,7 +126,17 @@ define([
 				_this._blurHandler(evt.target);
 			}
 
+			function touchendHandler() {
+				lastTouchendTime = (new Date()).getTime();
+			}
+
 			function mouseOverHandler(evt) {
+				// Ignore emulated mouseover events on iOS and android.  Otherwise, when clicking the
+				// [x] to close a TooltipDialog it will immediately reopen (see HasDropDownHover.html).
+				if (lastTouchendTime && (new Date()).getTime() < lastTouchendTime + 500) {
+					return;
+				}
+
 				_this._mouseOverHandler(evt.target);
 			}
 
@@ -132,6 +145,7 @@ define([
 				body.addEventListener("pointerdown", pointerDownHandler, true);
 				body.addEventListener("focus", focusHandler, true);	// need true since focus doesn't bubble
 				body.addEventListener("blur", blurHandler, true);	// need true since blur doesn't bubble
+				body.addEventListener("touchend", touchendHandler, true);
 				body.addEventListener("mouseover", mouseOverHandler);
 
 				return {

@@ -11,10 +11,6 @@ define([
 		name: "HasDropDown \"open on hover\" functional tests",
 
 		setup: function () {
-			var environmentType = this.remote.environmentType;
-			if (environmentType.platformName === "iOS" || environmentType.browserName === "android") {
-				return this.skip("no hover on mobile devices");
-			}
 			return this.remote
 				.get(require.toUrl("./HasDropDownHover.html"))
 				.then(pollUntil("return ready || null;", [],
@@ -22,6 +18,13 @@ define([
 		},
 
 		basic: {
+			setup: function () {
+				var environmentType = this.remote.environmentType;
+				if (environmentType.platformName === "iOS" || environmentType.browserName === "android") {
+					return this.skip("no hover on mobile devices");
+				}
+			},
+
 			"simple open and close": function () {
 				return this.remote
 					.findById("fileMenuItem").moveMouseTo().end()
@@ -81,7 +84,24 @@ define([
 		},
 
 		behavior: {
-			a11y: function () {
+			"touch or mouse": function () {
+				return this.remote
+					.findById("behaviorButton").click().end()
+					.findById("behaviorTooltip").isDisplayed().then(function (visible) {
+						assert(visible, "tooltip visible");
+					}).end()
+					.findByCssSelector("#behaviorTooltip .closeButton").click().end()
+					.sleep(1000)	// confirm that tooltip doesn't reopen after 500ms on mobile devices
+					.findById("behaviorTooltip").isDisplayed().then(function (visible) {
+						assert.isFalse(visible, "tooltip hidden");
+					}).end();
+			},
+
+			keyboard: function () {
+				if (this.remote.environmentType.brokenSendKeys || !this.remote.environmentType.nativeEvents) {
+					return this.skip("no keyboard support");
+				}
+
 				return this.remote
 					.findById("inputBeforeBehaviorButton").click().end()
 					.pressKeys(keys.TAB)
