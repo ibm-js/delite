@@ -220,20 +220,18 @@ define([
 						container.removeAttribute("tabindex");
 					}
 
-					// Also adjust tabIndex for navigable descendant (i.e. one that matches descendantSelector):
-					// 1. If the navigable descendant itself is focused, then set tabIndex=0 so that tab and
-					//    shift-tab work right.
-					// 2. If a descendant of the navigable descendant is focused, the clear the tabIndex, to
-					//    prevented unwanted tab stop and to avoid Safari/Firefox nested focus problems.
-					// When focus is moved outside the navigable descendant, focusoutHandler() resets its
-					// tabIndex to -1.
+					// Handling for when navigatedDescendant or a node inside a navigableDescendant gets focus.
 					var navigatedDescendant = this._getTargetElement(evt);
 					if (navigatedDescendant !== this) {
 						if (evt.target === navigatedDescendant) {
+							// If the navigable descendant itself is focused, then set tabIndex=0 so that tab and
+							// shift-tab work correctly.
 							navigatedDescendant.tabIndex = this._savedTabIndex;
-						} else {
-							navigatedDescendant.removeAttribute("tabindex");
 						}
+
+						// Note: when focus is moved outside the navigable descendant,
+						// focusoutHandler() resets its tabIndex to -1.
+
 						this._descendantNavigateHandler(navigatedDescendant, evt);
 					}
 				}
@@ -250,12 +248,7 @@ define([
 				// or keyboard.
 				var previouslyNavigatedDescendant = this._getTargetElement(evt);
 				if (previouslyNavigatedDescendant && previouslyNavigatedDescendant !== this.keyNavContainerNode) {
-					if (previouslyNavigatedDescendant.contains(evt.relatedTarget)) {
-						// If focus has moved inside of the navigable descendant, then clear the
-						// navigable descendant's tabindex, to prevent extraneous tab stop and to
-						// avoid Safari and Firefox problem with nested focusable elements.
-						previouslyNavigatedDescendant.removeAttribute("tabindex");
-					} else if (previouslyNavigatedDescendant !== evt.relatedTarget) {
+					if (previouslyNavigatedDescendant !== evt.relatedTarget) {
 						// If focus has moved outside of the previously navigated descendant, then set its
 						// tabIndex back to -1, for future time when navigable descendant is clicked.
 						previouslyNavigatedDescendant.tabIndex = "-1";

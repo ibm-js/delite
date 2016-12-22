@@ -154,27 +154,6 @@
 				}
 			});
 
-			// Accordion is special because some of the child nodes aren't navigable children
-			// from KeyNav's perspective.
-			register("my-accordion", [HTMLElement, Container, KeyNav], {
-
-				descendantSelector: "header",
-
-				downKeyHandler: function () {
-					var nextChild = this.getNext(this.navigatedDescendant, 1);
-					if (nextChild) {
-						this.navigateTo(nextChild);
-					}
-				},
-
-				upKeyHandler: function () {
-					var previousChild = this.getNext(this.navigatedDescendant, -1);
-					if (previousChild) {
-						this.navigateTo(previousChild);
-					}
-				}
-			});
-
 			// Test declarative creation
 			register.deliver();
 
@@ -269,13 +248,6 @@
 		.d-active-descendant {
 			color: white;
 			background-color: blue;
-		}
-
-		my-accordion, header, panel {
-			display: block;
-			border: gray dotted medium;
-			margin: 5px;
-			padding: 5px;
 		}
 	</style>
 </head>
@@ -389,26 +361,5 @@
 		<my-list-item value="NY">New York</my-list-item>
 	</my-container-node>
 	<input id="keynavroot_after">
-
-	<h3>Accordion with nested focusable nodes</h3>
-	<p>Test that tabindex set correctly after clicking nested inputs</p>
-	<input id="nested_before">
-	<my-accordion id="nested" tabindex="0">
-		<header id="header-one" tabindex="-1">
-			header one
-			<button id="header-one-button">button</button>
-		</header>
-		<panel>
-			panel one <button id="panel-one-button">button</button>
-		</panel>
-		<header id="header-two" tabindex="-1">
-			header two
-			<button id="header-two-button">button</button>
-		</header>
-		<panel>
-			panel two <button id="panel-two-button">button</button>
-		</panel>
-	</my-accordion>
-	<input id="nested_after">
 </body>
 </html>
