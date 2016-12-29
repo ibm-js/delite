@@ -21,38 +21,53 @@
 		dojoWidgetsLength = 0;
 		dijitRegistry = null;
 
-		require(["delite/Widget", "delite/samples/ExampleWidget", "delite/register", "dojo/domReady!"],
-				function (Widget, ExampleWidget, register) {
+		require([
+			"delite/Widget",
+			"delite/samples/ExampleWidget",
+			"delite/register",
+
+			"dijit/Calendar",
+			"dojo/parser",
+			"dijit/registry",
+
+			"dojo/domReady!"
+		], function (
+			Widget,
+			ExampleWidget,
+			register,
+			DijitCalendar,
+			dojoParser,
+			_dijitRegistry
+		) {
 			register.deliver();
 			var dExample = document.getElementById("declarativecustomelement");
 			console.log("declarative dExample instance widget has render = " + Boolean(dExample.render !=null && dExample.render != undefined));
 
-			var SimpleWidget = register("simple-widget", [HTMLElement, Widget], {
+			var SimpleDeliteWidget = register("simple-widget", [HTMLElement, Widget], {
 				render: function () {
 					this.textContent = "i'm a simple custom element, created at " + new Date() + ", my widgetId is " + this.widgetId;
 				}
 			});
-			new SimpleWidget({id: "simplewidget"}).placeAt(document.getElementById("simplewidgetholder"));
+			new SimpleDeliteWidget({id: "simplewidget"}).placeAt(document.getElementById("simplewidgetholder"));
 			var simplewidgetInstance = document.getElementById("simplewidget");
 			console.log("programmatic simplewidgetInstance has render = " + Boolean(simplewidgetInstance.render !=null && simplewidgetInstance.render != undefined));
 			var noncustomelement = document.getElementById("noncustomelement");
 			console.log("noncustomelement has render = " + Boolean(noncustomelement.render !=null && noncustomelement.render != undefined));
 			readyDelite = true;
-		});
 
-		require(["dijit/Calendar", "dojo/parser", "dijit/registry", "dojo/domReady!"], function(Calendar, parser, registry){
-			dijitRegistry = registry;
-			new Calendar({
+			dijitRegistry = _dijitRegistry;
+			new DijitCalendar({
 				value: new Date(),
 				id : "dijitprogrammaticid"
 			}, "dijitcalendarprogrammatic").startup();
+
 			// Set global variable to signal that the test page is ready
-			parser.parse(document.getElementById("dojowidgetsid")).then(function () {
-				dojoWidgets = registry.findWidgets(document.body);
+			dojoParser.parse(document.getElementById("dojowidgetsid")).then(function () {
+				dojoWidgets = _dijitRegistry.findWidgets(document.body);
 				dojoWidgetsLength = dojoWidgets.length;
 				console.log("dijit registry of widgets on this page", dojoWidgets);
-				console.log(registry.byId("dijitcalendardeclarative"));
-				console.log(registry.byId("dijitprogrammaticid"));
+				console.log(_dijitRegistry.byId("dijitcalendardeclarative"));
+				console.log(_dijitRegistry.byId("dijitprogrammaticid"));
 				readyDijit = true;
 			});
 		});
