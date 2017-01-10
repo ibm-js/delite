@@ -136,8 +136,7 @@ define([
 		keyNavContainerNode: null,
 
 		/**
-		 * Figure out effective target of this event, either a navigable node, or this widget itself.
-		 * Note that for subclasses like a Tree, one navigable node could be a descendant of another.
+		 * Figure out effective navigable descendant of this event.
 		 * @param {Event} evt
 		 * @private
 		 */
@@ -147,7 +146,7 @@ define([
 					return child;
 				}
 			}
-			return this;
+			return null;
 		},
 
 		postRender: function () {
@@ -191,7 +190,7 @@ define([
 		 */
 		pointerdownHandler: function (evt) {
 			var target = this._getTargetElement(evt);
-			if (target && target !== this) {
+			if (target) {
 				this._descendantNavigateHandler(target, evt);
 			}
 		},
@@ -222,7 +221,7 @@ define([
 
 					// Handling for when navigatedDescendant or a node inside a navigableDescendant gets focus.
 					var navigatedDescendant = this._getTargetElement(evt);
-					if (navigatedDescendant !== this) {
+					if (navigatedDescendant) {
 						if (evt.target === navigatedDescendant) {
 							// If the navigable descendant itself is focused, then set tabIndex=0 so that tab and
 							// shift-tab work correctly.
@@ -247,7 +246,7 @@ define([
 				// updated to point to the new descendant, depending on if navigation was by mouse
 				// or keyboard.
 				var previouslyNavigatedDescendant = this._getTargetElement(evt);
-				if (previouslyNavigatedDescendant && previouslyNavigatedDescendant !== this.keyNavContainerNode) {
+				if (previouslyNavigatedDescendant) {
 					if (previouslyNavigatedDescendant !== evt.relatedTarget) {
 						// If focus has moved outside of the previously navigated descendant, then set its
 						// tabIndex back to -1, for future time when navigable descendant is clicked.
