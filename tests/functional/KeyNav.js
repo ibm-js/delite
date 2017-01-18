@@ -378,7 +378,7 @@ define([
 
 			mouse: function () {
 				var environmentType = this.remote.environmentType;
-				if (environmentType.browserName === "internet explorer") {
+				if (environmentType.brokenMouseEvents) {
 					// https://github.com/theintern/leadfoot/issues/17
 					return this.skip("click() doesn't generate mousedown, so navigation won't work");
 				}

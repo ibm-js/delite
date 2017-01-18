@@ -20,7 +20,7 @@ define([
 		"basic menu drop down": {
 			mouse: function () {
 				var environmentType = this.remote.environmentType;
-				if (environmentType.browserName === "internet explorer") {
+				if (environmentType.brokenMouseEvents) {
 					// https://github.com/theintern/leadfoot/issues/17
 					return this.skip("click() doesn't generate mousedown/mouseup, so popup won't open");
 				}
@@ -44,9 +44,12 @@ define([
 							assert.notStrictEqual(index, "1", "focus didn't move to drop down");
 						})
 						.execute(function () {
+							// note: "return node.getBoundingClientRect();" doesn't work on IE; webdriver bug.
+							var anchor = document.getElementById("dd").getBoundingClientRect();
+							var dropDown = document.getElementById("dd_popup").getBoundingClientRect();
 							return {
-								anchor: document.getElementById("dd").getBoundingClientRect(),
-								dropDown: document.getElementById("dd_popup").getBoundingClientRect()
+								anchor: {left: anchor.left, width: anchor.width},
+								dropDown: {left: dropDown.left, width: dropDown.width}
 							};
 						}).then(function (pos) {
 							assert(Math.abs(pos.anchor.left - pos.dropDown.left) < 1,
@@ -102,7 +105,7 @@ define([
 
 			// Mouse down, slide to menu choice, mouse up: should execute menu choice and close menu.
 			"mouse - slide": function () {
-				if (this.remote.environmentType.browserName === "internet explorer") {
+				if (this.remote.environmentType.brokenMouseEvents) {
 					// https://github.com/theintern/leadfoot/issues/17
 					return this.skip("click() doesn't generate mousedown/mouseup, so popup won't open");
 				}
@@ -129,7 +132,7 @@ define([
 
 		"dropdown dialog": function () {
 			var environmentType = this.remote.environmentType;
-			if (environmentType.browserName === "internet explorer") {
+			if (environmentType.brokenMouseEvents) {
 				// https://github.com/theintern/leadfoot/issues/17
 				return this.skip("click() doesn't generate mousedown/mouseup, so popup won't open");
 			}
@@ -152,13 +155,18 @@ define([
 					.execute(function () {
 						var anchor = document.querySelector("button[is=delayed-drop-down-button]");
 						var dropDown = document.querySelector(".dropdown-dialog");
+
+						// note: "return node.getBoundingClientRect();" doesn't work on IE; webdriver bug.
+						var anchorRect = anchor.getBoundingClientRect();
+						var dropDownRect = dropDown.getBoundingClientRect();
+
 						return {
 							anchorId: anchor.id,
 							anchorAriaHasPopup: anchor.getAttribute("aria-haspopup"),
-							anchorRect: anchor.getBoundingClientRect(),
+							anchorRect: {left: anchorRect.left, width: anchorRect.width},
 							anchorAriaOwns: anchor.getAttribute("aria-owns"),
 							dropDownId: dropDown.id,
-							dropDownRect: dropDown.getBoundingClientRect(),
+							dropDownRect: {left: dropDownRect.left, width: dropDownRect.width},
 							dropDownLabelledBy: dropDown.getAttribute("aria-labelledby")
 						};
 					}).then(function (ret) {
@@ -204,7 +212,7 @@ define([
 		// Just to make sure that a non-focusable button can still open the drop down
 		"non focusable HasDropDown": function () {
 			var environmentType = this.remote.environmentType;
-			if (environmentType.browserName === "internet explorer") {
+			if (environmentType.brokenMouseEvents) {
 				// https://github.com/theintern/leadfoot/issues/17
 				return this.skip("click() doesn't generate mousedown/mouseup, so popup won't open");
 			}
@@ -262,7 +270,7 @@ define([
 		"autowidth: false": {
 			"alignment - left": function () {
 				var environmentType = this.remote.environmentType;
-				if (environmentType.browserName === "internet explorer") {
+				if (environmentType.brokenMouseEvents) {
 					// https://github.com/theintern/leadfoot/issues/17
 					return this.skip("click() doesn't generate mousedown/mouseup, so popup won't open");
 				}
@@ -279,9 +287,12 @@ define([
 							assert(visible, "visible");
 						})
 						.execute(function () {
+							// note: "return node.getBoundingClientRect();" doesn't work on IE; webdriver bug.
+							var anchor = document.getElementById("nawl").getBoundingClientRect();
+							var dropDown = document.getElementById("nawl_popup").getBoundingClientRect();
 							return {
-								anchor: document.getElementById("nawl").getBoundingClientRect(),
-								dropDown: document.getElementById("nawl_popup").getBoundingClientRect()
+								anchor: {left: anchor.left, width: anchor.width},
+								dropDown: {left: dropDown.left, width: dropDown.width}
 							};
 						}).then(function (pos) {
 							assert(Math.abs(pos.anchor.left - pos.dropDown.left) < 1,
@@ -295,7 +306,7 @@ define([
 
 			"alignment - right": function () {
 				var environmentType = this.remote.environmentType;
-				if (environmentType.browserName === "internet explorer") {
+				if (environmentType.brokenMouseEvents) {
 					// https://github.com/theintern/leadfoot/issues/17
 					return this.skip("click() doesn't generate mousedown/mouseup, so popup won't open");
 				}
@@ -307,9 +318,12 @@ define([
 				return this.remote.findById("nawr")
 					.click()
 					.execute(function () {
+						// note: "return node.getBoundingClientRect();" doesn't work on IE; webdriver bug.
+						var anchor = document.getElementById("nawr").getBoundingClientRect();
+						var dropDown = document.getElementById("nawr_popup").getBoundingClientRect();
 						return {
-							anchor: document.getElementById("nawr").getBoundingClientRect(),
-							dropDown: document.getElementById("nawr_popup").getBoundingClientRect()
+							anchor: {left: anchor.left, width: anchor.width},
+							dropDown: {left: dropDown.left, width: dropDown.width}
 						};
 					}).then(function (pos) {
 						assert(Math.abs((pos.anchor.left + pos.anchor.width) -
@@ -326,7 +340,7 @@ define([
 
 		"centered dialog": function () {
 			var environmentType = this.remote.environmentType;
-			if (environmentType.browserName === "internet explorer") {
+			if (environmentType.brokenMouseEvents) {
 				// https://github.com/theintern/leadfoot/issues/17
 				return this.skip("click() doesn't generate mousedown/mouseup, so popup won't open");
 			}
@@ -345,10 +359,21 @@ define([
 				.execute("return document.activeElement.tagName.toLowerCase();").then(function (tag) {
 					assert.strictEqual(tag, "input", "focus moved to dialog's <input>");
 				})
-				// Use delite/Viewport to get size because window.innerWidth not quite right on iOS7.1.
-				// It returns 304 instead of 320.
-				.execute("return { viewport: require('delite/Viewport').getEffectiveBox(), "
-					+ "dropDownRect: document.querySelector('.centered-dialog').getBoundingClientRect() };")
+				.execute(function () {
+					// note: "return node.getBoundingClientRect();" doesn't work on IE; webdriver bug.
+					var dropDownRect = document.querySelector(".centered-dialog").getBoundingClientRect();
+					return {
+						// Use delite/Viewport to get size because window.innerWidth not quite right on iOS7.1.
+						// It returns 304 instead of 320.
+						viewport: require("delite/Viewport").getEffectiveBox(),
+						dropDownRect:  {
+							left: dropDownRect.left,
+							width: dropDownRect.width,
+							top: dropDownRect.top,
+							height: dropDownRect.height
+						}
+					};
+				})
 				.then(function (ret) {
 					var viewport = ret.viewport,
 						popupCoords = ret.dropDownRect;
@@ -368,7 +393,7 @@ define([
 
 		events: function () {
 			var environmentType = this.remote.environmentType;
-			if (environmentType.browserName === "internet explorer") {
+			if (environmentType.brokenMouseEvents) {
 				// https://github.com/theintern/leadfoot/issues/17
 				return this.skip("click() doesn't generate mousedown/mouseup, so popup won't open");
 			}
@@ -400,7 +425,7 @@ define([
 		// Test that HasDropDown can be used to apply dropdown behavior to a random node.
 		behavior: function () {
 			var environmentType = this.remote.environmentType;
-			if (environmentType.browserName === "internet explorer") {
+			if (environmentType.brokenMouseEvents) {
 				// https://github.com/theintern/leadfoot/issues/17
 				return this.skip("click() doesn't generate mousedown/mouseup, so popup won't open");
 			}
@@ -434,7 +459,7 @@ define([
 		// Make sure that destroying a HasDropDown closes the popup
 		destroy: function () {
 			var environmentType = this.remote.environmentType;
-			if (environmentType.browserName === "internet explorer") {
+			if (environmentType.brokenMouseEvents) {
 				// https://github.com/theintern/leadfoot/issues/17
 				return this.skip("click() doesn't generate mousedown/mouseup, so popup won't open");
 			}

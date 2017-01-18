@@ -81,7 +81,7 @@ define([
 				// though there's no actual DOM focus event
 				.findByCssSelector("fake-spinner .button").click().end()
 				.findById("activeStack").getProperty("value").then(function (activeStack) {
-					if (environmentType.browserName === "internet explorer") {
+					if (environmentType.brokenMouseEvents) {
 						// click() doesn't generate pointerdown event on IE10+ and neither does
 						// moveMouseTo().pressMouseButton(1).releaseMouseButton(1).
 						// see https://github.com/theintern/leadfoot/issues/17.
@@ -144,7 +144,7 @@ define([
 					.click()
 					.end()
 				.findById("activeStack").getProperty("value").then(function (activeStack) {
-					if (environmentType.browserName === "internet explorer") {
+					if (environmentType.brokenMouseEvents) {
 						// click() doesn't generate pointerdown event on IE10+ and neither does
 						// moveMouseTo().pressMouseButton(1).releaseMouseButton(1).
 						// see https://github.com/theintern/leadfoot/issues/17.
