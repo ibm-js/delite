@@ -19,49 +19,37 @@ define([
 
 		"basic menu drop down": {
 			mouse: function () {
-				var environmentType = this.remote.environmentType;
-				if (environmentType.brokenMouseEvents) {
-					// https://github.com/theintern/leadfoot/issues/17
-					return this.skip("click() doesn't generate mousedown/mouseup, so popup won't open");
-				}
-				if (environmentType.platformName === "iOS") {
-					// https://github.com/theintern/leadfoot/issues/61
-					return this.skip("click() doesn't generate touchstart/touchend, so popup won't open");
-				}
-				return this.remote.findById("input")
-						.click()
-						.end()
-					.findById("dd")
-						.click()
-						.end()
+				return this.remote
+					.findById("input").click().end()
+					.findById("dd").click().end()
 					.findById("dd_popup")
-						.isDisplayed().then(function (visible) {
-							assert(visible, "visible");
-						})
-						.execute("return document.activeElement.getAttribute('index')").then(function (index) {
-							// shouldn't focus drop down since it's a mouse click
-							// and dropdown has focusOnPointerOpen=false
-							assert.notStrictEqual(index, "1", "focus didn't move to drop down");
-						})
-						.execute(function () {
-							// note: "return node.getBoundingClientRect();" doesn't work on IE; webdriver bug.
-							var anchor = document.getElementById("dd").getBoundingClientRect();
-							var dropDown = document.getElementById("dd_popup").getBoundingClientRect();
-							return {
-								anchor: {left: anchor.left, width: anchor.width},
-								dropDown: {left: dropDown.left, width: dropDown.width}
-							};
-						}).then(function (pos) {
-							assert(Math.abs(pos.anchor.left - pos.dropDown.left) < 1,
-								"drop down and anchor left aligned");
-							assert(Math.abs(pos.anchor.width - pos.dropDown.width) < 1,
-								"drop down same width as anchor " + pos.anchor.width + " vs " + pos.dropDown.width);
-						})
-						.click()
-						.isDisplayed().then(function (visible) {
-							assert(!visible, "hidden");
-						})
-						.end();
+					.isDisplayed().then(function (visible) {
+						assert(visible, "visible");
+					})
+					.execute("return document.activeElement.getAttribute('index')").then(function (index) {
+						// shouldn't focus drop down since it's a mouse click
+						// and dropdown has focusOnPointerOpen=false
+						assert.notStrictEqual(index, "1", "focus didn't move to drop down");
+					})
+					.execute(function () {
+						// note: "return node.getBoundingClientRect();" doesn't work on IE; webdriver bug.
+						var anchor = document.getElementById("dd").getBoundingClientRect();
+						var dropDown = document.getElementById("dd_popup").getBoundingClientRect();
+						return {
+							anchor: {left: anchor.left, width: anchor.width},
+							dropDown: {left: dropDown.left, width: dropDown.width}
+						};
+					}).then(function (pos) {
+						assert(Math.abs(pos.anchor.left - pos.dropDown.left) < 1,
+							"drop down and anchor left aligned");
+						assert(Math.abs(pos.anchor.width - pos.dropDown.width) < 1,
+							"drop down same width as anchor " + pos.anchor.width + " vs " + pos.dropDown.width);
+					})
+					.click()
+					.isDisplayed().then(function (visible) {
+						assert(!visible, "hidden");
+					})
+					.end();
 			},
 
 			keyboard: function () {
@@ -69,81 +57,44 @@ define([
 					return this.skip("no keyboard support");
 				}
 				return this.remote.execute("dd.focus()")
-					.pressKeys(" ") // space, to open menu
+					.pressKeys(keys.SPACE) // open menu
 					.findById("dd_popup")
-						.isDisplayed().then(function (visible) {
-							assert(visible, "visible");
-						})
-						.execute("return document.activeElement.getAttribute('index')").then(function (index) {
-							assert.strictEqual(index, "1", "focus moved to drop down");
-						})
-						.pressKeys(" ")// space, to select the first menu option
-						.isDisplayed().then(function (visible) {
-							assert(!visible, "hidden");
-						})
-						.end()
+					.isDisplayed().then(function (visible) {
+						assert(visible, "visible");
+					})
+					.execute("return document.activeElement.getAttribute('index')").then(function (index) {
+						assert.strictEqual(index, "1", "focus moved to drop down");
+					})
+					.pressKeys(keys.SPACE)// select the first menu option
+					.isDisplayed().then(function (visible) {
+						assert(!visible, "hidden");
+					})
+					.end()
 					.execute("return document.activeElement.id").then(function (id) {
 						assert.strictEqual(id, "dd", "focused back on button #1");
 					})
-					.pressKeys(" ")// space, to open menu again, but this time for tab testing
+					.pressKeys(keys.SPACE)// open menu again, but this time for tab testing
 					.findById("dd_popup")
-						.isDisplayed().then(function (visible) {
-							assert(visible, "visible again");
-						})
-						.execute("return document.activeElement.getAttribute('index')").then(function (index) {
-							assert.strictEqual(index, "1", "focus moved to drop down");
-						})
-						.pressKeys(keys.TAB)// tab away, to cancel menu
-						.isDisplayed().then(function (visible) {
-							assert(!visible, "hidden again");
-						})
-						.end()
+					.isDisplayed().then(function (visible) {
+						assert(visible, "visible again");
+					})
+					.execute("return document.activeElement.getAttribute('index')").then(function (index) {
+						assert.strictEqual(index, "1", "focus moved to drop down");
+					})
+					.pressKeys(keys.TAB)// tab away, to cancel menu
+					.isDisplayed().then(function (visible) {
+						assert(!visible, "hidden again");
+					})
+					.end()
 					.execute("return document.activeElement.id").then(function (id) {
 						assert.strictEqual(id, "dd", "focused back on button #2");
 					});
-			},
-
-			// Mouse down, slide to menu choice, mouse up: should execute menu choice and close menu.
-			"mouse - slide": function () {
-				if (this.remote.environmentType.brokenMouseEvents) {
-					// https://github.com/theintern/leadfoot/issues/17
-					return this.skip("click() doesn't generate mousedown/mouseup, so popup won't open");
-				}
-				// note: check specifically for iOS to workaround https://github.com/theintern/leadfoot/issues/62
-				if (!this.remote.environmentType.mouseEnabled || this.remote.environmentType.platformName === "iOS") {
-					return this.skip("touch device, skipping mouse specific test");
-				}
-				return this.remote.findById("dd")
-						.moveMouseTo()
-						.pressMouseButton(1)
-						.end()
-					.findById("dd_popup")
-						.isDisplayed().then(function (visible) {
-							assert(visible, "visible");
-						})
-						.moveMouseTo()
-						.releaseMouseButton(1)
-						.isDisplayed().then(function (visible) {
-							assert(!visible, "hidden");
-						})
-						.end();
 			}
 		},
 
 		"dropdown dialog": function () {
-			var environmentType = this.remote.environmentType;
-			if (environmentType.brokenMouseEvents) {
-				// https://github.com/theintern/leadfoot/issues/17
-				return this.skip("click() doesn't generate mousedown/mouseup, so popup won't open");
-			}
-			if (environmentType.platformName === "iOS") {
-				// https://github.com/theintern/leadfoot/issues/61
-				return this.skip("click() doesn't generate touchstart/touchend, so popup won't open");
-			}
-
-			return this.remote.findByCssSelector("button[is=delayed-drop-down-button]")
-					.click()
-					.end()
+			return this.remote
+				.findByCssSelector("button[is=delayed-drop-down-button]").click().end()
 				.setFindTimeout(intern.config.WAIT_TIMEOUT)	// takes 500ms for dropdown to appear first time
 				.findByClassName("dropdown-dialog")
 					.isDisplayed().then(function (visible) {
@@ -186,24 +137,19 @@ define([
 						assert.strictEqual(ret.anchorAriaHasPopup, "true", "aria-haspopup");
 					})
 					// test close by clicking submit button
-					.findByCssSelector("button[type=submit]")
-						.click()
-						.end()
+					.findByCssSelector("button[type=submit]").click().end()
 					.isDisplayed().then(function (visible) {
 						assert(!visible, "hidden");
 					})
 					.end()
-				.findByCssSelector("button[is=delayed-drop-down-button]")
-					.click()		// reopen drop down by clicking DropDownButton again
-					.end()
+				// reopen drop down by clicking DropDownButton again
+				.findByCssSelector("button[is=delayed-drop-down-button]").click().end()
 				.findByClassName("dropdown-dialog")
 					.isDisplayed().then(function (visible) {
 						assert(visible, "visible again");
 					})
 					// test close by clicking cancel button
-					.findByCssSelector("button[type=button]")
-					.click()
-					.end()
+					.findByCssSelector("button[type=button]").click().end()
 					.isDisplayed().then(function (visible) {
 						assert(!visible, "hidden again");
 					});
@@ -211,19 +157,8 @@ define([
 
 		// Just to make sure that a non-focusable button can still open the drop down
 		"non focusable HasDropDown": function () {
-			var environmentType = this.remote.environmentType;
-			if (environmentType.brokenMouseEvents) {
-				// https://github.com/theintern/leadfoot/issues/17
-				return this.skip("click() doesn't generate mousedown/mouseup, so popup won't open");
-			}
-			if (environmentType.platformName === "iOS") {
-				// https://github.com/theintern/leadfoot/issues/61
-				return this.skip("click() doesn't generate touchstart/touchend, so popup won't open");
-			}
-
-			return this.remote.findById("ndd")
-					.click()
-					.end()
+			return this.remote
+				.findById("ndd").click().end()
 				.findById("ndd_popup")
 					.isDisplayed().then(function (visible) {
 						assert(visible, "visible");
@@ -269,19 +204,8 @@ define([
 
 		"autowidth: false": {
 			"alignment - left": function () {
-				var environmentType = this.remote.environmentType;
-				if (environmentType.brokenMouseEvents) {
-					// https://github.com/theintern/leadfoot/issues/17
-					return this.skip("click() doesn't generate mousedown/mouseup, so popup won't open");
-				}
-				if (environmentType.platformName === "iOS") {
-					// https://github.com/theintern/leadfoot/issues/61
-					return this.skip("click() doesn't generate touchstart/touchend, so popup won't open");
-				}
-
-				return this.remote.findById("nawl")
-						.click()
-						.end()
+				return this.remote
+					.findById("nawl").click().end()
 					.findById("nawl_popup")
 						.isDisplayed().then(function (visible) {
 							assert(visible, "visible");
@@ -305,17 +229,8 @@ define([
 			},
 
 			"alignment - right": function () {
-				var environmentType = this.remote.environmentType;
-				if (environmentType.brokenMouseEvents) {
-					// https://github.com/theintern/leadfoot/issues/17
-					return this.skip("click() doesn't generate mousedown/mouseup, so popup won't open");
-				}
-				if (environmentType.platformName === "iOS") {
-					// https://github.com/theintern/leadfoot/issues/61
-					return this.skip("click() doesn't generate touchstart/touchend, so popup won't open");
-				}
-
-				return this.remote.findById("nawr")
+				return this.remote
+					.findById("nawr")
 					.click()
 					.execute(function () {
 						// note: "return node.getBoundingClientRect();" doesn't work on IE; webdriver bug.
@@ -340,18 +255,9 @@ define([
 
 		"centered dialog": function () {
 			var environmentType = this.remote.environmentType;
-			if (environmentType.brokenMouseEvents) {
-				// https://github.com/theintern/leadfoot/issues/17
-				return this.skip("click() doesn't generate mousedown/mouseup, so popup won't open");
-			}
-			if (environmentType.platformName === "iOS") {
-				// https://github.com/theintern/leadfoot/issues/61
-				return this.skip("click() doesn't generate touchstart/touchend, so popup won't open");
-			}
 
-			return this.remote.findById("show-dialog-button")
-				.click()
-				.end()
+			return this.remote
+				.findById("show-dialog-button").click().end()
 				.findByClassName("centered-dialog")
 				.isDisplayed().then(function (visible) {
 					assert(visible, "visible");
@@ -386,34 +292,19 @@ define([
 					assert(Math.abs(viewport.w / 2 - popupCoords.left - popupCoords.width / 2) < 1,
 						"centered horizontally, " + viewport.w + ", " + popupCoords.width + ", " + popupCoords.left);
 				})
-				.findByCssSelector(".centered-dialog button[type=submit]")
-					.click()	// close dialog, otherwise next test will fail
-					.end();
+				// close dialog, otherwise next test will fail
+				.findByCssSelector(".centered-dialog button[type=submit]").click().end();
 		},
 
 		events: function () {
-			var environmentType = this.remote.environmentType;
-			if (environmentType.brokenMouseEvents) {
-				// https://github.com/theintern/leadfoot/issues/17
-				return this.skip("click() doesn't generate mousedown/mouseup, so popup won't open");
-			}
-			if (environmentType.platformName === "iOS") {
-				// https://github.com/theintern/leadfoot/issues/61
-				return this.skip("click() doesn't generate touchstart/touchend, so popup won't open");
-			}
-
 			return this.remote
-				.findById("eventsButton")
-					.click()
-					.end()
+				.findById("eventsButton").click().end()
 				.findById("eventsDialog")
 					.isDisplayed().then(function (visible) {
 						assert(visible, "visible");
 					})
 					.end()
-				.findById("eventsButton")	// click again to close
-					.click()
-					.end()
+				.findById("eventsButton").click().end()	// click again to close
 				.findById("eventsLog")
 					.getVisibleText().then(function (text) {
 						assert.strictEqual(text.trim(), "delite-display-load\n" +
@@ -424,19 +315,8 @@ define([
 
 		// Test that HasDropDown can be used to apply dropdown behavior to a random node.
 		behavior: function () {
-			var environmentType = this.remote.environmentType;
-			if (environmentType.brokenMouseEvents) {
-				// https://github.com/theintern/leadfoot/issues/17
-				return this.skip("click() doesn't generate mousedown/mouseup, so popup won't open");
-			}
-			if (environmentType.platformName === "iOS") {
-				// https://github.com/theintern/leadfoot/issues/61
-				return this.skip("click() doesn't generate touchstart/touchend, so popup won't open");
-			}
-
-			return this.remote.findById("behavior-button")
-				.click()
-				.end()
+			return this.remote
+				.findById("behavior-button").click().end()
 				.findByCssSelector("[aria-labelledby=behavior-button]")
 				.isDisplayed().then(function (visible) {
 					assert(visible, "visible");
@@ -446,9 +326,7 @@ define([
 				})
 				.end()
 				// test close by clicking another node on the screen
-				.findById("input")
-				.click()
-				.end()
+				.findById("input").click().end()
 				.findByCssSelector("[aria-labelledby=behavior-button]")
 				.isDisplayed().then(function (visible) {
 					assert(!visible, "hidden");
@@ -458,19 +336,8 @@ define([
 
 		// Make sure that destroying a HasDropDown closes the popup
 		destroy: function () {
-			var environmentType = this.remote.environmentType;
-			if (environmentType.brokenMouseEvents) {
-				// https://github.com/theintern/leadfoot/issues/17
-				return this.skip("click() doesn't generate mousedown/mouseup, so popup won't open");
-			}
-			if (environmentType.platformName === "iOS") {
-				// https://github.com/theintern/leadfoot/issues/61
-				return this.skip("click() doesn't generate touchstart/touchend, so popup won't open");
-			}
-
-			return this.remote.findById("dd")
-					.click()
-					.end()
+			return this.remote
+				.findById("dd").click().end()
 				.findById("dd_popup")
 					.isDisplayed().then(function (visible) {
 						assert(visible, "visible");

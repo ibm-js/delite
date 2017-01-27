@@ -8,7 +8,7 @@ define([
 	"./register",
 	"./Widget",
 	"./activationTracker",		// for delite-deactivated event
-	"dpointer/events"		// so can just monitor for "pointerdown"
+	"dpointer/events"		// for "pointerenter", "pointerleave"
 ], function (dcl, Promise, $, place, popup, register, Widget) {
 	
 	/**
@@ -166,80 +166,18 @@ define([
 		opened: false,
 
 		/**
-		 * Callback when the user mousedown/touchstart on the arrow icon.
+		 * Callback when the user clicks the arrow icon.
 		 * @private
 		 */
-		_dropDownPointerDownHandler: function () {
+		_dropDownClickHandler: function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+
 			if (this.disabled || this.readOnly) {
 				return;
 			}
 
-			// In the past we would call e.preventDefault() to stop things like text selection,
-			// but it doesn't work on IE10 (or IE11?) since it prevents the button from getting focus
-			// (see #17262), so not doing it at all for now.
-			//
-			// Also, don't stop propagation, so that:
-			//		1. TimeTextBox etc. can focus the <input> on mousedown
-			//		2. dropDownButtonActive class applied by CssState (on button depress)
-			//		3. user defined onMouseDown handler fires
-
-			this._docHandler = this.on("pointerup", this._dropDownPointerUpHandler.bind(this), this.ownerDocument.body);
-
 			this.toggleDropDown();
-		},
-
-		/**
-		 * Callback on mouseup/touchend after mousedown/touchstart on the arrow icon.
-		 * Note that this function is called regardless of what node the event occurred on (but only after
-		 * a mousedown/touchstart on the arrow).
-		 *
-		 * If the drop down is a simple menu and the cursor is over the menu, we execute it, otherwise,
-		 * we focus our drop down widget.  If the event is missing, then we are not a mouseup event.
-		 *
-		 * This is useful for the common mouse movement pattern with native browser `<select>` nodes:
-		 *
-		 * 1. mouse down on the select node (probably on the arrow)
-		 * 2. move mouse to a menu item while holding down the mouse button
-		 * 3. mouse up; this selects the menu item as though the user had clicked it
-		 *
-		 * @param {Event} [e]
-		 * @private
-		 */
-		_dropDownPointerUpHandler: function (e) {
-			/* jshint maxcomplexity:14 */
-
-			if (this._docHandler) {
-				this._docHandler.remove();
-				this._docHandler = null;
-			}
-
-			// If mousedown on the button, then dropdown opened, then user moved mouse over a menu item
-			// in the drop down, and released the mouse.
-			if (this._currentDropDown) {
-				// This if() statement deals with the corner-case when the drop down covers the original widget,
-				// because it's so large.  In that case mouse-up shouldn't select a value from the menu.
-				// Find out if our target is somewhere in our dropdown widget,
-				// but not over our buttonNode (the clickable node)
-				var c = place.position(this.buttonNode);
-				if (!(e.pageX >= c.x && e.pageX <= c.x + c.w) || !(e.pageY >= c.y && e.pageY <= c.y + c.h)) {
-					var t = e.target, overMenu;
-					while (t && !overMenu) {
-						if ($(t).hasClass("d-popup")) {
-							overMenu = true;
-							break;
-						} else {
-							t = t.parentNode;
-						}
-					}
-					if (overMenu) {
-						if (this._currentDropDown.handleSlideClick) {
-							var menuItem = this.getEnclosingWidget(e.target);
-							menuItem.handleSlideClick(menuItem, e);
-						}
-						return;
-					}
-				}
-			}
 
 			if (this._openDropDownPromise) {
 				// Test if this is a fake mouse event caused by the user typing
@@ -293,7 +231,7 @@ define([
 
 			this._HasDropDownListeners = [
 				// basic listeners
-				this.on("pointerdown", this._dropDownPointerDownHandler.bind(this), this.buttonNode),
+				this.on("click", this._dropDownClickHandler.bind(this), this.buttonNode),
 				this.on("keydown", this._dropDownKeyDownHandler.bind(this), this.focusNode || this.behaviorNode),
 				this.on("keyup", this._dropDownKeyUpHandler.bind(this), this.focusNode || this.behaviorNode),
 
@@ -306,32 +244,7 @@ define([
 				}.bind(this), this.behaviorNode),
 				this.on("pointerleave", function () {
 					this.hovering = false;
-				}.bind(this), this.behaviorNode),
-
-				// Avoid phantom click on android [and maybe iOS] where touching the button opens a centered dialog, but
-				// then there's a phantom click event on the dialog itself, possibly closing it.
-				// Happens in deliteful/tests/functional/ComboBox-prog.html on a phone (portrait mode), when you click
-				// towards the right side of the second ComboBox.
-				this.on("touchstart", function (evt) {
-					// Note: need to be careful not to call evt.preventDefault() indiscriminately because that would
-					// prevent [non-disabled] <input> etc. controls from getting focus.
-					if (this.dropDownPosition[0] === "center") {
-						evt.preventDefault();
-					}
-				}.bind(this), this.buttonNode),
-
-				// Stop click events and workaround problem on iOS where a blur event occurs ~300ms after
-				// the focus event, causing the dropdown to open then immediately close.
-				// Workaround iOS problem where clicking a Menu can focus an <input> (or click a button) behind it.
-				// Need to be careful though that you can still focus <input>'s and click <button>'s in a TooltipDialog.
-				// Also, be careful not to break (native) scrolling of dropdown like ComboBox's options list.
-				this.on("touchend", function (evt) {
-					evt.preventDefault();
-				}, this.buttonNode),
-				this.on("click", function (evt) {
-					evt.preventDefault();
-					evt.stopPropagation();
-				}, this.buttonNode)
+				}.bind(this), this.behaviorNode)
 			];
 
 			if (this.openOnHover) {

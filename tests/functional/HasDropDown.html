@@ -91,19 +91,29 @@
 			// This will emit a change event (just like selecting a day in a Calendar).
 			// No keyboard navigation.
 			var FocusMenu = register("focus-menu", [HTMLElement, MenuBase], {
+				createdCallback: function () {
+					// Implement keyboard support.  Note that we need to process SPACE/ENTER on keyup
+					// rather than keydown.  Otherwise
+					this.on("keydown", function (evt) {
+						if(evt.key === "Enter" || evt.key === "Spacebar") {
+							// Emit "change" event to close menu and return focus to the DropDownButton.
+							// The DropDownButton receives the keyup event, and on IE that causes another click event
+							// (on the button),
+							// unless we call evt.preventDefault().
+							evt.preventDefault();
+							this.emit("change");
+						} else if(evt.key === "ArrowDown") {
+							this.focus((this.selected && this.selected.nextSibling) || this.firstChild);
+						} else if(evt.key === "ArrowUp") {
+							this.focus((this.selected && this.selected.previousSibling) || this.lastChild);
+						}
+					}.bind(this));
+				},
+
 				postRender: function () {
 					Array.prototype.forEach.call(this.children, function (child) {
 						child.setAttribute("tabindex", "-1");
 					});
-					this.on("keydown", function (evt) {
-						if(evt.key === "Enter" || evt.key === "Spacebar") {
-							this.emit("change");
-						} else if(evt.key === "ArrowDown" ) {
-							this.focus((this.selected && this.selected.nextSibling) || this.firstChild);
-						} else if(evt.key === "ArrowUp" ) {
-							this.focus((this.selected && this.selected.previousSibling) || this.lastChild);
-						}
-					}.bind(this));
 				},
 
 				focus: function (selected) {
