@@ -382,7 +382,7 @@ define([
 					// https://github.com/theintern/leadfoot/issues/17
 					return this.skip("click() doesn't generate mousedown, so navigation won't work");
 				}
-				if (environmentType.platformName === "iOS") {
+				if (environmentType.platformName === "iOS" || environmentType.platform === "ANDROID") {
 					// https://github.com/theintern/leadfoot/issues/61
 					return this.skip("click() doesn't generate touchstart, so navigation won't work");
 				}

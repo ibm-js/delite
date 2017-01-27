@@ -227,12 +227,16 @@ define([
 					})
 					.findById("lotsOfChoicesPopup")
 						.click()
+						.isDisplayed().then(function (visible) {
+							assert.isFalse(visible, "lotsOfChoicesPopup hidden");
+						})
 						.end();
 
 			},
 
 			around: function () {
 				return this.remote
+					.execute("tallChoiceDropDownButton.scrollIntoView();")
 					.findById("tallChoiceDropDownButton")
 						.click()
 						.end()

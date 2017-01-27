@@ -87,7 +87,7 @@ define([
 						// see https://github.com/theintern/leadfoot/issues/17.
 						return;
 					}
-					if (environmentType.platformName === "iOS" || environmentType.browserName === "android") {
+					if (environmentType.platformName === "iOS" || environmentType.platform === "ANDROID") {
 						// click() doesn't generate touchstart on iOS or android, see
 						// https://github.com/theintern/leadfoot/issues/61
 						return;
@@ -150,7 +150,7 @@ define([
 						// see https://github.com/theintern/leadfoot/issues/17.
 						return;
 					}
-					if (environmentType.platformName === "iOS") {
+					if (environmentType.platformName === "iOS" || environmentType.platform === "ANDROID") {
 						// click() doesn't generate touchstart on iOS, see
 						// https://github.com/theintern/leadfoot/issues/61
 						return;
