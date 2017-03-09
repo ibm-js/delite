@@ -20,7 +20,8 @@ define(["decor/sniff"], function (has) {
 			"d-chrome": has("chrome"),
 
 			"d-ios": has("ios"),
-			"d-android": has("android")
+			"d-android": has("android"),
+			"d-mac": has("mac")
 		};
 
 	if (ie) {
