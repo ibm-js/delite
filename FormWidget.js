@@ -242,10 +242,8 @@ define([
 
 		setAttribute: dcl.superCall(function (sup) {
 			return function (name, value) {
-				if (/^aria-/.test(name)) {
-					this.forEachFocusNode(function (node) {
-						node.setAttribute(name, value);
-					});
+				if (/^aria-/.test(name) && this.focusNode) {
+					this.focusNode.setAttribute(name, value);
 				} else {
 					sup.call(this, name, value);
 				}
@@ -254,8 +252,8 @@ define([
 
 		getAttribute: dcl.superCall(function (sup) {
 			return function (name) {
-				if (/^aria-/.test(name)) {
-					return this.firstFocusNode().getAttribute(name);
+				if (/^aria-/.test(name) && this.focusNode) {
+					return this.focusNode.getAttribute(name);
 				} else {
 					return sup.call(this, name);
 				}
@@ -264,8 +262,8 @@ define([
 
 		hasAttribute: dcl.superCall(function (sup) {
 			return function (name) {
-				if (/^aria-/.test(name)) {
-					return this.firstFocusNode().hasAttribute(name);
+				if (/^aria-/.test(name) && this.focusNode) {
+					return this.focusNode.hasAttribute(name);
 				} else {
 					return sup.call(this, name);
 				}
@@ -274,10 +272,8 @@ define([
 
 		removeAttribute: dcl.superCall(function (sup) {
 			return function (name) {
-				if (/^aria-/.test(name)) {
-					this.forEachFocusNode(function (node) {
-						node.removeAttribute(name);
-					});
+				if (/^aria-/.test(name) && this.focusNode) {
+					this.focusNode.removeAttribute(name);
 				} else {
 					sup.call(this, name);
 				}
@@ -285,14 +281,16 @@ define([
 		}),
 
 		postRender: function () {
-			// Move all initially specified aria- attributes to focus node(s).
-			var attr, idx = 0;
-			while ((attr = this.attributes[idx++])) {
-				if (/^aria-/.test(attr.name)) {
-					this.setAttribute(attr.name, attr.value);
+			// Move all initially specified aria- attributes to focus node.
+			if (this.focusNode) {
+				var attr, idx = 0;
+				while ((attr = this.attributes[idx++])) {
+					if (/^aria-/.test(attr.name)) {
+						this.setAttribute(attr.name, attr.value);
 
-					// force remove from root node not focus nodes
-					HTMLElement.prototype.removeAttribute.call(this, attr.name);
+						// force remove from root node not focus nodes
+						HTMLElement.prototype.removeAttribute.call(this, attr.name);
+					}
 				}
 			}
 		},

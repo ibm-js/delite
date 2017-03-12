@@ -188,38 +188,8 @@ define([
 				assert.strictEqual(myWidget.field2.getAttribute("tabindex"), "0", "field2 default tabIndex");
 				assert.isFalse(HTMLElement.prototype.hasAttribute.call(myWidget, "tabindex"), "no tabIndex on root 1");
 
-				// Check that aria-label was moved
-				assert.strictEqual(myWidget.attributes.length, 1, "aria-label removed from root");
-				assert.strictEqual(myWidget.field1.getAttribute("aria-label"), "test label",
-					"aria-label added to field1");
-				assert.strictEqual(myWidget.field2.getAttribute("aria-label"), "test label",
-					"aria-label added to field2");
-
-				// Test that setAttribute(), removeAttribute(), hasAttribute(), and getAttribute() all redirect to the
-				// focus nodes when appropriate
-				assert(myWidget.hasAttribute("foo"), "hasAttribute(foo)");
-				assert(myWidget.hasAttribute("aria-label"), "hasAttribute(aria-label)");
-				assert(myWidget.field1.hasAttribute("aria-label"), "field1 hasAttribute(aria-label)");
-				assert(myWidget.field2.hasAttribute("aria-label"), "field2 hasAttribute(aria-label)");
-				assert.isFalse(myWidget.hasAttribute("bar"), "hasAttribute(bar)");
-
-				assert.strictEqual(myWidget.getAttribute("foo"), "bar", "getAttribute(foo)");
-				assert.strictEqual(myWidget.getAttribute("aria-label"), "test label", "getAttribute(aria-label)");
-
-				myWidget.removeAttribute("foo");
-				assert.isFalse(myWidget.hasAttribute("foo"), "foo removed");
-				myWidget.removeAttribute("aria-label");
-				assert.isFalse(myWidget.hasAttribute("aria-label"), "hasAttribute(aria-label)");
-				assert.isFalse(myWidget.field1.hasAttribute("aria-label"), "field1 hasAttribute(aria-label)");
-				assert.isFalse(myWidget.field2.hasAttribute("aria-label"), "field2 hasAttribute(aria-label)");
-
-				myWidget.setAttribute("foo", "bar 2");
-				myWidget.setAttribute("aria-label", "label 2");
-				assert.strictEqual(myWidget.attributes.length, 1, "root has foo but not aria-label");
-				assert.strictEqual(myWidget.field1.getAttribute("aria-label"), "label 2",
-					"aria-label added to field1");
-				assert.strictEqual(myWidget.field2.getAttribute("aria-label"), "label 2",
-					"aria-label added to field2");
+				// In this case we don't move aria-label because the subnodes may already have their own labels.
+				assert.strictEqual(myWidget.attributes.length, 2, "aria-label etc. still on root");
 			},
 
 			"#disabled": function () {
