@@ -52,7 +52,7 @@ define([
 		tabIndex: 0,
 
 		/**
-		 * Comma separated list of tabbable nodes, i.e. comma separated list of widget properties that reference
+		 * Array of names of widget properties that reference
 		 * the widget DOM nodes that receive focus during tab operations.
 		 *
 		 * Aria roles are applied to these nodes rather than the widget root node.
@@ -60,10 +60,10 @@ define([
 		 * Note that FormWidget requires that all of the tabbable nodes be sub-nodes of the widget, rather than the
 		 * root node.  This is because of its processing of `tabIndex`.
 		 *
-		 * @member {string}
+		 * @member {Array|string}
 		 * @default "focusNode"
 		 */
-		tabStops: "focusNode",
+		tabStops: ["focusNode"],
 
 		/**
 		 * If set to true, the widget will not respond to user input and will not be included in form submission.
@@ -132,7 +132,7 @@ define([
 
 			// If the tab stops have changed then start by removing the tabIndex from all the old tab stops.
 			if ("tabStops" in oldValues) {
-				oldValues.tabStops.split(/, */).forEach(function (nodeName) {
+				oldValues.tabStops.forEach(function (nodeName) {
 					var node = this[nodeName];
 					node.tabIndex = "-1";				// backup plan in case next line of code ineffective
 					node.removeAttribute("tabindex");	// works for <div> etc. but not <input>
@@ -218,7 +218,7 @@ define([
 		 * @protected
 		 */
 		firstFocusNode: function () {
-			return this[this.tabStops.split(/, */)[0]];
+			return this[this.tabStops[0]];
 		},
 
 		/**
@@ -228,7 +228,7 @@ define([
 		 * @protected
 		 */
 		forEachFocusNode: function (callback) {
-			this.tabStops.split(/, */).map(function (nodeName) {
+			this.tabStops.forEach(function (nodeName) {
 				var node = this[nodeName];
 				if (node !== this) {	// guard against hard to debug infinite recursion
 					callback.call(this, node);

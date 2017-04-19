@@ -150,7 +150,7 @@ define([
 		"multiple tab stops": {
 			setup: function () {
 				FormWidgetTest = register("form-widget-test-2", [HTMLElement, FormWidget], {
-					tabStops: "field1, field2",
+					tabStops: ["field1", "field2"],
 					render: function () {
 						// Widget has four fields.  Initially field1 and field2 are focusable.
 						this.field1 = this.ownerDocument.createElement("span");
@@ -233,7 +233,7 @@ define([
 
 			"change #tabStops": function () {
 				var myWidget = new FormWidgetTest();
-				myWidget.tabStops = "field3, field4";
+				myWidget.tabStops = ["field3", "field4"];
 				myWidget.deliver();
 				assert.isFalse(myWidget.field1.hasAttribute("tabindex"), "field1 tabIndex removed");
 				assert.isFalse(myWidget.field2.hasAttribute("tabindex"), "field2 tabIndex removed");
