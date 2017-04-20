@@ -72,7 +72,7 @@ define([
 		//////////// INITIALIZATION METHODS ///////////////////////////////////////
 
 		createdCallback: function () {
-			this.widgetId = ++cnt;
+			this.widgetId = "d-" + (++cnt);
 		},
 
 		// deliver() is called on widget creation, either from CustomElement#attachedCallback() (for the declarative
