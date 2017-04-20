@@ -19,8 +19,8 @@ define([
 
 		basic: {
 			setup: function () {
-				var environmentType = this.remote.environmentType;
-				if (environmentType.platformName === "iOS" || environmentType.browserName === "android") {
+				// note: check specifically for iOS to workaround https://github.com/theintern/leadfoot/issues/62
+				if (!this.remote.environmentType.mouseEnabled || this.remote.environmentType.platformName === "iOS") {
 					return this.skip("no hover on mobile devices");
 				}
 			},

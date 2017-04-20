@@ -20,7 +20,8 @@ define({
 		{ browserName: "safari", version: "9", name: "delite" },
 
 		{ browserName: "iphone", platform: "OS X 10.10", version: "9.3", deviceName: "iPad Retina", name: "delite" },
-		{ browserName: "android", platform: "Linux", version: "5.1", deviceName: "Android Emulator", name: "delite" }
+		{ browserName: "android", platform: "Linux", version: "5.1",
+			deviceName: "Android Emulator", deviceType: "tablet", name: "delite" }
 	],
 
 	// Maximum number of simultaneous integration tests that should be executed on the remote WebDriver service

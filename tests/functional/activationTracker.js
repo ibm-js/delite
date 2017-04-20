@@ -58,8 +58,7 @@ define([
 					assert.strictEqual(changes, "3", "activeStack changes #3");
 				}).end()
 				.findById("activeStack").getProperty("value").then(function (activeStack) {
-					assert.strictEqual(activeStack, "form, fieldset1, combobox, input", "activeStack #3, " +
-						JSON.stringify(environmentType));
+					assert.strictEqual(activeStack, "form, fieldset1, combobox, input", "activeStack #3");
 				}).end()
 				.findById("log").getProperty("value").then(function (log) {
 					assert.strictEqual(log.trim(), "form activated\nfieldset1 activated\ncombobox activated", "log #3");
