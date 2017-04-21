@@ -1,9 +1,11 @@
 define([
 	"intern!object",
 	"intern/chai!assert",
+	"dcl/dcl",
 	"delite/register",
-	"delite/FormWidget"
-], function (registerSuite, assert, register, FormWidget) {
+	"delite/FormWidget",
+	"delite/Widget"
+], function (registerSuite, assert, dcl, register, FormWidget, Widget) {
 	var container, FormWidgetTest;
 
 	registerSuite({
@@ -240,6 +242,53 @@ define([
 				assert.strictEqual(myWidget.field3.tabIndex, 0, "field3 tabIndex");
 				assert.strictEqual(myWidget.field4.getAttribute("tabindex"), "0", "field4 tabIndex");
 			}
+		},
+
+		// Test that disabled property and required property are correctly propagated to custom element children.
+		"disabled and required propagation to custom elements": function () {
+			var PlainWidget = register("form-widget-no-dis-req", [HTMLElement, Widget], {});
+			var BaseClassWithDisabledAndRequired = dcl([Widget], {   // workaround https://github.com/uhop/dcl/issues/18
+				disabled: true,
+				required: true
+			});
+			var WidgetWithDisabledAndRequired = register("form-widget-dis-req",
+				[HTMLElement, BaseClassWithDisabledAndRequired], {});
+
+			// Create a widget with two child widgets, one with disabled and required properties, and one without.
+			var Container = register("form-widget-test-3", [HTMLElement, FormWidget], {
+				tabStops: ["plain", "form"],
+
+				render: function () {
+					this.plain = new PlainWidget();
+					this.appendChild(this.plain);
+
+					this.form = new WidgetWithDisabledAndRequired();
+					this.appendChild(this.form);
+
+					this.valueNode = this.ownerDocument.createElement("input");
+					this.valueNode.type = "hidden";
+					this.appendChild(this.valueNode);
+				}
+			});
+
+			var container = new Container({
+				disabled: true,
+				required: true
+			});
+
+			// Since PlainWidget doesn't have disabled and required properties,
+			// the "aria-disabled" and "aria-required" attributes should be set.
+			assert.strictEqual(container.plain.getAttribute("aria-disabled"), "true", "aria-disabled on PlainWidget");
+			assert.strictEqual(container.plain.getAttribute("aria-disabled"), "true", "aria-disabled on PlainWidget");
+
+			// Since  WidgetWithDisabledAndRequired has disabled and required properties, they should be set
+			// and aria properties shouldn't be set.
+			assert.isFalse(container.form.hasAttribute("aria-disabled"),
+				"aria-disabled on WidgetWithDisabledAndRequired");
+			assert.isFalse(container.form.hasAttribute("aria-required"),
+				"aria-required on WidgetWithDisabledAndRequired");
+			assert.isTrue(container.form.disabled, "disabled on WidgetWithDisabledAndRequired");
+			assert.isTrue(container.form.required, "required on WidgetWithDisabledAndRequired");
 		},
 
 		teardown: function () {

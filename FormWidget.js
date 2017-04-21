@@ -159,14 +159,21 @@ define([
 					node.alt = this.alt;
 
 					// Set the disabled property for native elements like <input>, and also custom elements with a
-					// disabled property.  Note that on IE every element has a disabled property, so it's hard to
-					// test if it's real or not.
-					node.disabled = this.disabled;
-					node.required = this.required;
-
-					// Set aria-disabled and required but try to avoid setting it redundantly.
-					if (!(/^(button|input|select|textarea|optgroup|option|fieldset)$/i.test(node.tagName))) {
+					// disabled property.  Otherwise set aria-disabled.  Note that on IE every element has a
+					// disabled property, so it's hard to test if it's real or not.
+					// _propsToObserve is set by register() based on CustomElement.getProps().
+					if (/^(button|fieldset|input|keygen|optgroup|option|select|textarea)$/i.test(node.tagName) ||
+						(node._ctor && node._ctor._propsToObserve && "disabled" in node._ctor._propsToObserve)) {
+						node.disabled = this.disabled;
+					} else {
 						node.setAttribute("aria-disabled", "" + this.disabled);
+					}
+
+					// Likewise for aria-required.
+					if (/^(input|select|textarea)$/i.test(node.tagName) ||
+						(node._ctor && node._ctor._propsToObserve && "required" in node._ctor._propsToObserve)) {
+						node.required = this.required;
+					} else {
 						node.setAttribute("aria-required", "" + this.required);
 					}
 
