@@ -173,7 +173,8 @@ define([
 					if (/^(input|select|textarea)$/i.test(node.tagName) ||
 						(node._ctor && node._ctor._propsToObserve && "required" in node._ctor._propsToObserve)) {
 						node.required = this.required;
-					} else {
+					} else if (/^(combobox|gridcell|listbox|radiogroup|spinbutton|textbox|tree)$/i.test(
+						node.getAttribute("role"))) {
 						node.setAttribute("aria-required", "" + this.required);
 					}
 

@@ -152,24 +152,28 @@ define([
 		"multiple tab stops": {
 			setup: function () {
 				FormWidgetTest = register("form-widget-test-2", [HTMLElement, FormWidget], {
-					tabStops: ["field1", "field2"],
+					tabStops: ["button1", "input1"],
 					render: function () {
-						// Widget has four fields.  Initially field1 and field2 are focusable.
-						this.field1 = this.ownerDocument.createElement("span");
-						this.field1.textContent = "1";
-						this.appendChild(this.field1);
+						// Widget has four fields.  Initially button1 and input1 are focusable.
+						this.button1 = this.ownerDocument.createElement("span");
+						this.button1.setAttribute("role", "button");
+						this.button1.textContent = "1";
+						this.appendChild(this.button1);
 
-						this.field2 = this.ownerDocument.createElement("span");
-						this.field1.textContent = "2";
-						this.appendChild(this.field2);
+						this.input1 = this.ownerDocument.createElement("span");
+						this.input1.setAttribute("role", "textbox");
+						this.input1.textContent = "2";
+						this.appendChild(this.input1);
 
-						this.field3 = this.ownerDocument.createElement("span");
-						this.field3.textContent = "3";
-						this.appendChild(this.field3);
+						this.button2 = this.ownerDocument.createElement("span");
+						this.button2.setAttribute("role", "button");
+						this.button2.textContent = "3";
+						this.appendChild(this.button2);
 
-						this.field4 = this.ownerDocument.createElement("span");
-						this.field4.textContent = "4";
-						this.appendChild(this.field4);
+						this.input2 = this.ownerDocument.createElement("span");
+						this.input2.setAttribute("role", "textbox");
+						this.input2.textContent = "4";
+						this.appendChild(this.input2);
 
 						this.valueNode = this.ownerDocument.createElement("input");
 						this.valueNode.type = "hidden";
@@ -186,8 +190,8 @@ define([
 				var myWidget = container.firstChild;
 
 				// tabIndex
-				assert.strictEqual(myWidget.field1.getAttribute("tabindex"), "0", "field1 default tabIndex");
-				assert.strictEqual(myWidget.field2.getAttribute("tabindex"), "0", "field2 default tabIndex");
+				assert.strictEqual(myWidget.button1.getAttribute("tabindex"), "0", "button1 default tabIndex");
+				assert.strictEqual(myWidget.input1.getAttribute("tabindex"), "0", "input1 default tabIndex");
 				assert.isFalse(HTMLElement.prototype.hasAttribute.call(myWidget, "tabindex"), "no tabIndex on root 1");
 
 				// In this case we don't move aria-label because the subnodes may already have their own labels.
@@ -200,16 +204,16 @@ define([
 				myWidget.disabled = true;
 				myWidget.deliver();
 
-				// Since field1 and field2 are <span>, the "aria-disabled" attribute should be set,
+				// Since button1 and input1 are <span>, the "aria-disabled" attribute should be set,
 				// but the "disabled" property should be set on the <input>.
-				assert.strictEqual(myWidget.field1.getAttribute("aria-disabled"), "true", "aria-disabled on field1");
-				assert.strictEqual(myWidget.field2.getAttribute("aria-disabled"), "true", "aria-disabled on field2");
+				assert.strictEqual(myWidget.button1.getAttribute("aria-disabled"), "true", "aria-disabled on button1");
+				assert.strictEqual(myWidget.input1.getAttribute("aria-disabled"), "true", "aria-disabled on input1");
 				assert.strictEqual(myWidget.valueNode.disabled, true, "valueNode disabled prop");
 
 				myWidget.disabled = false;
 				myWidget.deliver();
-				assert.strictEqual(myWidget.field1.getAttribute("aria-disabled"), "false", "aria-disabled on field1");
-				assert.strictEqual(myWidget.field2.getAttribute("aria-disabled"), "false", "aria-disabled on field2");
+				assert.strictEqual(myWidget.button1.getAttribute("aria-disabled"), "false", "aria-disabled on button1");
+				assert.strictEqual(myWidget.input1.getAttribute("aria-disabled"), "false", "aria-disabled on input1");
 				assert.strictEqual(myWidget.valueNode.disabled, false, "valueNode disabled prop");
 			},
 
@@ -219,48 +223,66 @@ define([
 				myWidget.required = true;
 				myWidget.deliver();
 
-				// Since field1 and field2 are <span>, the "aria-required" attribute should be set,
+				// Since input1 is a <span role=textbox>, the "aria-required" attribute should be set,
 				// but the "required" property should be set on the <input>.
-				assert.strictEqual(myWidget.field1.getAttribute("aria-required"), "true", "aria-required on field1");
-				assert.strictEqual(myWidget.field2.getAttribute("aria-required"), "true", "aria-required on field2");
+				// button1 is a <span role=button> so it gets neither the property nor the attribute.
+				assert.isFalse(myWidget.button1.hasAttribute("aria-required"), "aria-required on button1");
+				assert.strictEqual(myWidget.input1.getAttribute("aria-required"), "true", "aria-required on input1");
 				assert.strictEqual(myWidget.valueNode.required, true, "valueNode required prop");
 
 				myWidget.required = false;
 				myWidget.deliver();
-				assert.strictEqual(myWidget.field1.getAttribute("aria-required"), "false", "aria-required on field1");
-				assert.strictEqual(myWidget.field2.getAttribute("aria-required"), "false", "aria-required on field2");
-				assert.strictEqual(myWidget.valueNode.required, false, "valueNode required prop");
+				assert.isFalse(myWidget.button1.hasAttribute("aria-required"), "aria-required on button1 (check #2)");
+				assert.strictEqual(myWidget.input1.getAttribute("aria-required"), "false",
+					"aria-required on input1 (check #2)");
+				assert.strictEqual(myWidget.valueNode.required, false, "valueNode required prop (check #2)");
 			},
 
 
 			"change #tabStops": function () {
 				var myWidget = new FormWidgetTest();
-				myWidget.tabStops = ["field3", "field4"];
+				myWidget.tabStops = ["button2", "input2"];
 				myWidget.deliver();
-				assert.isFalse(myWidget.field1.hasAttribute("tabindex"), "field1 tabIndex removed");
-				assert.isFalse(myWidget.field2.hasAttribute("tabindex"), "field2 tabIndex removed");
-				assert.strictEqual(myWidget.field3.tabIndex, 0, "field3 tabIndex");
-				assert.strictEqual(myWidget.field4.getAttribute("tabindex"), "0", "field4 tabIndex");
+				assert.isFalse(myWidget.button1.hasAttribute("tabindex"), "button1 tabIndex removed");
+				assert.isFalse(myWidget.input1.hasAttribute("tabindex"), "input1 tabIndex removed");
+				assert.strictEqual(myWidget.button2.tabIndex, 0, "button2 tabIndex");
+				assert.strictEqual(myWidget.input2.getAttribute("tabindex"), "0", "input2 tabIndex");
 			}
 		},
 
 		// Test that disabled property and required property are correctly propagated to custom element children.
 		"disabled and required propagation to custom elements": function () {
-			var PlainWidget = register("form-widget-no-dis-req", [HTMLElement, Widget], {});
-			var BaseClassWithDisabledAndRequired = dcl([Widget], {   // workaround https://github.com/uhop/dcl/issues/18
+			// Create test widgets without disabled and required properties.
+			var ButtonWidget = register("form-widget-button", [HTMLElement, Widget], {
+				render: function () {
+					this.setAttribute("role", "button");
+				}
+			});
+			var TextboxWidget = register("form-widget-textbox", [HTMLElement, Widget], {
+				render: function () {
+					this.setAttribute("role", "textbox");
+				}
+			});
+			
+			// Create test widget with disabled and required properties.
+			// Base class needed to workaround https://github.com/uhop/dcl/issues/18. 
+			var BaseClassWithDisabledAndRequired = dcl([Widget], {
 				disabled: true,
 				required: true
 			});
 			var WidgetWithDisabledAndRequired = register("form-widget-dis-req",
 				[HTMLElement, BaseClassWithDisabledAndRequired], {});
 
-			// Create a widget with two child widgets, one with disabled and required properties, and one without.
+			// Create a widget with child widgets, with and without disabled and required properties.
 			var Container = register("form-widget-test-3", [HTMLElement, FormWidget], {
-				tabStops: ["plain", "form"],
+				tabStops: ["button", "textbox", "form"],
 
 				render: function () {
-					this.plain = new PlainWidget();
-					this.appendChild(this.plain);
+					this.button = new ButtonWidget();
+					this.appendChild(this.button);
+
+					this.textbox = new TextboxWidget();
+					this.appendChild(this.textbox);
 
 					this.form = new WidgetWithDisabledAndRequired();
 					this.appendChild(this.form);
@@ -276,11 +298,17 @@ define([
 				required: true
 			});
 
-			// Since PlainWidget doesn't have disabled and required properties,
+			// Since Textbox widget doesn't have disabled and required properties,
 			// the "aria-disabled" and "aria-required" attributes should be set.
-			assert.strictEqual(container.plain.getAttribute("aria-disabled"), "true", "aria-disabled on PlainWidget");
-			assert.strictEqual(container.plain.getAttribute("aria-disabled"), "true", "aria-disabled on PlainWidget");
+			assert.strictEqual(container.textbox.getAttribute("aria-disabled"), "true",
+				"aria-disabled on TextboxWidget");
+			assert.strictEqual(container.textbox.getAttribute("aria-required"), "true",
+				"aria-required on TextboxWidget");
 
+			// Likewise for Button widget, except that we shouldn't set aria-required on buttons.
+			assert.strictEqual(container.button.getAttribute("aria-disabled"), "true", "aria-disabled on ButtonWidget");
+			assert.isFalse(container.button.hasAttribute("aria-required"), "aria-required on ButtonWidget");
+			
 			// Since  WidgetWithDisabledAndRequired has disabled and required properties, they should be set
 			// and aria properties shouldn't be set.
 			assert.isFalse(container.form.hasAttribute("aria-disabled"),
