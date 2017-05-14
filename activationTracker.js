@@ -50,7 +50,6 @@ define([
 
 	// Time of the last touch/mouse and focusin events
 	var lastPointerDownTime;
-	var lastFocusinTime;
 
 	// Time of last touchend event.  Tells us if the mouseover event is real or emulated.
 	var lastTouchendTime;
@@ -122,10 +121,6 @@ define([
 				_this._focusHandler(evt.target);
 			}
 
-			function blurHandler(evt) {
-				_this._blurHandler(evt.target);
-			}
-
 			function touchendHandler() {
 				lastTouchendTime = (new Date()).getTime();
 			}
@@ -144,7 +139,6 @@ define([
 				// Listen for touches or mousedowns.
 				body.addEventListener("pointerdown", pointerDownHandler, true);
 				body.addEventListener("focus", focusHandler, true);	// need true since focus doesn't bubble
-				body.addEventListener("blur", blurHandler, true);	// need true since blur doesn't bubble
 				body.addEventListener("touchend", touchendHandler, true);
 				body.addEventListener("mouseover", mouseOverHandler);
 
@@ -152,49 +146,10 @@ define([
 					remove: function () {
 						body.removeEventListener("pointerdown", pointerDownHandler, true);
 						body.removeEventListener("focus", focusHandler, true);
-						body.removeEventListener("blur", blurHandler, true);
 						body.addEventListener("mouseover", mouseOverHandler);
 					}
 				};
 			}
-		},
-
-		/**
-		 * Called when focus leaves a node.
-		 * Usually ignored, _unless_ it *isn't* followed by touching another node,
-		 * which indicates that we tabbed off the last field on the page,
-		 * in which case every widget is marked inactive.
-		 * @param {Element} node
-		 * @private
-		 */
-		_blurHandler: function (node) { // jshint unused: vars
-			var now = (new Date()).getTime();
-
-			// IE9+ and chrome have a problem where focusout events come after the corresponding focusin event.
-			// For chrome problem see https://bugs.dojotoolkit.org/ticket/17668.
-			// IE problem happens when moving focus from the Editor's <iframe> to a normal DOMNode.
-			if (now < lastFocusinTime + 100) {
-				return;
-			}
-
-			// Unset timer to zero-out widget stack; we'll reset it below if appropriate.
-			if (this._clearActiveWidgetsTimer) {
-				clearTimeout(this._clearActiveWidgetsTimer);
-			}
-
-			if (now < lastPointerDownOrFocusInTime + 500) {
-				// This blur event is coming late (after the call to _pointerDownOrFocusHandler() rather than before.
-				// So let _pointerDownOrFocusHandler() handle setting the widget stack.
-				// See https://bugs.dojotoolkit.org/ticket/17668
-				return;
-			}
-
-			// If the blur event isn't followed (or preceded) by a focus or pointerdown event,
-			// mark all widgets as inactive.
-			this._clearActiveWidgetsTimer = setTimeout(function () {
-				delete this._clearActiveWidgetsTimer;
-				this._setStack([]);
-			}.bind(this), 0);
 		},
 
 		/**
@@ -243,12 +198,6 @@ define([
 		 * @private
 		 */
 		_pointerDownOrFocusHandler: function (node, by) {
-			if (this._clearActiveWidgetsTimer) {
-				// forget the recent blur event
-				clearTimeout(this._clearActiveWidgetsTimer);
-				delete this._clearActiveWidgetsTimer;
-			}
-
 			// Compute stack of active widgets ending at node (ex: ComboButton --> Menu --> MenuItem).
 			var newStack = this._getStack(node, by !== "mouse");
 
@@ -275,9 +224,6 @@ define([
 				// (which don't get focus) won't cause that widget to blur. (FF issue)
 				return;
 			}
-
-			// Keep track of time of last focusin event.
-			lastFocusinTime = (new Date()).getTime();
 
 			// Also, if clicking a node causes its ancestor to be focused, ignore the focus event.
 			// Example in the activationTracker.html functional test on IE, where clicking the spinner buttons
