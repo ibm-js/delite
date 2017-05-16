@@ -295,18 +295,6 @@ define([
 				return;
 			}
 			var dropDown = this._currentDropDown, target = e.target;
-			if (dropDown && this.opened) {
-				// Forward the keystroke to the dropdown widget.
-				// deliteful/List (the dropdown for deliteful/Combobox)
-				// listens for events on List#containerNode rather than the List root node.
-				var forwardNode = dropDown.keyNavContainerNode || dropDown.containerNode || dropDown;
-				if (dropDown.emit("keydown", e, forwardNode) === false) {
-					/* false return code means that the drop down handled the key */
-					e.stopPropagation();
-					e.preventDefault();
-					return;
-				}
-			}
 			if (dropDown && this.opened && e.key === "Escape") {
 				this.closeDropDown();
 				e.stopPropagation();
@@ -325,6 +313,16 @@ define([
 				this._openOnKeyUp = true;
 				e.stopPropagation();
 				e.preventDefault();
+			} else if (dropDown && this.opened) {
+				// Forward the keystroke to the dropdown widget.
+				// deliteful/List (the dropdown for deliteful/Combobox)
+				// listens for events on List#containerNode rather than the List root node.
+				var forwardNode = dropDown.keyNavContainerNode || dropDown.containerNode || dropDown;
+				if (dropDown.emit("keydown", e, forwardNode) === false) {
+					/* false return code means that the drop down handled the key */
+					e.stopPropagation();
+					e.preventDefault();
+				}
 			}
 		},
 

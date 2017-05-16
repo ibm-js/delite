@@ -170,36 +170,64 @@ define([
 					.end();
 		},
 
-		"non focusable dropdown": function () {
-			if (this.remote.environmentType.brokenSendKeys || !this.remote.environmentType.nativeEvents) {
-				return this.skip("no keyboard support");
-			}
-			return this.remote.execute("combobox.focus()")
-				.pressKeys(keys.ARROW_DOWN) // open menu
-				.findByTagName("non-focus-menu")
-					.isDisplayed().then(function (visible) {
+		// Test for Combobox type widget where focus stays on the widget and events are forwarded to the dropdown.
+		"non focusable dropdown": {
+			basic: function () {
+				if (this.remote.environmentType.brokenSendKeys || !this.remote.environmentType.nativeEvents) {
+					return this.skip("no keyboard support");
+				}
+				return this.remote.execute(function () {
+						document.keydownEvents = 0;
+						document.body.onkeydown = function () { document.keydownEvents++; };
+						document.getElementById("combobox").focus();
+					})
+					.pressKeys(keys.ARROW_DOWN) // open menu
+					.findByTagName("non-focus-menu").isDisplayed().then(function (visible) {
 						assert(visible, "visible");
+					}).end()
+					.findByCssSelector("non-focus-menu .selected").getVisibleText().then(function (text) {
+						assert.strictEqual(text, "choice #1");
+					}).end()
+					.execute("return document.keydownEvents").then(function (count) {
+						assert.strictEqual(count, 0, "no keydown events bubbled to body");
 					})
-					.findByClassName("selected")
-						.getVisibleText().then(function (text) {
-							assert.strictEqual(text, "choice #1");
-						})
-						.end()
-					.end()		// deselect "non-focus-menu" so that next pressKeys() call goes to the ComboBox itself
-				.pressKeys(keys.ARROW_DOWN)
-				.findByTagName("non-focus-menu")
-					.findByClassName("selected")
-						.getVisibleText().then(function (text) {
-							assert.strictEqual(text, "choice #2");
-						})
-						.end()
-					.end()		// deselect "non-focus-menu" so that next pressKeys() call goes to the ComboBox itself
-				.pressKeys(" ")	// to close menu
-				.findByTagName("non-focus-menu")
-					.isDisplayed().then(function (visible) {
+					.pressKeys(keys.ARROW_DOWN)
+					.findByCssSelector("non-focus-menu .selected").getVisibleText().then(function (text) {
+						assert.strictEqual(text, "choice #2");
+					}).end()
+					.execute("return document.keydownEvents;").then(function (count) {
+						assert.strictEqual(count, 0, "no keydown events bubbled to body");
+					})
+					.pressKeys(" ")	// to close menu
+					.findByTagName("non-focus-menu").isDisplayed().then(function (visible) {
 						assert.isFalse(visible, "hidden");
+					}).end();
+			},
+
+			escape: function () {
+				if (this.remote.environmentType.brokenSendKeys || !this.remote.environmentType.nativeEvents) {
+					return this.skip("no keyboard support");
+				}
+				return this.remote.execute(function () {
+						document.keydownEvents = 0;
+						document.body.onkeydown = function () { document.keydownEvents++; };
+						document.getElementById("combobox").focus();
 					})
-					.end();
+					.pressKeys(keys.ARROW_DOWN) // open menu
+					.execute("return document.keydownEvents;").then(function (count) {
+						assert.strictEqual(count, 0, "no keydown events bubbled to body");
+					})
+					.findByTagName("non-focus-menu").isDisplayed().then(function (visible) {
+						assert(visible, "visible");
+					}).end()
+					.pressKeys(keys.ESCAPE)	// to close menu
+					.execute("return document.keydownEvents;").then(function (count) {
+						assert.strictEqual(count, 0, "no keydown events bubbled to body");
+					})
+					.findByTagName("non-focus-menu").isDisplayed().then(function (visible) {
+						assert.isFalse(visible, "hidden");
+					}).end();
+			}
 		},
 
 		"autowidth: false": {

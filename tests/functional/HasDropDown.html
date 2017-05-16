@@ -153,11 +153,17 @@
 					if(evt.key === "Enter" || evt.key === "Spacebar") {
 						this.emit("change");
 						this.selected.className = "";
+						evt.preventDefault();
+						evt.stopPropagation();
 					} else if(evt.key === "ArrowDown" ) {
 						this._select(this.selected.nextSibling || this.firstChild);
+						evt.preventDefault();
+						evt.stopPropagation();
 						return false;
 					} else if(evt.key === "ArrowUp" ) {
 						this._select(this.selected.previousSibling || this.lastChild);
+						evt.preventDefault();
+						evt.stopPropagation();
 						return false;
 					}
 				}

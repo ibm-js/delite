@@ -411,7 +411,7 @@ define([
 		 * @protected
 		 */
 		emit: function (type, eventObj, node) {
-			on.emit(node || this, type, eventObj);
+			return on.emit(node || this, type, eventObj);
 		},
 
 		/**
