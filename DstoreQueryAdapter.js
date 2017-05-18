@@ -1,20 +1,20 @@
-/** @module delite/DstoreToStoreAdapter */
+/** @module delite/DstoreQueryAdapter */
 define([
 	"dcl/dcl"
 ], function (dcl) {
 
 	/**
-	 * An adapter to use dstore/Store in the source of delite/Store.js.
-	 * Created to keep a commun interface with the use of an array instead of dstore/Store.
+	 * An adapter to use dstore/Store in the `source` of delite/Store.js.
+	 * Created to keep a common interface with the use of an array instead of dstore/Store.
 	 * The arguments to pass to the constructor are:
 	 *
 	 * - source: dstore/Store - the dstore/Store represented by the adapter.
 	 * - query: the query filter to apply to the store.
 	 * - processQueryResult: function to apply to the store.
 	 *
-	 * @class module:delite/DstoreToStoreAdapter
+	 * @class module:delite/DstoreQueryAdapter
 	 */
-	return dcl(null, /** @lends module:delite/DstoreToStoreAdapter# */ {
+	return dcl(null, /** @lends module:delite/DstoreQueryAdapter# */ {
 		constructor: function (args) {
 			this.source = args.source;
 			this.data = args.processQueryResult(this.source.filter(args.query));

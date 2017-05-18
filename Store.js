@@ -6,9 +6,9 @@ define([
 	"requirejs-dplugins/Promise!",
 	"decor/ObservableArray",
 	"decor/Observable",
-	"./ArrayToStoreAdapter",
-	"./DstoreToStoreAdapter"
-], function (dcl, has, Invalidating, Promise, ObservableArray, Observable, ArrayToStoreAdapter, DstoreToStoreAdapter) {
+	"./ArrayQueryAdapter",
+	"./DstoreQueryAdapter"
+], function (dcl, has, Invalidating, Promise, ObservableArray, Observable, ArrayQueryAdapter, DstoreQueryAdapter) {
 
 	/**
 	 * Dispatched once the query has been executed and the `renderItems` array
@@ -151,10 +151,10 @@ define([
 			this._untrack();
 			if (this.source != null) {
 				if (!Array.isArray(this.source)) {
-					this._storeAdapter = new DstoreToStoreAdapter({source: this.source, query: this.query,
+					this._storeAdapter = new DstoreQueryAdapter({source: this.source, query: this.query,
 						processQueryResult: processQueryResult});
 				} else {
-					this._storeAdapter = new ArrayToStoreAdapter({source: this.source, query: this.query,
+					this._storeAdapter = new ArrayQueryAdapter({source: this.source, query: this.query,
 						processQueryResult: processQueryResult});
 				}
 				var collection = this._storeAdapter;

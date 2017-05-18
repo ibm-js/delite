@@ -1,4 +1,4 @@
-/** @module delite/ArrayToStoreAdapter */
+/** @module delite/ArrayQueryAdapter */
 define([
 	"dcl/dcl",
 	"decor/Evented",
@@ -21,7 +21,7 @@ define([
 
 	/**
 	 * An adapter to use an array in the source of delite/Store.js.
-	 * Created to keep a commun interface with the use of dstore/Store instead of an array.
+	 * Created to keep a common interface with the use of dstore/Store instead of an array.
 	 *
 	 * The arguments to pass to the constructor are:
 	 *
@@ -29,9 +29,9 @@ define([
 	 * - query: the query filter to apply to the source.
 	 * - processQueryResult: function to apply to the source
 	 *
-	 * @class module:delite/ArrayToStoreAdapter
+	 * @class module:delite/ArrayQueryAdapter
 	 */
-	return dcl(Evented, /** @lends module:delite/ArrayToStoreAdapter# */ {
+	return dcl(Evented, /** @lends module:delite/ArrayQueryAdapter# */ {
 		constructor: function (args) {
 			this.source = args.source;
 			// affect the callbacks of the observe functions
