@@ -359,7 +359,7 @@ define([
 					promise = pro;
 				}};
 				this.emit("_new-query-asked", evt);
-				return promise;
+				return promise || syncThenable(res);
 			} else {
 				return syncThenable(res);
 			}

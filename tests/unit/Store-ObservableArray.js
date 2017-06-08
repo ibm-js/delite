@@ -423,28 +423,40 @@ define([
 			assert.strictEqual(store._storeAdapter._itemHandles.length, 2);
 		},
 
-		"'new-query-asked' event": function () {
-			var store = new C();
-			store.fetch = function (collection) {
-				return collection.fetchRange({start: 0, end: 3});
-			};
-			store.on("new-query-asked", function (evt) {
-				evt.setPromise({
-					then: function (resolve) {
-						var arr = [
-							{ id: "foo", name: "Foo" },
-							{ id: "bar", name: "Bar" },
-							{ id: "bar2", name: "Bar2" }
-						];
-						resolve(arr.slice(evt.start, evt.end));
-					}
+		"'new-query-asked' event": {
+			"with listener": function () {
+				var store = new C();
+				store.fetch = function (collection) {
+					return collection.fetchRange({start: 0, end: 3});
+				};
+				store.on("new-query-asked", function (evt) {
+					evt.setPromise({
+						then: function (resolve) {
+							var arr = [
+								{ id: "foo", name: "Foo" },
+								{ id: "bar", name: "Bar" },
+								{ id: "bar2", name: "Bar2" }
+							];
+							resolve(arr.slice(evt.start, evt.end));
+						}
+					});
 				});
-			});
-			store.source = new ObservableArray({ id: "foo", name: "Foo" },
-				{ id: "bar", name: "Bar" });
-			store.deliver();
-			assert(store.renderItems instanceof Array);
-			assert.strictEqual(store.renderItems.length, 3);
+				store.source = new ObservableArray({ id: "foo", name: "Foo" }, { id: "bar", name: "Bar" });
+				store.deliver();
+				assert(store.renderItems instanceof Array);
+				assert.strictEqual(store.renderItems.length, 3);
+			},
+
+			"without listener": function () {
+				var store = new C();
+				store.fetch = function (collection) {
+					return collection.fetchRange({start: 0, end: 3});
+				};
+				store.source = new ObservableArray({ id: "foo", name: "Foo" }, { id: "bar", name: "Bar" });
+				store.deliver();
+				assert(store.renderItems instanceof Array);
+				assert.strictEqual(store.renderItems.length, 2);
+			}
 		}
 	});
 });
