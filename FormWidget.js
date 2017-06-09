@@ -258,7 +258,7 @@ define([
 
 		setAttribute: dcl.superCall(function (sup) {
 			return function (name, value) {
-				if (/^aria-/.test(name) && this.focusNode) {
+				if (/^aria-/.test(name) && this.focusNode && this.moveAriaAttributes) {
 					this.focusNode.setAttribute(name, value);
 				} else {
 					sup.call(this, name, value);
@@ -268,7 +268,7 @@ define([
 
 		getAttribute: dcl.superCall(function (sup) {
 			return function (name) {
-				if (/^aria-/.test(name) && this.focusNode) {
+				if (/^aria-/.test(name) && this.focusNode && this.moveAriaAttributes) {
 					return this.focusNode.getAttribute(name);
 				} else {
 					return sup.call(this, name);
@@ -278,7 +278,7 @@ define([
 
 		hasAttribute: dcl.superCall(function (sup) {
 			return function (name) {
-				if (/^aria-/.test(name) && this.focusNode) {
+				if (/^aria-/.test(name) && this.focusNode && this.moveAriaAttributes) {
 					return this.focusNode.hasAttribute(name);
 				} else {
 					return sup.call(this, name);
@@ -288,7 +288,7 @@ define([
 
 		removeAttribute: dcl.superCall(function (sup) {
 			return function (name) {
-				if (/^aria-/.test(name) && this.focusNode) {
+				if (/^aria-/.test(name) && this.focusNode && this.moveAriaAttributes) {
 					this.focusNode.removeAttribute(name);
 				} else {
 					sup.call(this, name);
