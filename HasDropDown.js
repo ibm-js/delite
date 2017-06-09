@@ -77,6 +77,15 @@ define([
 		buttonNode: null,
 
 		/**
+		 * The DOMElement that will contain some aria attributes.
+		 * Useful for widgets like Combobox that needs some special attibutes like aria-haspopup
+		 * to be defined on a specific element.
+		 * @member {Element}
+		 * @protected
+		 */
+		popupStateNode: null,
+
+		/**
 		 * The widget to display as a popup.  Applications/subwidgets should *either*:
 		 *
 		 * 1. define this property
@@ -225,7 +234,7 @@ define([
 		postRender: function () {
 			this.behaviorNode = this.behaviorNode || this;
 			this.buttonNode = this.buttonNode || this.behaviorNode;
-			this.popupStateNode = this.focusNode || this.buttonNode;
+			this.popupStateNode = this.popupStateNode || this.focusNode || this.buttonNode;
 
 			this.popupStateNode.setAttribute("aria-haspopup", "true");
 
