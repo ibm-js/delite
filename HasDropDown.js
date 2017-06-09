@@ -225,7 +225,7 @@ define([
 		postRender: function () {
 			this.behaviorNode = this.behaviorNode || this;
 			this.buttonNode = this.buttonNode || this.behaviorNode;
-			this.popupStateNode = this.focusNode || this.buttonNode;
+			this.popupStateNode = this.popupNode || this.focusNode || this.buttonNode;
 
 			this.popupStateNode.setAttribute("aria-haspopup", "true");
 
