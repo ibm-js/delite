@@ -187,10 +187,10 @@ define(["./register"], function (register) {
 					this.generateWatchCode(dependsOn,
 							"this.setClassComponent('template'+this.widgetId, " + js + ", " + nodeName + ")");
 				} else {
-					this.buildText.push(propName ? nodeName + "." + propName + " = " + js + ";" :
-						nodeName + ".setAttribute('" + attr + "', " + js + ");");
-					this.generateWatchCode(dependsOn, propName ? nodeName + "." + propName + " = " + js :
-						"this.setOrRemoveAttribute(" + nodeName + ", '" + attr + "', " + js + ")");
+					var setJs = propName ? nodeName + "." + propName + " = " + js :
+						"this.setOrRemoveAttribute(" + nodeName + ", '" + attr + "', " + js + ")";
+					this.buildText.push(setJs);
+					this.generateWatchCode(dependsOn, setJs);
 				}
 			}
 

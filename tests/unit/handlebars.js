@@ -909,6 +909,27 @@ define([
 			assert.strictEqual(node.textContent.trim(), "reversed", "reversed=true, textContent");
 		},
 
+		"set attribute on root node": function () {
+			// Make sure that setting attribute on root node works even if setAttribute() was overridden.
+			var MyWidget = register("handlebars-attribute-on-root-node", [HTMLElement, Widget], {
+				expanded: false,
+				template: handlebars.compile(
+					"<template aria-expanded='{{expanded}}'><div></div></template>"
+				),
+				setAttribute: function () {},
+				removeAttribute: function () {}
+			});
+
+			var myWidget = new MyWidget({});
+
+			assert.strictEqual(myWidget.getAttribute("aria-expanded"), "false", "initial value");
+
+			myWidget.expanded = true;
+			myWidget.deliver();
+
+			assert.strictEqual(myWidget.getAttribute("aria-expanded"), "true", "updated value");
+		},
+
 		teardown: function () {
 			container.parentNode.removeChild(container);
 		}

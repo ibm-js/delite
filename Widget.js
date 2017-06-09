@@ -199,11 +199,15 @@ define([
 		},
 
 		/**
-		 * Helper method to set/remove an attribute based on the given value:
+		 * Helper method to set/remove an attribute on a node based on the given value:
 		 *
 		 * - If value is undefined, the attribute is removed.  Useful for attributes like aria-valuenow.
 		 * - If value is boolean, the attribute is set to "true" or "false".  Useful for attributes like aria-selected.
 		 * - If value is a number, it's converted to a string.
+		 *
+		 * When called for this widget's root node, sets attribute on this widget's root node even if this widget
+		 * overrides `setAttribute()` etc. (like delite/FormWidget).  But when called on a nested custom element,
+		 * calls that element's `setAttribute()` method.
 		 *
 		 * @param {Element} node - The node to set the property on.
 		 * @param {string} name - Name of the property.
@@ -212,9 +216,17 @@ define([
 		 */
 		setOrRemoveAttribute: function (node, name, value) {
 			if (value === undefined) {
-				node.removeAttribute(name);
+				if (node === this) {
+					HTMLElement.prototype.removeAttribute.call(node, name);
+				} else {
+					node.removeAttribute(name);
+				}
 			} else {
-				node.setAttribute(name, "" + value);
+				if (node === this) {
+					HTMLElement.prototype.setAttribute.call(node, name, "" + value);
+				} else {
+					node.setAttribute(name, "" + value);
+				}
 			}
 		},
 
