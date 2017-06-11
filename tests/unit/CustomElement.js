@@ -61,16 +61,16 @@ define([
 				container.innerHTML +=
 					"<test-ce-declarative id='d' boolProp='boolProp' numProp='5' stringProp='hello' " +
 					"funcProp='global=123;' funcProp2='globalInstance.func' " +
-					"objProp1='foo:1,bar:2' objProp2='globalObj'/>";
+					"objProp1='foo:1,bar:2' objProp2='globalObj' aryProp='cat,dog,fish'/>";
+
+				// Check that "customelement-attached" event fires.
+				// In Chrome (native custom elements) this should happen as soon as the registration will occur,
+				// on other browser this should happen right after upgrade .
 				var d = document.getElementById("d");
-				var def = this.async(1000);
-				var listenerCalled = false;
-				// in Chrome (native custom elements) this should happen as soon as the registration will occur,
-				// on other browser this should happen right after upgrade
-				d.addEventListener("customelement-attached", def.rejectOnError(function (evt) {
-					assert.strictEqual(evt.target, d, "customelement-attached target");
-					listenerCalled = true;
-				}));
+				var customElementAttachedEventTarget;
+				d.addEventListener("customelement-attached", function (evt) {
+					customElementAttachedEventTarget = evt.target;
+				});
 
 				register("test-ce-declarative", [HTMLElement, CustomElement], {
 					boolProp: false,
@@ -81,14 +81,14 @@ define([
 					funcProp2: function () {
 					},
 					objProp1: { },
-					objProp2: { }
+					objProp2: { },
+					aryProp: []
 				});
-
-
 				register.upgrade(d);
-				assert.isTrue(listenerCalled, "listener called");
-				assert.isTrue(d.boolProp, "d.boolProp");
 
+				assert.strictEqual(customElementAttachedEventTarget, d, "customelement-attached target");
+
+				assert.isTrue(d.boolProp, "d.boolProp");
 				assert.strictEqual(d.numProp, 5, "d.numProp");
 				assert.strictEqual(d.stringProp, "hello", "d.stringProp");
 				d.funcProp();
@@ -98,8 +98,7 @@ define([
 				assert.strictEqual(d.objProp1.foo, 1, "d.objProp1.foo");
 				assert.strictEqual(d.objProp1.bar, 2, "d.objProp1.bar");
 				assert.strictEqual(d.objProp2.text, "global var", "d.objProp2.text");
-				def.resolve();
-				return def;
+				assert.deepEqual(d.aryProp, ["cat", "dog", "fish"], "d.aryProp");
 			},
 
 			"setter not called on creation": function () {

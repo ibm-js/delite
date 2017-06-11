@@ -295,7 +295,7 @@ define([
 				// Try to interpret value as global variable, ex: store="myStore", array of strings
 				// ex: "1, 2, 3", or expression, ex: constraints="min: 10, max: 100"
 				return getObject(value) ||
-					(this[name] instanceof Array ? (value ? value.split(/\s+/) : []) : stringToObject(value));
+					(Array.isArray(this[name]) ? (value ? value.split(/,\s*/) : []) : stringToObject(value));
 			case "function":
 				return this.parseFunctionAttribute(value, []);
 			}
