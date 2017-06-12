@@ -198,7 +198,7 @@ define([
 					.execute("return document.keydownEvents;").then(function (count) {
 						assert.strictEqual(count, 0, "no keydown events bubbled to body");
 					})
-					.pressKeys(" ")	// to close menu
+					.pressKeys(keys.ENTER)	// to close menu
 					.findByTagName("non-focus-menu").isDisplayed().then(function (visible) {
 						assert.isFalse(visible, "hidden");
 					}).end();

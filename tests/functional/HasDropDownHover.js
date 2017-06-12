@@ -87,7 +87,6 @@ define([
 			"touch or mouse": function () {
 				return this.remote
 					.findById("behaviorButton").click().end()
-					.sleep(1000)	// HasDropDown click doesn't work on IE webdriver; wait for hover to open Tooltip.
 					.findById("behaviorTooltip").isDisplayed().then(function (visible) {
 						assert(visible, "tooltip visible");
 					}).end()

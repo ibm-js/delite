@@ -2,7 +2,7 @@
 	"name": "delite",
 	"version": "0.8.2",
 	"devDependencies": {
-		"intern": "3.2.x",
+		"intern": "3.4.x",
 		"jsdom": "7.x",
 		"leadfoot": "1.x",
 		"grunt": "~0.4.2",

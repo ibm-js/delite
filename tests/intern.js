@@ -14,13 +14,19 @@ define({
 	// OnDemand. Options that will be permutated are browserName, version, platform, and platformVersion; any other
 	// capabilities options specified for an environment will be copied as-is
 	environments: [
-		{ browserName: "internet explorer", version: "11", platform: "Windows 7", name: "delite" },
-		{ browserName: "firefox", version: "45", platform: "Windows 7", name: "delite" },
-		{ browserName: "chrome", version: "36", platform: "Windows 7", name: "delite" },
+		{ browserName: "internet explorer", version: "11", platform: "Windows 8.1",
+			requireWindowFocus: "true", name: "delite"},
+		{ browserName: "firefox", version: "53", platform: [ /* "OS X 10.6", "Linux", */ "Windows 7" ],
+			name: "delite"},
+		{ browserName: "chrome", version: "58", platform: [ /* "OS X 10.6", "Linux", */ "Windows 7" ],
+			name: "delite"},
+
+		// Use V9 because Safari 10 doesn't support isDisplayed(),
+		// see https://github.com/SeleniumHQ/selenium/issues/3029
 		{ browserName: "safari", version: "9", name: "delite" },
 
-		{ browserName: "iphone", platform: "OS X 10.10", version: "9.3", deviceName: "iPad Retina", name: "delite" },
-		{ browserName: "android", platform: "Linux", version: "5.1",
+		{ browserName: "iphone", platform: "OS X 10.10", version: "10.2", deviceName: "iPad Retina", name: "delite" },
+		{ browserName: "android", platform: "Linux", version: "6.0",
 			deviceName: "Android Emulator", deviceType: "tablet", name: "delite" }
 	],
 
