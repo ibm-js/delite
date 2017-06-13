@@ -6,7 +6,7 @@ define([
 	"delite/FormWidget",
 	"delite/Widget"
 ], function (registerSuite, assert, dcl, register, FormWidget, Widget) {
-	var container, FormWidgetTest;
+	var container, FormWidgetTest, FormWidgetTest2;
 
 	registerSuite({
 		name: "FormWidget",
@@ -27,10 +27,21 @@ define([
 						this.appendChild(this.valueNode);
 					}
 				});
+
+				FormWidgetTest2 = register("form-widget-test-two", [HTMLElement, FormWidget], {
+					moveAriaAttributes: false,
+					render: function () {
+						this.focusNode = this.ownerDocument.createElement("input");
+						this.appendChild(this.focusNode);
+						this.valueNode = this.ownerDocument.createElement("input");
+						this.valueNode.type = "hidden";
+						this.appendChild(this.valueNode);
+					}
+				});
 			},
 
 			// Test that aria attributes are moved to the focus node
-			aria: function () {
+			moveAria: function () {
 				// Create a widget declaratively to test initial aria attributes processed
 				container.innerHTML = "<form-widget-test aria-label='test label' foo='bar'></form-widget-test>";
 				register.parse(container);
@@ -62,6 +73,20 @@ define([
 				assert.strictEqual(myWidget.attributes.length, 1, "root has foo but not aria-label");
 				assert.strictEqual(myWidget.focusNode.getAttribute("aria-label"), "label 2",
 					"aria-label added to focusNode");
+			},
+
+			// Test that aria attributes are moved to the focus node
+			dontMoveAria: function () {
+				// Create a widget declaratively to test initial aria attributes processed
+				container.innerHTML = "<form-widget-test-two aria-label='test' foo='bar'></form-widget-test-two>";
+				register.parse(container);
+
+				var myWidget = container.firstChild;
+
+				assert.strictEqual(myWidget.moveAriaAttributes, false, "moveAriaAttributes should be false");
+				assert.strictEqual(myWidget.attributes.length, 2, "aria-label not on the root");
+				assert.strictEqual(myWidget.attributes["aria-label"].nodeValue,
+					"test", "aria-label should be equals test");
 			},
 
 			"#disabled": function () {

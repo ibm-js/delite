@@ -83,6 +83,14 @@ define([
 		required: false,
 
 		/**
+		 * If set to true, the widget move all aria-* attributes found on the root DOM element of this widget and
+		 * apply those to the focusNode using the overridden setAttribute method.
+		 * @member {boolean}
+		 * @default true
+		 */
+		moveAriaAttributes: true,
+
+		/**
 		 * For widgets with a single tab stop, the Element within the widget, often an `<input>`,
 		 * that gets the focus.  Widgets with multiple tab stops, such as a range slider, should set `tabStops`
 		 * rather than setting `focusNode`.
@@ -250,7 +258,7 @@ define([
 
 		setAttribute: dcl.superCall(function (sup) {
 			return function (name, value) {
-				if (/^aria-/.test(name) && this.focusNode) {
+				if (/^aria-/.test(name) && this.focusNode && this.moveAriaAttributes) {
 					this.focusNode.setAttribute(name, value);
 				} else {
 					sup.call(this, name, value);
@@ -260,7 +268,7 @@ define([
 
 		getAttribute: dcl.superCall(function (sup) {
 			return function (name) {
-				if (/^aria-/.test(name) && this.focusNode) {
+				if (/^aria-/.test(name) && this.focusNode && this.moveAriaAttributes) {
 					return this.focusNode.getAttribute(name);
 				} else {
 					return sup.call(this, name);
@@ -270,7 +278,7 @@ define([
 
 		hasAttribute: dcl.superCall(function (sup) {
 			return function (name) {
-				if (/^aria-/.test(name) && this.focusNode) {
+				if (/^aria-/.test(name) && this.focusNode && this.moveAriaAttributes) {
 					return this.focusNode.hasAttribute(name);
 				} else {
 					return sup.call(this, name);
@@ -280,7 +288,7 @@ define([
 
 		removeAttribute: dcl.superCall(function (sup) {
 			return function (name) {
-				if (/^aria-/.test(name) && this.focusNode) {
+				if (/^aria-/.test(name) && this.focusNode && this.moveAriaAttributes) {
 					this.focusNode.removeAttribute(name);
 				} else {
 					sup.call(this, name);
@@ -289,18 +297,7 @@ define([
 		}),
 
 		postRender: function () {
-			// Move all initially specified aria- attributes to focus node.
-			if (this.focusNode) {
-				var attr, idx = 0;
-				while ((attr = this.attributes[idx++])) {
-					if (/^aria-/.test(attr.name)) {
-						this.setAttribute(attr.name, attr.value);
-
-						// force remove from root node not focus nodes
-						HTMLElement.prototype.removeAttribute.call(this, attr.name);
-					}
-				}
-			}
+			this._moveAriaAttributes();
 		},
 
 		attachedCallback: function () {
@@ -328,7 +325,26 @@ define([
 			if (this.checked !== this.valueNode.checked) {
 				this.checked = this.valueNode.checked;
 			}
-		}
+		},
+
+		/**
+		 * Move all initially specified aria-* attributes to focus node.
+		 *
+		 * @protected
+		 */
+		_moveAriaAttributes: function () {
+			if (this.focusNode && this.moveAriaAttributes) {
+				var attr, idx = 0;
+				while ((attr = this.attributes[idx++])) {
+					if (/^aria-/.test(attr.name)) {
+						this.setAttribute(attr.name, attr.value);
+
+						// force remove from root node not focus nodes
+						HTMLElement.prototype.removeAttribute.call(this, attr.name);
+					}
+				}
+			}
+		},
 	});
 });
 
