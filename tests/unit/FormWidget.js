@@ -85,7 +85,8 @@ define([
 
 				assert.strictEqual(myWidget.moveAriaAttributes, false, "moveAriaAttributes should be false");
 				assert.strictEqual(myWidget.attributes.length, 2, "aria-label not on the root");
-				assert.strictEqual(myWidget.attributes['aria-label'].nodeValue, 'test', "aria-label should be equals test");
+				assert.strictEqual(myWidget.attributes["aria-label"].nodeValue,
+					"test", "aria-label should be equals test");
 			},
 
 			"#disabled": function () {
