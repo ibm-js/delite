@@ -362,6 +362,30 @@ define([
 				.end();
 		},
 
+		"combo button": function () {
+			return this.remote
+				// Clicking right half of button should show popup, but underneath entire button.
+				.findById("cbr").click().end()
+				.findById("cbr_popup").isDisplayed().then(function (visible) {
+					assert(visible, "popup shown");
+				}).end()
+				.execute(function () {
+					return {
+						buttonLeft: document.getElementById("cb").getBoundingClientRect().left,
+						popupLeft: document.getElementById("cbr_popup").getBoundingClientRect().left
+					};
+				}).then(function (res) {
+					assert.strictEqual(Math.round(res.buttonLeft), Math.round(res.popupLeft),
+						"popup left aligned with entire combobutton, not the HasDropDown node");
+				})
+
+				// Clicking left half of button should hide popup.
+				.findById("cbl").click().end()
+				.findById("cbr_popup").isDisplayed().then(function (visible) {
+					assert.isFalse(visible, "popup hidden");
+				}).end();
+		},
+
 		// Make sure that destroying a HasDropDown closes the popup
 		destroy: function () {
 			return this.remote

@@ -86,6 +86,16 @@ define([
 		popupStateNode: null,
 
 		/**
+		 * The node to display the popup next to.
+		 * Can be set in a template via a `attach-point` assignment.
+		 * If undefined, popup will be displayed next to`this.behaviorNode` (if defined),
+		 * or otherwise next to `this`.
+		 * @member {Element}
+		 * @protected
+		 */
+		aroundNode: null,
+
+		/**
 		 * The widget to display as a popup.  Applications/subwidgets should *either*:
 		 *
 		 * 1. define this property
@@ -233,6 +243,7 @@ define([
 
 		postRender: function () {
 			this.behaviorNode = this.behaviorNode || this;
+			this.aroundNode = this.aroundNode || this.behaviorNode;
 			this.buttonNode = this.buttonNode || this.behaviorNode;
 			this.popupStateNode = this.popupStateNode || this.focusNode || this.buttonNode;
 
@@ -437,6 +448,7 @@ define([
 
 				this._currentDropDown = dropDown;
 				var behaviorNode = this.behaviorNode,
+					aroundNode = this.aroundNode,
 					self = this;
 
 				this.emit("delite-before-show", {
@@ -452,20 +464,20 @@ define([
 				dropDown._originalStyle = dropDown.style.cssText;
 
 				// Set width of drop down if necessary, so that dropdown width [including scrollbar]
-				// matches width of behaviorNode.  Don't do anything for when dropDownPosition=["center"] though,
+				// matches width of aroundNode.  Don't do anything for when dropDownPosition=["center"] though,
 				// in which case popup.open() doesn't return a value.
 				if (this.dropDownPosition[0] !== "center") {
 					if (this.forceWidth) {
-						dropDown.style.width = behaviorNode.offsetWidth + "px";
+						dropDown.style.width = aroundNode.offsetWidth + "px";
 					} else if (this.autoWidth) {
-						dropDown.style.minWidth = behaviorNode.offsetWidth + "px";
+						dropDown.style.minWidth = aroundNode.offsetWidth + "px";
 					}
 				}
 
 				var retVal = popup.open({
 					parent: behaviorNode,
 					popup: dropDown,
-					around: behaviorNode,
+					around: aroundNode,
 					orient: this.dropDownPosition,
 					maxHeight: this.maxHeight,
 					onExecute: function () {
