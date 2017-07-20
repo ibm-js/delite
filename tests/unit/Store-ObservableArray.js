@@ -81,22 +81,15 @@ define([
 			store.destroy();
 
 			store.source.push({ id: "foo", name: "Foo2" });
-			store.deliver();
-			assert.strictEqual(store.renderItems.length, 2);
-			assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo" });
-			assert.deepEqual(store.renderItems[1], { id: "bar", name: "Bar" });
 
-			store.source.push({ id: "fb", name: "FB" });
-			store.deliver();
-			assert.strictEqual(store.renderItems.length, 2);
-			assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo" });
-			assert.deepEqual(store.renderItems[1], { id: "bar", name: "Bar" });
-
-			store.source.splice(1, 1);
-			store.deliver();
-			assert.strictEqual(store.renderItems.length, 2);
-			assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo" });
-			assert.deepEqual(store.renderItems[1], { id: "bar", name: "Bar" });
+			// Don't call store.deliver() because it's invalid to call that after store.destroy().
+			// Instead, use setTimeout() to see if we get any notifications.
+			var def = this.async();
+			setTimeout(def.callback(function () {
+				assert.strictEqual(store.renderItems.length, 2);
+				assert.deepEqual(store.renderItems[0], { id: "foo", name: "Foo" });
+				assert.deepEqual(store.renderItems[1], { id: "bar", name: "Bar" });
+			}));
 		},
 
 		Query: function () {
