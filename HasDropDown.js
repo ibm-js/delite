@@ -2,14 +2,14 @@
 define([
 	"dcl/dcl",
 	"requirejs-dplugins/Promise!",
-	"requirejs-dplugins/jquery!attributes/classes",	// addClass(), removeClass(), hasClass()
+	"./on",
 	"./place",
 	"./popup",
 	"./register",
 	"./Widget",
 	"./activationTracker",		// for delite-deactivated event
 	"dpointer/events"		// for "pointerenter", "pointerleave"
-], function (dcl, Promise, $, place, popup, register, Widget) {
+], function (dcl, Promise, on, place, popup, register, Widget) {
 	
 	/**
 	 * Dispatched before popup widget is shown.
@@ -77,7 +77,7 @@ define([
 		buttonNode: null,
 
 		/**
-		 * The DOMElement that will contain some aria attributes.
+		 * The Element that will contain some aria attributes.
 		 * Useful for widgets like Combobox that needs some special attibutes like aria-haspopup
 		 * to be defined on a specific element.
 		 * @member {Element}
@@ -185,6 +185,12 @@ define([
 		opened: false,
 
 		/**
+		 * Computed element to set aria attributes on.
+		 * @private
+		 */
+		_effectivePopupStateNode: null,
+
+		/**
 		 * Callback when the user clicks the arrow icon.
 		 * @private
 		 */
@@ -231,51 +237,72 @@ define([
 			}.bind(this));
 		},
 
-		preRender: function () {
-			// Remove old listeners if we are re-rendering, just in case some of the listeners were put onto
-			// the root node.  We don't want to make duplicate listeners.
-			if (this._HasDropDownListeners) {
-				this._HasDropDownListeners.forEach(function (handle) {
-					handle.remove();
-				});
+		computeProperties: function (oldVals) {
+			if ("popupStateNode" in oldVals || "focusNode" in oldVals || "buttonNode" in oldVals ||
+				"behaviorNode" in oldVals) {
+				this._effectivePopupStateNode = this.popupStateNode || this.focusNode || this.buttonNode ||
+					this.behaviorNode || this;
 			}
 		},
 
-		postRender: function () {
-			this.behaviorNode = this.behaviorNode || this;
-			this.aroundNode = this.aroundNode || this.behaviorNode;
-			this.buttonNode = this.buttonNode || this.behaviorNode;
-			this.popupStateNode = this.popupStateNode || this.focusNode || this.buttonNode;
+		refreshRendering: function (oldVals) {
+			if ("_effectivePopupStateNode" in oldVals) {
+				if (oldVals._effectivePopupStateNode) {
+					oldVals._effectivePopupStateNode.removeAttribute("aria-haspopup");
+				}
+				if (this._effectivePopupStateNode) {
+					this._effectivePopupStateNode.setAttribute("aria-haspopup", "true");
+				}
+			}
 
-			this.popupStateNode.setAttribute("aria-haspopup", "true");
+			if ("behaviorNode" in oldVals || "buttonNode" in oldVals || "focusNode" in oldVals ||
+				"openOnHover" in oldVals) {
+				this._removeHasDropDownListeners();
+				this._setupHasDropDownListeners();
+			}
+		},
+
+		_setupHasDropDownListeners: function () {
+			var behaviorNode = this.behaviorNode || this,
+				buttonNode = this.buttonNode || behaviorNode,
+				keystrokeNode = this.focusNode || behaviorNode;
 
 			this._HasDropDownListeners = [
 				// basic listeners
-				this.on("click", this._dropDownClickHandler.bind(this), this.buttonNode),
-				this.on("keydown", this._dropDownKeyDownHandler.bind(this), this.focusNode || this.behaviorNode),
-				this.on("keyup", this._dropDownKeyUpHandler.bind(this), this.focusNode || this.behaviorNode),
+				on(buttonNode, "click", this._dropDownClickHandler.bind(this)),
+				on(keystrokeNode, "keydown", this._dropDownKeyDownHandler.bind(this)),
+				on(keystrokeNode, "keyup", this._dropDownKeyUpHandler.bind(this)),
 
-				this.on("delite-deactivated", this._deactivatedHandler.bind(this), this.behaviorNode),
+				on(behaviorNode, "delite-deactivated", this._deactivatedHandler.bind(this)),
 
-				// set this.hovering when mouse is over widget so we can differentiate real mouse clicks from synthetic
-				// mouse clicks generated from JAWS upon keyboard events
-				this.on("pointerenter", function () {
+				// set this.hovering when mouse is over widget so we can differentiate real mouse clicks
+				// from synthetic mouse clicks generated from JAWS upon keyboard events
+				on(behaviorNode, "pointerenter", function () {
 					this.hovering = true;
-				}.bind(this), this.behaviorNode),
-				this.on("pointerleave", function () {
+				}.bind(this)),
+				on(behaviorNode, "pointerleave", function () {
 					this.hovering = false;
-				}.bind(this), this.behaviorNode)
+				}.bind(this))
 			];
 
 			if (this.openOnHover) {
 				this._HasDropDownListeners.push(
-					this.on("delite-hover-activated", function () {
+					on(buttonNode, "delite-hover-activated", function () {
 						this.openDropDown();
-					}.bind(this), this.buttonNode),
-					this.on("delite-hover-deactivated", function () {
+					}.bind(this)),
+					on(buttonNode, "delite-hover-deactivated", function () {
 						this.closeDropDown();
-					}.bind(this), this.buttonNode)
+					}.bind(this))
 				);
+			}
+		},
+
+		_removeHasDropDownListeners: function () {
+			if (this._HasDropDownListeners) {
+				this._HasDropDownListeners.forEach(function (handle) {
+					handle.remove();
+				});
+				delete this._HasDropDownListeners;
 			}
 		},
 
@@ -293,6 +320,8 @@ define([
 		},
 
 		destroy: function () {
+			this._removeHasDropDownListeners();
+
 			if (this.dropDown) {
 				// Destroy the drop down, unless it's already been destroyed.  This can happen because
 				// the drop down is a direct child of <body> even though it's logically my child.
@@ -447,8 +476,8 @@ define([
 				delete this._cancelPendingDisplay;
 
 				this._currentDropDown = dropDown;
-				var behaviorNode = this.behaviorNode,
-					aroundNode = this.aroundNode,
+				var behaviorNode = this.behaviorNode || this,
+					aroundNode = this.aroundNode || behaviorNode,
 					self = this;
 
 				this.emit("delite-before-show", {
@@ -487,19 +516,19 @@ define([
 						self.closeDropDown(true);
 					},
 					onClose: function () {
-						$(self.popupStateNode).removeClass("d-drop-down-open");
+						self._effectivePopupStateNode.classList.remove("d-drop-down-open");
 						this.opened = false;
 					}
 				});
 
-				$(this.popupStateNode).addClass("d-drop-down-open");
+				this._effectivePopupStateNode.classList.add("d-drop-down-open");
 				this.opened = true;
 
-				this.popupStateNode.setAttribute("aria-owns", dropDown.id);
+				this._effectivePopupStateNode.setAttribute("aria-owns", dropDown.id);
 
 				// Set aria-labelledby on dropdown if it's not already set to something more meaningful
 				if (dropDown.getAttribute("role") !== "presentation" && !dropDown.getAttribute("aria-labelledby")) {
-					dropDown.setAttribute("aria-labelledby", this.behaviorNode.id);
+					dropDown.setAttribute("aria-labelledby", behaviorNode.id);
 				}
 
 				this.emit("delite-after-show", {
@@ -547,8 +576,9 @@ define([
 			}
 
 			if (this.opened) {
-				if (focus && this.behaviorNode.focus) {
-					this.behaviorNode.focus();
+				var behaviorNode = this.behaviorNode || this;
+				if (focus && behaviorNode.focus) {
+					behaviorNode.focus();
 				}
 
 				this.emit("delite-before-hide", {
@@ -576,7 +606,7 @@ define([
 			}
 
 			// Avoid complaint about aria-owns pointing to hidden element.
-			this.popupStateNode.removeAttribute("aria-owns");
+			this._effectivePopupStateNode.removeAttribute("aria-owns");
 
 			this._previousDropDown = this._currentDropDown;
 			delete this._currentDropDown;
