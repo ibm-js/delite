@@ -50,15 +50,11 @@ define([
 	"requirejs-domready/domReady!"
 ], function (advise, dcl, $, Evented, on) {
 
-	// Time of the last touch/mouse and focusin events
+	// Time of the last touch/mouse event.
 	var lastPointerDownTime;
 
 	// Time of last touchend event.  Tells us if the mouseover event is real or emulated.
 	var lastTouchendTime;
-
-	// Last node that got pointerdown or focusin event, and the time it happened.
-	var lastPointerDownOrFocusInNode;
-	var lastPointerDownOrFocusInTime;
 
 	var ActivationTracker = dcl(Evented, /** @lends module:delite/activationTracker */ {
 		/**
@@ -227,10 +223,6 @@ define([
 			var newStack = this._getStack(node, by !== "mouse");
 
 			this._setActiveStack(newStack, by);
-
-			// Keep track of most recent focusin or pointerdown event.
-			lastPointerDownOrFocusInTime = (new Date()).getTime();
-			lastPointerDownOrFocusInNode = node;
 		},
 
 		/**
@@ -253,7 +245,8 @@ define([
 			// Also, if clicking a node causes its ancestor to be focused, ignore the focus event.
 			// Example in the activationTracker.html functional test on IE, where clicking the spinner buttons
 			// focuses the <fieldset> holding the spinner.
-			if ((new Date()).getTime() < lastPointerDownTime + 100 &&
+			var lastPointerDownOrFocusInNode = this.activeStack[this.activeStack.length - 1];
+			if (lastPointerDownOrFocusInNode && (new Date()).getTime() < lastPointerDownTime + 100 &&
 					node.contains(lastPointerDownOrFocusInNode.parentNode)) {
 				return;
 			}
