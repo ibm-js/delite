@@ -215,6 +215,27 @@ define([
 						"this delite-hover-deactivated"
 					], "everything unhovered");
 				});
+		},
+
+		"detaching hovered/active nodes": function () {
+			return this.remote
+				// Test that detaching active (and hovered) node removes it from the activeStack/hoverStack.
+				.findById("removeMe").click().end()
+				.findById("activeStack").getProperty("value").then(function (activeStack) {
+					assert.strictEqual(activeStack, "grandparent, parent", "activeStack #1");
+				}).end()
+				.findById("hoverStack").getProperty("value").then(function (activeStack) {
+					assert.strictEqual(activeStack, "grandparent, parent", "hoverStack #1");
+				}).end()
+
+				// Test that detaching parent of active (and hovered) node removes it from the activeStack/hoverStack.
+				.findById("removeMyParent").click().end()
+				.findById("activeStack").getProperty("value").then(function (activeStack) {
+					assert.strictEqual(activeStack, "grandparent", "activeStack #2");
+				}).end()
+				.findById("hoverStack").getProperty("value").then(function (hoverStack) {
+					assert.strictEqual(hoverStack, "grandparent", "hoverStack #2");
+				}).end();
 		}
 	});
 });

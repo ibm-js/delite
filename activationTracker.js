@@ -19,6 +19,8 @@
  * have been unhovered for `hoverDelay` milliseconds.  If the user unhovers a node and then re-hovers within
  * `hoverDelay` milliseconds, there's no `delite-hover-deactivated` event.
  *
+ * Call `activationTracker.on("hover-stack", callback)` to track the stack of currently hovered nodes.
+ *
  * TO IMPLEMENT: Generally, there is a delay between hovering a node and the "delite-hover-activated" event, and
  * if the user hovers a node and then unhovers within the delay, there's no "delite-hover-activated"
  * event.  However, clicking a node sends the "delite-hover-activated" event to it (and its ancestors)
@@ -135,6 +137,25 @@ define([
 				_this._mouseOverHandler(evt.target);
 			}
 
+			function processMutations(mutations) {
+				mutations.forEach(function (mutation) {
+					// Update activeStack and hoverStack to not contain any nodes that were detached from the document.
+					var removedRoot, idx = 0;
+					while ((removedRoot = mutation.removedNodes && mutation.removedNodes[idx++])) {
+						if (removedRoot.nodeType === 1) {
+							var activeStackIndex = _this.activeStack.indexOf(removedRoot);
+							if (activeStackIndex > -1) {
+								_this._setActiveStack(_this.activeStack.slice(0, activeStackIndex));
+							}
+							var hoverStackIndex = _this.hoverStack.indexOf(removedRoot);
+							if (hoverStackIndex > -1) {
+								_this._setHoverStack(_this.hoverStack.slice(0, hoverStackIndex));
+							}
+						}
+					}
+				});
+			}
+
 			if (body) {
 				// Listen for touches or mousedowns.
 				body.addEventListener("pointerdown", pointerDownHandler, true);
@@ -142,11 +163,15 @@ define([
 				body.addEventListener("touchend", touchendHandler, true);
 				body.addEventListener("mouseover", mouseOverHandler);
 
+				var observer = new MutationObserver(processMutations);
+				var observeHandle = observer.observe(body, {childList: true, subtree: true});
+
 				return {
 					remove: function () {
 						body.removeEventListener("pointerdown", pointerDownHandler, true);
 						body.removeEventListener("focus", focusHandler, true);
-						body.addEventListener("mouseover", mouseOverHandler);
+						body.removeEventListener("mouseover", mouseOverHandler);
+						observeHandle.disconnect();
 					}
 				};
 			}
@@ -201,7 +226,7 @@ define([
 			// Compute stack of active widgets ending at node (ex: ComboButton --> Menu --> MenuItem).
 			var newStack = this._getStack(node, by !== "mouse");
 
-			this._setStack(newStack, by);
+			this._setActiveStack(newStack, by);
 
 			// Keep track of most recent focusin or pointerdown event.
 			lastPointerDownOrFocusInTime = (new Date()).getTime();
@@ -249,7 +274,7 @@ define([
 		 * @param {string} by - "mouse" if the focus/pointerdown was caused by a mouse down event.
 		 * @private
 		 */
-		_setStack: function (newStack, by) {
+		_setActiveStack: function (newStack, by) {
 			var oldStack = this.activeStack, lastOldIdx = oldStack.length - 1, lastNewIdx = newStack.length - 1;
 
 			if (newStack[lastNewIdx] === oldStack[lastOldIdx]) {
@@ -285,13 +310,29 @@ define([
 		 * @private
 		 */
 		_mouseOverHandler: function (node) {
-			var oldStack = this.hoverStack, lastOldIdx = oldStack.length - 1;
-			var newStack = this.hoverStack = this._getStack(node), lastNewIdx = newStack.length - 1;
-			var i;
+			this._setHoverStack(this._getStack(node));
+		},
+
+		/**
+		 * The stack of hovered nodes has changed.  Send out appropriate events and record new stack.
+		 * @param {Element} newStack - Array of nodes, starting from the top (outermost) node.
+		 * @private
+		 */
+		_setHoverStack: function (newStack) {
+			var oldStack = this.hoverStack, lastOldIdx = oldStack.length - 1, lastNewIdx = newStack.length - 1;
+
+			if (newStack[lastNewIdx] === oldStack[lastOldIdx]) {
+				// no changes, return now to avoid spurious notifications about changes to activeStack
+				return;
+			}
+
+			this.hoverStack = newStack;
+			this.emit("hover-stack", newStack);
 
 			// For all elements that have left the hover chain, stop timer to
 			// send those elements delite-hover-activated event, or start timer to send
 			// those elements delite-hover-deactivated event.
+			var i;
 			for (i = lastOldIdx; i >= 0 && oldStack[i] !== newStack[i]; i--) {
 				this.onNodeLeaveHoverStack(oldStack[i]);
 			}

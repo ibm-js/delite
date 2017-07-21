@@ -244,6 +244,13 @@
 				activeStackChangeNotifications.value = +activeStackChangeNotifications.value + 1;
 			});
 
+			activationTracker.on("hover-stack", function (fs) {
+				var hs = fs.map(function(elem){ return elem.id || elem.tagName.toLowerCase(); }).join(", ");
+				console.log("New hover stack: " + hs);
+				hoverStack.value = hs;
+				hoverStackChangeNotifications.value = +hoverStackChangeNotifications.value + 1;
+			});
+
 			register.deliver();
 
 			["form", "fieldset1", "fieldset2", "combobox", "editor", "spinner"].forEach(function (id) {
@@ -257,6 +264,18 @@
 				});
 			});
 
+			// Setup tests for what happens when active or hovered element is removed from document.
+			var grandparent = document.getElementById("grandparent"),
+				parent = document.getElementById("parent"),
+				removeMe = document.getElementById("removeMe"),
+				removeMyParent = document.getElementById("removeMyParent");
+			removeMe.addEventListener("click", function () {
+				parent.removeChild(removeMe);
+			});
+			removeMyParent.addEventListener("click", function () {
+				grandparent.removeChild(parent);
+			});
+
 			ready = true;
 		});
 
@@ -264,6 +283,8 @@
 			setTimeout(function () {
 				activeStack.value = "";
 				activeStackChangeNotifications.value = 0;
+				hoverStack.value = "";
+				hoverStackChangeNotifications.value = 0;
 				log.value = "";
 			}, 50);
 		}
@@ -279,6 +300,14 @@
 
 	<label for="activeStackChangeNotifications">Active stack notifications:</label>
 	<input id="activeStackChangeNotifications" disabled value="0">
+
+	<br>
+	
+	<label for="hoverStack">Hover stack:</label>
+	<input id="hoverStack" style="width: 100%;" disabled autocomplete="off">
+
+	<label for="hoverStackChangeNotifications">Hover stack notifications:</label>
+	<input id="hoverStackChangeNotifications" disabled value="0">
 
 	<br><br>
 
@@ -318,6 +347,19 @@
 
 		<fake-hover-dropdown-button id="hoverDropdownButton"></fake-hover-dropdown-button>
 	</form>
+
+	<!--
+		Test code for detaching active/hovered nodes from document.
+		Fancy CSS is to control what node ends up getting hovered after other node is removed...
+		in other words, when nodes are detached, nothing on the screen should move.
+	-->
+	<div id="grandparent" style="border: solid red 2px; padding: 10px; height: 40px;">
+		<div id="parent" style="border: solid blue 2px; height: 30px; position: relative;">
+			<button id="removeMe">remove me</button>
+			<button id="removeMyParent" style="position: absolute; left: 100px;">remove my parent</button>
+		</div>
+	</div>
+
 	<label for="log">Log:</label> <textarea id="log" disabled></textarea>
 	<button id="clearButton" type="button" onclick="clearLog();">clear log</button>
 </body>
