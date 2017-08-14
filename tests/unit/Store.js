@@ -4,10 +4,18 @@ define([
 	"delite/register", "delite/Widget", "delite/Store",
 	"dstore/Trackable", "dstore/Rest", "dstore/Memory"
 ], function (registerSuite, assert, dcl, declare, register, Widget, Store, Trackable, Rest, Memory) {
+
 	var C = register("test-store", [HTMLElement, Widget, Store]);
 	var M = declare([Memory, Trackable], {});
+	var container;
+
 	registerSuite({
 		name: "Store",
+
+		setup: function () {
+			container = document.createElement("div");
+			document.body.appendChild(container);
+		},
 
 		"Error": function () {
 			var d = this.async(10000);	// SauceLabs takes 2-5 seconds for bogus URL to generate a 404 error
@@ -254,6 +262,35 @@ define([
 			return d;
 		},
 
+		"deatch and reattach": function () {
+			var mySource = new M({
+				data: [
+					{ id: "foo", name: "Foo" },
+					{ id: "bar", name: "Bar" }
+				],
+				model: null
+			});
+			var store = new C({
+				source: mySource
+			});
+			store.placeAt(container);
+
+			assert.deepEqual(store.renderItems, [
+				{ id: "foo", name: "Foo" },
+				{ id: "bar", name: "Bar" }
+			], "initial");
+
+			container.removeChild(store);
+			return mySource.put({ id: "zaz", name: "Zaz" }).then(function () {
+				store.placeAt(container);
+				assert.deepEqual(store.renderItems, [
+					{ id: "foo", name: "Foo" },
+					{ id: "bar", name: "Bar" },
+					{ id: "zaz", name: "Zaz"}
+				], "after detach, update, reattach");
+			});
+		},
+
 		// TODO: re-enable when dstore will have re-introduced refresh event?
 
 		/**
@@ -290,7 +327,7 @@ define([
 		},**/
 
 		teardown: function () {
-			//container.parentNode.removeChild(container);
+			container.parentNode.removeChild(container);
 		}
 	});
 });

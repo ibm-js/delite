@@ -239,10 +239,6 @@ define([
 			}
 		},
 
-		detachedCallback: function () {
-			this._untrack();
-		},
-
 		destroy: function () {
 			this._untrack();
 		},

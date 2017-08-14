@@ -103,7 +103,7 @@ define(["dcl/dcl", "./Store"], function (dcl, Store) {
 
 		queryStoreAndInitItems: dcl.superCall(function (sup) {
 			return function (processQueryResult, force) {
-				if (this.attached || force) {
+				if (this._storeMapAttachedOnce || force) {
 					sup.apply(this, arguments);
 				} else {
 					// we just keep the last processQueryResult we were called with as we are before attachment
@@ -116,31 +116,36 @@ define(["dcl/dcl", "./Store"], function (dcl, Store) {
 		attachedCallback: function () {
 			// This runs after the attributes have been processed (and converted into properties),
 			// and after any properties specified to the constructor have been mixed in.
+			// It should not re-run if the StoreMap is detached and then reattached.
 
-			// look into properties of the instance for keys to map
-			var mappedKeys = [];
-			for (var prop in this) {
-				var match = propregexp.exec(prop);
-				if (match && mappedKeys.indexOf(match[0]) === -1) {
-					mappedKeys.push(match[0]);
+			if (!this._storeMapAttachedOnce) {
+				// look into properties of the instance for keys to map
+				var mappedKeys = [];
+				for (var prop in this) {
+					var match = propregexp.exec(prop);
+					if (match && mappedKeys.indexOf(match[0]) === -1) {
+						mappedKeys.push(match[0]);
+					}
 				}
-			}
 
-			// which are the considered keys in the store item itself
-			if (this.copyAllItemProps) {
-				this._itemKeys = [];
-				for (var i = 0; i < mappedKeys.length; i++) {
-					this._itemKeys.push(this[mappedKeys[i] + "Attr"] ?
-						this[mappedKeys[i] + "Attr"] : mappedKeys[i]);
+				// which are the considered keys in the store item itself
+				if (this.copyAllItemProps) {
+					this._itemKeys = [];
+					for (var i = 0; i < mappedKeys.length; i++) {
+						this._itemKeys.push(this[mappedKeys[i] + "Attr"] ?
+							this[mappedKeys[i] + "Attr"] : mappedKeys[i]);
+					}
 				}
-			}
 
-			this._mappedKeys = mappedKeys;
-			this.deliver();
-			
-			if (this._pendingQuery) {
-				this.queryStoreAndInitItems(this._pendingQuery, true);
-				this._pendingQuery = null;
+				this._mappedKeys = mappedKeys;
+				this.deliver();
+
+				if (this._pendingQuery) {
+					this.queryStoreAndInitItems(this._pendingQuery, true);
+					this._pendingQuery = null;
+				}
+
+				this._storeMapAttachedOnce = true;
 			}
 		},
 
