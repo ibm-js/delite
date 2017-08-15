@@ -5,14 +5,18 @@
 		Test that delite and web components shim (nee polymer platform) can coexist.
 		This is intentionally a functional test because unit tests don't have sandboxing.
 	-->
-	<script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
 	<script src="../../../requirejs/require.js"></script>
 	<script>
 		var ready = false; // set to true when the test page is ready
 		require.config({
 			baseUrl: "../../.."
 		});
-		require(["delite/samples/ExampleWidget", "delite/register", "requirejs-domready/domReady!"], function (ExampleWidget, register) {
+		require([
+			"delite/samples/ExampleWidget",
+			"delite/register",
+			"requirejs-domready/domReady!",
+			"webcomponentsjs/webcomponents-lite"
+		], function (ExampleWidget, register) {
 			register.deliver();
 
 			// Set global variable to signal that the test page is ready
