@@ -15,7 +15,7 @@
 		"dojo": ">=1.9.1",
 		"dstore": "1.1.x",
 		"dijit": ">=1.9.1",
-		"webcomponentsjs": "~0.7.12"
+		"webcomponentsjs": "~1.0"
 	},
 	"keywords": [
 		"web-components",
