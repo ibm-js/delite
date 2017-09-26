@@ -363,7 +363,7 @@ define([
 				id: widget.id + "_wrapper",
 				className: wrapperClasses.join(" ")
 			});
-			wrapper.style.zIndex = this._beginZIndex + stack.length;
+			wrapper.style.zIndex = this._beginZIndex + stack.length * 2;   // *2 leaves z-index slot for DialogUnderlay
 			wrapper._popupParent = args.parent ? args.parent : null;
 
 			if (stack.length === 0 && around) {
