@@ -29,7 +29,7 @@ define([
 		 * @protected
 		 */
 		_getFocusItems: function () {
-			var elems = a11y._getTabNavigable(this);
+			var elems = a11y._getTabNavigable(this.containerNode || this);
 			this._firstFocusItem = elems.lowest || elems.first || this.closeButtonNode || this;
 			this._lastFocusItem = elems.last || elems.highest || this._firstFocusItem;
 		},
