@@ -88,8 +88,8 @@ define([
 		},
 
 		createdCallback: function () {
-			// Get the data from the textContent
-			if (this.textContent.trim()) {
+			// If the control seems to contain JSON, then parse it as our data source.
+			if (!this.firstElementChild && this.textContent.trim()) {
 				var data = JSON.parse("[" + this.textContent + "]");
 				if (data.length) {
 					this.source = new ObservableArray();
