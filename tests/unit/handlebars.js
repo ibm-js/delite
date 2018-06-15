@@ -572,38 +572,37 @@ define([
 			assert.strictEqual(node.textContent.trim(), "Hello Fred Smith!", "textContent #3");
 		},
 
-		aria: function () {
-			// To match the aria spec:
-			// - boolean values like aria-selected must be represented as the strings "true" or "false".
-			// - aria-valuenow attribute should be removed is the value is undefined, but exist if value is ""
+		attributes: function () {
+			// Boolean values like aria-selected must be represented as the strings "true" or "false".
+			// Attributes shouldn't be set if value is "", null, etc.  But 0 should be set.
 
-			var TestAria = register("handlebars-aria", [HTMLElement, Widget], {
+			var TestAttributes = register("handlebars-attributes", [HTMLElement, Widget], {
 				selected: true,
-				value: "",
+				value: 0,
 				template: handlebars.compile(
 					"<span aria-selected={{selected}} aria-valuenow={{value}}>hello world</span>")
 			});
 
 			// Initial values
-			var node = new TestAria();
+			var node = new TestAttributes();
 			node.placeAt(container);
 			assert(node.hasAttribute("aria-valuenow"), "aria-valuenow exists");
-			assert.strictEqual(node.getAttribute("aria-valuenow"), "", "aria-valuenow initial value");
+			assert.strictEqual(node.getAttribute("aria-valuenow"), "0", "aria-valuenow initial value");
 			assert.strictEqual(node.getAttribute("aria-selected"), "true", "aria-selected initial value");
 
 			// Change
 			node.selected = false;
-			node.value = undefined;
+			node.value = "";
 			node.deliver();
 			assert.isFalse(node.hasAttribute("aria-valuenow"), "aria-valuenow removed");
 			assert.strictEqual(node.getAttribute("aria-selected"), "false", "aria-selected updated value #1");
 
 			// Change back
 			node.selected = true;
-			node.value = "";
+			node.value = "2";
 			node.deliver();
 			assert(node.hasAttribute("aria-valuenow"), "aria-valuenow recreated");
-			assert.strictEqual(node.getAttribute("aria-valuenow"), "", "aria-valuenow new value");
+			assert.strictEqual(node.getAttribute("aria-valuenow"), "2", "aria-valuenow new value");
 			assert.strictEqual(node.getAttribute("aria-selected"), "true", "aria-selected updated value #2");
 		},
 

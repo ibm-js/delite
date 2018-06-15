@@ -201,7 +201,7 @@ define([
 		/**
 		 * Helper method to set/remove an attribute on a node based on the given value:
 		 *
-		 * - If value is undefined, the attribute is removed.  Useful for attributes like aria-valuenow.
+		 * - If value is null/blank, the attribute is removed.  Useful for attributes like aria-valuenow.
 		 * - If value is boolean, the attribute is set to "true" or "false".  Useful for attributes like aria-selected.
 		 * - If value is a number, it's converted to a string.
 		 *
@@ -215,7 +215,7 @@ define([
 		 * @protected
 		 */
 		setOrRemoveAttribute: function (node, name, value) {
-			if (value === undefined) {
+			if (value === undefined || value === null || value === "") {
 				if (node === this) {
 					HTMLElement.prototype.removeAttribute.call(node, name);
 				} else {
