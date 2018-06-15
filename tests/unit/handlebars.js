@@ -606,6 +606,32 @@ define([
 			assert.strictEqual(node.getAttribute("aria-selected"), "true", "aria-selected updated value #2");
 		},
 
+		"binding a function": function () {
+			register("handlebars-child-with-func", [HTMLElement, Widget], {
+				loadDropDown: function () {
+				}
+			});
+
+			var calledContext;
+			var TestParent = register("handlebars-bind-function", [HTMLElement, Widget], {
+				loadDropDown: function () {
+					calledContext = this;
+				},
+				template: handlebars.compile(
+					"<template>" +
+					"<handlebars-child-with-func loadDropDown='{{loadDropDown}}' attach-point='nestedNode'>" +
+					"</handlebars-child-with-func>" +
+					"</template>"
+				)
+			});
+
+			var node = new TestParent();
+			node.placeAt(container);
+			node.nestedNode.loadDropDown();
+			assert(calledContext, "TestParent#loadDropDown() called");
+			assert.strictEqual(calledContext, node, "context was TestParent");
+		},
+
 		"hide and show node": {
 			"d-hidden": function () {
 				var TestNested = register("handlebars-hide", [HTMLElement, Widget], {

@@ -52,9 +52,10 @@ define([
 	 * rather than class="foo undefined", but for something like aria-valuenow="{{value}}", when value is undefined
 	 * we need to leave it that way, to trigger removal of that attribute completely instead of setting
 	 * aria-valuenow="".
+	 * @param {boolean} targetIsFunction - This JS expression will be assigned to a function.
 	 * @returns {string} like "'hello' + this.foo + 'world'"
 	 */
-	function toJs(text, convertUndefinedToBlank) {
+	function toJs(text, convertUndefinedToBlank, targetIsFunction) {
 		var pos = 0, length = text.length, insideBraces = false, parts = [];
 
 		while (pos < length) {
@@ -67,9 +68,16 @@ define([
 					// JS expression (ex: this.selectionMode === "multiple")
 					parts.push("(" + prop + ")");
 				} else {
-					// Property (ex: selectionMode) or path (ex: item.foo)
-					parts.push(convertUndefinedToBlank ? "(this." + prop + "== null ? '' : this." + prop + ")" :
-						"this." + prop);
+					// Property (ex: selectionMode) or path (ex: item.foo).
+					var propExpr = "this." + prop;
+					if (targetIsFunction) {
+						// Assignment like foo="{{bar}}" and foo is a function, so this.bar must be a function too.
+						propExpr = propExpr + ".bind(this)";
+					}
+					if (convertUndefinedToBlank) {
+						propExpr = "(" + propExpr + "== null ? '' : " + propExpr + ")";
+					}
+					parts.push(propExpr);
 				}
 			} else {
 				// string literal, single quote it and escape special characters
@@ -166,7 +174,7 @@ define([
 					return value;
 				}
 			} else {
-				return toJs(value, name === "class");
+				return toJs(value, name === "class", typeof elem[propName] === "function");
 			}
 		},
 
