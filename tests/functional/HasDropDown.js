@@ -19,9 +19,12 @@ define([
 
 		"basic menu drop down": {
 			mouse: function () {
+				if (!this.remote.environmentType.mouseEnabled) {
+					return this.skip("no moveMouseTo()");
+				}
 				return this.remote
 					.findById("input").click().end()
-					.findById("dd").click().end()
+					.findById("dd").moveMouseTo().click().end()
 					.findById("dd_popup")
 					.isDisplayed().then(function (visible) {
 						assert(visible, "visible");

@@ -204,37 +204,14 @@ define([
 
 			this.toggleDropDown();
 
-			if (this._openDropDownPromise) {
-				// Test if this is a fake mouse event caused by the user typing
-				// SPACE/ENTER while using JAWS.  Jaws converts the SPACE/ENTER key into mousedown/mouseup events.
-				var keyboard = e.pointerType === "mouse" && !this.hovering;
-
-				// Focus the drop down once it opens, unless it's a menu.
-				this._focusDropDownOnOpen(keyboard);
-			} else {
+			if (!this._openDropDownPromise) {
+				// We just closed the dropdown.
 				// The drop down arrow icon probably can't receive focus, but widget itself should get focus.
 				// defer() needed to make it work on IE (test DateTextBox)
 				if (this.focus) {
 					this.defer(this.focus);
 				}
 			}
-		},
-
-		/**
-		 * Helper function to focus the dropdown when it finishes loading and opening,
-		 * based on `focusOnPointerOpen` and `focusOnKeyboardOpen` properties.
-		 * @param {boolean} keyboard - True if the user opened the dropdown via the keyboard
-		 */
-		_focusDropDownOnOpen: function (keyboard) {
-			this._openDropDownPromise.then(function (ret) {
-				var dropDown = ret.dropDown;
-				if (dropDown.focus && (keyboard ? this.focusOnKeyboardOpen : this.focusOnPointerOpen)) {
-					this._focusDropDownTimer = this.defer(function () {
-						dropDown.focus();
-						delete this._focusDropDownTimer;
-					});
-				}
-			}.bind(this));
 		},
 
 		computeProperties: function (oldVals) {
@@ -284,6 +261,7 @@ define([
 					this.hovering = false;
 				}.bind(this))
 			];
+			buttonNode._hasDropDownClickListener = true;
 
 			if (this.openOnHover) {
 				this._HasDropDownListeners.push(
@@ -343,32 +321,47 @@ define([
 			if (this.disabled || this.readOnly) {
 				return;
 			}
+
 			var dropDown = this._currentDropDown, target = e.target;
-			if (dropDown && this.opened && e.key === "Escape") {
-				this.closeDropDown();
-				e.stopPropagation();
-				e.preventDefault();
-			} else if (!this.opened &&
-				(e.key === "ArrowDown" ||
-					// ignore unmodified SPACE if KeyNav has search in progress
-					((e.key === "Enter" || (e.key === "Spacebar" &&
-						(!this._searchTimer || (e.ctrlKey || e.altKey || e.metaKey)))) &&
-						//ignore enter and space if the event is for a text input
-						((target.tagName || "").toLowerCase() !== "input" ||
-							(target.type && target.type.toLowerCase() !== "text"))))) {
+			if (dropDown && this.opened) {
+				if (e.key === "Escape") {
+					this.closeDropDown();
+					e.stopPropagation();
+					e.preventDefault();
+				} else {
+					// Forward the keystroke to the dropdown widget.
+					// deliteful/List (the dropdown for deliteful/Combobox)
+					// listens for events on List#containerNode rather than the List root node.
+					var forwardNode = dropDown.keyNavContainerNode || dropDown.containerNode || dropDown;
+					if (dropDown.emit("keydown", e, forwardNode) === false) {
+						/* false return code means that the drop down handled the key */
+						e.stopPropagation();
+						e.preventDefault();
+					}
+				}
+			} else if (!this.opened) {
+				var openOnKeyUp,
+					tagName = target.tagName && target.tagName.toLowerCase();
+				if (e.key === "ArrowDown") {
+					openOnKeyUp = true;
+				} else if (target._hasDropDownClickListener && tagName === "button") {
+					// Ignore space/enter key for a <button> because we already do toggling for
+					// the <button> on "click", and space/enter on a <button> generates a "click" event.
+					openOnKeyUp = false;
+				} else if (tagName === "input" || (target.type && target.type.toLowerCase() === "text")) {
+					// Ignore enter and space if the focusNode is a text input.
+					openOnKeyUp = false;
+				} else {
+					// Ignore unmodified SPACE if KeyNav has search in progress.
+					openOnKeyUp = e.key === "Enter" || (e.key === "Spacebar" &&
+						(!this._searchTimer || (e.ctrlKey || e.altKey || e.metaKey)));
+				}
+
 				// Toggle the drop down, but wait until keyup so that the drop down doesn't
 				// get a stray keyup event, or in the case of key-repeat (because user held
 				// down key for too long), stray keydown events.
-				this._openOnKeyUp = true;
-				e.stopPropagation();
-				e.preventDefault();
-			} else if (dropDown && this.opened) {
-				// Forward the keystroke to the dropdown widget.
-				// deliteful/List (the dropdown for deliteful/Combobox)
-				// listens for events on List#containerNode rather than the List root node.
-				var forwardNode = dropDown.keyNavContainerNode || dropDown.containerNode || dropDown;
-				if (dropDown.emit("keydown", e, forwardNode) === false) {
-					/* false return code means that the drop down handled the key */
+				if (openOnKeyUp) {
+					this._openOnKeyUp = true;
 					e.stopPropagation();
 					e.preventDefault();
 				}
@@ -381,11 +374,17 @@ define([
 		 * @private
 		 */
 		_dropDownKeyUpHandler: function () {
+			this._justGotKeyUp = true;
+
 			if (this._openOnKeyUp) {
 				delete this._openOnKeyUp;
 				this.openDropDown();
-				this._focusDropDownOnOpen(true);
 			}
+
+			// Don't clear flag until after browser converts the SPACE/ENTER key into a "click" event.
+			this.defer(function () {
+				this._justGotKeyUp = false;
+			});
 		},
 
 		_deactivatedHandler: function () {
@@ -461,12 +460,20 @@ define([
 				return this._openDropDownPromise;
 			}
 
+			// Is the dropdown being opened due to a SPACE/ENTER/down arrow keystroke?
+			// Use this.hovering flag since JAWS sometimes suppresses keydown/keyup events.
+			// Side effect: treats touch click on mobile like a keyboard click,
+			// but I think that's actually what we want for focus, since
+			// the mobile popup can cover the original anchor node.
+			var keyboard = this._justGotKeyUp || !this.hovering;
+
 			// will be set to true if closeDropDown() is called before the loadDropDown() promise completes
 			var canceled;
 
 			var loadDropDownPromise = this.loadDropDown();
 
 			this._openDropDownPromise = Promise.resolve(loadDropDownPromise).then(function (dropDown) {
+				/* jshint maxcomplexity:12 */
 				if (this._previousDropDown && this._previousDropDown !== dropDown) {
 					popup.detach(this._previousDropDown);
 					delete this._previousDropDown;
@@ -529,6 +536,13 @@ define([
 				// Set aria-labelledby on dropdown if it's not already set to something more meaningful
 				if (dropDown.getAttribute("role") !== "presentation" && !dropDown.getAttribute("aria-labelledby")) {
 					dropDown.setAttribute("aria-labelledby", behaviorNode.id);
+				}
+
+				if (dropDown.focus && (keyboard ? this.focusOnKeyboardOpen : this.focusOnPointerOpen)) {
+					this._focusDropDownTimer = this.defer(function () {
+						dropDown.focus();
+						delete this._focusDropDownTimer;
+					});
 				}
 
 				this.emit("delite-after-show", {
