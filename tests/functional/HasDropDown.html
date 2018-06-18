@@ -212,6 +212,8 @@
 				focusOnPointerOpen: false,
 				focusOnKeyboardOpen: false,
 
+				dropDownType: "listbox",
+				
 				loadDropDown: function () {
 					return this._dropDown || (this._dropDown = new this.dropDownConstructor({
 						id: this.id + "_popup"
@@ -284,7 +286,8 @@
 				dir: "rtl",
 				label: "show tooltip dropdown after 500ms - rtl",
 				dropDownConstructor: SimpleDialog,
-				dropDownClass: "dropdown-dialog"
+				dropDownClass: "dropdown-dialog",
+				dropDownType: "dialog"
 			}).placeAt(document.body);
 
 			// non-focusable dropdown
@@ -299,6 +302,7 @@
 				label: "show non-auto-width menu - ltr",
 				autoWidth: false,
 				dropDownConstructor: FocusMenu,
+				dropDownType: "menu",
 				focusOnPointerOpen: false	// traditionally you only focus drop down menus when opened by the keyboard
 			}).placeAt(document.body);
 
@@ -309,6 +313,7 @@
 				label: "show non-auto-width menu - rtl",
 				autoWidth: false,
 				dropDownConstructor: FocusMenu,
+				dropDownType: "menu",
 				focusOnPointerOpen: false	// traditionally you only focus drop down menus when opened by the keyboard
 			}).placeAt(document.body);
 
@@ -323,6 +328,7 @@
 				label: "show dialog",
 				dropDownPosition: ["center"],
 				dropDownConstructor: SimpleDialog,
+				dropDownType: "dialog",
 				dropDownClass: "centered-dialog"
 			}).placeAt(document.body);
 
@@ -359,7 +365,8 @@
 			new HasDropDown.HasDropDownCustomElement({
 				id: "behavioral-has-drop-down",
 				behaviorNode: simpleButton,
-				dropDownConstructor: SimpleDialog
+				dropDownConstructor: SimpleDialog,
+				dropDownType: "menu"
 			}).placeAt(document.body);
 
 			new SimpleComboButton({

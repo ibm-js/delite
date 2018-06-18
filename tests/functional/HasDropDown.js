@@ -137,7 +137,7 @@ define([
 						assert.strictEqual(ret.anchorAriaOwns, ret.dropDownId, "aria-owns points to dropdown id");
 						assert.strictEqual(ret.dropDownLabelledBy, ret.anchorId, "aria-labelledby --> anchor id");
 
-						assert.strictEqual(ret.anchorAriaHasPopup, "true", "aria-haspopup");
+						assert.strictEqual(ret.anchorAriaHasPopup, "dialog", "aria-haspopup");
 					})
 					// test close by clicking submit button
 					.findByCssSelector("button[type=submit]").click().end()

@@ -178,6 +178,17 @@ define([
 		openOnHover: false,
 
 		/**
+		 * Value to set aria-haspopup to.  Describes the type of the popup.  Values:
+		 *
+		 * - menu
+		 * - listbox
+		 * - tree
+		 * - grid
+		 * - dialog
+		 */
+		dropDownType: "menu",
+
+		/**
 		 * Whether or not the drop down is open.
 		 * @member {boolean}
 		 * @readonly
@@ -228,7 +239,7 @@ define([
 					oldVals._effectivePopupStateNode.removeAttribute("aria-haspopup");
 				}
 				if (this._effectivePopupStateNode) {
-					this._effectivePopupStateNode.setAttribute("aria-haspopup", "true");
+					this._effectivePopupStateNode.setAttribute("aria-haspopup", this.dropDownType);
 				}
 			}
 
