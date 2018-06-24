@@ -203,7 +203,7 @@ define([
 							var attrName = mr.attributeName,
 								setter = this._nativePropSetterMap[attrName],
 								newValue = this.getAttribute(attrName);
-							if (newValue !== null) {
+							if (setter && newValue !== null) {
 								this.removeAttribute(attrName);
 								setter.call(this, newValue);
 							}
