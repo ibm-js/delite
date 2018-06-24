@@ -41,15 +41,19 @@ define([
 
 	/**
 	 * Get a property from a dot-separated string, such as "A.B.C".
+	 * Returns undefined to indicate the object doesn't exist (although that
+	 * could also mean that the object does exist, but its value is "undefined".
 	 */
 	function getObject(name) {
-		try {
-			return name.split(".").reduce(function (context, part) {
-				return context[part];
-			}, this);	// "this" is the global object (i.e. window on browsers)
-		} catch (e) {
-			// Return undefined to indicate that object doesn't exist.
+		if (!name) {
+			return;
 		}
+		var context = this,   // "this" is the global object (i.e. window on browsers)
+			parts = name.split(".");
+		while (context && parts.length) {
+			context = context[parts.shift()];
+		}
+		return context;
 	}
 
 	// Properties not to monitor for changes.
