@@ -163,7 +163,9 @@ define(["dcl/dcl", "./Store"], function (dcl, Store) {
 				setvalue(this, tmp, key, store, renderItem[key]);
 			}
 			return store.get(tmp.id).then(function (item) {
-				dcl.mix(item, tmp);
+				for (var n in tmp) {
+					item[n] = tmp[n];
+				}
 				return item;
 			});
 		},

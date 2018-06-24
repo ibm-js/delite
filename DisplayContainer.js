@@ -58,7 +58,13 @@ define(["dcl/dcl", "requirejs-dplugins/Promise!", "./Container"],
 	 * @event module:delite/DisplayContainer#delite-after-hide
 	 * @property {Element} child - reference to child element
 	 */
-	
+
+	function mix(a, b) {
+		for (var n in b) {
+			a[n] = b[n];
+		}
+	}
+
 	/**
 	 * Mixin for widget containers that need to show on or off a child.
 	 *
@@ -95,8 +101,8 @@ define(["dcl/dcl", "requirejs-dplugins/Promise!", "./Container"],
 					dest: dest,
 					cancelable: false
 				};
-				dcl.mix(event, params);
-				dcl.mix(event, value);
+				mix(event, params);
+				mix(event, value);
 
 				self.emit("delite-before-show", event);
 
@@ -122,7 +128,7 @@ define(["dcl/dcl", "requirejs-dplugins/Promise!", "./Container"],
 		 */
 		hide: function (dest, params) {
 			var args = {hide: true};
-			dcl.mix(args, params);
+			mix(args, params);
 			var self = this;
 			return this.loadChild(dest, args).then(function (value) {
 				// the child is here, actually perform the display
@@ -133,8 +139,8 @@ define(["dcl/dcl", "requirejs-dplugins/Promise!", "./Container"],
 					cancelable: false,
 					hide: true
 				};
-				dcl.mix(event, params);
-				dcl.mix(event, value);
+				mix(event, params);
+				mix(event, value);
 
 				self.emit("delite-before-hide", event);
 
@@ -189,7 +195,7 @@ define(["dcl/dcl", "requirejs-dplugins/Promise!", "./Container"],
 					child = val;
 				}
 			};
-			dcl.mix(event, params);
+			mix(event, params);
 
 			// we now need to warn potential app controller we need to load a new child.
 			// if the controller specifies the child then use it,

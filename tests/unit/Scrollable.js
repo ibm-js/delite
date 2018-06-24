@@ -103,7 +103,13 @@ define([
 		}
 	};
 
-	dcl.mix(suite, ScrollableSharedTests.testCases);
+	function mix(a, b) {
+		for (var n in b) {
+			a[n] = b[n];
+		}
+	}
+
+	mix(suite, ScrollableSharedTests.testCases);
 
 	registerSuite(suite);
 
@@ -141,7 +147,7 @@ define([
 		}
 	};
 
-	dcl.mix(suite, ScrollableSharedTests.testCases);
+	mix(suite, ScrollableSharedTests.testCases);
 
 	registerSuite(suite);
 });

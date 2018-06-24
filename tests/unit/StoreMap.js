@@ -7,7 +7,7 @@ define([
 	"delite/Widget",
 	"delite/StoreMap",
 	"dstore/Trackable",
-	"dstore/Memory", "dcl/inherited"
+	"dstore/Memory"
 ], function (registerSuite, assert, dcl, declare, register, Widget, StoreMap, Trackable, Memory) {
 
 	var container;

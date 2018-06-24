@@ -279,7 +279,9 @@ define([
 		 */
 		itemUpdated: function (index, renderItem, renderItems) {
 			// we want to keep the same item object and mixin new values into old object
-			dcl.mix(renderItems[index], renderItem);
+			for (var n in renderItem) {
+				renderItems[index][n] = renderItem[n];
+			}
 		},
 
 		/**

@@ -274,10 +274,8 @@ define([
 			// Create wrapper if not already there
 			var wrapper = this._createWrapper(widget);
 
-			dcl.mix(wrapper.style, {
-				display: "none",
-				height: "auto"		// Open may have limited the height to fit in the viewport
-			});
+			wrapper.style.display = "none";
+			wrapper.style.height = "auto";		// Open may have limited the height to fit in the viewport
 		},
 
 		/**
@@ -359,10 +357,8 @@ define([
 					wrapperClasses.push(cls + "-popup");
 				}
 			});
-			dcl.mix(wrapper, {
-				id: widget.id + "_wrapper",
-				className: wrapperClasses.join(" ")
-			});
+			wrapper.id = widget.id + "_wrapper";
+			wrapper.className = wrapperClasses.join(" ");
 			wrapper.style.zIndex = this._beginZIndex + stack.length * 2;   // *2 leaves z-index slot for DialogUnderlay
 			wrapper._popupParent = args.parent ? args.parent : null;
 
@@ -509,10 +505,8 @@ define([
 						args.padding);
 
 				// Emit event telling popup that it was [re]positioned.
-				var event = {
-					around: around
-				};
-				dcl.mix(event, position);
+				var event = Object.create(position);
+				event.around = around;
 				widget.emit("popup-after-position", event);
 
 				return position;

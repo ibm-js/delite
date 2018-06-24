@@ -6,8 +6,7 @@ define([
 	"delite/register",
 	"delite/Widget",
 	"delite/StoreMap",
-	"decor/ObservableArray",
-	"dcl/inherited"
+	"decor/ObservableArray"
 ], function (registerSuite, assert, dcl, declare, register, Widget, StoreMap, ObservableArray) {
 
 	var container;
