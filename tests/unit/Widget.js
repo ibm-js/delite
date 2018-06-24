@@ -31,11 +31,6 @@ define([
 			topLevel: function () {
 				// Test when tabIndex is declared top level, in the props passed to register().
 
-				// TODO: enable this test when https://github.com/uhop/dcl/issues/9 is fixed
-				if (1 === 1) {
-					return this.skip("disabled until https://github.com/uhop/dcl/issues/9 is fixed");
-				}
-
 				var SpecialNames = register("test-tabindex-names", [HTMLElement, Widget], {
 					tabIndex: "0",
 

@@ -278,8 +278,7 @@ define([
 		// Test that we can observe changes to other native properties like tabIndex, dir, etc
 		"observing native properties": {
 			setup: function () {
-				// mixin to workaround https://github.com/uhop/dcl/issues/9
-				var TestNativePropsMixin = register.dcl(CustomElement, {
+				TestNativeProps = register("test-native-props", [HTMLInputElement, CustomElement], {
 					name: "hello",
 					title: "world",
 					createdCallback: function () {
@@ -290,8 +289,6 @@ define([
 						}.bind(this));
 					}
 				});
-
-				TestNativeProps = register("test-native-props", [HTMLInputElement, TestNativePropsMixin], {});
 			},
 
 			programmatic: function () {

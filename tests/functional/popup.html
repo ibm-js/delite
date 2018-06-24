@@ -233,14 +233,9 @@ require([
 
 	// DialogWithPopupWidget: This is a dialog that contains a button that spawns a drop down.
 	// Supply popup as an argument to this widget.
-	// DialogWithPopupWidgetMixin is to workaround problem using dcl() on native DOMNodes on FF and IE,
-	// see https://github.com/uhop/dcl/issues/9.
-	// After that's fixed, this should be a single register() statement.
-	var DialogWithPopupWidgetMixin = register.dcl(Widget, {
-		title: "I'm a dialog"
-	});
-	var DialogWithPopupWidget = register("dialog-with-popup-widget", [HTMLElement, DialogWithPopupWidgetMixin], {
+	var DialogWithPopupWidget = register("dialog-with-popup-widget", [HTMLElement, Widget], {
 		label: "show popup",
+		title: "I'm a dialog" ,
 
 		render: function () {
 			this.innerHTML +=

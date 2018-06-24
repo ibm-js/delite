@@ -9,15 +9,11 @@ define([
 		name: "CssState",
 
 		"basic": function () {
-			// Workaround problem using dcl() on native DOMNodes on FF and IE,
-			// see https://github.com/uhop/dcl/issues/9.
-			// After that's fixed, this should be a single register() statement.
-			var CssWidgetMixin = register.dcl(CssState, {
+			var CssWidget = register("css-widget", [HTMLElement, CssState], {
 				state: "",
 				disabled: false,
 				checked: false
 			});
-			var CssWidget = register("css-widget", [HTMLElement, CssWidgetMixin], { });
 
 			var widget = new CssWidget({
 				state: "error",

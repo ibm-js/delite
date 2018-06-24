@@ -27,12 +27,11 @@ define([
 	// skipping use of register().
 	has.add("setter-on-native-prop", function () {
 		var works = false,
-			Mixin = dcl(Stateful, {	// mixin to workaround https://github.com/uhop/dcl/issues/9
+			TestWidget = register("test-setter-on-native-prop", [HTMLElement], {
 				getProps: function () { return {dir: true}; },
 				dir: "",
 				_setDirAttr: function () { works = true; }
 			}),
-			TestWidget = register("test-setter-on-native-prop", [HTMLElement, Mixin], {}),
 			tw = new TestWidget();
 		tw.dir = "rtl";
 		return works;
