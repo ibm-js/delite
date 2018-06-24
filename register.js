@@ -15,24 +15,6 @@ define([
 	// instantiated in a separate code path.
 	var initialParseComplete;
 
-	// Workaround problem using dcl() on native DOMNodes on FF and IE,
-	// see https://github.com/uhop/dcl/issues/9.
-	// Fixes case where tabIndex is declared in a mixin that's passed to register().
-	dcl.mix = function (a, b) {
-		for (var n in b) {
-			try {
-				a[n] = b[n];
-			} catch (e) {
-				Object.defineProperty(a, n, {
-					configurable: true,
-					writable: true,
-					enumerable: true,
-					value: b[n]
-				});
-			}
-		}
-	};
-
 	/**
 	 * List of selectors that the parser needs to search for as possible upgrade targets.  Mainly contains
 	 * the widget custom tags like d-accordion, but also selectors like button[is='d-button'] to find <button is="...">
