@@ -56,7 +56,7 @@ define([
 	}
 
 	// Properties not to monitor for changes.
-	var REGEXP_IGNORE_PROPS = /^constructor$|^_set$|^_get$|^deliver$|^discardChanges$|^_(.+)Attr$/;
+	var REGEXP_IGNORE_PROPS = /^_(.+)Attr$/;
 
 	/**
 	 * Base class for all custom elements.
@@ -115,8 +115,10 @@ define([
 			do {
 				Object.keys(proto).forEach(function (prop) {
 					if (!REGEXP_IGNORE_PROPS.test(prop)) {
-						hash[prop] = true;
 						pcm[prop.toLowerCase()] = prop;
+						if (typeof proto[prop] !== "function") {
+							hash[prop] = true;
+						}
 					}
 				});
 
