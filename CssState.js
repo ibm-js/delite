@@ -21,6 +21,7 @@ define([
 	 * @augments module:delite/Widget
 	 */
 	return dcl(Widget, /** lends module:delite/CssState# */ {
+		declaredClass: "delite/CssState",
 
 		/**
 		 * List of boolean properties to watch.

@@ -1,11 +1,12 @@
 define([
 	"intern!object",
 	"intern/chai!assert",
+	"dcl/dcl",
 	"delite/register",
 	"delite/HasDropDown",
 	"delite/Widget",
 	"../functional/helpers"
-], function (registerSuite, assert, register, HasDropDown, Widget, helpers) {
+], function (registerSuite, assert, dcl, register, HasDropDown, Widget, helpers) {
 	var container;
 
 	// ------------
@@ -30,11 +31,14 @@ define([
 
 	// A button that shows a popup
 	var SimpleDropDownButton = register("simple-drop-down-button", [HTMLButtonElement, HasDropDown], {
-		label: "",
-		_setLabelAttr: function (val) {
-			this.textContent = val;
-			this._set("label", val);
-		},
+		label: dcl.prop({
+			set: function (val) {
+				this.textContent = val;
+			},
+			get: function () {
+				return this.textContent;
+			}
+		}),
 
 		loadDropDown: function () {
 			if (!this._dropDown) {

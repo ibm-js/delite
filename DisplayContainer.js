@@ -76,6 +76,8 @@ define(["dcl/dcl", "requirejs-dplugins/Promise!", "./Container"],
 	 * @augments module:delite/Container
 	 */
 	return dcl(Container, /** @lends module:delite/DisplayContainer# */ {
+		declaredClass: "delite/DisplayContainer",
+
 		/**
 		 * This method must be called to display a particular destination child on this container.
 		 * @param {Element|string} dest - Element or Element id that points to the child this container must

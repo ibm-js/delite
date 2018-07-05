@@ -40,6 +40,7 @@ define([
 	 * @augments module:delite/Widget
 	 */
 	return dcl(Widget, /** @lends module:delite/Scrollable# */{
+		declaredClass: "delite/Scrollable",
 
 		/**
 		 * The direction of the interactive scroll. Possible values are:

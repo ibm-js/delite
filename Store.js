@@ -35,6 +35,8 @@ define([
 	 * @mixin module:delite/Store
 	 */
 	return dcl(Invalidating, /** @lends module:delite/Store# */ {
+		declaredClass: "delite/Store",
+
 		/**
 		 * The source that contains the items to display.
 		 * @member {(dstore/Store|decor/ObservableArray|Array)}

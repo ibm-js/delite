@@ -60,18 +60,6 @@ define(["requirejs-dplugins/has"], function (has) {
 			return sawChild ? "all" : sawRoot ? "root" : "";
 		});
 
-		// Can we use __proto__ to reset the prototype of DOMNodes?
-		// It's not available on IE<11, and even on IE11 it makes the node's attributes
-		// (ex: node.attributes, node.textContent) disappear, so disabling it on IE11 too.
-		has.add("dom-proto-set", function () {
-			var node = document.createElement("div");
-			/* jshint camelcase: false */
-			/* jshint proto: true */
-			return !!node.__proto__;
-			/* jshint camelcase: true */
-			/* jshint proto: false */
-		});
-
 		// Support for <template> elements (specifically, that their content is available via templateNode.content
 		// rather than templateNode.children[] etc.
 		has.add("dom-template", !!document.createElement("template").content);

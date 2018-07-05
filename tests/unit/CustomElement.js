@@ -1,11 +1,12 @@
 define([
 	"intern!object",
 	"intern/chai!assert",
+	"dcl/dcl",
 	"dcl/advise",
 	"delite/register",
 	"delite/CustomElement",
 	"requirejs-domready/domReady!"
-], function (registerSuite, assert, advise, register, CustomElement) {
+], function (registerSuite, assert, dcl, advise, register, CustomElement) {
 
 	var container;
 	var TestNativeProps;
@@ -105,11 +106,15 @@ define([
 				// Setters are no longer called on creation except for parameters sent to new Foo(...)
 				var fooSetterCalled = false;
 				var MyCustomElement = register("my-custom-element", [HTMLElement, CustomElement], {
-					foo: 345,
-					_setFooAttr: function (val) {
-						fooSetterCalled = val;
-						this._set("foo", val);
-					}
+					foo: dcl.prop({
+						set: function (val) {
+							fooSetterCalled = val;
+							this._set("foo", val);
+						},
+						get: function () {
+							return this._has("foo") ? this._get("foo") : 345;
+						}
+					})
 				});
 				var instance = new MyCustomElement();
 				assert(instance, "instance created");

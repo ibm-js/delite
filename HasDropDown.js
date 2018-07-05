@@ -57,6 +57,8 @@ define([
 	 * @augments module:delite/Widget
 	 */
 	var HasDropDown = dcl(Widget, /** @lends module:delite/HasDropDown# */ {
+		declaredClass: "delite/HasDropDown",
+
 		/**
 		 * If specified, defines a node to set up the dropdown-opening behavior on,
 		 * rather than the HasDropDown node itself.

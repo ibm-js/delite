@@ -38,7 +38,9 @@ define(["./register"], function (register) {
 	 * @param {boolean} createRootNode - If true, create node; otherwise assume node exists in variable `nodeName`.
 	 * @class module:delite/Template
 	 */
-	var Template = register.dcl(null, /** @lends module:delite/Template# */ {
+	var Template = register.dcl(/** @lends module:delite/Template# */ {
+		declaredClass: "delite/Store",
+
 		constructor: function (tree, rootNodeName, createRootNode) {
 			this.buildText = [];	// code to build the initial DOM
 			this.attachText = [];	// code to run in attachedCallback()

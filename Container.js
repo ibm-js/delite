@@ -36,6 +36,8 @@ define([
 	 * @augments module:delite/Widget
 	 */
 	return dcl(Widget, /** @lends module:delite/Container# */{
+		declaredClass: "delite/Container",
+
 		/**
 		 * Designates where children of the source DOM node will be placed,
 		 * and also the target for nodes inserted via `.appendChild()`, `.insertBefore()`, etc.

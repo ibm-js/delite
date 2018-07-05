@@ -4,6 +4,20 @@ define([
 	"./Widget"
 ], function (dcl, Widget) {
 
+
+	// Detect if specified instance or its prototypes, not including HTMLElement, have defined the specified property.
+	function overridesProperty(instance, prop) {
+		for (var proto = Object.getPrototypeOf(instance);
+			 proto && proto !== instance._baseElement.prototype;
+			 proto = Object.getPrototypeOf(proto)
+		) {
+			var descriptor = Object.getOwnPropertyDescriptor(proto, prop);
+			if (descriptor) {
+				return true;
+			}
+		}
+	}
+
 	/**
 	 * Base class for widgets that extend `HTMLElement`, but conceptually correspond to form elements.
 	 *
@@ -19,6 +33,8 @@ define([
 	 * @augments module:delite/Widget
 	 */
 	return dcl(Widget, /** @lends module:delite/FormWidget# */ {
+		declaredClass: "delite/FormWidget",
+
 		/**
 		 * Name used when submitting form; same as "name" attribute or plain HTML elements.
 		 * @member {string}
@@ -168,10 +184,9 @@ define([
 
 					// Set the disabled property for native elements like <input>, and also custom elements with a
 					// disabled property.  Otherwise set aria-disabled.  Note that on IE every element has a
-					// disabled property, so it's hard to test if it's real or not.
-					// _propsToObserve is set by register() based on CustomElement.getProps().
+					// disabled property, so it's hard to test if it's real or not
 					if (/^(button|fieldset|input|keygen|optgroup|option|select|textarea)$/i.test(node.tagName) ||
-						(node._ctor && node._ctor._propsToObserve && "disabled" in node._ctor._propsToObserve)) {
+						(node._ctor && overridesProperty(node, "disabled"))) {
 						node.disabled = this.disabled;
 					} else {
 						node.setAttribute("aria-disabled", "" + this.disabled);
@@ -179,7 +194,7 @@ define([
 
 					// Likewise for aria-required.
 					if (/^(input|select|textarea)$/i.test(node.tagName) ||
-						(node._ctor && node._ctor._propsToObserve && "required" in node._ctor._propsToObserve)) {
+						(node._ctor && overridesProperty(node, "required"))) {
 						node.required = this.required;
 					} else if (/^(combobox|gridcell|listbox|radiogroup|spinbutton|textbox|tree)$/i.test(
 						node.getAttribute("role"))) {

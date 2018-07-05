@@ -53,6 +53,8 @@ define([
 	 * @augments module:delite/FormWidget
 	 */
 	return dcl(FormWidget, /** @lends module:delite/FormValueWidget# */{
+		declaredClass: "delite/FormValueWidget",
+
 		/**
 		 * If true, this widget won't respond to user input.  Similar to `disabled` except
 		 * `readOnly` form values are submitted.  FormValueWidget automatically updates

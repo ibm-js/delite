@@ -1,18 +1,17 @@
 define([
 	"intern!object",
 	"intern/chai!assert",
+	"dcl/dcl",
 	"decor/sniff",
 	"delite/register",
 	"decor/Stateful",
 	"requirejs-domready/domReady!"
-], function (registerSuite, assert, has, register, Stateful) {
+], function (registerSuite, assert, dcl, has, register, Stateful) {
 
 	// The <div> node where we will put all our DOM nodes
 	var container;
 
 	var Mixin, TestWidget, TestButtonWidget, TestExtendedWidget, TestExtendedButtonWidget;
-
-	var nativeButton = document.createElement("button");
 
 	registerSuite({
 		name: "register",
@@ -37,10 +36,6 @@ define([
 
 		// Declare and instantiate a simple widget
 		simple: function () {
-			if (has("safari") < 10) {
-				return this.skip("fails on old safari and ios due to https://github.com/uhop/dcl/issues/15");
-			}
-
 			TestWidget = register("test-simple-widget", [HTMLElement], {
 				foo: 3,
 				createdCallback: function () {
@@ -95,23 +90,14 @@ define([
 					this._fooCalled = true;
 				},
 
-				cs1: 3,
-				_setCs1Attr: function (val) {
-					this._set("cs1", val + 1);
-				},
-
-				// Need to redefine Stateful.getProps() because on FF and IE, we get exceptions when accessing props
-				// like HTMLElement.title.  We are accessing them in the HTMLElement prototype rather than an object
-				// created from the document.createElement() factory.
-				getProps: function () {
-					var hash = {};
-					for (var prop in this) {
-						if (!(prop in nativeButton)) {
-							hash[prop] = true;
-						}
+				cs1: dcl.prop({
+					set: function (val) {
+						this._set("cs1", val + 1);
+					},
+					get: function () {
+						return this._has("cs1") ? this._get("cs1") : 3;
 					}
-					return hash;
-				}
+				})
 			});
 			assert.ok(Mixin, "Mixin created");
 

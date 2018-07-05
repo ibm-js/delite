@@ -68,6 +68,7 @@ define([
 	  * @augments module:delite/Widget
 	  */
 	return dcl(Widget, /** @lends module:delite/KeyNav# */ {
+		declaredClass: "delite/KeyNav",
 
 		/*jshint -W101*/
 		/**

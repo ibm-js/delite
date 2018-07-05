@@ -6,9 +6,8 @@ define([
 	"decor/Destroyable",
 	"decor/Stateful",
 	"requirejs-dplugins/has",
-	"./on",
-	"./register"
-], function (advise, dcl, Observable, Destroyable, Stateful, has, on, register) {
+	"./on"
+], function (advise, dcl, Observable, Destroyable, Stateful, has, on) {
 
 	/**
 	 * Dispatched after the CustomElement has been attached.
@@ -20,23 +19,6 @@ define([
 	 * });
 	 * @event module:delite/CustomElement#customelement-attached
 	 */
-
-	// Test if custom setters work for native properties like dir, or if they are ignored.
-	// They don't work on some versions of webkit (Chrome, Safari 7, iOS 7), but do work on Safari 8 and iOS 8.
-	// If needed, this test could probably be reduced to just use Object.defineProperty() and dcl(),
-	// skipping use of register().
-	has.add("setter-on-native-prop", function () {
-		var works = false,
-			TestWidget = register("test-setter-on-native-prop", [HTMLElement], {
-				getProps: function () { return {dir: true}; },
-				dir: "",
-				_setDirAttr: function () { works = true; }
-			}),
-			tw = new TestWidget();
-		tw.dir = "rtl";
-		return works;
-	});
-
 
 	/**
 	 * Get a property from a dot-separated string, such as "A.B.C".
@@ -55,96 +37,33 @@ define([
 		return context;
 	}
 
-	// Properties not to monitor for changes.
-	var REGEXP_IGNORE_PROPS = /^_(.+)Attr$/;
-
 	/**
 	 * Base class for all custom elements.
 	 *
 	 * Use this class rather that delite/Widget for non-visual custom elements.
-	 * Custom elements can provide custom setters/getters for properties, which are called automatically
-	 * when the value is set.  For an attribute XXX, define methods _setXXXAttr() and/or _getXXXAttr().
 	 *
 	 * @mixin module:delite/CustomElement
 	 * @augments module:decor/Stateful
 	 * @augments module:decor/Destroyable
 	 */
 	var CustomElement = dcl([Stateful, Destroyable], /** @lends module:delite/CustomElement# */{
-		introspect: function () {
-			if (!has("setter-on-native-prop")) {
-				// Generate map from native attributes of HTMLElement to custom setters for those attributes.
-				// Necessary because webkit masks all custom setters for native properties on the prototype.
-				// For details see:
-				//		https://bugs.webkit.org/show_bug.cgi?id=36423
-				//		https://bugs.webkit.org/show_bug.cgi?id=49739
-				//		https://bugs.webkit.org/show_bug.cgi?id=75297
-				var proto = this,
-					nativeProps = document.createElement(this._extends || "div"),
-					setterMap = this._nativePropSetterMap = {};
+		declaredClass: "delite/CustomElement",
 
-				this._nativeAttrs = [];
-				do {
-					Object.keys(proto).forEach(function (prop) {
-						var lcProp = prop.toLowerCase();
+		instrument: function () {
+			var prototype = Object.getPrototypeOf(this);
+			var pcm = prototype._propCaseMap = {};
 
-						if (prop in nativeProps && !setterMap[lcProp]) {
-							var desc = Object.getOwnPropertyDescriptor(proto, prop);
-							if (desc && desc.set) {
-								this._nativeAttrs.push(lcProp);
-								setterMap[lcProp] = desc.set;
-							}
-						}
-					}, this);
+			// Set up this._propCaseMap, a mapping from lowercase property name to actual name,
+			// ex: iconclass --> iconClass, including the methods, but excluding
+			// props like "style" that are merely inherited from HTMLElement.
 
-					proto = Object.getPrototypeOf(proto);
-				} while (proto && proto !== this._baseElement.prototype);
-			}
-		},
-
-		getProps: function () {
-			// Override _Stateful.getProps() to ignore properties from the HTML*Element superclasses, like "style".
-			// You would need to explicitly declare style: "" in your widget to get it here.
-			//
-			// Also sets up this._propCaseMap, a mapping from lowercase property name to actual name,
-			// ex: iconclass --> iconClass, which does include the methods, but again doesn't
-			// include props like "style" that are merely inherited from HTMLElement.
-
-			var hash = {}, proto = this,
-				pcm = this._propCaseMap = {};
-
-			do {
+			for (var proto = prototype;
+				proto && proto !== this._baseElement.prototype;
+				proto = Object.getPrototypeOf(proto)
+			) {
 				Object.keys(proto).forEach(function (prop) {
-					if (!REGEXP_IGNORE_PROPS.test(prop)) {
-						pcm[prop.toLowerCase()] = prop;
-						if (typeof proto[prop] !== "function") {
-							hash[prop] = true;
-						}
-					}
+					pcm[prop.toLowerCase()] = prop;
 				});
-
-				proto = Object.getPrototypeOf(proto);
-			} while (proto && proto !== this._baseElement.prototype);
-
-			return hash;
-		},
-
-		/**
-		 * This method will detect and process any properties that the application has set, but the custom setter
-		 * didn't run because `has("setter-on-native-prop") === false`.
-		 * Used during initialization and also by `deliver()`.
-		 * @private
-		 */
-		_processNativeProps: function () {
-			if (!has("setter-on-native-prop")) {
-				this._nativeAttrs.forEach(function (attrName) {
-					if (this.hasAttribute(attrName)) { // value was specified
-						var value = this.getAttribute(attrName);
-						this.removeAttribute(attrName);
-						if (value !== null) {
-							this._nativePropSetterMap[attrName].call(this, value); // call custom setter
-						}
-					}
-				}, this);
 			}
 		},
 
@@ -186,36 +105,6 @@ define([
 						this[pa.prop] = pa.value;
 					}
 				}, this);
-
-				if (!has("setter-on-native-prop")) {
-					// Call custom setters for initial values of attributes with shadow properties (dir, tabIndex, etc)
-					this._processNativeProps();
-
-					// Begin watching for changes to those DOM attributes.
-					// Note that (at least on Chrome) I could use attributeChangedCallback() instead, which is
-					// synchronous, so Widget#deliver() will work as expected, but OTOH gets lots of notifications
-					// that I don't care about.
-					// If Polymer is loaded, use MutationObserver rather than WebKitMutationObserver
-					// to avoid error about "referencing a Node in a context where it does not exist".
-					/* global WebKitMutationObserver */
-					var MO = window.MutationObserver || WebKitMutationObserver;	// for jshint
-					var observer = new MO(function (records) {
-						records.forEach(function (mr) {
-							var attrName = mr.attributeName,
-								setter = this._nativePropSetterMap[attrName],
-								newValue = this.getAttribute(attrName);
-							if (setter && newValue !== null) {
-								this.removeAttribute(attrName);
-								setter.call(this, newValue);
-							}
-						}, this);
-					}.bind(this));
-					observer.observe(this, {
-						subtree: false,
-						attributeFilter: this._nativeAttrs,
-						attributes: true
-					});
-				}
 			}
 		}),
 
@@ -443,12 +332,6 @@ define([
 		getPropsToObserve: function () {
 			return this._ctor._propsToObserve;
 		},
-
-		// Before deliver() runs, process any native properties (tabIndex, dir) etc. that may have been
-		// set without the custom setter getting called.
-		deliver: dcl.before(function () {
-			this._processNativeProps();
-		}),
 
 		/**
 		 * Search subtree under root returning custom elements found.

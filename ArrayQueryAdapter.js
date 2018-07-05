@@ -32,6 +32,8 @@ define([
 	 * @class module:delite/ArrayQueryAdapter
 	 */
 	return dcl(Evented, /** @lends module:delite/ArrayQueryAdapter# */ {
+		declaredClass: "delite/ArrayQueryAdapter",
+
 		constructor: function (args) {
 			this.source = args.source;
 			// affect the callbacks of the observe functions

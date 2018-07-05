@@ -34,6 +34,7 @@
 		var ready = false; // set to true when the test page is ready
 
 		require([
+			"dcl/dcl",
 			"requirejs-dplugins/Promise!",
 			"delite/register",
 			"delite/Dialog",
@@ -41,7 +42,7 @@
 			"delite/Widget",
 			"dpointer/events",	// since I'm using touch-action
 			"requirejs-domready/domReady!"
-		], function (Promise, register, Dialog, HasDropDown, Widget) {
+		], function (dcl, Promise, register, Dialog, HasDropDown, Widget) {
 
 			// A trivial popup widget
 			var SimpleDialog = register("simple-dialog", [HTMLElement, Dialog], {
@@ -175,11 +176,14 @@
 
 			// A button that shows a popup
 			var SimpleDropDownButton = register("simple-drop-down-button", [HTMLButtonElement, HasDropDown], {
-				label: "",
-				_setLabelAttr: function (val) {
-					this.textContent = val;
-					this._set("label", val);
-				},
+				label: dcl.prop({
+					set: function (val) {
+						this.textContent = val;
+					},
+					get: function () {
+						return this.textContent;
+					}
+				}),
 
 				loadDropDown: function () {
 					if (!this._dropDown) {
@@ -197,11 +201,14 @@
 
 			// A button that emits the delite-display-load event to get a reference to the dropdown
 			var EventsDropDownButton = register("events-drop-down-button", [HTMLButtonElement, HasDropDown], {
-				label: "",
-				_setLabelAttr: function (val) {
-					this.textContent = val;
-					this._set("label", val);
-				}
+				label: dcl.prop({
+					set: function (val) {
+						this.textContent = val;
+					},
+					get: function () {
+						return this.textContent;
+					}
+				})
 			});
 
 			// A button that shows a popup
@@ -241,11 +248,14 @@
 			// A non-focusable "button" that shows a popup.
 			// Should work for mouse, although not for keyboard.
 			var NonFocusableDropDownButton = register("non-focusable-drop-down-button", [HTMLElement, HasDropDown], {
-				label: "",
-				_setLabelAttr: function (val) {
-					this.textContent = val;
-					this._set("label", val);
-				},
+				label: dcl.prop({
+					set: function (val) {
+						this.textContent = val;
+					},
+					get: function () {
+						return this.textContent;
+					}
+				}),
 
 				loadDropDown: function () {
 					return this._dropDown || (this._dropDown = new FocusMenu({

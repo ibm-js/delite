@@ -59,29 +59,6 @@ define([
 	}
 
 	/**
-	 * Generate metadata about all the properties in proto, both direct and inherited.
-	 * On IE<=10, these properties will be applied to a DOMNode via Object.defineProperties().
-	 * Skips properties in the base element (HTMLElement, HTMLButtonElement, etc.)
-	 * @param {Object} proto - The prototype.
-	 * @returns {Object} Hash from property name to return value from `Object.getOwnPropertyDescriptor()`.
-	 */
-	function getPropDescriptors(proto) {
-		var props = {};
-
-		do {
-			var keys = Object.getOwnPropertyNames(proto);	// better than Object.keys() because finds hidden props too
-			for (var i = 0, k; (k = keys[i]); i++) {
-				if (!props[k]) {
-					props[k] = Object.getOwnPropertyDescriptor(proto, k);
-				}
-			}
-			proto = Object.getPrototypeOf(proto);
-		} while (!/HTML[a-zA-Z]*Element/.test(proto.constructor.toString()));
-
-		return props;
-	}
-
-	/**
 	 * Converts plain Element of custom type into "custom element", by adding the widget's custom methods, etc.
 	 * Does nothing if the Element has already been converted or if it doesn't correspond to a registered custom tag.
 	 * After the upgrade, calls `createdCallback()`.
@@ -100,17 +77,8 @@ define([
 			var widget = registry[element.getAttribute("is") || element.nodeName.toLowerCase()];
 			if (widget) {
 				if (!element._upgraded) {
-					if (has("dom-proto-set")) {
-						// Redefine Element's prototype to point to widget's methods etc.
-						/*jshint camelcase: false*/
-						/*jshint proto: true*/
-						element.__proto__ = widget.prototype;
-						/*jshint camelcase: true*/
-						/*jshint proto: false*/
-					} else {
-						// Mixin all the widget's methods etc. into Element
-						Object.defineProperties(element, widget.props);
-					}
+					// Redefine Element's prototype to point to widget's methods etc.
+					Object.setPrototypeOf(element, widget.prototype);
 					element._upgraded = true;
 					if (element.createdCallback) {
 						element.createdCallback();
@@ -229,11 +197,6 @@ define([
 
 		if (has("document-register-element")) {
 			doc.registerElement(tag, config);
-		} else {
-			if (!has("dom-proto-set")) {
-				// Get descriptors for all the properties in the prototype.  This is needed on IE<=10 in upgrade().
-				config.props = getPropDescriptors(proto);
-			}
 		}
 
 		// Note: if we wanted to support registering new types after the parser was called, then here we should
@@ -291,10 +254,6 @@ define([
 
 	/**
 	 * Declare a widget and register it as a custom element.
-	 *
-	 * props{} can provide custom setters/getters for widget properties, which are called automatically when
-	 * the widget properties are set.
-	 * For a property XXX, define methods _setXXXAttr() and/or _getXXXAttr().
 	 *
 	 * @param  {string}               tag             The custom element's tag name.
 	 * @param  {Object[]}             superclasses    Any number of superclasses to be built into the custom element
@@ -361,15 +320,16 @@ define([
 			};
 		});
 
-		// Run introspection to add ES5 getters/setters.
+		// First time widget is instantiated, run introspection to add ES5 getters/setters for all props.
 		// Doesn't happen automatically because Stateful's constructor isn't called.
-		// Also, on IE this needs to happen before the getTagConstructor() call,
-		// since getTagConstructor() scans all the properties on the widget prototype.
-		if (proto.introspect) {
-			ctor._propsToObserve = proto.getProps();
-			proto.introspect(ctor._propsToObserve);
-			ctor.introspected = true;
-		}
+		// TODO: createdCallback not getting called.  Maybe I need to process prototype directly myself
+		advise.before(proto, "createdCallback", function () {
+			var ctor = this.constructor;
+			if (this.instrument && !ctor._instrumented) {
+				this.instrument();
+				ctor._instrumented = true;
+			}
+		});
 
 		// Save widget metadata to the registry and return constructor that creates an upgraded DOMNode for the widget
 		/* jshint boss:true */

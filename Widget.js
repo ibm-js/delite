@@ -22,6 +22,7 @@ define([
 	 * @mixes module:delite/Bidi
 	 */
 	var Widget = dcl([CustomElement, Invalidating], /** @lends module:delite/Widget# */ {
+		declaredClass: "delite/Widget",
 
 		/**
 		 * Root CSS class of the widget (ex: "d-text-box")

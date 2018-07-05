@@ -14,7 +14,9 @@ define([
 	 *
 	 * @class module:delite/DstoreQueryAdapter
 	 */
-	return dcl(null, /** @lends module:delite/DstoreQueryAdapter# */ {
+	return dcl(/** @lends module:delite/DstoreQueryAdapter# */ {
+		declaredClass: "delite/DstoreQueryAdapter",
+
 		constructor: function (args) {
 			this.source = args.source;
 			this.data = args.processQueryResult(this.source.filter(args.query));

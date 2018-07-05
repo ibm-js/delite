@@ -22,6 +22,8 @@ define(["dcl/dcl", "decor/sniff", "./Widget"], function (dcl, has, Widget) {
 	 * @augments module:delite/Widget
 	 */
 	return dcl(Widget, /** @lends module:delite/Selection# */{
+		declaredClass: "delite/Selection",
+
 		createdCallback: function () {
 			this._set("selectedItems", []);
 		},
@@ -47,61 +49,68 @@ define(["dcl/dcl", "decor/sniff", "./Widget"], function (dcl, has, Widget) {
 		 * @member {string}
 		 * @default "single"
 		 */
-		selectionMode: "single",
-
-		_setSelectionModeAttr: function (value) {
-			if (value !== "none" && value !== "single" && value !== "multiple" && value !== "radio") {
-				throw new TypeError("selectionMode invalid value");
-			}
-			if (value !== this.selectionMode) {
-				this._set("selectionMode", value);
-				if (value === "none") {
-					this.selectedItems = null;
-				} else if ((value === "single" || value === "radio") && this.selectedItem) {
-					this.selectedItems = [this.selectedItem];
+		selectionMode: dcl.prop({
+			set: function (value) {
+				if (value !== "none" && value !== "single" && value !== "multiple" && value !== "radio") {
+					throw new TypeError("selectionMode invalid value");
 				}
+				if (value !== this.selectionMode) {
+					this._set("selectionMode", value);
+					if (value === "none") {
+						this.selectedItems = null;
+					} else if ((value === "single" || value === "radio") && this.selectedItem) {
+						this.selectedItems = [this.selectedItem];
+					}
+				}
+			},
+			get: function () {
+				return this._get("selectionMode") || "single";
 			}
-		},
+		}),
 
 		/**
 		 * In single selection mode, the selected item or in multiple selection mode the last selected item.
 		 * @member {Object}
 		 * @default null
 		 */
-		selectedItem: null,
-
-		_setSelectedItemAttr: function (value) {
-			if (this.selectedItem !== value) {
-				this.selectedItems = (value == null ? null : [value]);
+		selectedItem: dcl.prop({
+			set: function (value) {
+				if (this.selectedItem !== value) {
+					this.selectedItems = (value == null ? null : [value]);
+				}
+			},
+			get: function () {
+				// TODO: stop calling _get()/_set() for "selectedItem" and just use "selectedItems"
+				return this._get("selectedItem") || null;
 			}
-		},
+		}),
 
 		/**
 		 * The list of selected items.
 		 * @member {Object[]}
 		 * @default null
 		 */
-		selectedItems: null,
+		selectedItems: dcl.prop({
+			set: function (value) {
+				var oldSelectedItems = this.selectedItems;
 
-		_setSelectedItemsAttr: function (value) {
-			var oldSelectedItems = this.selectedItems;
+				this._set("selectedItems", value);
 
-			this._set("selectedItems", value);
+				if (oldSelectedItems != null && oldSelectedItems.length > 0) {
+					this.updateRenderers(oldSelectedItems);
+				}
+				if (this.selectedItems && this.selectedItems.length > 0) {
+					this._set("selectedItem", this.selectedItems[0]);
+					this.updateRenderers(this.selectedItems);
+				} else {
+					this._set("selectedItem", null);
+				}
+			},
 
-			if (oldSelectedItems != null && oldSelectedItems.length > 0) {
-				this.updateRenderers(oldSelectedItems);
+			get: function () {
+				return this._get("selectedItems") == null ? [] : this._get("selectedItems").concat();
 			}
-			if (this.selectedItems && this.selectedItems.length > 0) {
-				this._set("selectedItem", this.selectedItems[0]);
-				this.updateRenderers(this.selectedItems);
-			} else {
-				this._set("selectedItem", null);
-			}
-		},
-
-		_getSelectedItemsAttr: function () {
-			return this._get("selectedItems") == null ? [] : this._get("selectedItems").concat();
-		},
+		}),
 
 		/**
 		 * Tests if an event has a selection modifier.

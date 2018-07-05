@@ -40,7 +40,9 @@ define([
 	 * @param {Element} node
 	 * @class module:delite/BackgroundIframe
 	 */
-	return dcl(null, /** @lends module:delite/BackgroundIframe# */ {
+	return dcl(/** @lends module:delite/BackgroundIframe# */ {
+		declaredClass: "delite/BackgroundIframe",
+
 		constructor: function (node) {
 			if (has("config-bgIframe")) {
 				var iframe = (this.iframe = _frames.pop());

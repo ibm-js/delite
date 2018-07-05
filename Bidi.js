@@ -13,6 +13,7 @@ define([
 		PDF = "\u202C";
 
 	return /** @lends module:delite/Bidi */ {
+		declaredClass: "delite/Bidi",
 
 		/**
 		 * Bi-directional support, the main variable which is responsible for the direction of the text.

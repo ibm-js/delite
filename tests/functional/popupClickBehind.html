@@ -32,18 +32,22 @@
 var ready = false; // set to true when the test page is ready
 
 require([
+	"dcl/dcl",
 	"delite/popup", "delite/register", "delite/Widget",
 	"requirejs-domready/domReady!"
-], function (popupUtil, register, Widget) {
+], function (dcl, popupUtil, register, Widget) {
 
 	// A button that shows a popup.
 	// Supply popup as parameter when instantiating this widget.
 	var SimpleDropDownButton = register("simple-dropdown-button", [HTMLButtonElement, Widget], {
-		label: "show popup",
-		_setLabelAttr: function (label) {
-			this.textContent = label;
-			this._set("label", label);
-		},
+		label: dcl.prop({
+			set: function (val) {
+				this.textContent = val;
+			},
+			get: function () {
+				return this.textContent;
+			}
+		}),
 
 		orient: ["below"],
 
