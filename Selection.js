@@ -65,7 +65,9 @@ define(["dcl/dcl", "decor/sniff", "./Widget"], function (dcl, has, Widget) {
 			},
 			get: function () {
 				return this._get("selectionMode") || "single";
-			}
+			},
+			enumerable: true,
+			configurable: true
 		}),
 
 		/**
@@ -82,7 +84,9 @@ define(["dcl/dcl", "decor/sniff", "./Widget"], function (dcl, has, Widget) {
 			get: function () {
 				// TODO: stop calling _get()/_set() for "selectedItem" and just use "selectedItems"
 				return this._get("selectedItem") || null;
-			}
+			},
+			enumerable: true,
+			configurable: true
 		}),
 
 		/**
@@ -106,10 +110,11 @@ define(["dcl/dcl", "decor/sniff", "./Widget"], function (dcl, has, Widget) {
 					this._set("selectedItem", null);
 				}
 			},
-
 			get: function () {
 				return this._get("selectedItems") == null ? [] : this._get("selectedItems").concat();
-			}
+			},
+			enumerable: true,
+			configurable: true
 		}),
 
 		/**
