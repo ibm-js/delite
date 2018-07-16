@@ -327,12 +327,6 @@ define([
 			return on(node || this, type, func);
 		},
 
-		// Override Stateful#getPropsToObserve() because the way to get the list of properties to watch is different
-		// than for a plain Stateful.  Especially since IE doesn't support prototype swizzling.
-		getPropsToObserve: function () {
-			return this._ctor._propsToObserve;
-		},
-
 		/**
 		 * Search subtree under root returning custom elements found.
 		 * @param {Element} [root] - Node to search under.
