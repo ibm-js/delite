@@ -174,16 +174,14 @@ define([
 		},
 
 		/**
-		 * Reposition all the popups due to viewport scroll.  The main purpose of the function is to handle
+		 * Reposition [and resize] all the popups due to viewport scroll.  The main purpose of the function is to handle
 		 * automatic scrolling on mobile from the keyboard popping up or when the browser tries to scroll the
 		 * focused element to the upper part of the screen.
 		 * @private
 		 */
 		_viewportScrollHandler: function () {
 			this._stack.forEach(function (args) {
-				if (args.orient[0] !== "center") {	// no need to resize dialogs just due to viewport scroll
-					this._size(args);
-				}
+				this._size(args);
 				this._position(args);
 			}, this);
 		},
@@ -437,6 +435,10 @@ define([
 				orient = args.orient || ["below", "below-alt", "above", "above-alt"],
 				viewport = Viewport.getEffectiveBox(widget.ownerDocument);
 
+			var cs = getComputedStyle(widget),
+				verticalMargin = parseFloat(cs.marginTop) + parseFloat(cs.marginBottom),
+				horizontalMargin = parseFloat(cs.marginLeft) + parseFloat(cs.marginRight);
+
 			if (measureSize) {
 				// Get natural size of popup (i.e. when not squashed to fit within viewport).  First, remove any
 				// previous size restriction set on popup.  Note that setting popups's height and width to "auto"
@@ -449,9 +451,6 @@ define([
 					widget.style.width = "auto";
 				}
 
-				var cs = getComputedStyle(widget),
-					verticalMargin = parseFloat(cs.marginTop) + parseFloat(cs.marginBottom),
-					horizontalMargin = parseFloat(cs.marginLeft) + parseFloat(cs.marginRight);
 				args._naturalHeight = widget.offsetHeight + verticalMargin;
 				args._naturalWidth = widget.offsetWidth + horizontalMargin;
 			}
@@ -469,12 +468,15 @@ define([
 				if ("maxHeight" in args && args.maxHeight !== -1) {
 					maxHeight = args.maxHeight || Infinity;
 				} else {
+					// Get around node position, doing correction if iOS auto-scroll has moved it off screen.
 					var aroundPos = around ? around.getBoundingClientRect() : {
 						top: args.y - (args.padding || 0),
 						height: (args.padding || 0) * 2
 					};
-					maxHeight = Math.floor(Math.max(aroundPos.top, viewport.h -
-						(aroundPos.top + aroundPos.height)));
+					var aroundPosTop = Math.max(aroundPos.top, 0);
+					var aroundPosBottom = Math.max(aroundPos.top + aroundPos.height, 0);
+
+					maxHeight = Math.floor(Math.max(aroundPosTop, viewport.h - aroundPosBottom));
 				}
 
 				widget.style.height = args._naturalHeight > maxHeight ? maxHeight - verticalMargin + "px" : "auto";
