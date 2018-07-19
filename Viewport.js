@@ -23,25 +23,12 @@ define([
 	// Get the size of the viewport without size adjustment needed for iOS soft keyboard.
 	// On android though, this returns the size of the visible area not including the keyboard.
 	function getBox() {
-		if (has("ios") < 8) {
-			// Workaround iOS < 8 problem where window.innerHeight is too low when the document is scrolled so
-			// much that the document ends before the bottom of the keyboard.  Workaround not needed and doesn't work,
-			// on iOS 8.
-			var bcr = document.body.getBoundingClientRect();
-			return {
-				w: Math.max(bcr.width, window.innerWidth),
-				h: Math.max(bcr.height, window.innerHeight),
-				t: window.pageYOffset,
-				l: window.pageXOffset
-			};
-		} else {
-			return {
-				w: window.innerWidth,
-				h: window.innerHeight,
-				t: window.pageYOffset,
-				l: window.pageXOffset
-			};
-		}
+		return {
+			w: window.innerWidth,
+			h: window.innerHeight,
+			t: window.pageYOffset,
+			l: window.pageXOffset
+		};
 	}
 
 	/**
@@ -50,7 +37,7 @@ define([
 	 * @function module:delite/Viewport.getEffectiveBox
 	 */
 	Viewport.getEffectiveBox = function () {
-		/* jshint maxcomplexity:12 */
+		/* jshint maxcomplexity:11 */
 
 		var box = getBox();
 
@@ -60,39 +47,45 @@ define([
 		if (has("ios") && focusedNode && !focusedNode.readOnly && (tag === "textarea" || (tag === "input" &&
 			/^(color|email|number|password|search|tel|text|url)$/.test(focusedNode.type)))) {
 
-			// Box represents the size of the viewport.  Some of the viewport is likely covered by the keyboard.
-			// Estimate height of visible viewport assuming viewport goes to bottom of screen,
-			// but is covered by keyboard.
-			
-			// By my measurements the effective viewport is the following size (compared to full viewport:
-			// Portrait / landscape / window.screen.height:
-			// iPhone 6 / iOS 8: 54% / 26% / 667
-			// iPhone 5s / iOS 8: 53% / 27% / 568
-			// iPhone 5s / iOS 7: 53% / 19% / 568
-			// iPhone 5 / iOS 8: 52% / 27% / 568
-			// iPhone 4s / iOS 7: 41% / 19% / 480
-			// iPad 2 / iOS 7.1: 66% / 41%
-			// iPhone 3s / iOS6: 43% / 29% (but w/hidden address bar because it hides all the time)
+			var portrait = (window.orientation === 0 || window.orientation === 180);
 
-			if (has("ipad")) {
-				// Numbers for iPad 2, hopefully it works for other iPads (including iPad mini) too.
-				box.h *= (window.orientation === 0 || window.orientation === 180 ? 0.65 : 0.38);
+			// "box" represents the size of the viewport.  Some of the viewport is likely covered by the virtual
+			// keyboard, but we don't know how much, so window.innerHeight doesn't help us.  Instead,
+			// estimate effective viewport size based on screen.height (in portrait mode) or screen.width
+			// (in landscape mode).
+
+			// Measurements of various iOS devices and how much of the screen size is available between
+			// the address bar and the virtual keyboard, including the row for auto-suggest.
+			// Note that iPhone hides the address bar in landscape mode.
+			//
+			// iPhone5, 5s, 5c, SE:
+			//	* landscape screen.width = 320, available height = 115/640 = 17.9%
+			//	* portrait screen.height = 568, available height = 405/1136 = 35.6%
+			// iPhone 6, 7, 8:
+			//	* landscape screen.width = 375, available height = 263/750 = 35%
+			//	* portrait screen.height = 667, available height = 596/1325 = 44.9%
+			// iPhone 6+, 6s+, 7+, 8+
+			//	* landscape screen.width = 414, available height = 507/1242 = 40%
+			//	* portrait screen.height = 736, available height = 1060/2208 = 48%
+			// iPhone X:
+			//	* landscape screen.width = 375, available height = 364/1122 = 32.4%
+			//	* portrait screen.height = 812, available height = 1033/2436 = 42.4%
+			// iPad mini, iPad Air, iPad Pro 9.7”
+			//	* landscape screen.width = 768, available height = 603 / 1535 = 39.2%
+			//	* portrait screen.height = 1024, available height = 1284 / 2047 = 62.7%
+			// iPad Pro 12.9”, first and second gen
+			//	* landscape screen.width = 1024, available height = 970 / 2044 = 47.4%
+			//	* portrait screen.height = 1366, available height = 1846 / 2729 = 67.6%
+
+			var multiplier;
+			if (portrait) {
+				multiplier = screen.height >= 1366 ? 0.67 : screen.height >= 1024 ? 0.62 :
+					screen.height >= 667 ? 0.42 : 0.35;
+				box.h = screen.height * multiplier;
 			} else {
-				// iPhone varies a lot by model, this should estimate the available space conservatively
-				if (window.orientation === 0 || window.orientation === 180) {
-					// portrait
-					box.h *= (window.screen.height > 500 ? 0.54 : 0.42);
-				} else {
-					// landscape
-					box.h *= (window.screen.height > 500 && has("ios") >= 8 ? 0.26 : 0.19);
-				}
-			}
-
-			// Account for space taken by auto-completion suggestions.
-			if (has("ios") >= 8 &&
-				(!focusedNode.hasAttribute("autocorrect") || focusedNode.getAttribute("autocorrect") === "on") &&
-				/^(color|number|search|tel|text)$/.test(focusedNode.type)) {
-				box.h -= 40;
+				multiplier = screen.width >= 1024 ? 0.47 : screen.width >= 414 ? 0.39 :
+					screen.width >= 375 ? 0.32 : 0.18;
+				box.h = screen.width * multiplier;
 			}
 		}
 
