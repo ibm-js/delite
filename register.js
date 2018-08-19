@@ -9,86 +9,6 @@ define([
 ) {
 	"use strict";
 
-	/**
-	 * Mapping of tag names to HTMLElement interfaces.
-	 * Doesn't include newer elements not available on all browsers.
-	 * @type {Object}
-	 */
-	var tagMap = typeof HTMLElement !== "undefined" && {	// "typeof HTMLElement" check so module loads in NodeJS
-		a: HTMLAnchorElement,
-		// applet: HTMLAppletElement,
-		// area: HTMLAreaElement,
-		// audio: HTMLAudioElement,
-		base: HTMLBaseElement,
-		br: HTMLBRElement,
-		button: HTMLButtonElement,
-		canvas: HTMLCanvasElement,
-		// data: HTMLDataElement,
-		// datalist: HTMLDataListElement,
-		div: HTMLDivElement,
-		dl: HTMLDListElement,
-		directory: HTMLDirectoryElement,
-		// embed: HTMLEmbedElement,
-		fieldset: HTMLFieldSetElement,
-		font: HTMLFontElement,
-		form: HTMLFormElement,
-		head: HTMLHeadElement,
-		h1: HTMLHeadingElement,
-		html: HTMLHtmlElement,
-		hr: HTMLHRElement,
-		iframe: HTMLIFrameElement,
-		img: HTMLImageElement,
-		input: HTMLInputElement,
-		// keygen: HTMLKeygenElement,
-		label: HTMLLabelElement,
-		legend: HTMLLegendElement,
-		li: HTMLLIElement,
-		link: HTMLLinkElement,
-		map: HTMLMapElement,
-		// media: HTMLMediaElement,
-		menu: HTMLMenuElement,
-		meta: HTMLMetaElement,
-		// meter: HTMLMeterElement,
-		ins: HTMLModElement,
-		object: HTMLObjectElement,
-		ol: HTMLOListElement,
-		optgroup: HTMLOptGroupElement,
-		option: HTMLOptionElement,
-		// output: HTMLOutputElement,
-		p: HTMLParagraphElement,
-		param: HTMLParamElement,
-		pre: HTMLPreElement,
-		// progress: HTMLProgressElement,
-		quote: HTMLQuoteElement,
-		script: HTMLScriptElement,
-		select: HTMLSelectElement,
-		// source: HTMLSourceElement,
-		// span: HTMLSpanElement,
-		style: HTMLStyleElement,
-		table: HTMLTableElement,
-		caption: HTMLTableCaptionElement,
-		// td: HTMLTableDataCellElement,
-		// th: HTMLTableHeaderCellElement,
-		col: HTMLTableColElement,
-		tr: HTMLTableRowElement,
-		tbody: HTMLTableSectionElement,
-		textarea: HTMLTextAreaElement,
-		// time: HTMLTimeElement,
-		title: HTMLTitleElement,
-		// track: HTMLTrackElement,
-		ul: HTMLUListElement,
-		// blink: HTMLUnknownElement,
-		video: HTMLVideoElement
-	};
-
-	// Map from HTML*Element constructor to tag name.
-	var htmlElementConstructorMap = new Map();
-	if (tagMap) {
-		for (var tag in tagMap) {
-			htmlElementConstructorMap.set(tagMap[tag], tag);
-		}
-	}
-
 	// Hack DCL so that MyWidget#constructor() doesn't do HTML*Element.apply(this, arguments)...
 	// since that throws an exception.
 	// An alternate approach might be to have the HTMLElement wrapper shim with
@@ -102,8 +22,7 @@ define([
 		newProp.value = function () {
 			for (var i = 0; i < chain.length; ++i) {
 				/* global HTMLUnknownElement */
-				if (chain[i] !== HTMLElement && chain[i] !== HTMLUnknownElement
-						&& !htmlElementConstructorMap.has(chain[i])) {
+				if (chain[i] !== HTMLElement && chain[i] !== HTMLUnknownElement) {
 					chain[i].apply(this, arguments);
 				}
 			}
@@ -116,8 +35,7 @@ define([
 	};
 	dcl._origMakeStub = dcl._makeStub;
 	dcl._makeStub = function (aroundStub, beforeChain, afterChain) {
-		if (aroundStub === HTMLElement || aroundStub === HTMLUnknownElement
-				|| htmlElementConstructorMap.has(aroundStub)) {
+		if (aroundStub === HTMLElement || aroundStub === HTMLUnknownElement) {
 			aroundStub = null;
 		}
 		return dcl._origMakeStub(aroundStub, beforeChain, afterChain);
@@ -153,12 +71,8 @@ define([
 		}
 
 		// Get name of tag that this BaseCtor extends, for example <button is="..."> --> "button"
-		var _extends;
 		if (BaseHTMLElement !== HTMLElement) {
-			_extends = htmlElementConstructorMap.get(BaseHTMLElement);
-			if (!_extends) {
-				throw new TypeError(tag + ": must have HTMLElement in prototype chain");
-			}
+			throw new TypeError(tag + ": must have HTMLElement in prototype chain");
 		}
 
 		// Get a composited constructor
@@ -167,7 +81,6 @@ define([
 		proto._ctor = CustomElementClass;
 		proto._BaseHTMLElement = BaseHTMLElement;
 		proto._tag = tag;
-		proto._extends = _extends;
 
 		// Use trick from https://github.com/w3c/webcomponents/issues/587#issuecomment-254017839
 		// to create constructor.
@@ -175,16 +88,16 @@ define([
 			/* global Reflect */
 			var elem;
 			if (typeof Reflect === "object") {
+				// I want the third argument CustomElementClass but that throws exceptions in some cases.
 				elem = Reflect.construct(BaseHTMLElement, [], Constructor);
 			} else {
-				// TODO: Try Object.create() too, see
 				// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect/construct
 				elem = BaseHTMLElement.call(this);
 				Object.setPrototypeOf(elem, Constructor.prototype);
 			}
 
 			CustomElementClass.prototype.constructor.apply(elem, arguments);
-			// TODO: Try CustomElementClass.apply(elem, arguments) instead.
+
 			return elem;
 		};
 		Object.setPrototypeOf(Constructor.prototype, CustomElementClass.prototype);
@@ -210,16 +123,9 @@ define([
 			};
 		});
 
-		// TODO: Is this still needed?  It isn't in the latest native-shim.js.
-		Constructor.observedAttributes = CustomElementClass.observedAttributes;
-		ConstructorProto.connectedCallback = CustomElementClass.prototype.connectedCallback;
-		ConstructorProto.disconnectedCallback = CustomElementClass.prototype.disconnectedCallback;
-		ConstructorProto.attributeChangedCallback = CustomElementClass.prototype.attributeChangedCallback;
-		ConstructorProto.adoptedCallback = CustomElementClass.prototype.adoptedCallback;
-
 		// Define the custom element.
 		/* global customElements */
-		customElements.define(tag, Constructor, _extends ? {extends: _extends} : null);
+		customElements.define(tag, Constructor);
 
 		// Add some flags for debugging and return the new constructor
 		Constructor.tag = tag;
