@@ -46,8 +46,6 @@ define([
 
 		constructor: function (tree, rootNodeName, createRootNode) {
 			this.buildText = [];	// code to build the initial DOM
-			this.attachText = [];	// code to run in connectedCallback()
-			this.detachText = [];	// code to run in disconnectedCallback()
 			this.destroyText = [];	// code to run in tear down template, removing listeners etc.
 			this.observeText = [];	// code to update the DOM when widget properties change
 
@@ -56,12 +54,6 @@ define([
 			// Generate text of function.
 			this.text = this.buildText.join("\n") + "\n" +
 				"return {\n" +
-					"\tattach: function(){\n\t\t" +
-						this.attachText.join("\n\t\t") +
-					"\n\t},\n" +
-					"\tdetach: function(){\n\t\t" +
-						this.detachText.join("\n\t\t") +
-					"\n\t},\n" +
 					"\trefresh: function(props){\n\t\t" +
 						this.observeText.join("\n\t\t") +
 					"\n\t}.bind(this),\n" +
@@ -163,10 +155,6 @@ define([
 					"document.createElementNS('" + templateNode.xmlns + "', '" + templateNode.tag + "');" :
 					"document.createElement('" + templateNode.tag + "');")
 				);
-				if (/-/.test(templateNode.tag)) {
-					this.attachText.push(nodeName + ".connectedCallback();");
-					this.detachText.push(nodeName + ".disconnectedCallback();");
-				}
 			} else if (ap) {
 				// weird case that someone set attach-point on root node
 				this.buildText.push(ap + nodeName + ";");

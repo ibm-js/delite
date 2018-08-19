@@ -184,9 +184,6 @@ define([
 			// Render the widget.
 			if (this.template) {
 				this._templateHandle = this.template(this.ownerDocument);
-				if (this.attached && !has("document-register-element")) {
-					this._templateHandle.attach();
-				}
 			}
 		},
 
@@ -255,10 +252,6 @@ define([
 		//////////// DESTROY FUNCTIONS ////////////////////////////////
 
 		disconnectedCallback: function () {
-			// Call disconnectedCallback() on any widgets in the template
-			if (this._templateHandle && !has("document-register-element")) {
-				this._templateHandle.detach();
-			}
 			if (this.bgIframe) {
 				this.bgIframe.destroy();
 				delete this.bgIframe;
