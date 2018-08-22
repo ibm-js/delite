@@ -54,7 +54,7 @@ define([
 					if (a11y.isTabNavigable(child)) {
 						elems.push({
 							elem: child,
-							tabIndex: child.hasAttribute("tabindex") ? child.getAttribute("tabindex") : 0,
+							tabIndex: child.hasAttribute("tabindex") ? +child.getAttribute("tabindex") : 0,
 							pos: elems.length
 						});
 					}
@@ -106,8 +106,8 @@ define([
 			//		Returns Promise that fires when all widgets have finished initializing.
 			//		Call this after the parser has finished running.
 
-			// Promise fires when all widgets with a loadPromise have fired.
-			// Note that we really just want to search for the widgets registered via register.createElement()
+			// Promise fires when all custom elements with a loadPromise have fired.
+			// Note that we really just want to search for custom elements
 			// but that info isn't public.
 			var allNodes = Array.prototype.slice.call(document.getElementsByTagName("*"));
 			var widgets = allNodes.filter(function (w) {

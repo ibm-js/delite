@@ -2,12 +2,18 @@
 define([
 	"dcl/advise",
 	"dcl/dcl",
-	"decor/Observable",
 	"decor/Destroyable",
 	"decor/Stateful",
 	"requirejs-dplugins/has",
 	"./on"
-], function (advise, dcl, Observable, Destroyable, Stateful, has, on) {
+], function (
+	advise,
+	dcl,
+	Destroyable,
+	Stateful,
+	has,
+	on
+) {
 
 	/**
 	 * Dispatched after the CustomElement has been attached.
@@ -58,7 +64,7 @@ define([
 			// props like "style" that are merely inherited from HTMLElement.
 
 			for (var proto = prototype;
-				proto && proto !== this._baseElement.prototype;
+				proto && proto !== this._BaseHTMLElement.prototype;
 				proto = Object.getPrototypeOf(proto)
 			) {
 				Object.keys(proto).forEach(function (prop) {
@@ -68,69 +74,79 @@ define([
 		},
 
 		/**
-		 * Set to true when `createdCallback()` has completed.
+		 * Set to true when `constructor()` has completed.
 		 * @member {boolean}
 		 * @protected
 		 */
 		created: false,
 
 		/**
-		 * Called when the custom element is created, or when `register.parse()` parses a custom tag.
+		 * Called when the custom element is created, or when a custom tag is parsed.
 		 *
 		 * This method is automatically chained, so subclasses generally do not need to use `dcl.superCall()`,
 		 * `dcl.advise()`, etc.
 		 * @method
 		 * @protected
 		 */
-		createdCallback: dcl.advise({
+		constructor: dcl.advise({
 			before: function () {
-				// Mark this object as observable with Object.observe() shim
-				if (!this._observable) {
-					Observable.call(this);
+				// Set up this.constructor._propCaseMap, a mapping from lowercase property name to actual name,
+				// ex: iconclass --> iconClass, including the methods, but excluding
+				// props like "style" that are merely inherited from HTMLElement.
+				if (!this.constructor._propCaseMap) {
+					var pcm = this.constructor._propCaseMap = {};
+					for (var proto = Object.getPrototypeOf(this);
+						 proto && proto !== this._BaseHTMLElement.prototype;
+						 proto = Object.getPrototypeOf(proto)
+					) {
+						Object.keys(proto).forEach(function (prop) {
+							pcm[prop.toLowerCase()] = prop;
+						});
+					}
 				}
-
-				// Get parameters that were specified declaratively on the widget DOMNode.
-				this._parsedAttributes = this._mapAttributes();
 			},
 
 			after: function () {
 				this.created = true;
-
-				// Now that creation has finished, apply parameters that were specified declaratively.
-				// This is consistent with the timing that parameters are applied for programmatic creation.
-				this._parsedAttributes.forEach(function (pa) {
-					if (pa.event) {
-						this.on(pa.event, pa.callback);
-					} else {
-						this[pa.prop] = pa.value;
-					}
-				}, this);
 			}
 		}),
 
 		/**
-		 * Set to true when `attachedCallback()` has completed, and false when `detachedCallback()` called.
+		 * Set to true when `connectedCallback()` has completed, and false when `disconnectedCallback()` called.
 		 * @member {boolean}
 		 * @protected
 		 */
 		attached: false,
 
 		/**
-		 * Called automatically when the element is added to the document, after `createdCallback()` completes.
+		 * Called automatically when the element is added to the document, after `constructor()` completes.
 		 * This method is automatically chained, so subclasses generally do not need to use `dcl.superCall()`,
 		 * `dcl.advise()`, etc.
 		 * @method
 		 * @fires module:delite/CustomElement#customelement-attached
 		 */
-		attachedCallback: dcl.advise({
+		connectedCallback: dcl.advise({
+			// TODO: switch to standard around advice?
 			before: function () {
-				// Call computeProperties() and refreshRendering() for declaratively set properties.
-				// Do this in attachedCallback() rather than createdCallback() to avoid calling refreshRendering() etc.
-				// prematurely in the programmatic case (i.e. calling it before user parameters have been applied).
-				this.deliver();
+				// Apply parameters that were specified as attributes on the custom element root node.
+				// On Safari (and maybe other browsers), the attributes sometimes aren't available until
+				// connectedCallback().  It's part of the black magic of calling constructor() for elements that
+				// already exist.  (Of course, only parse the attributes this the first time the element is connected.)
+				if (!this._parsedAttributes) {
+					this._parsedAttributes = this._mapAttributes();
+					this._parsedAttributes.forEach(function (pa) {
+						if (pa.event) {
+							this.on(pa.event, pa.callback);
+						} else {
+							this[pa.prop] = pa.value;
+						}
+					}, this);
+				}
 			},
 
 			after: function () {
+				this.deliver();
+
 				this.attached = true;
 
 				this.emit("customelement-attached", {
@@ -145,7 +161,7 @@ define([
 		 * This method is automatically chained, so subclasses generally do not need to use `dcl.superCall()`,
 		 * `dcl.advise()`, etc.
 		 */
-		detachedCallback: function () {
+		disconnectedCallback: function () {
 			this.attached = false;
 		},
 
@@ -232,7 +248,7 @@ define([
 		 * @protected
 		 */
 		parseAttribute: function (name, value) {
-			var pcm = this._propCaseMap;
+			var pcm = this.constructor._propCaseMap;
 			if (name in pcm) {
 				name =  pcm[name]; // convert to correct case for widget
 				return {
@@ -289,7 +305,7 @@ define([
 
 			if (this.parentNode) {
 				this.parentNode.removeChild(this);
-				this.detachedCallback();
+				this.disconnectedCallback();
 			}
 		},
 
@@ -336,7 +352,7 @@ define([
 
 			function getChildrenHelper(root) {
 				for (var node = root.firstChild; node; node = node.nextSibling) {
-					if (node.nodeType === 1 && node.createdCallback) {
+					if (node.nodeType === 1 && /-/.test(node.tagName)) {
 						outAry.push(node);
 					} else {
 						getChildrenHelper(node);
@@ -351,9 +367,8 @@ define([
 
 	// Setup automatic chaining for lifecycle methods.
 	// destroy() is chained in Destroyable.js.
-	dcl.chainAfter(CustomElement, "createdCallback");
-	dcl.chainAfter(CustomElement, "attachedCallback");
-	dcl.chainBefore(CustomElement, "detachedCallback");
+	dcl.chainAfter(CustomElement, "connectedCallback");
+	dcl.chainBefore(CustomElement, "disconnectedCallback");
 
 	return CustomElement;
 });

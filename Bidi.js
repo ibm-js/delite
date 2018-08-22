@@ -40,7 +40,7 @@ define([
 			return this._inheritedDir || this.ownerDocument.body.dir || this.ownerDocument.documentElement.dir || "ltr";
 		},
 
-		attachedCallback: function () {
+		connectedCallback: function () {
 			if (has("inherited-dir")) {
 				// Now that the widget is attached to the DOM, need to retrigger computation of effectiveDir.
 				this._inheritedDir = window.getComputedStyle(this, null).direction;

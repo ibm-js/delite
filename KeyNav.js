@@ -1,11 +1,14 @@
 /** @module delite/KeyNav */
 define([
 	"dcl/dcl",
-	"requirejs-dplugins/jquery!attributes/classes",	// addClass(), removeClass()
 	"./features",
 	"./Widget",
 	"dpointer/events"		// so can just monitor for "pointerdown"
-], function (dcl, $, has, Widget) {
+], function (
+	dcl,
+	has,
+	Widget
+) {
 
 	/**
 	 * Dispatched after the user has selected a different descendant, by clicking, arrow keys,
@@ -176,13 +179,13 @@ define([
 			}
 		},
 
-		attachedCallback: function () {
+		connectedCallback: dcl.after(function () {
 			// If the user hasn't specified a tabindex declaratively, then set to default value.
 			var container = this.keyNavContainerNode;
 			if (this.focusDescendants && !container.hasAttribute("tabindex")) {
 				container.tabIndex = "0";
 			}
-		},
+		}),
 
 		/**
 		 * Called on pointerdown event (on container or child of container).
@@ -252,7 +255,7 @@ define([
 						// If focus has moved outside of the previously navigated descendant, then set its
 						// tabIndex back to -1, for future time when navigable descendant is clicked.
 						previouslyNavigatedDescendant.tabIndex = "-1";
-						$(previouslyNavigatedDescendant).removeClass("d-active-descendant");
+						previouslyNavigatedDescendant.classList.remove("d-active-descendant");
 
 						if (this.navigatedDescendant === previouslyNavigatedDescendant) {
 							this.navigatedDescendant = null;
@@ -358,7 +361,7 @@ define([
 		_descendantNavigateHandler: function (child, triggerEvent) {
 			if (child && child !== this.navigatedDescendant) {
 				if (this.navigatedDescendant) {
-					$(this.navigatedDescendant).removeClass("d-active-descendant");
+					this.navigatedDescendant.classList.remove("d-active-descendant");
 					this.navigatedDescendant.tabIndex = "-1";
 				}
 
@@ -371,7 +374,7 @@ define([
 				// mark that the new node is the currently navigated one
 				this.navigatedDescendant = child;
 				if (child) {
-					$(child).addClass("d-active-descendant");
+					child.classList.add("d-active-descendant");
 				}
 			}
 		},

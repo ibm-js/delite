@@ -7,34 +7,30 @@
 		require.config({
 			baseUrl: "../../.."
 		});
-		require(["delite/register", "delite/CustomElement", "requirejs-domready/domReady!"],
-				function (register, CustomElement) {
-			// Include CustomElement to workaround https://github.com/uhop/dcl/issues/15, refs #259.
-			// Ideally this test shouldn't depend on anything besides register() itself.
-			register("test-widget", [HTMLElement, CustomElement], {
-				_createdCallbackCalled: false,
-				createdCallback: function () {
-					this._createdCallbackCalled = true;
+		require([
+			"delite/register",
+			"requirejs-domready/domReady!"
+		], function (
+			register
+		) {
+			register("test-widget", [HTMLElement], {
+				_constructorCalled: false,
+				constructor: function () {
+					this._constructorCalled = true;
 				},
 
-				_attachedCallbackCalled: false,
-				attachedCallback: function () {
-					this._attachedCallbackCalled = true;
+				_connectedCallbackCalled: false,
+				connectedCallback: function () {
+					this._connectedCallbackCalled = true;
 				}
 			});
+			register.deliver();
 
-			// Set global variable to signal that the test page is ready.
-			// Give register time to instantiate widgets before setting flag.
-			setTimeout(function () {
-				ready = true;
-			}, 0);
+			ready = true;
 		});
 	</script>
 </head>
 <body>
-	<template>
-		<test-widget id="inside"></test-widget>
-	</template>
-	<test-widget id="outside"></test-widget>
+	<test-widget id="myCustomElement"></test-widget>
 </body>
 </html>

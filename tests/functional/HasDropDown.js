@@ -19,23 +19,23 @@ define([
 
 		"basic menu drop down": {
 			mouse: function () {
-				if (!this.remote.environmentType.mouseEnabled) {
-					return this.skip("no moveMouseTo()");
-				}
+				var mobile = /ios|android/i.test(this.remote.environmentType.platformName);
 				return this.remote
 					.findById("input").click().end()
-					.findById("dd").moveMouseTo().click().end()
+					.findById("dd").click().end()
 					.findById("dd_popup")
 					.isDisplayed().then(function (visible) {
 						assert(visible, "visible");
 					})
-					.execute("return document.activeElement.getAttribute('index')").then(function (index) {
-						// shouldn't focus drop down since it's a mouse click
-						// and dropdown has focusOnPointerOpen=false
+					.execute(function () {
+						return document.activeElement.getAttribute("index");
+					}).then(mobile ? function () {} : function (index) {
+						// Shouldn't focus drop down since it's a mouse click
+						// and dropdown has focusOnPointerOpen=false.
+						// Exception: currently, on mobile dropdown is always focused, see HasDropDown#openDropDown().
 						assert.notStrictEqual(index, "1", "focus didn't move to drop down");
 					})
 					.execute(function () {
-						// note: "return node.getBoundingClientRect();" doesn't work on IE; webdriver bug.
 						var anchor = document.getElementById("dd").getBoundingClientRect();
 						var dropDown = document.getElementById("dd_popup").getBoundingClientRect();
 						return {
@@ -97,7 +97,7 @@ define([
 
 		"dropdown dialog": function () {
 			return this.remote
-				.findByCssSelector("button[is=delayed-drop-down-button]").click().end()
+				.findByCssSelector("delayed-drop-down-button").click().end()
 				.setFindTimeout(intern.config.WAIT_TIMEOUT)	// takes 500ms for dropdown to appear first time
 				.findByClassName("dropdown-dialog")
 					.isDisplayed().then(function (visible) {
@@ -107,10 +107,9 @@ define([
 						assert.strictEqual(tag, "input", "focus moved to dialog's <input>");
 					})
 					.execute(function () {
-						var anchor = document.querySelector("button[is=delayed-drop-down-button]");
+						var anchor = document.querySelector("delayed-drop-down-button");
 						var dropDown = document.querySelector(".dropdown-dialog");
 
-						// note: "return node.getBoundingClientRect();" doesn't work on IE; webdriver bug.
 						var anchorRect = anchor.getBoundingClientRect();
 						var dropDownRect = dropDown.getBoundingClientRect();
 
@@ -146,7 +145,7 @@ define([
 					})
 					.end()
 				// reopen drop down by clicking DropDownButton again
-				.findByCssSelector("button[is=delayed-drop-down-button]").click().end()
+				.findByCssSelector("delayed-drop-down-button").click().end()
 				.findByClassName("dropdown-dialog")
 					.isDisplayed().then(function (visible) {
 						assert(visible, "visible again");
@@ -242,7 +241,6 @@ define([
 							assert(visible, "visible");
 						})
 						.execute(function () {
-							// note: "return node.getBoundingClientRect();" doesn't work on IE; webdriver bug.
 							var anchor = document.getElementById("nawl").getBoundingClientRect();
 							var dropDown = document.getElementById("nawl_popup").getBoundingClientRect();
 							return {
@@ -255,32 +253,27 @@ define([
 								", dropDown = " + pos.dropDown.left);
 							assert(pos.anchor.width > pos.dropDown.width, "anchor wider than drop down");
 						})
-						.click()	// click to close popup
+						.click()		// close popup
 						.end();
 			},
 
 			"alignment - right": function () {
 				return this.remote
-					.findById("nawr")
-					.click()
+					.findById("nawr").click().end()
 					.execute(function () {
-						// note: "return node.getBoundingClientRect();" doesn't work on IE; webdriver bug.
 						var anchor = document.getElementById("nawr").getBoundingClientRect();
 						var dropDown = document.getElementById("nawr_popup").getBoundingClientRect();
 						return {
-							anchor: {left: anchor.left, width: anchor.width},
-							dropDown: {left: dropDown.left, width: dropDown.width}
+							anchor: {right: anchor.right, width: anchor.width},
+							dropDown: {right: dropDown.right, width: dropDown.width}
 						};
 					}).then(function (pos) {
-						assert(Math.abs((pos.anchor.left + pos.anchor.width) -
-							(pos.dropDown.left + pos.dropDown.width)) < 1, "drop down and anchor right aligned: " +
-							(pos.anchor.left + pos.anchor.width) + " vs " + (pos.dropDown.left + pos.dropDown.width));
+						assert(Math.abs(pos.anchor.right - pos.dropDown.right) < 1,
+							"drop down and anchor right aligned, anchor = " + pos.anchor.right  +
+							", dropDown = " + pos.dropDown.right);
 						assert(pos.anchor.width > pos.dropDown.width, "anchor wider than drop down");
 					})
-					// Click HasDropDown button again to close popup.  Note that this could be interpreted
-					// as a double click?
-					.click()
-					.end();
+					.findById("nawr").click().end();	// close popup
 			}
 		},
 
@@ -336,12 +329,22 @@ define([
 					})
 					.end()
 				.findById("eventsButton").click().end()	// click again to close
-				.findById("eventsLog")
-					.getVisibleText().then(function (text) {
-						assert.strictEqual(text.trim(), "delite-display-load\n" +
-							"delite-before-show\ndelite-after-show\ndelite-before-hide\ndelite-after-hide");
-					})
-					.end();
+				.execute(function () {
+					var childNodes = document.querySelector("#eventsLog").childNodes;
+					return Array.prototype.filter.call(childNodes, function (child) {
+						return child.nodeType === 3;
+					}).map(function (textNode) {
+						return textNode.textContent;
+					});
+				}).then(function (text) {
+					assert.deepEqual(text, [
+						"delite-display-load",
+						"delite-before-show",
+						"delite-after-show",
+						"delite-before-hide",
+						"delite-after-hide"
+					]);
+				});
 		},
 
 		// Test that HasDropDown can be used to apply dropdown behavior to a random node.

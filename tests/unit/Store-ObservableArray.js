@@ -55,6 +55,7 @@ define([
 				source: new ObservableArray({ id: "foo", name: "Foo" },
 					{ id: "bar", name: "Bar" })
 			});
+			store.deliver();
 			assert.strictEqual(store.renderItems.length, 2);
 
 			// Test the change store to null triggers a so-called query
@@ -338,7 +339,6 @@ define([
 				{ id: "foo", name: "Foo" },
 				{ id: "bar", name: "Bar" }
 			];
-			store.attachedCallback();
 			// use empty model to easy comparison
 			store.source = new ObservableArray({ id: "foo", name: "Foo" },
 				 { id: "bar", name: "Bar" });

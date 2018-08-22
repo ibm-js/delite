@@ -297,7 +297,7 @@ define([
 			}
 		},
 
-		detachedCallback: function () {
+		disconnectedCallback: function () {
 			// If dropdown is open, close it, to avoid leaving delite/activationTracker in a strange state.
 			// Put focus back on me to avoid the focused node getting destroyed, which flummoxes IE.
 			if (this.opened) {

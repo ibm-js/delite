@@ -9,13 +9,13 @@
 		"requirejs": "2.1.x",
 		"requirejs-domready": "2.0.x",
 		"requirejs-dplugins": "0.6.x",
-		"requirejs-text": "2.0.x"
+		"requirejs-text": "2.0.x",
+		"custom-elements": "https://github.com/webcomponents/custom-elements/archive/v1.1.2.zip"
 	},
 	"devDependencies": {
 		"dojo": ">=1.9.1",
 		"dstore": "1.1.x",
-		"dijit": ">=1.9.1",
-		"webcomponentsjs": "~1.0"
+		"dijit": ">=1.9.1"
 	},
 	"keywords": [
 		"web-components",

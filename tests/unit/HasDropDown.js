@@ -30,7 +30,7 @@ define([
 	});
 
 	// A button that shows a popup
-	var SimpleDropDownButton = register("simple-drop-down-button", [HTMLButtonElement, HasDropDown], {
+	var SimpleDropDownButton = register("simple-drop-down-button", [HTMLElement, HasDropDown], {
 		label: dcl.prop({
 			set: function (val) {
 				this.textContent = val;
@@ -98,7 +98,7 @@ define([
 				assert.isFalse(helpers.isVisible(popup), "not visible");
 
 				sdd.parentNode.removeChild(sdd);
-				register.deliver();
+
 				assert.isFalse(document.body.contains(popup), "removeChild() detaches popup too");
 
 				container.appendChild(sdd);

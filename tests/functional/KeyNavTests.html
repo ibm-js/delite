@@ -110,7 +110,7 @@
 
 			// Child of TestContainer
 			register("my-list-item", [HTMLElement, Widget], {
-				createdCallback: function () {
+				constructor: function () {
 					// With help of delite/a11yclick, convert SPACE/ENTER key to click event.
 					a11yclick(this);
 					this.tabIndex = "-1";

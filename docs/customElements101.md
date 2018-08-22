@@ -11,7 +11,7 @@ for example `<my-combobox>`, which can be used interchangeably with the native H
 
 Delite's support of custom elements is mainly split across four components:
 
-* [register](register.md) - utility for registering and instantiating new widgets
+* [register](register.md) - utility for defining new custom elements
 * [Widget](Widget.md) - base class for all widgets
 * [handlebars!](handlebars.md) - AMD plugin to compile templates
 * [theme!](theme.md) - AMD plugin to load CSS for this widget for the current theme
@@ -20,19 +20,24 @@ Delite's support of custom elements is mainly split across four components:
 ## Defining Custom Elements
 
 Custom Elements are defined using [register()](register.md).
-The [register()](register.md) method is a combination of a class declaration system
-(internally it uses [dcl](http://dcljs.org)),
-and a shim of [document.registerElement()](http://www.w3.org/TR/custom-elements/)
-from the new custom elements proposed standard.
+The [register()](register.md) method is
+as a combination of a class declaration system (internally it uses [dcl](http://dcljs.org),
+and [customElements.define](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements)
+from the custom elements standards.
+it calls `customElements.define()`, and if that method
+If `customElements.define()` isn't defined by the browser, then it loads the
+[webcomponentjs/custom-elements](https://github.com/webcomponents/custom-elements)
+polyfill.
+
 
 When defining a custom element you generally:
 
-* Define which HTML class you are extending.  Usually this is `HTMLElement`.
+* Define which HTML class you are extending.  Currently only `HTMLElement` is supported.
 * Define a template.
 * Define CSS for your custom element, preferably one CSS file for each supported theme.
 * Define the public properties of your custom elements.
 
-There are other optional steps, like defining methods and emitting custom events, but those are the most basic.
+There are other optional steps, like defining methods and emitting custom events, but those are the most basic steps.
 
 Example:
 
@@ -44,7 +49,7 @@ define([
 	"delite/handlebars!./MyWidget/MyWidget.html",				// the template
 	"delite/theme!./MyWidget/themes/{{theme}}/MyWidget.css"		// the CSS
 ], function (register, Widget, template) {
-	register(
+	MyWidget = register(
 		"my-widget",				// the custom tag name
 		[HTMLElement, Widget],		// the superclasses
 		{
@@ -93,7 +98,7 @@ to the property's type.
 
 "Parsing" refers to scanning the document for custom element usages (ex: `<my-widget></my-widget>`), and upgrading
 those plain HTML elements to be proper custom elements (i.e. setting up the prototype chain, and calling
-`createdCallback()` and `attachedCallback()`).
+`constructor()` and `connectedCallback()`).
 
 When the document has finished loading, delite will do an initial parse.
 Afterwards, if new custom elements are defined, delite will scan the document for any additional nodes that need to
@@ -140,19 +145,15 @@ var myWidgetInstance = new MyWidget({
 });
 ```
 
-Custom elements can also be created programatically just like native elements, except that
-[to support browsers without native custom element support] you
-need to call the `register.createElement()` shim rather than calling `document.createElement()`:
+Custom elements can also be created programatically just like native elements:
 
 ```js
-var myWidgetInstance = register.createElement("my-widget");
+var myWidgetInstance = document.createElement("my-widget");
 myWidgetInstance.stringProp = "hi";
 myWidgetInstance.numProp = 456;
 myWidgetInstance.boolProp = false;
 myWidgetInstance.objProp = myGlobalVariable;
 ```
-
-The first syntax calling `new MyWidget({...})` is just syntactic sugar for the second syntax.
 
 Note that:
 
@@ -172,6 +173,3 @@ Finally, use `placeAt()` to insert the element into the DOM:
 ```js
 myWidget.placeAt(document.body);
 ```
-
-Note that `placeAt()` will internally call `attachedCallback()`
-for the widget and any descendant widgets, which may be necessary for them to finish initializing.

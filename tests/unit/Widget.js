@@ -1,11 +1,17 @@
 define([
 	"intern!object",
 	"intern/chai!assert",
-	"requirejs-dplugins/jquery!attributes/classes",	// hasClass()
+	"dcl/dcl",
 	"delite/register",
 	"delite/Widget",
 	"requirejs-domready/domReady!"
-], function (registerSuite, assert, $, register, Widget) {
+], function (
+	registerSuite,
+	assert,
+	dcl,
+	register,
+	Widget
+) {
 	var container;
 
 	var SimpleWidget, TestDir, simple, pane1;
@@ -43,15 +49,18 @@ define([
 					}
 				});
 				var widget = new SpecialNames({ });
-				widget.tabIndex = "3";
 				container.appendChild(widget);
-				widget.attachedCallback();
-				assert.strictEqual(widget.watchedTabIndex, "3", "reported on widget");
+
+				setTimeout(this.async().callback(function () {
+					widget.tabIndex = "3";
+					widget.deliver();
+					assert.strictEqual(widget.watchedTabIndex, "3", "reported on widget");
+				}), 0);
 			},
 
 			mixin: function () {
 				// And test when tabIndex is declared in a mixin.
-				var SpecialNamesMixin = register.dcl(Widget, {
+				var SpecialNamesMixin = dcl(Widget, {
 					tabIndex: {
 						set: function (val) {
 							// In a real widget, if you declare a tabIndex property then you better have a custom setter
@@ -64,7 +73,7 @@ define([
 						}
 					},
 
-					createdCallback: function () {
+					constructor: function () {
 						this.observe(function (props) {
 							if ("tabIndex" in props) {
 								this.watchedTabIndex = this._get("tabIndex");
@@ -72,6 +81,7 @@ define([
 						}.bind(this));
 					}
 				});
+
 				var SpecialExtendedWidget = register("test-tabindex-names-extended", [HTMLElement, SpecialNamesMixin], {
 					tabIndex: "0",
 					value: "0",
@@ -90,7 +100,6 @@ define([
 				var extended = new SpecialExtendedWidget({ });
 				extended.tabIndex = "5";
 				container.appendChild(extended);
-				extended.attachedCallback();
 
 				var d = this.async(1000);
 
@@ -105,7 +114,7 @@ define([
 			declarative: function () {
 				// And also test for declarative widgets, to make sure the tabIndex property is
 				// removed from the root node, to prevent an extra tab stop
-				container.innerHTML +=
+				container.innerHTML =
 					"<test-tabindex-names-extended id=specialNames value=5 isrange isbool tabIndex=8/>";
 				var declarative = document.getElementById("specialNames");
 				register.upgrade(declarative);
@@ -121,7 +130,7 @@ define([
 				var SimpleWidget = register("tabindex-not-in-prototype", [HTMLElement, Widget], { });
 				var simple = new SimpleWidget({ tabIndex: 5 });
 				container.appendChild(simple);
-				simple.attachedCallback();
+				simple.connectedCallback();
 
 				var d = this.async(1000);
 
@@ -160,15 +169,15 @@ define([
 					dir: "rtl"
 				});
 				container.appendChild(myWidget);
-				myWidget.attachedCallback();
+				myWidget.connectedCallback();
 
 				assert.strictEqual(myWidget.style.direction, "rtl", "style.direction");
-				assert($(myWidget).hasClass("d-rtl"), "has d-rtl class");
+				assert(myWidget.classList.contains("d-rtl"), "has d-rtl class");
 
 				myWidget.dir = "ltr";
 				myWidget.deliver();
 				assert.strictEqual(myWidget.style.direction, "ltr", "style.direction 2");
-				assert.isFalse($(myWidget).hasClass("d-rtl"), "doesn't have d-rtl class 1");
+				assert.isFalse(myWidget.classList.contains("d-rtl"), "doesn't have d-rtl class 1");
 
 				var bodyOriginalDir = window.getComputedStyle(document.body).direction;
 				try {
@@ -177,7 +186,7 @@ define([
 					myWidget.dir = "";
 					myWidget.deliver();
 					assert.strictEqual(myWidget.style.direction, "", "style.direction 3");
-					assert($(myWidget).hasClass("d-rtl"), "has d-rtl class 2");
+					assert(myWidget.classList.contains("d-rtl"), "has d-rtl class 2");
 				} finally {
 					// Revert changes made to body.dir.   Should be able to just say dir = "" but due to
 					// apparent bugs in Safari 7 (used during saucelabs testing), that leaves the browser
@@ -188,11 +197,12 @@ define([
 
 			declarative: function () {
 				container.innerHTML = "<test-dir id=dirTest dir='rtl'></test-dir>";
-				var declarative = document.getElementById("dirTest");
-				register.parse(container);
 
-				assert.strictEqual(declarative.style.direction, "rtl", "style.direction");
-				assert($(declarative).hasClass("d-rtl"), "has d-rtl class");
+				setTimeout(this.async().callback(function () {
+					var declarative = document.getElementById("dirTest");
+					assert.strictEqual(declarative.style.direction, "rtl", "style.direction");
+					assert(declarative.classList.contains("d-rtl"), "has d-rtl class");
+				}), 0);
 			}
 		},
 
@@ -213,18 +223,18 @@ define([
 			});
 			var myWidget = new TestWidget();
 			container.appendChild(myWidget);
-			myWidget.attachedCallback();
+			myWidget.connectedCallback();
 
-			assert($(myWidget).hasClass("base2"), "baseClass is base2");
+			assert(myWidget.classList.contains("base2"), "baseClass is base2");
 
 			// Then test that baseClass specified as widget parameter gets set
 			var myWidgetCustom = new TestWidget();
 			myWidgetCustom.baseClass = "customBase";
 			container.appendChild(myWidgetCustom);
-			myWidgetCustom.attachedCallback();
+			myWidgetCustom.connectedCallback();
 			myWidgetCustom.deliver();
 
-			assert($(myWidgetCustom).hasClass("customBase"), "baseClass is customBase");
+			assert(myWidgetCustom.classList.contains("customBase"), "baseClass is customBase");
 		},
 
 		placeAt: {
@@ -241,7 +251,7 @@ define([
 				// create a SimpleWidget
 				simple = (new SimpleWidget({id: "simple-place-at-id"})).placeAt(container);
 				assert.strictEqual(container, simple.parentNode, "simple is child of container");
-				assert(simple.attached, "attachedCallback() ran");
+				assert(simple.attached, "connectedCallback() ran");
 			},
 
 			"Place as widget child": function () {
@@ -369,7 +379,7 @@ define([
 				</div> \
 				<div id='not-a-widget'></div>";
 
-			register.parse(container);
+			register.deliver();
 
 			assert.strictEqual(Widget.prototype.getEnclosingWidget(document.getElementById("not-a-widget")), null,
 				"not-a-widget");

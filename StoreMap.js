@@ -115,7 +115,7 @@ define(["dcl/dcl", "./Store"], function (dcl, Store) {
 			};
 		}),
 
-		attachedCallback: function () {
+		connectedCallback: function () {
 			// This runs after the attributes have been processed (and converted into properties),
 			// and after any properties specified to the constructor have been mixed in.
 			// It should not re-run if the StoreMap is detached and then reattached.

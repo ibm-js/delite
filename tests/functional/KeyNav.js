@@ -11,6 +11,10 @@ define([
 		name: "KeyNav functional tests",
 
 		setup: function () {
+			if (this.remote.environmentType.brokenSendKeys || !this.remote.environmentType.nativeEvents) {
+				return this.skip("no keyboard support");
+			}
+
 			return this.remote
 				.get(require.toUrl("./KeyNavTests.html"))
 				.then(pollUntil("return ready || null;", [],
@@ -18,9 +22,6 @@ define([
 		},
 
 		tabIndex: function () {
-			if (this.remote.environmentType.brokenSendKeys || !this.remote.environmentType.nativeEvents) {
-				return this.skip("no keyboard support");
-			}
 			return this.remote
 				.findById("focus")
 				.click()
@@ -94,9 +95,6 @@ define([
 		},
 
 		"grid arrow navigation": function () {
-			if (this.remote.environmentType.brokenSendKeys || !this.remote.environmentType.nativeEvents) {
-				return this.skip("no keyboard support");
-			}
 			return this.remote.execute("grid.focus();")
 				.execute("return document.activeElement.textContent")
 				.then(function (value) {
@@ -135,9 +133,6 @@ define([
 		},
 
 		"grid letter search": function () {
-			if (this.remote.environmentType.brokenSendKeys || !this.remote.environmentType.nativeEvents) {
-				return this.skip("no keyboard support");
-			}
 			return this.remote.execute("grid.focus();")
 				.execute("return document.activeElement.textContent")
 				.then(function (value) {
@@ -169,9 +164,6 @@ define([
 		},
 
 		"activationTracker integration": function () {
-			if (this.remote.environmentType.brokenSendKeys || !this.remote.environmentType.nativeEvents) {
-				return this.skip("no keyboard support");
-			}
 			return this.remote
 				.findById("keyboardInput").click().end()
 				.pressKeys(keys.TAB)
@@ -183,9 +175,6 @@ define([
 		},
 
 		"multi char search with spaces": function () {
-			if (this.remote.environmentType.brokenSendKeys || !this.remote.environmentType.nativeEvents) {
-				return this.skip("no keyboard support");
-			}
 			return this.remote
 				.findById("keyboardInput")
 				.click()
@@ -224,9 +213,6 @@ define([
 		},
 
 		"setup key handler for space": function () {
-			if (this.remote.environmentType.brokenSendKeys || !this.remote.environmentType.nativeEvents) {
-				return this.skip("no keyboard support");
-			}
 			return this.remote
 				.findByCssSelector("#keyboardInputCust")
 					.click()
@@ -299,9 +285,6 @@ define([
 		},
 
 		"embedded form controls": function () {
-			if (this.remote.environmentType.brokenSendKeys || !this.remote.environmentType.nativeEvents) {
-				return this.skip("no keyboard support");
-			}
 			return this.remote.execute("testContainer2.focus();")
 				.execute("return document.activeElement.textContent")
 				.then(function (value) {
@@ -350,9 +333,6 @@ define([
 
 		combobox: {
 			keyboard: function () {
-				if (this.remote.environmentType.brokenSendKeys || !this.remote.environmentType.nativeEvents) {
-					return this.skip("no keyboard support");
-				}
 				return this.remote.execute("document.body.scrollTop = 10000; combobox.focus();")
 					.pressKeys(keys.ARROW_DOWN)
 					.execute("return document.activeElement.id")
@@ -405,9 +385,6 @@ define([
 		},
 
 		"container node": function () {
-			if (this.remote.environmentType.brokenSendKeys || !this.remote.environmentType.nativeEvents) {
-				return this.skip("no keyboard support");
-			}
 			return this.remote
 				.findById("keynavroot_before").click().end()
 				.pressKeys(keys.TAB)

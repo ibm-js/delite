@@ -1,6 +1,9 @@
 /** @module delite/Template */
-define(["./register"], function (register) {
-
+define([
+	"dcl/dcl"
+], function (
+	dcl
+) {
 	// Get list of properties that the javascript expression depends on.
 	// For example, for "this.label + ' hi ' + this.foo", returns ["label", "foo"].
 	// For nested props (ex: this.item.foo), return top level prop (ex: item).
@@ -28,7 +31,7 @@ define(["./register"], function (register) {
 	 *
 	 * ```js
 	 * var template = new Template(ast);
-	 * template.func(document, register);
+	 * template.func(document);
 	 * ```
 	 *
 	 * See the reference documentation for details on the AST format.
@@ -38,13 +41,13 @@ define(["./register"], function (register) {
 	 * @param {boolean} createRootNode - If true, create node; otherwise assume node exists in variable `nodeName`.
 	 * @class module:delite/Template
 	 */
-	var Template = register.dcl(/** @lends module:delite/Template# */ {
-		declaredClass: "delite/Store",
+	var Template = dcl(/** @lends module:delite/Template# */ {
+		declaredClass: "delite/Template",
 
 		constructor: function (tree, rootNodeName, createRootNode) {
 			this.buildText = [];	// code to build the initial DOM
-			this.attachText = [];	// code to run in attachedCallback()
-			this.detachText = [];	// code to run in detachedCallback()
+			this.attachText = [];	// code to run in connectedCallback()
+			this.detachText = [];	// code to run in disconnectedCallback()
 			this.destroyText = [];	// code to run in tear down template, removing listeners etc.
 			this.observeText = [];	// code to update the DOM when widget properties change
 
@@ -69,7 +72,7 @@ define(["./register"], function (register) {
 				"};\n";
 
 			/* jshint evil:true */
-			this.func = new Function("document", "register", this.text);
+			this.func = new Function("document", this.text);
 		},
 
 		/**
@@ -158,11 +161,11 @@ define(["./register"], function (register) {
 				this.buildText.push(
 					"var " + nodeName + " = " + ap + (templateNode.xmlns ?
 					"document.createElementNS('" + templateNode.xmlns + "', '" + templateNode.tag + "');" :
-					"register.createElement('" + templateNode.tag + "');")
+					"document.createElement('" + templateNode.tag + "');")
 				);
 				if (/-/.test(templateNode.tag)) {
-					this.attachText.push(nodeName + ".attachedCallback();");
-					this.detachText.push(nodeName + ".detachedCallback();");
+					this.attachText.push(nodeName + ".connectedCallback();");
+					this.detachText.push(nodeName + ".disconnectedCallback();");
 				}
 			} else if (ap) {
 				// weird case that someone set attach-point on root node
@@ -236,7 +239,7 @@ define(["./register"], function (register) {
 	var elementCache = {};
 	Template.getElement = function (tag) {
 		if (!(tag in elementCache)) {
-			elementCache[tag] = register.createElement(tag);
+			elementCache[tag] = document.createElement(tag);
 		}
 		return elementCache[tag];
 	};

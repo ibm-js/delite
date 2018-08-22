@@ -8,7 +8,7 @@ define([
 	// Detect if specified instance or its prototypes, not including HTMLElement, have defined the specified property.
 	function overridesProperty(instance, prop) {
 		for (var proto = Object.getPrototypeOf(instance);
-			 proto && proto !== instance._baseElement.prototype;
+			 proto && proto !== instance._BaseHTMLElement.prototype;
 			 proto = Object.getPrototypeOf(proto)
 		) {
 			var descriptor = Object.getOwnPropertyDescriptor(proto, prop);
@@ -315,7 +315,7 @@ define([
 			this._moveAriaAttributes();
 		},
 
-		attachedCallback: function () {
+		connectedCallback: function () {
 			// If the widget is in a form, reset the initial value of the widget when the form is reset.
 			for (var form = this.parentNode; form; form = form.parentNode) {
 				if (/^form$/i.test(form.tagName)) {

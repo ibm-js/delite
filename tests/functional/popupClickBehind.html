@@ -39,7 +39,7 @@ require([
 
 	// A button that shows a popup.
 	// Supply popup as parameter when instantiating this widget.
-	var SimpleDropDownButton = register("simple-dropdown-button", [HTMLButtonElement, Widget], {
+	var SimpleDropDownButton = register("simple-dropdown-button", [HTMLElement, Widget], {
 		label: dcl.prop({
 			set: function (val) {
 				this.textContent = val;

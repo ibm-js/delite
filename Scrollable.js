@@ -89,7 +89,7 @@ define([
 			}
 		},
 
-		detachedCallback: function () {
+		disconnectedCallback: function () {
 			this._stopAnimation();
 		},
 

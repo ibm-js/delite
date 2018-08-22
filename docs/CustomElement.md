@@ -22,13 +22,8 @@ into:
 myWidget.numProp = 123;
 ```
 
-
 The initialization methods in `delite/CustomElement` correspond to the function names from the
-Custom Elements specification, specifically `createdCallback()` and `attachedCallback()`.
-
-`delite/CustomElement` does not provide the `attributeChangedCallback()`, but you can
-find out when properties change by declaring the properties in your element's prototype, and then reacting to changes
-in `refreshRendering()`.
+Custom Elements specification, specifically `constructor()` and `connectedCallback()`.
 
 Finally, CustomElement provides common methods like `on()` and `destroy()`, but
 it does not provide the [`delite/Widget`](Widget.md) specific lifecycle methods

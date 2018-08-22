@@ -78,7 +78,7 @@ define([
 			}, 1000);
 
 			store.on("query-success", d.callback(function () {
-				// attachedCallback() called late, after adding data to the store
+				// connectedCallback() called late, after adding data to the store
 				assert.strictEqual(store.renderItems.length, 2);
 			}));
 			return d;
@@ -193,7 +193,8 @@ define([
 			fct = function () { return "fct"; };
 			container.innerHTML = "<test-storemap-observablearray-5 id='ts5' barAttr='firstname' mFunc='fct' " +
 			"nFunc='return item.name + item.firstname;'></test-storemap-5>";
-			register.parse(container);
+			register.deliver();
+
 			var d = this.async(2000);
 			var store = container.children[0];
 			store.on("query-success", d.callback(function () {
@@ -224,8 +225,8 @@ define([
 			}));
 			store.source = new ObservableArray({ id: "foo", name: "Foo", firstname: "1" },
 				{ id: "bar", name: "Bar", firstname: "2" });
-			return d;
 
+			return d;
 		},
 
 		ItemToAndFrom: function () {

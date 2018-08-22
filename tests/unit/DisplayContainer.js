@@ -21,7 +21,7 @@ define([
 		original: function () {
 			this.timeout = 2500;
 			register("test-default-display-container", [HTMLElement, Widget, DisplayContainer]);
-			var dcontainer = register.createElement("test-default-display-container");
+			var dcontainer = document.createElement("test-default-display-container");
 
 			function initView(view) {
 				dcontainer.appendChild(view);
@@ -57,7 +57,7 @@ define([
 		hide: function () {
 			this.timeout = 2500;
 			register("test-hide-display-container", [HTMLElement, Widget, DisplayContainer]);
-			var dcontainer = register.createElement("test-hide-display-container");
+			var dcontainer = document.createElement("test-hide-display-container");
 
 			function initView(view) {
 				dcontainer.appendChild(view);
@@ -109,7 +109,7 @@ define([
 				});
 			});
 			register("test-event-display-container", [HTMLElement, Widget, DisplayContainer]);
-			var dcontainer = register.createElement("test-event-display-container");
+			var dcontainer = document.createElement("test-event-display-container");
 			dcontainer.setAttribute("id", "dcontainer");
 			dcontainer.placeAt(container);
 			var beforeDisplayCalled = false;
@@ -144,7 +144,7 @@ define([
 				}));
 			});
 			register("test-custom-display-container", [HTMLElement, Widget, DisplayContainer]);
-			var dcontainer = register.createElement("test-custom-display-container");
+			var dcontainer = document.createElement("test-custom-display-container");
 			dcontainer.setAttribute("id", "dcontainer");
 			dcontainer.placeAt(container);
 			function testView(view) {

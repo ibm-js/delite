@@ -44,7 +44,7 @@ define([
 			moveAria: function () {
 				// Create a widget declaratively to test initial aria attributes processed
 				container.innerHTML = "<form-widget-test aria-label='test label' foo='bar'></form-widget-test>";
-				register.parse(container);
+				register.deliver();
 
 				var myWidget = container.firstChild;
 
@@ -52,7 +52,6 @@ define([
 				assert.strictEqual(myWidget.attributes.length, 1, "aria-label removed from root");
 				assert.strictEqual(myWidget.focusNode.getAttribute("aria-label"), "test label",
 					"aria-label added to focusNode");
-
 
 				// Test that setAttribute(), removeAttribute(), hasAttribute(), and getAttribute() all redirect to the
 				// focus node when appropriate
@@ -79,7 +78,7 @@ define([
 			dontMoveAria: function () {
 				// Create a widget declaratively to test initial aria attributes processed
 				container.innerHTML = "<form-widget-test-two aria-label='test' foo='bar'></form-widget-test-two>";
-				register.parse(container);
+				register.deliver();
 
 				var myWidget = container.firstChild;
 
@@ -139,6 +138,7 @@ define([
 			"#tabIndex": function () {
 				// default tabIndex
 				var myWidget = new FormWidgetTest();
+				myWidget.deliver();
 				assert.strictEqual(myWidget.focusNode.getAttribute("tabindex"), "0", "default tabIndex");
 				assert.isFalse(HTMLElement.prototype.hasAttribute.call(myWidget, "tabindex"),
 					"no tabIndex on root 1");
@@ -147,6 +147,7 @@ define([
 				myWidget = new FormWidgetTest({
 					tabIndex: "3"
 				});
+				myWidget.deliver();
 				assert.strictEqual(myWidget.focusNode.getAttribute("tabindex"), "3", "specified tabIndex");
 				assert.isFalse(HTMLElement.prototype.hasAttribute.call(myWidget, "tabindex"),
 					"no tabIndex on root 2");
@@ -163,6 +164,7 @@ define([
 				var myWidget = new FormWidgetTest({
 					alt: "hello world"
 				});
+				myWidget.deliver();
 				assert.strictEqual(myWidget.focusNode.getAttribute("alt"), "hello world");
 			},
 
@@ -170,6 +172,7 @@ define([
 				var myWidget = new FormWidgetTest({
 					name: "bob"
 				});
+				myWidget.deliver();
 				assert.strictEqual(myWidget.valueNode.getAttribute("name"), "bob");
 			}
 		},
@@ -210,7 +213,7 @@ define([
 			basic: function () {
 				// Create a widget declaratively to test initial aria attributes processed
 				container.innerHTML = "<form-widget-test-2 aria-label='test label' foo='bar'></form-widget-test>";
-				register.parse(container);
+				register.deliver();
 
 				var myWidget = container.firstChild;
 
@@ -290,13 +293,10 @@ define([
 			});
 			
 			// Create test widget with disabled and required properties.
-			// Base class needed to workaround https://github.com/uhop/dcl/issues/18. 
-			var BaseClassWithDisabledAndRequired = dcl([Widget], {
+			var WidgetWithDisabledAndRequired = register("form-widget-dis-req", [HTMLElement, Widget], {
 				disabled: true,
 				required: true
 			});
-			var WidgetWithDisabledAndRequired = register("form-widget-dis-req",
-				[HTMLElement, BaseClassWithDisabledAndRequired], {});
 
 			// Create a widget with child widgets, with and without disabled and required properties.
 			var Container = register("form-widget-test-3", [HTMLElement, FormWidget], {
@@ -304,24 +304,34 @@ define([
 
 				render: function () {
 					this.button = new ButtonWidget();
+					this.button.deliver();
 					this.appendChild(this.button);
 
 					this.textbox = new TextboxWidget();
+					this.textbox.deliver();
 					this.appendChild(this.textbox);
 
 					this.form = new WidgetWithDisabledAndRequired();
+					this.form.deliver();
 					this.appendChild(this.form);
 
 					this.valueNode = this.ownerDocument.createElement("input");
 					this.valueNode.type = "hidden";
 					this.appendChild(this.valueNode);
-				}
+				},
+
+				deliver: dcl.after(function () {
+					this.button.deliver();
+					this.textbox.deliver();
+					this.form.deliver();
+				})
 			});
 
 			var container = new Container({
 				disabled: true,
 				required: true
 			});
+			container.deliver();
 
 			// Since Textbox widget doesn't have disabled and required properties,
 			// the "aria-disabled" and "aria-required" attributes should be set.

@@ -66,6 +66,7 @@ define([
 			store.placeAt(container);
 			var mySource = new M({ data: myData });
 			store.source = mySource;
+			store.deliver();
 			return d;
 		},
 
@@ -90,7 +91,7 @@ define([
 			}, 1000);
 
 			store.on("query-success", d.callback(function () {
-				// attachedCallback() called late, after adding data to the store
+				// connectedCallback() called late, after adding data to the store
 				assert.strictEqual(store.renderItems.length, 2);
 			}));
 			return d;
@@ -139,6 +140,7 @@ define([
 			// use empty model to ease comparison
 			var mySource = new M({ data: myData });
 			store.source = mySource;
+			store.deliver();
 			return d;
 		},
 
@@ -183,6 +185,7 @@ define([
 			store.placeAt(container);
 			var mySource = new M({ data: myData });
 			store.source = mySource;
+			store.deliver();
 			return d;
 
 		},
@@ -219,8 +222,8 @@ define([
 			store.placeAt(container);
 			var mySource = new M({ data: myData });
 			store.source = mySource;
+			store.deliver();
 			return d;
-
 		},
 
 		Markup: function () {
@@ -231,8 +234,9 @@ define([
 			fct = function () { return "fct"; };
 			container.innerHTML = "<test-storemap-5 id='ts5' barAttr='firstname' mFunc='fct' " +
 				"nFunc='return item.name + item.firstname;'></test-storemap-5>";
-			register.parse(container);
+			register.deliver();
 			var d = this.async(2000);
+
 			var store = container.children[0];
 			var myData = [
 				{ id: "foo", name: "Foo", firstname: "1" },
@@ -269,8 +273,8 @@ define([
 			}));
 			var mySource = new M({ data: myData });
 			store.source = mySource;
-			return d;
 
+			return d;
 		},
 
 		ItemToAndFrom: function () {
@@ -303,6 +307,7 @@ define([
 			store.placeAt(container);
 			var mySource = new Memory({ data: myData });
 			store.source = mySource;
+			store.deliver();
 			return d;
 		},
 

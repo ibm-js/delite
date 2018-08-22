@@ -1,105 +1,13 @@
 /** @module delite/register */
 define([
-	"module",
 	"dcl/advise",
 	"dcl/dcl",
-	"decor/schedule",
-	"requirejs-domready/domReady",	// loading as a function, not as a plugin
-	"./features"
-], function (module, advise, dcl, schedule, domReady, has) {
+	"./customElements!"
+], function (
+	advise,
+	dcl
+) {
 	"use strict";
-
-	var doc = has("builder") ? require.nodeRequire("jsdom").jsdom("") : document;
-
-	// Set to true after the page finishes loading and the parser runs.  Any widgets declared after initialParseComplete
-	// instantiated in a separate code path.
-	var initialParseComplete;
-
-	/**
-	 * List of selectors that the parser needs to search for as possible upgrade targets.  Mainly contains
-	 * the widget custom tags like d-accordion, but also selectors like button[is='d-button'] to find <button is="...">
-	 * @type {string[]}
-	 */
-	var selectors = [];
-
-	/**
-	 * Internal registry of widget class metadata.
-	 * Key is custom widget tag name, used as Element tag name like <d-accordion> or "is" attribute like
-	 * <button is="d-accordion">).
-	 * Value is metadata about the widget, including its prototype, ex: {prototype: object, extends: "button", ... }
-	 * @type {Object}
-	 */
-	var registry = {};
-
-	/**
-	 * Create an Element.  Similar to document.createElement(), but if tag is the name of a widget defined by
-	 * register(), then it upgrades the Element to be a widget.
-	 * @function module:delite/register.createElement
-	 * @param {string} tag
-	 * @returns {Element} The DOMNode
-	 */
-	function createElement(tag) {
-		if (/-/.test(tag) && !(tag in registry) && !has("builder")) {
-			// Try to help people that have templates with custom elements but they forgot to do requires="..."
-			console.warn("register.createElement(): undefined tag '" + tag +
-				"', did you forget requires='...' in your template?");
-		}
-
-		var base = registry[tag] ? registry[tag].extends : null;
-		if (has("document-register-element")) {
-			return base ? doc.createElement(base, tag) : doc.createElement(tag);
-		} else {
-			var element = doc.createElement(base || tag);
-			if (base) {
-				element.setAttribute("is", tag);
-			}
-			upgrade(element);
-			return element;
-		}
-	}
-
-	/**
-	 * Converts plain Element of custom type into "custom element", by adding the widget's custom methods, etc.
-	 * Does nothing if the Element has already been converted or if it doesn't correspond to a registered custom tag.
-	 * After the upgrade, calls `createdCallback()`.
-	 *
-	 * Usually the application will not need to call this method directly, because it's called automatically
-	 * on page load and as elements are added to the document.
-	 *
-	 * @function module:delite/register.upgrade
-	 * @param {Element} element - The DOM node.
-	 * @param {boolean} [attach] - If `element`'s tag has been registered, but `attachedCallback()` hasn't yet been
-	 * called [since the last call to `detachedCallback()`], then call `attachedCallback()`.  Call even if the element
-	 * has already been upgraded.
-	 */
-	function upgrade(element, attach) {
-		if (!has("document-register-element")) {
-			var widget = registry[element.getAttribute("is") || element.nodeName.toLowerCase()];
-			if (widget) {
-				if (!element._upgraded) {
-					// Redefine Element's prototype to point to widget's methods etc.
-					Object.setPrototypeOf(element, widget.prototype);
-					element._upgraded = true;
-					if (element.createdCallback) {
-						element.createdCallback();
-					}
-				}
-				if (attach && !element._attached) {
-					element.attachedCallback();
-				}
-			}
-		}
-	}
-
-	/**
-	 * Call detachedCallback() on specified Element if it's a custom element that was upgraded by us.
-	 * @param {Element} node
-	 */
-	function detach(node) {
-		if (node._upgraded) {
-			node.detachedCallback();
-		}
-	}
 
 	/**
 	 * Mapping of tag names to HTMLElement interfaces.
@@ -172,147 +80,129 @@ define([
 		// blink: HTMLUnknownElement,
 		video: HTMLVideoElement
 	};
-	var tags = tagMap && Object.keys(tagMap);
 
-	/**
-	 * Registers the tag with the current document, and save tag information in registry.
-	 * Handles situations where the base constructor inherits from
-	 * HTMLElement but is not HTMLElement.
-	 * @param  {string}   tag         The custom tag name for the element, or the "is" attribute value.
-	 * @param  {string}	  _extends    The name of the tag this element extends, ex: "button" for <button is="...">
-	 * @param  {string}   baseElement The native HTML*Element "class" that this custom element is extending.
-	 * @param  {Function} baseCtor    The constructor function.
-	 * @return {Function}             The "new" constructor function that can create instances of the custom element.
-	 */
-	function getTagConstructor(tag, _extends, baseElement, baseCtor) {
-		var proto = baseCtor.prototype,
-			config = registry[tag] = {
-				constructor: baseCtor,
-				prototype: proto
-			};
-
-		if (_extends) {
-			config.extends = _extends;
+	// Map from HTML*Element constructor to tag name.
+	var htmlElementConstructorMap = new Map();
+	if (tagMap) {
+		for (var tag in tagMap) {
+			htmlElementConstructorMap.set(tagMap[tag], tag);
 		}
+	}
 
-		if (has("document-register-element")) {
-			doc.registerElement(tag, config);
-		}
-
-		// Note: if we wanted to support registering new types after the parser was called, then here we should
-		// scan the document for the new type (selectors[length-1]) and upgrade any nodes found.
-
-		// Create a constructor method to return a DOMNode representing this widget.
-		var tagConstructor = function (params) {
-			// Create new widget node or upgrade existing node to widget
-			var node = createElement(tag);
-
-			// Set parameters on node
-			for (var name in params || {}) {
-				if (name === "style") {
-					node.style.cssText = params.style;
-				} else if ((name === "class" || name === "className") && node.setClassComponent) {
-					node.setClassComponent("user", params[name]);
-				} else {
-					node[name] = params[name];
+	// Hack DCL so that MyWidget#constructor() doesn't do HTML*Element.apply(this, arguments)...
+	// since that throws an exception.
+	// An alternate approach might be to have the HTMLElement wrapper shim with
+	// browserConstruction and userConstruction flags, like native-shim.js used to have,
+	// see https://github.com/Mindcraft1/custom-element-ie11/blob/master/shim/native-shim.js.
+	function weaveConstructorChain(chain, utils) {
+		var newProp = utils.cloneDescriptor(chain[chain.length - 1]);
+		chain = chain.map(function (prop) {
+			return prop.get || prop.set ? utils.adaptGet(prop.get) : prop.value;
+		});
+		newProp.value = function () {
+			for (var i = 0; i < chain.length; ++i) {
+				/* global HTMLUnknownElement */
+				if (chain[i] !== HTMLElement && chain[i] !== HTMLUnknownElement
+						&& !htmlElementConstructorMap.has(chain[i])) {
+					chain[i].apply(this, arguments);
 				}
 			}
-			if (node.deliver) {
-				node.deliver();
-			}
-
-			return node;
 		};
-
-		// Add some flags for debugging and return the new constructor
-		tagConstructor.tag = tag;
-		tagConstructor._ctor = baseCtor;
-
-		// Register the selector to find this custom element
-		var selector = _extends ? _extends + "[is='" + tag + "']" : tag;
-		selectors.push(selector);
-
-		// If the document has already been parsed then do a supplementary sweep for this new custom element.
-		if (initialParseComplete && !has("document-register-element")) {
-			unobserve();	// pause listening for added/deleted nodes
-			parse(doc, selector);
-			observe();	// resume listening for added/deleted nodes
+		return newProp;
+	}
+	var weaveConstructorAfter  = {name: "after", weave: weaveConstructorChain};
+	dcl.chainAfter = function (ctr, name) {
+		return dcl.chainWith(ctr, name, name === "constructor" ? weaveConstructorAfter : dcl.weaveAfter);
+	};
+	dcl._origMakeStub = dcl._makeStub;
+	dcl._makeStub = function (aroundStub, beforeChain, afterChain) {
+		if (aroundStub === HTMLElement || aroundStub === HTMLUnknownElement
+				|| htmlElementConstructorMap.has(aroundStub)) {
+			aroundStub = null;
 		}
-
-		return tagConstructor;
-	}
-
-	/**
-	 * Restore the "true" constructor when trying to recombine custom elements
-	 * @param  {Function} extension A constructor function that might have a shadow property that contains the
-	 *                              original constructor
-	 * @return {Function}           The original construction function or the existing function/object
-	 */
-	function restore(extension) {
-		return (extension && extension._ctor) || extension;
-	}
+		return dcl._origMakeStub(aroundStub, beforeChain, afterChain);
+	};
 
 	/**
-	 * Declare a widget and register it as a custom element.
+	 * Define a custom element from a set of properties and a list of superclasses.
 	 *
 	 * @param  {string}               tag             The custom element's tag name.
 	 * @param  {Object[]}             superclasses    Any number of superclasses to be built into the custom element
 	 *                                                constructor. But first one must be [descendant] of HTMLElement.
-	 * @param  {Object}               props           Properties of this widget class.
+	 * @param  {Object}               props           Properties of this baseCtor class.
 	 * @return {Function}                             A constructor function that will create an instance of the custom
 	 *                                                element.
 	 * @function module:delite/register
 	 */
 	function register(tag, superclasses, props) {
-		// Create the widget class by extending specified superclasses and adding specified properties.
+		// Create the baseCtor class by extending specified superclasses and adding specified properties.
 
 		// Make sure all the bases have their proper constructors for being composited.
 		// I.E. remove the wrapper added by getTagConstructor().
-		var bases = (superclasses instanceof Array ? superclasses : superclasses ? [superclasses] : []).map(restore);
-
-
-		// Check to see if the custom tag is already registered
-		if (tag in registry) {
-			throw new TypeError("A widget is already registered with tag '" + tag + "'.");
-		}
+		var superclassesArray = Array.isArray(superclasses) ? superclasses : superclasses ? [superclasses] : [];
+		var bases = superclassesArray.map(function (extension) {
+			return (extension && extension._ctor) || extension;
+		});
 
 		// Get root (aka native) class: HTMLElement, HTMLInputElement, etc.
-		var baseElement = bases[0];
-		if (baseElement.prototype && baseElement.prototype._baseElement) {
-			// The first superclass is a widget created by another call to register, so get that widget's root class
-			baseElement = baseElement.prototype._baseElement;
+		var BaseHTMLElement = bases[0];
+		if (BaseHTMLElement.prototype && BaseHTMLElement.prototype._BaseHTMLElement) {
+			// The first superclass is a custom element created by another call to register(),
+			// so get that custom element's root HTML*Element.
+			BaseHTMLElement = BaseHTMLElement.prototype._BaseHTMLElement;
 		}
 
-		// Get name of tag that this widget extends, for example <button is="..."> --> "button"
+		// Get name of tag that this BaseCtor extends, for example <button is="..."> --> "button"
 		var _extends;
-		if (baseElement !== HTMLElement) {
-			_extends = tags.filter(function (tag) {
-				return tagMap[tag] === baseElement;
-			})[0];
+		if (BaseHTMLElement !== HTMLElement) {
+			_extends = htmlElementConstructorMap.get(BaseHTMLElement);
 			if (!_extends) {
 				throw new TypeError(tag + ": must have HTMLElement in prototype chain");
 			}
 		}
 
 		// Get a composited constructor
-		var ctor = dcl(bases, props || {}),
-			proto = ctor.prototype;
-		proto._ctor = ctor;
-		proto._baseElement = baseElement;
+		var CustomElementClass = dcl(bases, props || {}),
+			proto = CustomElementClass.prototype;
+		proto._ctor = CustomElementClass;
+		proto._BaseHTMLElement = BaseHTMLElement;
 		proto._tag = tag;
 		proto._extends = _extends;
 
-		// Monkey-patch attachedCallback() and detachedCallback() to avoid double executions.
+		// Use trick from https://github.com/w3c/webcomponents/issues/587#issuecomment-254017839
+		// to create constructor.
+		var Constructor = function () {
+			/* global Reflect */
+			var elem;
+			if (typeof Reflect === "object") {
+				elem = Reflect.construct(BaseHTMLElement, [], Constructor);
+			} else {
+				// TODO: Try Object.create() too, see
+				// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect/construct
+				elem = BaseHTMLElement.call(this);
+				Object.setPrototypeOf(elem, Constructor.prototype);
+			}
+
+			CustomElementClass.prototype.constructor.apply(elem, arguments);
+			// TODO: Try CustomElementClass.apply(elem, arguments) instead.
+			return elem;
+		};
+		Object.setPrototypeOf(Constructor.prototype, CustomElementClass.prototype);
+		//Object.setPrototypeOf(Constructor, CustomElementClass.prototype);
+		var ConstructorProto = CustomElementClass.prototype;
+
+		// TODO: remove this code, clients shouldn't manually call connectedCallback/disconnectedCallback at all.
+		// Monkey-patch connectedCallback() and detachedCallback() to avoid double executions.
 		// Generally this isn't an issue, but it could happen if the app manually called the functions
 		// and then they were called automatically too.
-		advise.around(proto, "attachedCallback", function (sup) {
+		advise.around(ConstructorProto, "connectedCallback", function (sup) {
 			return function () {
 				if (this._attached) { return; }
 				if (sup) { sup.apply(this, arguments); }
 				this._attached = true;
 			};
 		});
-		advise.around(proto, "detachedCallback", function (sup) {
+		advise.around(ConstructorProto, "disconnectedCallback", function (sup) {
 			return function () {
 				if (!this._attached) { return; }
 				if (sup) { sup.apply(this, arguments); }
@@ -320,230 +210,51 @@ define([
 			};
 		});
 
-		// First time widget is instantiated, run introspection to add ES5 getters/setters for all props.
-		// Doesn't happen automatically because Stateful's constructor isn't called.
-		// TODO: createdCallback not getting called.  Maybe I need to process prototype directly myself
-		advise.before(proto, "createdCallback", function () {
-			var ctor = this.constructor;
-			if (this.instrument && !ctor._instrumented) {
-				this.instrument();
-				ctor._instrumented = true;
-			}
-		});
+		// TODO: Is this still needed?  It isn't in the latest native-shim.js.
+		Constructor.observedAttributes = CustomElementClass.observedAttributes;
+		ConstructorProto.connectedCallback = CustomElementClass.prototype.connectedCallback;
+		ConstructorProto.disconnectedCallback = CustomElementClass.prototype.disconnectedCallback;
+		ConstructorProto.attributeChangedCallback = CustomElementClass.prototype.attributeChangedCallback;
+		ConstructorProto.adoptedCallback = CustomElementClass.prototype.adoptedCallback;
 
-		// Save widget metadata to the registry and return constructor that creates an upgraded DOMNode for the widget
-		/* jshint boss:true */
-		return getTagConstructor(tag, _extends, baseElement, ctor);
+		// Define the custom element.
+		/* global customElements */
+		customElements.define(tag, Constructor, _extends ? {extends: _extends} : null);
+
+		// Add some flags for debugging and return the new constructor
+		Constructor.tag = tag;
+		Constructor._ctor = CustomElementClass;
+
+		return Constructor;
 	}
 
 	/**
-	 * Parse the given DOM tree for any Elements that need to be upgraded to widgets.
-	 * Searches all descendants of the specified node, but does not upgrade the node itself.
+	 * Converts plain Element of custom type into "custom element", by adding the widget's custom methods, etc.
+	 * Does nothing if the Element has already been converted or if it doesn't correspond to a registered custom tag.
+	 * After the upgrade, calls `constructor()`.
 	 *
 	 * Usually the application will not need to call this method directly, because it's called automatically
 	 * on page load and as elements are added to the document.
 	 *
-	 * @function module:delite/register.parse
-	 * @param {Element} [root] DOM node to parse from.
-	 * @param {String} [selector] The selector to use to detect custom elements.  Defaults to selector
-	 * for all registered custom elements.
+	 * @function module:delite/register.upgrade
+	 * @param {Element} element - The DOM node.
 	 */
-	function parse(root, selector) {
-		if (has("document-register-element")) { return; }
-		selector = selector || selectors.join(", ");
-		if (selector) {
-			var node, idx = 0, nodes = (root || doc).querySelectorAll(selector);
-			while ((node = nodes[idx++])) {
-				upgrade(node, true);
-			}
+	register.upgrade = function (elem) {
+		if (customElements.upgrade) {
+			customElements.upgrade(elem);
 		}
-	}
-
-	// ------------------------
-	// Code to listen for nodes being added/deleted from the document, to automatically call parse()/detachedCallback()
-	var observer;
+	};
 
 	/**
-	 * Start listening for added/deleted nodes.
+	 * Synchronously upgrade any custom tags in the document that have not yet been upgraded.
+	 * Nodes are automatically updated synchronously when the browser has native custom element support,
+	 * but only asynchronously when the polyfill is being used.  Should not be called before domReady event.
 	 */
-	function observe() {
-		if (!has("document-register-element")) {
-			if (!observer) {
-				if (has("MutationObserver")) {
-					observer = new MutationObserver(processMutations);
-				} else {
-					// Fallback for Android < 4.2 and IE < 11.  Partial shim of MutationObserver, except sometimes
-					// addedNodes lists all nodes not just the root of each added tree.
-					observer = {
-						takeRecords: function () {
-							var ret = this._mutations;
-							this._mutations = [];
-							if (this._timer) {
-								this._timer.remove();
-								this._timer = null;
-							}
-							return ret;
-						},
-						observe: function () {
-							this._mutations = [];
-							this._listener = function (event) {
-								if (event.target.nodeType === 1) {
-									var mutation = {};
-									mutation[event.type === "DOMNodeInserted" ? "addedNodes" : "removedNodes"] =
-										[event.target];
-									this._mutations.push(mutation);
-								}
-								if (!this._timer) {
-									this._timer = schedule(function () {
-										this._timer = null;
-										processMutations(this.takeRecords());
-									}.bind(this));
-								}
-							}.bind(this);
-							doc.body.addEventListener("DOMNodeInserted", this._listener);
-							doc.body.addEventListener("DOMNodeRemoved", this._listener);
-						},
-						disconnect: function () {
-							doc.body.removeEventListener("DOMNodeInserted", this._listener);
-							doc.body.removeEventListener("DOMNodeRemoved", this._listener);
-						}
-					};
-				}
-			}
-			observer.observe(doc.body, {childList: true, subtree: true});
+	register.deliver = function () {
+		if (customElements.upgrade) {
+			customElements.upgrade(document.body);
 		}
-	}
-
-	/**
-	 * Stop (aka pause) listening for added/deleted nodes.
-	 */
-	function unobserve() {
-		if (observer) {
-			// TODO: This method is supposed to pause listening for DOM updates,
-			// but I suspect disconnect() also throws away records
-			// for any mutations that have already occurred.   Those records need to be saved or processed.
-			observer.disconnect();
-		}
-	}
-
-	/**
-	 * Process the added/deleted nodes.  Called for incremental updates after initial parse.
-	 * @param mutations
-	 */
-	function processMutations(mutations) {
-		if (!has("document-register-element") && selectors.length) {
-			unobserve();	// pause listening for added/deleted nodes
-			var parseDescendants = has("MutationObserver") || has("DOMNodeInserted") === "root";
-			mutations.forEach(function (mutation) {
-				var added, idx1 = 0;
-				while ((added = mutation.addedNodes && mutation.addedNodes[idx1++])) {
-					// contains() checks avoid calling attachedCallback() on nodes not attached to document because:
-					//		1. node was added then removed before processMutations() was called
-					//		2. node was added and then its ancestor was removed before processMutations() was called
-					if (added.nodeType === 1 && added.ownerDocument.body.contains(added)) {
-						// upgrade the node itself (if it's a custom widget and it hasn't been upgraded yet),
-						// and then call attachedCallback() on it
-						upgrade(added, true);
-
-						// upgrade any descendants that are custom widgets (if they aren't already upgraded),
-						// and then call attachedCallback() on them
-						if (parseDescendants) {
-							parse(added);
-						}
-					}
-				}
-
-				var removedRoot, idx2 = 0;
-				while ((removedRoot = mutation.removedNodes && mutation.removedNodes[idx2++])) {
-					if (removedRoot.nodeType === 1) {
-						detach(removedRoot);
-						var removed, idx3 = 0, removedDescendants = removedRoot.querySelectorAll(selectors.join(", "));
-						while ((removed = removedDescendants[idx3++])) {
-							detach(removed);
-						}
-					}
-				}
-			});
-			observe();	// resume listening for added/deleted nodes
-		}
-	}
-
-	/**
-	 * Upgrade any custom tags in the document that have not yet been upgraded.
-	 * Nodes are automatically updated asynchronously, but applications can synchronously update them by calling
-	 * this method.  Should not be called before domReady event.
-	 */
-	function deliver() {
-		if (!has("document-register-element")) {
-			if (!initialParseComplete) {
-				parse();
-				initialParseComplete = true;
-				observe();
-			} else {
-				processMutations(observer.takeRecords());
-			}
-		}
-	}
-
-	// Setup initial parse of document and also listeners for future document modifications.
-	if (!has("document-register-element") && doc) {
-		domReady(function () {
-			if (!has("dom-template")) {
-				// Move <template> child nodes to .content property, so that we don't parse custom elements in
-				// <template> nodes.  Could be done on dynamically created nodes too, but currently there's no need.
-				var template, idx = 0, nodes = doc.querySelectorAll("template");
-				while ((template = nodes[idx++])) {
-					if (!template.content) {
-						var child, content = template.content = doc.createDocumentFragment();
-						while ((child = template.firstChild)) {
-							content.appendChild(child);
-						}
-					}
-				}
-			}
-
-			// Upgrade all custom element nodes, and setup listeners for future changes.
-			deliver();
-		});
-	}
-
-	// Setup return value as register() method, with other methods hung off it.
-	register.upgrade = upgrade;
-	register.createElement = createElement;
-	register.parse = parse;
-	register.deliver = deliver;
-
-	// Add helpers from dcl for declaring classes.
-
-	/**
-	 * Convenience shortcut to [dcl()](http://www.dcljs.org/docs/mini_js/dcl/).
-	 * @function module:delite/register.dcl
-	 */
-	register.dcl = dcl;
-
-	/**
-	 * Convenience shortcut to [dcl.after()](http://www.dcljs.org/docs/dcl_js/after/).
-	 * @function module:delite/register.after
-	 */
-	register.after = dcl.after;
-
-	/**
-	 * Convenience shortcut to [dcl.before()](http://www.dcljs.org/docs/dcl_js/before/).
-	 * @function module:delite/register.before
-	 */
-	register.before = dcl.before;
-
-	/**
-	 * Convenience shortcut to [dcl.around()](http://www.dcljs.org/docs/dcl_js/around/).
-	 * @function module:delite/register.around
-	 */
-	register.around = dcl.around;
-
-	/**
-	 * Convenience shortcut to [dcl.superCall()](http://www.dcljs.org/docs/mini_js/supercall/).
-	 * @function module:delite/register.superCall
-	 */
-	register.superCall = dcl.superCall;
+	};
 
 	return register;
 });

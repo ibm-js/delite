@@ -11,7 +11,7 @@ define([
 	"delite/theme!"		// to get CSS rules for d-hidden
 ], function (require, registerSuite, assert, Promise, $, handlebars, register, Widget, buttonHBTmpl) {
 
-	var container, myButton;
+	var container;
 
 	registerSuite({
 		name: "handlebars",
@@ -33,25 +33,26 @@ define([
 			});
 
 			var myWidget = new MyWidget({});
+			myWidget.placeAt(container);
 
 			assert.strictEqual(myWidget.textContent.trim(), "number 0, boolean false, string hi, null");
 		},
 
 		"load from file": function () {
 			// Test that function returned from delite/handlebars! creates the template correctly
-			var TestButton = register("handlebars-button", [HTMLButtonElement, Widget], {
+			var TestButton = register("handlebars-button", [HTMLElement, Widget], {
 				iconClass: "originalClass",
 				label: "original label",
 				template: buttonHBTmpl
 			});
-			myButton = new TestButton();
-			assert.strictEqual(myButton.tagName.toLowerCase(), "button", "root node exists");
+			var myButton = new TestButton();
+			myButton.placeAt(container);
+
+			assert.strictEqual(myButton.tagName.toLowerCase(), "handlebars-button", "root node exists");
 			assert.strictEqual(myButton.firstChild.tagName.toLowerCase(), "span", "icon node exists too");
 			assert.strictEqual(myButton.firstChild.className, "d-reset originalClass", "icon class set");
 			assert.strictEqual(myButton.textContent.trim(), "original label", "label set");
-		},
-
-		update: function () {
+			
 			myButton.label = "new label";
 			myButton.iconClass = "newClass";
 			myButton.deliver();
@@ -73,6 +74,7 @@ define([
 			});
 
 			var node = new TestHtml();
+			node.placeAt(container);
 
 			assert.strictEqual(node.root.tagName.toLowerCase(), "handlebars-attach-point", "node.root");
 			assert.strictEqual(node.root2.tagName.toLowerCase(), "handlebars-attach-point", "node.root");
@@ -93,6 +95,8 @@ define([
 					)
 				});
 				var mySpecialPropsWidget = new SpecialPropsWidget();
+				mySpecialPropsWidget.deliver();
+
 				var input = mySpecialPropsWidget.children[0];
 
 				assert.strictEqual(input.value, "original value", "value set as property");
@@ -118,11 +122,11 @@ define([
 					size: 0,
 					multiple: false,
 					template: handlebars.compile(
-							"<template><select data-attach-point='select' foo='{{foo}}' " +
-									"size='{{size}}' multiple='{{multiple}}'>" +
-								"<option value=''>hello now</option>" +
-								"<option selected='selected' value='CA16'>Reference Number</option>" +
-							"</select></template>"
+						"<template><select data-attach-point='select' foo='{{foo}}' " +
+						"size='{{size}}' multiple='{{multiple}}'>" +
+						"<option value=''>hello now</option>" +
+						"<option selected='selected' value='CA16'>Reference Number</option>" +
+						"</select></template>"
 					)
 				});
 
@@ -131,23 +135,28 @@ define([
 					size: 2,
 					multiple: true
 				});
+				mySelect.placeAt(container);
 
 				var select = mySelect.select;
 				assert.strictEqual(select.getAttribute("foo"), "2", "foo");
 				assert.strictEqual(select.size, 2, "size");
 				assert.strictEqual(select.multiple, true, "multiple");
 				assert.strictEqual(select.selectedIndex, 1, "selected=selected");
+			},
 
+			select2: function () {
 				// Also make sure that <option selected> markup works.
 				var MySelect2 = register("handlebars-select-2", [HTMLElement, Widget], {
 					template: handlebars.compile(
 						"<template><select attach-point='select'>" +
-							"<option value=''>hello now</option>" +
-							"<option selected value='CA16'>Reference Number</option>" +
+						"<option value=''>hello now</option>" +
+						"<option selected value='CA16'>Reference Number</option>" +
 						"</select></template>"
 					)
 				});
 				var mySelect2 = new MySelect2();
+				mySelect2.deliver();
+
 				assert.strictEqual(mySelect2.select.selectedIndex, 1, "selected");
 			},
 
@@ -162,6 +171,7 @@ define([
 				});
 
 				var myWidget = new MyWidget({});
+				myWidget.placeAt(container);
 
 				assert.strictEqual(myWidget.children[0].getAttribute("autocorrect"), "off");
 			}
@@ -169,18 +179,26 @@ define([
 
 		"special characters": function () {
 			// Test that special characters are escaped.  This is actually testing template.js.
-			var TestList = register("handlebars-ul", [HTMLUListElement, Widget], {
+			var TestList = register("handlebars-ul", [HTMLElement, Widget], {
 				label: "bill'\\",
 				template: handlebars.compile(
-					"<ul><li foo=\"a.b('c,d')\" bar='\\\"hello\"'>\"\\{{label}}\n\twas \n\there'</li></ul>")
+					"<template><ul>" +
+					"<li foo=\"a.b('c,d')\" bar='\\\"hello\"'>\"\\{{label}}\n\twas \n\there'</li>" +
+					"</ul></template>"
+				)
 			});
-			var myList = new TestList();
+			var myTestList = new TestList();
+			myTestList.placeAt(container);
 
+			var myList = myTestList.firstChild;
 			assert.strictEqual(myList.tagName.toLowerCase(), "ul", "root node exists");
 			assert.strictEqual(myList.firstChild.tagName.toLowerCase(), "li", "child exists");
 			assert.strictEqual(myList.firstChild.getAttribute("foo"), "a.b('c,d')", "single quotes prop");
 			assert.strictEqual(myList.firstChild.getAttribute("bar"), "\\\"hello\"", "double quotes, backslash prop");
 			assert.strictEqual(myList.firstChild.textContent, "\"\\bill'\\\n\twas \n\there'", "node text");
+		},
+
+		"special characters 2": function () {
 
 			// Also check that a template can contain JSON (even though it's probably not a good idea).
 			// The }} should have no effect since there's no {{.
@@ -192,6 +210,7 @@ define([
 					"</template>")
 			});
 			var myJson = new TestJson();
+			myJson.placeAt(container);
 
 			assert.strictEqual(myJson.children[0].getAttribute("attr"), "{name: {first: 'john', last: 'doe'}}", "json");
 			assert.strictEqual(myJson.children[1].textContent, "hello", "parsing after json");
@@ -210,6 +229,7 @@ define([
 				});
 				var myListener = new TestListener();
 				myListener.placeAt(container);
+
 				myListener.firstChild.click();
 				assert.strictEqual(myListener.clicks, 1, "click callback fired");
 			},
@@ -224,6 +244,7 @@ define([
 				});
 				var myClick = new TestClick();
 				myClick.placeAt(container);
+
 				myClick.firstChild.click();
 				assert.strictEqual(g, 2, "click handler fired");
 			}
@@ -236,37 +257,30 @@ define([
 					template: handlebars.compile("<template>{{text}}</template>")
 				});
 
-				// This widget uses sub-widgets handlebars-button (defined in first test) and also handlebars-heading.
 				var ComplexWidget = register("handlebars-widgets-in-template", [HTMLElement, Widget], {
 					heading: "original heading",
 					content: "original content",
-					buttonLabel: "original button label",
 					template: handlebars.compile(
 						"<template>" +
 							"<handlebars-heading text='{{heading}}'></handlebars-heading>" +
 							"<span>{{content}}</span>" +
-							"<button is='handlebars-button' label='{{buttonLabel}}'></button>" +
 						"</template>"
 					)
 				});
 
-				var myComplexWidget = new ComplexWidget(),
-					headingWidget = myComplexWidget.getElementsByTagName("handlebars-heading")[0],
-					buttonWidget = myComplexWidget.getElementsByTagName("button")[0];
+				var myComplexWidget = new ComplexWidget();
+				myComplexWidget.placeAt(container);
+
+				var headingWidget = myComplexWidget.getElementsByTagName("handlebars-heading")[0];
 
 				assert.ok(headingWidget.render, "heading widget was instantiated");
-				assert.ok(buttonWidget.render, "button widget was instantiated");
 
-				myComplexWidget.placeAt(container);
 
 				assert.ok(myComplexWidget.attached, "myComplexWidget widget was attached");
 				assert.ok(headingWidget.attached, "heading widget was attached");
-				assert.ok(buttonWidget.attached, "button widget was attached");
 
 				assert.strictEqual(headingWidget.textContent, "original heading",
 					"heading widget got title from main widget");
-				assert.strictEqual(buttonWidget.textContent.trim(), "original button label",
-					"button widget got label from main widget");
 
 				myComplexWidget.mix({
 					heading: "new heading",
@@ -275,14 +289,12 @@ define([
 				myComplexWidget.deliver();
 
 				assert.strictEqual(headingWidget.textContent, "new heading", "heading changed");
-				assert.strictEqual(buttonWidget.textContent.trim(), "new button label", "button changed");
 
 				container.removeChild(myComplexWidget);
-				myComplexWidget.detachedCallback();
-
-				assert.isFalse(myComplexWidget.attached, "myComplexWidget widget was detached");
-				assert.isFalse(headingWidget.attached, "heading widget was detached");
-				assert.isFalse(buttonWidget.attached, "button widget was detached");
+				setTimeout(this.async().callback(function () {
+					assert.isFalse(myComplexWidget.attached, "myComplexWidget widget was detached");
+					assert.isFalse(headingWidget.attached, "heading widget was detached");
+				}), 0);
 			},
 
 			"class attr for widgets in templates": function () {
@@ -299,15 +311,18 @@ define([
 
 				var widget = document.createElement("handlebars-test-app");
 				container.appendChild(widget);
-				register.parse(container);
 
-				var embeddedWidget = widget.querySelector("handlebars-embedded-widget");
-				assert($(embeddedWidget).hasClass("foo"), "has original foo class");
-				assert($(embeddedWidget).hasClass("bar"), "has user specified bar class");
+				setTimeout(this.async().callback(function () {
+					var embeddedWidget = widget.querySelector("handlebars-embedded-widget");
+					assert($(embeddedWidget).hasClass("foo"), "has original foo class");
+					assert($(embeddedWidget).hasClass("bar"), "has user specified bar class");
+				}), 0);
 			},
-
+			
+			/*
+			// Customized built in elements not support cross browser.
 			buttons: function () {
-				var ButtonWidget = register("handlebars-buttons-in-template", [HTMLElement, Widget], {
+				var ButtonWidget = register("handlebars-buttons-in-template", [HTMLButtonElement, Widget], {
 					template: handlebars.compile(
 						"<template>" +
 							"<button is='handlebars-button' label='Default button'></button> " +
@@ -320,8 +335,11 @@ define([
 				testWidget.placeAt(container);
 
 				// Make sure all the buttons are siblings of each other, not parent-child.
-				assert.strictEqual(testWidget.children.length, 3, "direct children");
+				setTimeout(this.async().callback(function () {
+					assert.strictEqual(testWidget.children.length, 3, "direct children");
+				}), 0);
 			},
+            */
 
 			"boolean bind var": function () {
 				register("handlebars-layout", [HTMLElement, Widget], {
@@ -332,7 +350,6 @@ define([
 					)
 				});
 
-				// This widget uses sub-widgets handlebars-button (defined in first test) and also handlebars-heading.
 				var ComplexWidget = register("handlebars-wit-boolean-bind", [HTMLElement, Widget], {
 					layout: false,
 					template: handlebars.compile(
@@ -343,6 +360,7 @@ define([
 				});
 
 				var myComplexWidget = new ComplexWidget();
+				myComplexWidget.placeAt(container);
 
 				assert.strictEqual(myComplexWidget.firstElementChild.vertical, false, "prop is false not 'false'");
 				assert.strictEqual(myComplexWidget.firstElementChild.className, "horizontal", "className");
@@ -359,6 +377,7 @@ define([
 				});
 
 				var myComplexWidget = new ComplexWidget();
+				myComplexWidget.placeAt(container);
 
 				assert.strictEqual(myComplexWidget.firstElementChild.vertical, false, "prop is false not 'false'");
 				assert.strictEqual(myComplexWidget.firstElementChild.className, "horizontal", "className");
@@ -391,8 +410,13 @@ define([
 					template: template
 				});
 
-				var myCompoundWidget = new CompoundWidget(),
-					sub1 = myCompoundWidget.getElementsByTagName("test-widget-1")[0],
+				var myCompoundWidget = new CompoundWidget();
+				myCompoundWidget.placeAt(container);
+
+				return myCompoundWidget;
+			}).then(function (myCompoundWidget) {
+				// Extra then() call gives time for custom widget instantiation to finish.
+				var sub1 = myCompoundWidget.getElementsByTagName("test-widget-1")[0],
 					sub2 = myCompoundWidget.getElementsByTagName("test-widget-2")[0];
 				assert(sub1.render, "sub1 instantiated");
 				assert(sub2.render, "sub2 instantiated");
@@ -402,22 +426,25 @@ define([
 		html: function () {
 			// Testing that parsing still works if ending tags are missing
 
-			var TestHtml = register("handlebars-html", [HTMLUListElement, Widget], {
-				template: handlebars.compile("<ul><li>1</li><li><input></ul>")
+			var TestHtml = register("handlebars-html", [HTMLElement, Widget], {
+				template: handlebars.compile("<template><ul><li>1</li><li><input></ul></template>")
 			});
 
 			var node = new TestHtml();
-			assert.strictEqual(node.tagName.toLowerCase(), "ul", "root node exists");
+			node.deliver();
+			var ul = node.firstChild;
 
-			node = node.firstChild;
-			assert.strictEqual(node.tagName.toLowerCase(), "li", "first li exists");
-			assert.strictEqual(node.textContent, "1", "first li value");
+			assert.strictEqual(ul.tagName.toLowerCase(), "ul", "root node exists");
 
-			node = node.nextSibling;
-			assert.strictEqual(node.tagName.toLowerCase(), "li", "second li exists");
+			var li = ul.firstChild;
+			assert.strictEqual(li.tagName.toLowerCase(), "li", "first li exists");
+			assert.strictEqual(li.textContent, "1", "first li value");
 
-			node = node.firstChild;
-			assert.strictEqual(node.tagName.toLowerCase(), "input", "input exists");
+			li = li.nextSibling;
+			assert.strictEqual(li.tagName.toLowerCase(), "li", "second li exists");
+
+			var input = li.firstChild;
+			assert.strictEqual(input.tagName.toLowerCase(), "input", "input exists");
 		},
 
 		svg: function () {
@@ -440,6 +467,8 @@ define([
 			});
 
 			var node = new TestSvg();
+			node.deliver();
+
 			assert.strictEqual(node.tagName.toLowerCase(), "handlebars-svg", "root node exists");
 
 			node = node.firstChild;
@@ -460,6 +489,7 @@ define([
 				)
 			});
 			var ws = new WhiteSpace();
+			ws.deliver();
 			assert.strictEqual(ws.childNodes.length, 3, "middle whitespace preserved, start/end whitespace deleted");
 
 			var WhiteSpaceNbsp = register("handlebars-whitespace-two", [HTMLElement, Widget], {
@@ -468,6 +498,7 @@ define([
 				)
 			});
 			var wsn = new WhiteSpaceNbsp();
+			wsn.deliver();
 			assert.strictEqual(wsn.childNodes.length, 5, "all &nbsp preserved");
 
 			var WhiteSpaceComments = register("handlebars-whitespace-three", [HTMLElement, Widget], {
@@ -476,6 +507,7 @@ define([
 				)
 			});
 			var wsc = new WhiteSpaceComments();
+			wsc.deliver();
 			assert.strictEqual(wsc.childNodes.length, 3, "comments don't break trimming");
 
 			var WhiteSpacePre = register("handlebars-whitespace-pre", [HTMLElement, Widget], {
@@ -484,6 +516,7 @@ define([
 				)
 			});
 			var wsp = new WhiteSpacePre();
+			wsp.deliver();
 			assert.strictEqual(wsp.innerHTML, "<pre>\thello\n\tworld </pre>", "pre whitespace preserved");
 		},
 
@@ -495,6 +528,7 @@ define([
 					)
 				});
 				var sc = new SelfClosing();
+				sc.deliver();
 				assert.strictEqual(sc.childNodes.length, 4, "# of child nodes");
 			},
 
@@ -510,6 +544,7 @@ define([
 				});
 
 				var node = new TestSvg();
+				node.deliver();
 				assert.strictEqual(node.tagName.toLowerCase(), "handlebars-self-closing-mixed", "root node exists");
 				assert.strictEqual(node.children.length, 2, "# of children");
 			}
@@ -527,6 +562,7 @@ define([
 			});
 
 			var node = new TestUndefined();
+			node.deliver();
 			assert.strictEqual(node.className, "", "class #1");
 			assert.strictEqual(node.textContent.trim(), "Hello Bob !", "textContent #1");
 
@@ -552,6 +588,7 @@ define([
 			});
 
 			var node = new TestNested();
+			node.deliver();
 			assert.strictEqual(node.className, "", "class #1");
 			assert.strictEqual(node.textContent.trim(), "Hello Bob !", "textContent #1");
 
@@ -641,7 +678,6 @@ define([
 
 				var node = new TestNested();
 				node.placeAt(container);
-				node.deliver();
 				assert.strictEqual(getComputedStyle(node).display, "none", "hidden");
 
 				node.hideSpan = false;
@@ -763,7 +799,7 @@ define([
 			assert(/plus.gif/.test(node.firstElementChild.src), "img src set");
 		},
 
-		"class": function () {
+		"class const": function () {
 			// Class is handled specially via addClass()/removeClass() so that it doesn't
 			// overwrite the settings from baseClass or user defined classes.
 
@@ -771,49 +807,43 @@ define([
 				baseClass: "myBaseClass",
 				template: handlebars.compile(
 					"<template class='constClass'>" +
-						"<span class='{{mySubClass}}'>hi</span>" +
+					"<span class='{{mySubClass}}'>hi</span>" +
 					"</template>"
 				)
 			});
-
-			var ClassVarWidget = register("handlebars-var-class", [HTMLElement, Widget], {
-				baseClass: "myBaseClass",
-				templateClass: "myTemplateClass1",
-				template: handlebars.compile(
-					"<template class='{{templateClass}}'>" +
-						"<span class='{{mySubClass}}'>hi</span>" +
-					"</template>"
-				)
-			});
-
-			// Test declarative with class=const
-			container.innerHTML = "<handlebars-const-class class='userDefinedClass'></handlebars-const-class>";
-			register.parse(container);
-			var cwdc = container.firstChild;
-			assert.strictEqual(cwdc.className, "userDefinedClass constClass myBaseClass", "declarative const");
-
-			// Test declarative with class={{foo}}
-			container.innerHTML = "<handlebars-var-class class='userDefinedClass'></handlebars-var-class>";
-			register.parse(container);
-			var cwdv = container.firstChild;
-			assert.strictEqual(cwdv.className, "userDefinedClass myTemplateClass1 myBaseClass",
-				"declarative var, before update");
-
-			cwdv.templateClass = "myTemplateClass2";
-			cwdv.deliver();
-			assert.strictEqual(cwdv.className, "userDefinedClass myBaseClass myTemplateClass2",
-				"declarative var, after update");
 
 			// Test programmatic with class=const
 			var cwpc = new ClassConstWidget({
 				className: "userDefinedClass"
 			});
+			cwpc.deliver();
 			assert.strictEqual(cwpc.className, "userDefinedClass constClass myBaseClass", "programmatic const");
+
+			// Test declarative with class=const
+			container.innerHTML = "<handlebars-const-class class='userDefinedClass'></handlebars-const-class>";
+
+			setTimeout(this.async().callback(function () {
+				var cwdc = container.firstChild;
+				assert.strictEqual(cwdc.className, "userDefinedClass constClass myBaseClass", "declarative const");
+			}), 0);
+		},
+
+		"class var": function () {
+			var ClassVarWidget = register("handlebars-var-class", [HTMLElement, Widget], {
+				baseClass: "myBaseClass",
+				templateClass: "myTemplateClass1",
+				template: handlebars.compile(
+					"<template class='{{templateClass}}'>" +
+					"<span class='{{mySubClass}}'>hi</span>" +
+					"</template>"
+				)
+			});
 
 			// Test programmatic with class={{foo}}
 			var cwpv = new ClassVarWidget({
 				className: "userDefinedClass"
 			});
+			cwpv.deliver();
 			assert.strictEqual(cwpv.className, "userDefinedClass myTemplateClass1 myBaseClass",
 				"programmatic var, before update");
 
@@ -821,6 +851,20 @@ define([
 			cwpv.deliver();
 			assert.strictEqual(cwpv.className, "userDefinedClass myBaseClass myTemplateClass2",
 				"programmatic var, after update");
+
+			// Test declarative with class={{foo}}
+			container.innerHTML = "<handlebars-var-class class='userDefinedClass'></handlebars-var-class>";
+
+			setTimeout(this.async().callback(function () {
+				var cwdv = container.firstChild;
+				assert.strictEqual(cwdv.className, "userDefinedClass myTemplateClass1 myBaseClass",
+					"declarative var, before update");
+
+				cwdv.templateClass = "myTemplateClass2";
+				cwdv.deliver();
+				assert.strictEqual(cwdv.className, "userDefinedClass myBaseClass myTemplateClass2",
+					"declarative var, after update");
+			}), 0);
 		},
 
 		"style": function () {
@@ -838,6 +882,7 @@ define([
 			});
 
 			var sw = new StyleWidget({});
+			sw.deliver();
 			assert.strictEqual(sw.children[0].style.height, "10px");
 
 			sw.height = 20;
@@ -864,7 +909,7 @@ define([
 			});
 
 			var node = new TestWidget();
-			container.appendChild(node);
+			node.placeAt(container);
 
 			assert.isDefined(node.root, "node.root set");
 			assert.isDefined(node.myButton2, "node.myButton2 set");
@@ -889,9 +934,6 @@ define([
 			var TestWidget = register("dynamic-template", [HTMLElement, Widget], {
 				label: "my label",
 				reversed: false,
-				createdCallback: function () {
-					this.notifyCurrentValue("reversed");
-				},
 				computeProperties: function (props) {
 					if ("reversed" in props) {
 						this.template = this.reversed ?
@@ -920,7 +962,7 @@ define([
 			var node = new TestWidget({
 				label: "normal"
 			});
-			container.appendChild(node);
+			node.placeAt(container);
 			assert.strictEqual(node.children[0], node.labelNode, "reversed=false, first child");
 			assert.strictEqual(node.children[1], node.checkboxNode, "reversed=false, second child");
 			assert.strictEqual(node.textContent.trim(), "normal:", "reversed=false, textContent");
@@ -946,6 +988,7 @@ define([
 			});
 
 			var myWidget = new MyWidget({});
+			myWidget.deliver();
 
 			assert.strictEqual(myWidget.getAttribute("aria-expanded"), "false", "initial value");
 

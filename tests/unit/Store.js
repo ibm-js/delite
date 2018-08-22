@@ -28,13 +28,16 @@ define([
 				d.reject(new Error("got query-success, should get query-error"));
 			});
 			store.source = new Rest({ target: "/foo" });	// bogus URL, should throw error
+			store.deliver();
 			return d;
 		},
 
 		Updates: function () {
 			var d = this.async(1500);
-			var refreshRenderingCallCount = 0;
 			var store = new C();
+			store.deliver();
+
+			var refreshRenderingCallCount = 0;
 			store.refreshRendering = function () {
 				refreshRenderingCallCount++;
 			};
@@ -71,6 +74,7 @@ define([
 			// use empty model to easy comparison
 			var mySource = new M({ data: myData, model: null});
 			store.source = mySource;
+			store.deliver();
 			return d;
 		},
 
@@ -87,6 +91,7 @@ define([
 				// Test the change store to null triggers a so-called query
 				store.source = null;
 			}), 100);
+			store.deliver();
 			return d;
 		},
 
@@ -121,6 +126,7 @@ define([
 			// use empty model to easy comparison
 			var mySource = new M({ data: myData, model: null });
 			store.source = mySource;
+			store.deliver();
 			return d;
 		},
 
@@ -150,6 +156,7 @@ define([
 			// use empty model to easy comparison
 			var mySource = new M({ data: myData, model: null });
 			store.source = mySource;
+			store.deliver();
 			return d;
 		},
 
@@ -160,7 +167,7 @@ define([
 			var MyStoreSubclass = register("my-store-subclass", [HTMLElement, Widget, Store], {
 				idToQuery: "place holder",
 
-				createdCallback: function () {
+				constructor: function () {
 					this.storeQueries = [];
 				},
 
@@ -190,9 +197,8 @@ define([
 				}),
 				idToQuery: "foo"
 			});
+			myStore.deliver();
 
-			// The new MyStoreSubclass() automatically calls deliver(), so the query has already executed.
-			// Now make sure that it just executed once.
 			assert.deepEqual(myStore.storeQueries, [{ id: "foo" }]);
 		},
 
@@ -226,6 +232,7 @@ define([
 			// use empty model to easy comparison
 			var mySource = new M({ data: myData, model: null });
 			store.source = mySource;
+			store.deliver();
 			return d;
 		},
 
@@ -259,6 +266,7 @@ define([
 			// use empty model to easy comparison
 			var mySource = new M({ data: myData, model: null });
 			store.source = mySource;
+			store.deliver();
 			return d;
 		},
 
@@ -319,7 +327,7 @@ define([
 					d.resolve();
 				}
 			}));
-			store.attachedCallback();
+			store.connectedCallback();
 			// use empty model to easy comparison
 			var mySource = new M({ data: myData, model: null });
 			store.source = mySource;

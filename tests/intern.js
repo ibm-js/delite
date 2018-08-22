@@ -10,21 +10,16 @@ define({
 	// The port on which the instrumenting proxy will listen
 	proxyPort: 9000,
 
-	// Browsers to run integration testing against. Note that version numbers must be strings if used with Sauce
-	// OnDemand. Options that will be permutated are browserName, version, platform, and platformVersion; any other
-	// capabilities options specified for an environment will be copied as-is
+	// Browsers to run integration testing against.
+	// Using fixSessionCapabilities: false to avoid Intern turning on synthetic click events etc. which hurts us
+	// rather than helping us.
 	environments: [
+		{ browserName: "MicrosoftEdge", version: "17", fixSessionCapabilities: false, name: "delite"},
 		{ browserName: "internet explorer", version: "11", platform: "Windows 8.1",
 			requireWindowFocus: "true", name: "delite"},
-		{ browserName: "firefox", version: "53", platform: [ /* "OS X 10.6", "Linux", */ "Windows 7" ],
-			name: "delite"},
-		{ browserName: "chrome", version: "58", platform: [ /* "OS X 10.6", "Linux", */ "Windows 7" ],
-			name: "delite"},
-
-		// Use V9 because Safari 10 doesn't support isDisplayed(),
-		// see https://github.com/SeleniumHQ/selenium/issues/3029
-		{ browserName: "safari", version: "9", name: "delite" },
-
+		{ browserName: "firefox", version: "60", platform: [ "Windows 10" ], name: "delite" },
+		{ browserName: "chrome", version: "68", platform: [ "Windows 10" ], name: "delite" },
+		{ browserName: "safari", version: "11", name: "delite" },
 		{ browserName: "iphone", platform: "OS X 10.10", version: "10.2", deviceName: "iPad Retina", name: "delite" },
 		{ browserName: "android", platform: "Linux", version: "6.0",
 			deviceName: "Android Emulator", deviceType: "tablet", name: "delite" }

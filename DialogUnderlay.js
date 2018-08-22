@@ -1,11 +1,18 @@
 /** @module delite/DialogUnderlay */
 define([
+	"dcl/dcl",
 	"./register",
 	"./Widget",
 	"./BackgroundIframe",
 	"./Viewport",
 	"./theme!./DialogUnderlay/themes/{{theme}}/DialogUnderlay.css"
-], function (register, Widget, BackgroundIframe, Viewport) {
+], function (
+	dcl,
+	register,
+	Widget,
+	BackgroundIframe,
+	Viewport
+) {
 
 	// TODO: having show() methods on the instance and also on the module is confusing,
 	// at least when looking at the API doc page.  Should one be renamed?
@@ -24,13 +31,12 @@ define([
 
 		baseClass: "d-dialog-underlay",
 
-		createdCallback: register.after(function () {
+		constructor: dcl.after(function () {
 			// Automatically append the underlay to <body> on creation.
 			this.ownerDocument.body.appendChild(this);
-			this.attachedCallback();
 		}),
 
-		attachedCallback: function () {
+		connectedCallback: function () {
 			this._resizeListener = Viewport.on("resize", function () {
 				if (this._open) {
 					this.layout();
@@ -38,7 +44,7 @@ define([
 			}.bind(this));
 		},
 
-		detachedCallback: function () {
+		disconnectedCallback: function () {
 			this._resizeListener.remove();
 		},
 

@@ -105,8 +105,8 @@ define([
 			// start it now.  Make sure to do this after widget has been
 			// inserted into the DOM tree, so it can see that it's being controlled by me,
 			// so it doesn't try to size itself.
-			if (this.attached && node.attachedCallback) {
-				node.attachedCallback();
+			if (this.attached && node.connectedCallback) {
+				node.connectedCallback();
 			}
 
 			this.emit("delite-add-child", {
@@ -124,7 +124,7 @@ define([
 		 */
 		addChild: function (node, insertIndex) {
 			// Note: insertBefore(node, null) equivalent to appendChild().  Null arg is needed (only) on IE.
-			var cn = this.containerNode, nextSibling = cn.children[insertIndex];
+			var cn = this.containerNode || this, nextSibling = cn.children[insertIndex];
 			cn.insertBefore(node, nextSibling || null);
 		},
 
@@ -162,7 +162,8 @@ define([
 		 */
 		getChildren: function () {
 			// use Array.prototype.slice to transform the live HTMLCollection into an Array
-			return Array.prototype.slice.call(this.containerNode.children);
+			var cn = this.containerNode || this;
+			return Array.prototype.slice.call(cn.children);
 		},
 
 		/**

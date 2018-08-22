@@ -24,7 +24,7 @@ define(["dcl/dcl", "decor/sniff", "./Widget"], function (dcl, has, Widget) {
 	return dcl(Widget, /** @lends module:delite/Selection# */{
 		declaredClass: "delite/Selection",
 
-		createdCallback: function () {
+		constructor: function () {
 			this._set("selectedItems", []);
 		},
 		

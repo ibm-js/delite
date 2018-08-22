@@ -15,6 +15,13 @@
 		margin: 0;
 	}
 
+	.button {
+		display: inline-block;
+		margin: 5px;
+		border: solid 1px black;
+		background: #e5e5e5;
+	}
+
 	div {
 		border: solid 1px gray;
 	}
@@ -64,7 +71,12 @@ require([
 
 	// A button that shows a popup.
 	// Supply popup as parameter when instantiating this widget.
-	var SimpleDropDownButton = register("simple-dropdown-button", [HTMLButtonElement, Widget], {
+	var SimpleDropDownButton = register("simple-dropdown-button", [HTMLElement, Widget], {
+		render: function () {
+			this.className = "button";
+			this.tabIndex = "0";
+		},
+		
 		label: dcl.prop({
 			set: function (val) {
 				this.textContent = val;
@@ -124,7 +136,7 @@ require([
 
 	// A trivial popup widget
 	var SimplePopup = register("simple-popup", [HTMLElement, Widget], {
-		createdCallback: function () {
+		constructor: function () {
 			// on click, emit execute event so that popup closes
 			this.on("click", this._clickHandler.bind(this));
 		},
@@ -141,7 +153,7 @@ require([
 
 	// A popup that emits a change event, like a DatePicker.
 	var DatePicker = register("my-date-picker", [HTMLElement, Widget], {
-		createdCallback: function () {
+		constructor: function () {
 			// on click, emit execute event so that popup closes
 			this.on("click", this._clickHandler.bind(this));
 		},
@@ -166,7 +178,7 @@ require([
 
 	// A popup with a listener on the popup-after-position event to adjust arrows.
 	var Tooltip = register("test-tooltip", [HTMLElement, SimplePopup], {
-		createdCallback: function () {
+		constructor: function () {
 			this.popupAfterPositionEvents = [];
 			this.on("popup-after-position", this.orient.bind(this));
 		},

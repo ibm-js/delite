@@ -14,11 +14,15 @@
 		var timeoutInterval = 1000;
 		var val = 0;
 		require([
+			"dcl/dcl",
 			"delite/register",
 			"delite/Widget",
 			"requirejs-domready/domReady!"
-		], function (register, Widget) {
-
+		], function (
+			dcl,
+			register,
+			Widget
+		) {
 			// Simple widget where the tabIndex (on the root node) is redirected to an inner node.
 			register("test-tab-index", [HTMLElement, Widget], {
 				label: "",
@@ -30,7 +34,7 @@
 				},
 
 				// dcl.after() to avoid spurious failure on chrome, TODO: investigate more later
-				attachedCallback: register.after(function () {
+				connectedCallback: dcl.after(function () {
 					// Test that observe() is working.
 					this.observe(function (props) {
 						if ("tabIndex" in props) {

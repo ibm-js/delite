@@ -26,43 +26,6 @@ define(["requirejs-dplugins/has"], function (has) {
 				return "msMatchesSelector";
 			}
 		});
-
-		// Does platform have native support for document.registerElement() or a polyfill to simulate it?
-		has.add("document-register-element", !!document.registerElement);
-
-		// Test for how to monitor DOM nodes being inserted and removed from the document.
-		// For DOMNodeInserted events, there are two variations:
-		//		"root" - just notified about the root of each tree added to the document
-		//		"all" - notified about all nodes added to the document
-		has.add("MutationObserver", window.MutationObserver ? "MutationObserver" : window.WebKitMutationObserver ?
-			"WebKitMutationObserver" : "");
-		has.add("DOMNodeInserted", function () {
-			var root = document.createElement("div"),
-				child = document.createElement("div"),
-				sawRoot, sawChild;
-			root.id = "root";
-			child.id = "child";
-			root.appendChild(child);
-
-			function listener(event) {
-				if (event.target.id === "root") {
-					sawRoot = true;
-				}
-				if (event.target.id === "child") {
-					sawChild = true;
-				}
-			}
-
-			document.body.addEventListener("DOMNodeInserted", listener);
-			document.body.appendChild(root);
-			document.body.removeChild(root);
-			document.body.removeEventListener("DOMNodeInserted", listener);
-			return sawChild ? "all" : sawRoot ? "root" : "";
-		});
-
-		// Support for <template> elements (specifically, that their content is available via templateNode.content
-		// rather than templateNode.children[] etc.
-		has.add("dom-template", !!document.createElement("template").content);
 	}
 
 	return has;

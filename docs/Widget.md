@@ -14,7 +14,7 @@ and code to read widget parameters specified as DOMNode attributes.
 Declarative creation:
 
 1. Element upgraded to have all methods and properties of the widget class.
-2. `createdCallback()` executed.
+2. `constructor()` executed.
 3. Parameters specified as attributes (ex: `<d-slider max=10>`) are mixed into the widget, thus calling
    custom setters.
 4. `computeProperties(this, true)` executed.
@@ -22,7 +22,7 @@ Declarative creation:
 6. `render()` executed.  Note though that the root node already exists.
 7. `postRender()` executed.
 8. `refreshRendering(this, true)` executed.
-9. `attachedCallback()` executed.
+9. `connectedCallback()` executed.
 
 Programmatic creation is:
 
@@ -31,23 +31,25 @@ Programmatic creation is:
 2. Parameters specified programmatically
    (ex: `new MyWidget({title: "..."})`) are mixed into the widget, thus calling
    custom setters.
+
+When the element is attached to the document:
+
+3. `connectedCallback()` will be called automatically, although asynchronously, when the widget is attached to the
+   document.
 4. `computeProperties(this, true)` executed.
 5. `preRender()` executed.
 6. `render()` executed.  Note though that the root node already exists.
 7. `postRender()` executed.
 8. `refreshRendering(this, true)` executed.
 
-`attachedCallback()` will be called automatically, although asynchronously, when the widget is attached to the
-document.
-
 There are currently six lifecycle methods which can be extended on the widget:
 
-1. `createdCallback()`
+1. `constructor()`
 2. `preRender()`
 3. `render()`
 4. `postRender()`
-5. `attachedCallback()`
-6. `detachedCallback()`
+5. `connectedCallback()`
+6. `disconnectedCallback()`
 
 Note that all of these methods except `render()` are automatically chained,
 so you don't need to worry about setting up code to call the superclasses' methods.
@@ -57,7 +59,7 @@ specify the `template` property.   See the [`handlebars!`](handlebars.md) docume
 
 ## Placement
 
-Delite widgets are DOM Custom Elements.  That means they can be placed and manipulated just like other DOM elements.
+Delite widgets are Custom Elements.  That means they can be placed and manipulated just like other DOM elements.
 Any DOM manipulation library should work well with instances of the widgets, but there is a helper function for
 placing the widget in the DOM named `.placeAt()`.  This function takes one or two arguments.  The first argument is
 node being referenced or the string ID of the node and the second argument is
@@ -89,7 +91,7 @@ arguments:
 
 ## Updating widgets
 
-`delite/Widget` extends [`decor/Invalidating`](/decor/docs/0.5.0/Invalidating.html) and thus uses the same mechanism
+`delite/Widget` extends [`decor/Invalidating`](/decor/docs/0.9.0/Invalidating.html) and thus uses the same mechanism
 for updating the widget DOM according to changes to widget properties.
 
 Specifically, the properties must be declared in the prototype, along with

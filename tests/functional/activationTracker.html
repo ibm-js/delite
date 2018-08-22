@@ -70,9 +70,9 @@
 				}
 			});
 
-			register("fake-form", [HTMLFormElement, Widget], {});
+ 			register("fake-form", [HTMLElement, Widget], {});
 
-			register("fake-fieldset", [HTMLFieldSetElement, Widget], {});
+			register("fake-fieldset", [HTMLElement, Widget], {});
 
 			register("fake-combobox", [HTMLElement, Widget], {
 				render: function () {
@@ -96,8 +96,9 @@
 			/**
 			 * A button that shows a popup.
 			 */
-			register("fake-dropdown-button", [HTMLButtonElement, Widget], {
+			register("fake-dropdown-button", [HTMLElement, Widget], {
 				postRender: function () {
+					this.tabIndex = "0";
 					this.on("click", this._clickHandler.bind(this));
 					this.on("delite-deactivated", this._deactivatedHandler.bind(this));
 					this.popup = new PopupWidget({
@@ -150,7 +151,7 @@
 			 * A button that shows a popup on hover.
 			 */
 			register("fake-hover-dropdown-button", [HTMLElement, Widget], {
-				createdCallback: function () {
+				constructor: function () {
 					this.log = [];
 				},
 
@@ -312,11 +313,11 @@
 	<br><br>
 
 	<label>Form widget:</label><br>
-	<form id="form" is="fake-form">
+	<fake-form id="form">
 		<label for="first">First input: </label><input id="first"><br>
 		<label for="second">Second input: </label><input id="second"><br>
 
-		<fieldset id=fieldset1 is="fake-fieldset">
+		<fake-fieldset id=fieldset1>
 			<legend>Fieldset widget</legend>
 			<span id="combobox-label">ComboBox widget:</span>
 			<fake-combobox id=combobox aria-labelledby="combobox-label">
@@ -327,26 +328,26 @@
 			</fake-combobox>
 			<label for="plain">Plain input:</label>
 			<input id=plain value=plain>
-		</fieldset>
+		</fake-fieldset>
 
 		<label>Editor widget:</label>
 		<fake-editor id=editor></fake-editor>
 		<br>
 
-		<fieldset id=fieldset2 is="fake-fieldset">
+		<fake-fieldset id=fieldset2>
 			<legend>Another fieldset widget</legend>
 			<label for="textarea">Plain textarea:</label>
 			<textarea id=textarea>hello there!</textarea><br>
 			<span id="spinner-label">Spinner widget:</span>
 			<fake-spinner id=spinner></fake-spinner>
-		</fieldset>
+		</fake-fieldset>
 
-		<button id="dropdownButton" type="button" is="fake-dropdown-button">show dropdown</button>
+		<fake-dropdown-button id="dropdownButton" type="button">show dropdown</fake-dropdown-button>
 		<button tabIndex="-1" id="minusOne" type="button">non tab-navigable button</button>
 		<button id="disabledButton" type="button" disabled>disabled button</button>
 
 		<fake-hover-dropdown-button id="hoverDropdownButton"></fake-hover-dropdown-button>
-	</form>
+	</fake-form>
 
 	<!--
 		Test code for detaching active/hovered nodes from document.

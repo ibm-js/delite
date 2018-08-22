@@ -20,6 +20,7 @@ define([
 				disabled: true,
 				checked: true
 			});
+			widget.deliver();
 
 			assert($(widget).hasClass("d-error"), "error state");
 			assert($(widget).hasClass("d-disabled"), "disabled");

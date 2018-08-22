@@ -11,6 +11,10 @@ define([
 		name: "tabIndex functional tests",
 
 		setup: function () {
+			if (this.remote.environmentType.brokenSendKeys || !this.remote.environmentType.nativeEvents) {
+				return this.skip("no keyboard support");
+			}
+
 			return this.remote
 				.get(require.toUrl("./TabIndex.html"))
 				.then(pollUntil("return ready || null;", [],
@@ -18,9 +22,6 @@ define([
 		},
 
 		"default tab indices": function () {
-			if (this.remote.environmentType.brokenSendKeys || !this.remote.environmentType.nativeEvents) {
-				return this.skip("no keyboard support");
-			}
 			return this.remote.findById("d1").click()		// start on first element, before widgets
 				.execute("return document.activeElement.id").then(function (value) {
 					// start focus on the node before the two widgets
@@ -43,9 +44,6 @@ define([
 		},
 
 		"specified tab indices": function () {
-			if (this.remote.environmentType.brokenSendKeys || !this.remote.environmentType.nativeEvents) {
-				return this.skip("no keyboard support");
-			}
 			return this.remote.findById("s1").click()		// start on first element, before widgets
 				.execute("return document.activeElement.id").then(function (value) {
 					// start focus on the node before the two widgets
@@ -68,9 +66,6 @@ define([
 		},
 
 		"changed tab indices": function () {
-			if (this.remote.environmentType.brokenSendKeys || !this.remote.environmentType.nativeEvents) {
-				return this.skip("no keyboard support");
-			}
 			return this.remote.findById("button").click()	// click button to change tab indices
 				.pressKeys(keys.TAB)
 				.execute("return document.activeElement.parentNode.id").then(function (value) {

@@ -96,7 +96,7 @@ define([
 			document.body.appendChild(container);
 			container.innerHTML = html;
 			register("my-scrollable-test-container", [ScrollableTestContainer], {});
-			register.parse(container);
+			register.deliver();
 		},
 		teardown: function () {
 			container.parentNode.removeChild(container);

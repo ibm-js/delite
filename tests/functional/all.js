@@ -9,7 +9,6 @@ define([
 	"./TabIndex",
 	"./KeyNav",
 	"./on",
-	"./webcomponents",
 	"./popup",
 	"./register",
 	"./DojoParser"
