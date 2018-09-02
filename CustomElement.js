@@ -119,6 +119,25 @@ define([
 		attached: false,
 
 		/**
+		 * Apply parameters that were specified as attributes on the custom element root node.
+		 * On Safari (and maybe other browsers), the attributes sometimes aren't available until
+		 * connectedCallback().  It's part of the black magic of calling constructor() for elements that
+		 * already exist.  (Of course, only parse the attributes the first time the element is connected.)
+		 */
+		applyAttributes: function () {
+			if (!this._parsedAttributes) {
+				this._parsedAttributes = this._mapAttributes();
+				this._parsedAttributes.forEach(function (pa) {
+					if (pa.event) {
+						this.on(pa.event, pa.callback);
+					} else {
+						this[pa.prop] = pa.value;
+					}
+				}, this);
+			}
+		},
+
+		/**
 		 * Called automatically when the element is added to the document, after `constructor()` completes.
 		 * This method is automatically chained, so subclasses generally do not need to use `dcl.superCall()`,
 		 * `dcl.advise()`, etc.
@@ -128,20 +147,7 @@ define([
 		connectedCallback: dcl.advise({
 			// TODO: switch to standard around advice?
 			before: function () {
-				// Apply parameters that were specified as attributes on the custom element root node.
-				// On Safari (and maybe other browsers), the attributes sometimes aren't available until
-				// connectedCallback().  It's part of the black magic of calling constructor() for elements that
-				// already exist.  (Of course, only parse the attributes this the first time the element is connected.)
-				if (!this._parsedAttributes) {
-					this._parsedAttributes = this._mapAttributes();
-					this._parsedAttributes.forEach(function (pa) {
-						if (pa.event) {
-							this.on(pa.event, pa.callback);
-						} else {
-							this[pa.prop] = pa.value;
-						}
-					}, this);
-				}
+				this.applyAttributes();
 			},
 
 			after: function () {

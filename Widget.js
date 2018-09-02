@@ -76,6 +76,11 @@ define([
 
 		// Setup deliver() as a way to force the widget to render before it's attached to the document.
 		deliver: dcl.after(function () {
+			// Avoid situation where rendering the widget sets attributes on the root node, and then later on,
+			// CustomElement thinks those attributes were specified by the user, and removes them.
+			this.applyAttributes();
+
+			// Render the widget.
 			this.initializeInvalidating();
 		}),
 
