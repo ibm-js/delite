@@ -87,11 +87,11 @@ any onchange event).
 Delite was originally designed to be a faster and smaller alternative to Polymer, that also supported some older
 browsers that Polymer didn't, such as IE9 and old versions of Android.
 
-Plus, it was designed to leave in a javascript-centric universe rather than HTML-centric (i.e. HTML Imports).
+Additionally, it was designed to live in a javascript-centric universe rather than HTML-centric (i.e. HTML Imports).
 
 In the years that have passed, these distinctions have become less important:
 
-* IE9 is desupported by Microsoft.  Only IE11 and Edge are important now.
+* IE9 has been desupported by Microsoft.  Only IE11 and Edge are important now.
 * Polymer gave up on HTML Imports and moved to the javascript-centric ES6 class system.
 * Polymer replaced the heavy (and imperfect) shadow-DOM polyfill with something lighterweight called "shady DOM".
 

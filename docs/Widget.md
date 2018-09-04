@@ -26,21 +26,25 @@ Declarative creation:
 
 Programmatic creation is:
 
-1. Element created with widget tag name (ex: `<d-slider>`), and
-   upgraded to have all methods and properties of the widget class.
-2. Parameters specified programmatically
+1. Element created with widget tag name (ex: `<d-slider>`), with
+   all methods and properties of the widget class.
+2. `constructor()` executed.
+3. Parameters specified programmatically
    (ex: `new MyWidget({title: "..."})`) are mixed into the widget, thus calling
    custom setters.
 
-When the element is attached to the document:
+Note that the widget is not yet rendered.  When the element is attached to the document,
+or you call `deliver()`:
 
-3. `connectedCallback()` will be called automatically, although asynchronously, when the widget is attached to the
-   document.
 4. `computeProperties(this, true)` executed.
 5. `preRender()` executed.
 6. `render()` executed.  Note though that the root node already exists.
 7. `postRender()` executed.
 8. `refreshRendering(this, true)` executed.
+9. `connectedCallback()` executed.
+
+(Except, `connectedCallback()` is only called when the widget is attached to the document,
+not just when you call `deliver()`.)
 
 There are currently six lifecycle methods which can be extended on the widget:
 
