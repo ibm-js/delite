@@ -334,11 +334,6 @@ define([
 				parent.insertBefore(this, children[position === "first" ? 0 : position] || null);
 			}
 
-			if (!this.attached) {
-				// Synchronously run attach code for this widget and any descendant custom elements too.
-				this.connectedCallback();
-			}
-
 			return this;
 		},
 
