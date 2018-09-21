@@ -630,13 +630,13 @@ define([
 					child: dropdown,
 					cancelable: false
 				});
+
+				// Avoid complaint about aria-owns pointing to hidden element.
+				this._effectivePopupStateNode.removeAttribute("aria-owns");
+
+				this._previousDropDown = this._currentDropDown;
+				delete this._currentDropDown;
 			}
-
-			// Avoid complaint about aria-owns pointing to hidden element.
-			this._effectivePopupStateNode.removeAttribute("aria-owns");
-
-			this._previousDropDown = this._currentDropDown;
-			delete this._currentDropDown;
 		}
 	});
 

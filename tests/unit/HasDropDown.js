@@ -40,6 +40,10 @@ define([
 			}
 		}),
 
+		render: function () {
+			this.tabIndex = 0;
+		},
+
 		loadDropDown: function () {
 			if (!this._dropDown) {
 				this._dropDown = new this.dropDownConstructor({
@@ -51,6 +55,15 @@ define([
 			}
 
 			return this._dropDown;
+		}
+	});
+
+	// A button that shows a popup
+	var CreateEveryTimeDropdownButton = register("create-every-time-drop-down-button", [SimpleDropDownButton], {
+		loadDropDown: function () {
+			return new this.dropDownConstructor({
+				className: this.dropDownClass || "create-every-time-dropdown"
+			});
 		}
 	});
 
@@ -107,6 +120,50 @@ define([
 					assert(helpers.isVisible(popup), "visible");
 				});
 			});
+		},
+
+		"dom leaks": function () {
+			var ddb = new CreateEveryTimeDropdownButton({
+				id: "cetdb",
+				label: "create every time",
+				dropDownConstructor: Menu,
+				focusOnPointerOpen: false	// traditionally you only focus drop down menus when opened by the keyboard
+			}).placeAt(container);
+
+			var input = document.createElement("input");
+			container.appendChild(input);
+
+			var origNumWrappers = document.querySelectorAll(".d-popup").length,
+				origNumDropdowns = document.querySelectorAll("d-hasdropdown-menu").length;
+
+			// Open the dropdown
+			ddb.focus();
+			ddb.click();
+
+			var dfd = this.async();
+
+			setTimeout(dfd.rejectOnError(function () {
+				// Close the dropdown and then blur the SimpleDropDownButton.
+				// (Makes two calls to closeDropDown().)
+				ddb.click();
+				input.focus();
+
+				// Reopen the dropdown.
+				setTimeout(dfd.rejectOnError(function () {
+					ddb.focus();
+					ddb.click();
+
+					// Check that old dropdown and wrapper were removed from doc.
+					setTimeout(dfd.callback(function () {
+						// Make sure that there's no DOM leak
+						var newNumWrappers = document.querySelectorAll(".d-popup").length,
+							newNumDropdowns = document.querySelectorAll("d-hasdropdown-menu").length;
+
+						assert.strictEqual(newNumWrappers, origNumWrappers + 1, "wrapper leak");
+						assert.strictEqual(newNumDropdowns, origNumDropdowns + 1, "dropdown widget leak");
+					}, 10));
+				}, 10));
+			}, 10));
 		},
 
 		teardown: function () {
