@@ -214,7 +214,10 @@ define([
 			// Set properties on valueNode.
 			var valueNode = this.valueNode !== this && this.valueNode;
 			if (valueNode) {
-				if ("value" in oldValues) {
+				if ("value" in oldValues && valueNode.value !== this.value) {
+					// Update <input>'s value if necessary, but don't update the value because the user
+					// typed a character into the <input> as that will move the caret to the end of the
+					// <input>.
 					valueNode.value = this.value;
 				}
 				if ("disabled" in oldValues) {
