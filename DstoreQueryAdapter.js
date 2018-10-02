@@ -19,7 +19,13 @@ define([
 
 		constructor: function (args) {
 			this.source = args.source;
-			this.data = args.processQueryResult(this.source.filter(args.query));
+			var result = this.source;
+			if (args.query && (typeof args.query === "function" || Object.keys(args.query).length)) {
+				// Only call filter() when there's a real filter, because applying any filter stops dstore/Cache
+				// from caching.
+				result = result.filter(args.query);
+			}
+			this.data = args.processQueryResult(result);
 			if (this.data.track) {
 				this.data = this._tracked = this.data.track();
 				this.track = true;
