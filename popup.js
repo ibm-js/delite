@@ -101,6 +101,8 @@ define([
 	 * Any popup taller than this will have scroll bars.
 	 * Set to `Infinity` for no max height.  Default is to limit height to available space in viewport,
 	 * above or below the `aroundNode` or specified `x/y` position.
+	 * @property {boolean} underlay - If true, put a DialogUnderlay underneath this popup so that it can't be
+	 * closed by clicking on a blank part of the screen.
 	 */
 
 	/**
@@ -115,7 +117,7 @@ define([
 
 	// TODO: convert from singleton to just a hash of functions; easier to doc that way.
 
-	var PopupManager = dcl(null, /** @lends module:delite/popup */ {
+	var PopupManager = dcl(/** @lends module:delite/popup */ {
 		/**
 		 * Stack of information about currently popped up widgets.
 		 * See `open()` method to see the properties set in each Object in this stack (widget, wrapper, etc)
@@ -499,7 +501,6 @@ define([
 			// position the wrapper node
 			if (orient[0] === "center") {
 				place.center(wrapper);
-				DialogUnderlay.showFor(wrapper);
 			} else {
 				var position = around ?
 					place.around(wrapper, around, orient, ltr) :
@@ -514,6 +515,11 @@ define([
 				return position;
 			}
 
+			// Setup underlay for popups that want one.  By default it's done for centered popups,
+			// but args can explicitly specify underlay=true or underlay=false.
+			if ("underlay" in args ? args.underlay : (orient[0] === "center")) {
+				DialogUnderlay.showFor(wrapper);
+			}
 		},
 
 		/**

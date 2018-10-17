@@ -14,9 +14,6 @@ define([
 	Viewport
 ) {
 
-	// TODO: having show() methods on the instance and also on the module is confusing,
-	// at least when looking at the API doc page.  Should one be renamed?
-
 	/**
 	 * A component used to block input behind a Dialog widget.
 	 *
