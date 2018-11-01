@@ -37,6 +37,46 @@ define([
 	 */
 
 	/**
+	 * Dispatched before popup widget is shown.
+	 * @example
+	 * document.addEventListener("delite-before-show", function (evt) {
+	 *      console.log("about to show popup", evt.child);
+	 * });
+	 * @event module:delite/popup#delite-before-show
+	 * @property {Element} child - reference to popup
+	 */
+
+	/**
+	 * Dispatched after popup widget is shown.
+	 * @example
+	 * document.addEventListener("delite-after-show", function (evt) {
+	 *      console.log("just displayed popup", evt.child);
+	 * });
+	 * @event module:delite/popup#delite-after-show
+	 * @property {Element} child - reference to popup
+	 */
+
+	/**
+	 * Dispatched before popup widget is hidden.
+	 * @example
+	 * document.addEventListener("delite-before-hide", function (evt) {
+	 *      console.log("about to hide popup", evt.child);
+	 * });
+	 * @event module:delite/popup#delite-before-hide
+	 * @property {Element} child - reference to popup
+	 */
+
+	/**
+	 * Dispatched after popup widget is hidden.
+	 * @example
+	 * document.addEventListener("delite-after-hide", function (evt) {
+	 *      console.log("just hid popup", evt.child);
+	 * });
+	 * @event module:delite/popup#delite-after-hide
+	 * @property {Element} child - reference to popup
+	 */
+
+	/**
 	 * Dispatched on a popup after the popup is shown or when it is repositioned
 	 * due to the size of its content changing.
 	 * @event module:delite/popup#popup-after-position
@@ -308,6 +348,13 @@ define([
 		 * popup.open({parent: this, popup: menuWidget, around: this, onClose: function(){...}});
 		 */
 		open: function (args) {
+			var eventNode = args.parent || document.body;
+
+			on.emit(eventNode, "delite-before-show", {
+				child: args.popup,
+				cancelable: false
+			});
+
 			// Size and position the popup.
 			this._prepareToOpen(args);
 			this._size(args, true);
@@ -316,6 +363,11 @@ define([
 			// Emit event on popup.
 			args.popup.emit("popup-after-show", {
 				around: args.around
+			});
+
+			on.emit(eventNode, "delite-after-show", {
+				child: args.popup,
+				cancelable: false
 			});
 
 			return position;

@@ -12,46 +12,6 @@ define([
 ], function (dcl, Promise, on, place, popup, register, Widget) {
 	
 	/**
-	 * Dispatched before popup widget is shown.
-	 * @example
-	 * document.addEventListener("delite-before-show", function (evt) {
-	 *      console.log("about to show popup", evt.child);
-	 * });
-	 * @event module:delite/HasDropDown#delite-before-show
-	 * @property {Element} child - reference to popup
-	 */
-	
-	/**
-	 * Dispatched after popup widget is shown.
-	 * @example
-	 * document.addEventListener("delite-after-show", function (evt) {
-	 *      console.log("just displayed popup", evt.child);
-	 * });
-	 * @event module:delite/HasDropDown#delite-after-show
-	 * @property {Element} child - reference to popup
-	 */
-
-	/**
-	 * Dispatched before popup widget is hidden.
-	 * @example
-	 * document.addEventListener("delite-before-hide", function (evt) {
-	 *      console.log("about to hide popup", evt.child);
-	 * });
-	 * @event module:delite/HasDropDown#delite-before-hide
-	 * @property {Element} child - reference to popup
-	 */
-	
-	/**
-	 * Dispatched after popup widget is hidden.
-	 * @example
-	 * document.addEventListener("delite-after-hide", function (evt) {
-	 *      console.log("just hid popup", evt.child);
-	 * });
-	 * @event module:delite/HasDropDown#delite-after-hide
-	 * @property {Element} child - reference to popup
-	 */
-	
-	/**
 	 * Base class for widgets that need drop down ability.
 	 * @mixin module:delite/HasDropDown
 	 * @augments module:delite/Widget
@@ -500,11 +460,6 @@ define([
 					aroundNode = this.aroundNode || behaviorNode,
 					self = this;
 
-				this.emit("delite-before-show", {
-					child: dropDown,
-					cancelable: false
-				});
-
 				// Generate id for anchor if it's not already specified
 				if (!this.id) {
 					this.id = "HasDropDown_" + this.widgetId;
@@ -557,11 +512,6 @@ define([
 						delete this._focusDropDownTimer;
 					});
 				}
-
-				this.emit("delite-after-show", {
-					child: dropDown,
-					cancelable: false
-				});
 
 				return {
 					dropDown: dropDown,
