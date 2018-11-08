@@ -494,7 +494,7 @@ define([
 		 * @private
 		 */
 		_size: function (args, measureSize) {
-			/* jshint maxcomplexity:14 */
+			/* jshint maxcomplexity:15 */
 			var widget = args.popup,
 				around = args.around,
 				orient = args.orient || ["below", "below-alt", "above", "above-alt"],
@@ -518,11 +518,19 @@ define([
 
 			if (orient[0] === "center") {
 				// Limit height and width so dialog fits within viewport.
-				if (args._naturalHeight > viewport.h * 0.9)  {
-					widget.style.height = Math.floor(viewport.h * 0.9) + "px";
+				var minSize = this.getMinCenteredPopupSize(widget),
+					maxSize = this.getMaxCenteredPopupSize(widget);
+				if (args._naturalHeight < minSize.h)  {
+					widget.style.height = minSize.h + "px";
 				}
-				if (args._naturalWidth > viewport.w * 0.9)  {
-					widget.style.width = Math.floor(viewport.w * 0.9) + "px";
+				if (args._naturalWidth < minSize.w)  {
+					widget.style.width = minSize.w + "px";
+				}
+				if (args._naturalHeight > maxSize.h)  {
+					widget.style.height = maxSize.h + "px";
+				}
+				if (args._naturalWidth > maxSize.w)  {
+					widget.style.width = maxSize.w + "px";
 				}
 			} else {
 				// Limit height to space available in viewport either above or below aroundNode (whichever side has
@@ -531,7 +539,7 @@ define([
 				if ("maxHeight" in args && args.maxHeight !== -1) {
 					maxHeight = args.maxHeight || Infinity;
 				} else {
-					// Get aroundnode position, doing correction if iOS auto-scroll has moved it off screen.
+					// Get aroundNode position, doing correction if iOS auto-scroll has moved it off screen.
 					var aroundPos = around ? around.getBoundingClientRect() : {
 						top: args.y - (args.padding || 0),
 						height: (args.padding || 0) * 2
@@ -546,6 +554,29 @@ define([
 					widget.style.height = maxHeight - verticalMargin + "px";
 				}
 			}
+		},
+
+		/**
+		 * Overridable method to return the maximum size allowed for a centered popup,
+		 * presumably based on the viewport size.  Used to control how much margin is
+		 * displayed between the dialog border and the edges of the viewport.
+		 */
+		getMaxCenteredPopupSize: function (widget) {
+			var viewport = Viewport.getEffectiveBox(widget.ownerDocument);
+			return  {
+				w: Math.floor(viewport.w * 0.9),
+				h: Math.floor(viewport.h * 0.9)
+			};
+		},
+
+		/**
+		 * Overridable method to return the minimum size allowed for a centered popup.
+		 */
+		getMinCenteredPopupSize: function () {
+			return  {
+				w: 0,
+				h: 0
+			};
 		},
 
 		/**
