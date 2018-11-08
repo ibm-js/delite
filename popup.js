@@ -316,6 +316,10 @@ define([
 
 			wrapper.style.display = "none";
 			wrapper.style.height = "auto";		// Open may have limited the height to fit in the viewport
+
+			if (widget.style.cssText !== widget._originalStyle) {
+				widget.style.cssText = widget._originalStyle;
+			}
 		},
 
 		/**
@@ -348,10 +352,11 @@ define([
 		 * popup.open({parent: this, popup: menuWidget, around: this, onClose: function(){...}});
 		 */
 		open: function (args) {
-			var eventNode = args.parent || document.body;
+			var eventNode = args.parent || document.body,
+				popup = args.popup;
 
 			on.emit(eventNode, "delite-before-show", {
-				child: args.popup,
+				child: popup,
 				cancelable: false
 			});
 
@@ -366,7 +371,7 @@ define([
 			});
 
 			on.emit(eventNode, "delite-after-show", {
-				child: args.popup,
+				child: popup,
 				cancelable: false
 			});
 
@@ -483,11 +488,15 @@ define([
 		 * @private
 		 */
 		_size: function (args, measureSize) {
-			/* jshint maxcomplexity:13 */
+			/* jshint maxcomplexity:14 */
 			var widget = args.popup,
 				around = args.around,
 				orient = args.orient || ["below", "below-alt", "above", "above-alt"],
 				viewport = Viewport.getEffectiveBox(widget.ownerDocument);
+
+			if (!("_originalStyle" in widget)) {
+				widget._originalStyle = widget.style.cssText;
+			}
 
 			var cs = getComputedStyle(widget),
 				verticalMargin = parseFloat(cs.marginTop) + parseFloat(cs.marginBottom),
@@ -497,12 +506,8 @@ define([
 				// Get natural size of popup (i.e. when not squashed to fit within viewport).  First, remove any
 				// previous size restriction set on popup.  Note that setting popups's height and width to "auto"
 				// erases scroll position, so should only be done when popup is first shown, before user has scrolled.
-				widget.style.height = "auto";
-				if (orient[0] === "center") {
-					// Don't set width to "auto" when orient!=center because it interferes with HasDropDown's
-					// autoWidth/forceWidth.
-					// TODO: maybe this if() check is no longer necessary to due to parent if(measureSize)
-					widget.style.width = "auto";
+				if (widget.style.cssText !== widget._originalStyle) {
+					widget.style.cssText = widget._originalStyle;
 				}
 
 				args._naturalHeight = widget.offsetHeight + verticalMargin;
@@ -511,10 +516,12 @@ define([
 
 			if (orient[0] === "center") {
 				// Limit height and width so dialog fits within viewport.
-				widget.style.height = args._naturalHeight > viewport.h * 0.9 ? Math.floor(viewport.h * 0.9) + "px" :
-					"auto";
-				widget.style.width = args._naturalWidth > viewport.w * 0.9 ? Math.floor(viewport.w * 0.9) + "px" :
-					"auto";
+				if (args._naturalHeight > viewport.h * 0.9)  {
+					widget.style.height = Math.floor(viewport.h * 0.9) + "px";
+				}
+				if (args._naturalWidth > viewport.w * 0.9)  {
+					widget.style.width = Math.floor(viewport.w * 0.9) + "px";
+				}
 			} else {
 				// Limit height to space available in viewport either above or below aroundNode (whichever side has
 				// more room).  This may make the popup widget display a scrollbar (or multiple scrollbars).
@@ -522,7 +529,7 @@ define([
 				if ("maxHeight" in args && args.maxHeight !== -1) {
 					maxHeight = args.maxHeight || Infinity;
 				} else {
-					// Get around node position, doing correction if iOS auto-scroll has moved it off screen.
+					// Get aroundnode position, doing correction if iOS auto-scroll has moved it off screen.
 					var aroundPos = around ? around.getBoundingClientRect() : {
 						top: args.y - (args.padding || 0),
 						height: (args.padding || 0) * 2
@@ -533,7 +540,9 @@ define([
 					maxHeight = Math.floor(Math.max(aroundPosTop, viewport.h - aroundPosBottom));
 				}
 
-				widget.style.height = args._naturalHeight > maxHeight ? maxHeight - verticalMargin + "px" : "auto";
+				if (args._naturalHeight > maxHeight) {
+					widget.style.height = maxHeight - verticalMargin + "px";
+				}
 			}
 		},
 

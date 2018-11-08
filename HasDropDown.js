@@ -465,8 +465,6 @@ define([
 					this.id = "HasDropDown_" + this.widgetId;
 				}
 
-				dropDown._originalStyle = dropDown.style.cssText;
-
 				// Set width of drop down if necessary, so that dropdown width [including scrollbar]
 				// matches width of aroundNode.  Don't do anything for when dropDownPosition=["center"] though,
 				// in which case popup.open() doesn't return a value.
@@ -565,16 +563,6 @@ define([
 
 				popup.close(dropdown);
 				this.opened = false;
-
-				// Restore original height/width etc.  But don't put back display:none.
-				// That is handled by the popup wrapper.
-				dropdown.style.cssText = dropdown._originalStyle;
-				if (dropdown.style.display === "none") {
-					dropdown.style.display = "";
-				}
-				if (dropdown.style.visibility === "hidden") {
-					dropdown.style.visibility = "";
-				}
 
 				this.emit("delite-after-hide", {
 					child: dropdown,
