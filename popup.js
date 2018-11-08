@@ -5,7 +5,6 @@
 define([
 	"dcl/advise",
 	"dcl/dcl",
-	"requirejs-dplugins/jquery!attributes/classes",	// addClass(), removeClass(), hasClass()
 	"./BackgroundIframe",
 	"./DialogUnderlay",
 	"./features", // has("config-bgIframe")
@@ -13,7 +12,7 @@ define([
 	"./place",
 	"./Viewport",
 	"./theme!" // d-popup class
-], function (advise, dcl, $, BackgroundIframe, DialogUnderlay, has, on, place, Viewport) {
+], function (advise, dcl, BackgroundIframe, DialogUnderlay, has, on, place, Viewport) {
 
 	function isDocLtr(doc) {
 		return !(/^rtl$/i).test(doc.body.dir || doc.documentElement.dir);
@@ -259,7 +258,9 @@ define([
 				if (widget.style.visibility === "hidden") {
 					widget.style.visibility = "";
 				}
-				$(widget).removeClass("d-hidden d-invisible d-offscreen");
+				widget.classList.remove("d-hidden");
+				widget.classList.remove("d-invisible");
+				widget.classList.remove("d-offscreen");
 
 				// Save any styling on the widget root node.  Do it here since we removed the display:none
 				// but haven't applied width/height setting to fit popup into viewport etc.
@@ -285,7 +286,7 @@ define([
 			// move it out of the viewport, see #5776, #10111, #13604
 			var wrapper = this._createWrapper(widget);
 			wrapper.style.display = "";
-			$(wrapper).addClass("d-offscreen");
+			wrapper.classList.add("d-offscreen");
 			return wrapper;
 		},
 
