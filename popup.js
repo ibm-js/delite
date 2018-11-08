@@ -261,6 +261,12 @@ define([
 				}
 				$(widget).removeClass("d-hidden d-invisible d-offscreen");
 
+				// Save any styling on the widget root node.  Do it here since we removed the display:none
+				// but haven't applied width/height setting to fit popup into viewport etc.
+				if (!("_originalStyle" in widget)) {
+					widget._originalStyle = widget.style.cssText;
+				}
+
 				widget._popupWrapper = wrapper;
 				advise.after(widget, "destroy", destroyWrapper);
 			}
@@ -404,7 +410,7 @@ define([
 				this.close(stack[stack.length - 1].popup);
 			}
 
-			// Get pointer to popup wrapper, and create wrapper if it doesn't exist.  Remove display:none (but keep
+			// Get reference to popup wrapper, and create wrapper if it doesn't exist.  Remove display:none (but keep
 			// off screen) so we can do sizing calculations.
 			var wrapper = this.moveOffScreen(widget);
 
@@ -493,10 +499,6 @@ define([
 				around = args.around,
 				orient = args.orient || ["below", "below-alt", "above", "above-alt"],
 				viewport = Viewport.getEffectiveBox(widget.ownerDocument);
-
-			if (!("_originalStyle" in widget)) {
-				widget._originalStyle = widget.style.cssText;
-			}
 
 			var cs = getComputedStyle(widget),
 				verticalMargin = parseFloat(cs.marginTop) + parseFloat(cs.marginBottom),
