@@ -49,8 +49,6 @@
 }
 .d-popup > * {
   box-sizing: border-box;
-  height: inherit;
-  width: inherit;
 }
 .d-tooltip-dialog-popup,
 .d-date-picker-popup {

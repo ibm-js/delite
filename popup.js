@@ -519,6 +519,8 @@ define([
 
 			if (orient[0] === "center") {
 				// Limit height and width so dialog fits within viewport.
+				// Note: It would be preferable to do this all with CSS, but we can't due to
+				// IE11 bugs with the combination of flex and max-height.
 				var minSize = this.getMinCenteredPopupSize(widget),
 					maxSize = this.getMaxCenteredPopupSize(widget);
 				if (args._naturalHeight < minSize.h)  {
