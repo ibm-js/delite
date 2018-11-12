@@ -66,14 +66,19 @@ define([
 				assert.strictEqual(openEvents, 1, "popup-after-show");
 				assert.strictEqual(positionEvents, 1, "popup-after-position");
 
-				// Test that the popup is repositioned when its size changes.
-				on.emit(myMenu, "delite-size-change");
-				assert.strictEqual(openEvents, 1, "popup-after-show didn't fire");
-				assert.strictEqual(positionEvents, 2, "popup-after-position");
+				myMenu.innerHTML += "<br>Another line.";
 
-				// Close popup and check that correct event was fired.
-				popup.close(myMenu);
-				assert.strictEqual(closeEvents, 1, "popup-before-hide");
+				setTimeout(this.async().callback(function () {
+					// Test that the popup is repositioned when its size changes.
+					// For some reason it might get a few reposition calls.  Don't fail the test for that.
+					assert.strictEqual(openEvents, 1, "popup-after-show didn't fire");
+					assert(positionEvents >= 2 && positionEvents <= 3,
+						"popup-after-position, positionEvents = " + positionEvents);
+
+					// Close popup and check that correct event was fired.
+					popup.close(myMenu);
+					assert.strictEqual(closeEvents, 1, "popup-before-hide");
+				}, 50));
 			}
 		},
 

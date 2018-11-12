@@ -477,9 +477,55 @@ define([
 				}));
 			}
 
-			handlers.push(widget.on("delite-size-change", function () {
-				this._repositionAll(true);
-			}.bind(this)));
+			// Handle size changes due to added/removed DOM or changed attributes.
+			var self = this,
+				oldHeight = widget.offsetHeight,
+				oldWidth = widget.offsetWidth,
+				resizeTimer;
+
+			function resizeIfNecessary() {
+				var newHeight = widget.offsetHeight,
+					newWidth = widget.offsetWidth;
+
+				if (newHeight !== oldHeight || newWidth !== oldWidth) {
+					oldHeight = newHeight;
+					oldWidth = newWidth;
+					self._repositionAll(true);
+				}
+			}
+
+			var observer = new MutationObserver(resizeIfNecessary);
+			observer.observe(widget, {
+					attributes: true,
+					characterData: true,
+					childList: true,
+					subtree: true
+				}
+			);
+			handlers.push({
+				remove: function () {
+					observer.disconnect();
+				}
+			});
+
+			// Handle size changes from in-progress animations.  Since there's no cross-browser
+			// "transitionstart" event, and since animations could start on a delay, just need to poll.
+			function startResizePolling() {
+				resizeTimer = setTimeout(function () {
+					resizeIfNecessary();
+					startResizePolling();
+				}, 50);
+			}
+			startResizePolling();
+
+			handlers.push({
+				remove: function stopResizePolling() {
+					if (resizeTimer) {
+						clearTimeout(resizeTimer);
+						resizeTimer = null;
+					}
+				}
+			});
 
 			var stackEntry = Object.create(args);
 			stackEntry.wrapper = wrapper;

@@ -22,8 +22,8 @@
 		background: #e5e5e5;
 	}
 
-	div {
-		border: solid 1px gray;
+	div + div {
+		border-top: solid 1px gray;
 	}
 
 	/* the menu type test widgets */
@@ -46,6 +46,19 @@
 		background: #ccc;
 	}
 
+	my-dialog {
+		display: block;
+		overflow: auto;
+		width: 300px;
+		transition: width 0.5s;
+		border: solid 1px black;
+	}
+	.narrow {
+		width: 200px;
+	}
+	.wide {
+		width: 400px;
+	}
 </style>
 
 <script language="JavaScript" type="text/javascript">
@@ -247,11 +260,16 @@ require([
 		popup: new LotsOfChoicesWidget({length: 100, id: "tallChoiceDropDown"})
 	}).placeAt("widgets");
 
-	// DialogWithPopupWidget: This is a dialog that contains a button that spawns a drop down.
+	// Dialog that contains:
+	//
+	// - a button that spawns a drop down
+	// - buttons to increase/decrease height by adding/removing content
+	// - buttons to change width via an animation
+	//
 	// Supply popup as an argument to this widget.
-	var DialogWithPopupWidget = register("dialog-with-popup-widget", [HTMLElement, Widget], {
+	var Dialog = register("my-dialog", [HTMLElement, Widget], {
 		label: "show popup",
-		title: "I'm a dialog" ,
+		title: "I'm a dialog",
 
 		render: function () {
 			this.innerHTML +=
@@ -259,6 +277,9 @@ require([
 				"<input>" +
 				"<input>" +
 				"<br>";
+
+			var rows = document.createElement("div");
+			this.appendChild(rows);
 
 			// Widget to show menus.
 			// Having it be a widget is important because that's how the popup
@@ -274,11 +295,45 @@ require([
 
 			this.appendChild(document.createElement("br"));
 
-			var button = this.ownerDocument.createElement("button");
-			button.className = "ok-button";
-			button.innerHTML = "OK";
-			button.onclick = this.emit.bind(this, "execute");
-			this.appendChild(button);
+			var addRowButton = this.ownerDocument.createElement("button");
+			addRowButton.innerHTML = "Add Row";
+			addRowButton.onclick = function () {
+				var row = document.createElement("div");
+				rows.appendChild(row);
+				row.innerHTML = "" + rows.children.length;
+			};
+			this.appendChild(addRowButton);
+
+			var deleteRowButton = this.ownerDocument.createElement("button");
+			deleteRowButton.innerHTML = "Delete Row";
+			deleteRowButton.onclick = function () {
+				if (rows.lastChild) {
+					rows.removeChild(rows.lastChild);
+				}
+			};
+			this.appendChild(deleteRowButton);
+
+			var increaseWidthButton = this.ownerDocument.createElement("button");
+			increaseWidthButton.innerHTML = "Animate wide";
+			increaseWidthButton.onclick = function () {
+				this.classList.remove("narrow");
+				this.classList.add("wide");
+			}.bind(this);
+			this.appendChild(increaseWidthButton);
+
+			var decreaseWidthButton = this.ownerDocument.createElement("button");
+			decreaseWidthButton.innerHTML = "Animate narrow";
+			decreaseWidthButton.onclick = function () {
+				this.classList.remove("wide");
+				this.classList.add("narrow");
+			}.bind(this);
+			this.appendChild(decreaseWidthButton);
+
+			var okButton = this.ownerDocument.createElement("button");
+			okButton.className = "ok-button";
+			okButton.innerHTML = "OK";
+			okButton.onclick = this.emit.bind(this, "execute");
+			this.appendChild(okButton);
 		}
 	});
 
@@ -286,7 +341,7 @@ require([
 	new SimpleDropDownButton({
 		id: "showSimpleDialogButton",
 		label: "show dropdown dialog",
-		popup: new DialogWithPopupWidget({
+		popup: new Dialog({
 			id: "simpleDialog",
 			label: 'show simple choice drop down',
 			popup: new SimpleChoiceWidget({
@@ -309,7 +364,7 @@ require([
 		id: "showCenteredDialogButton",
 		label: "show centered dialog",
 		orient: ["center"],
-		popup: new DialogWithPopupWidget({
+		popup: new Dialog({
 			id: "centeredDialog",
 			label: 'show simple choice drop down',
 			popup: new SimpleChoiceWidget({
@@ -413,7 +468,7 @@ require([
 		popup1: dialogNestedChoice1,
 		popup2: dialogNestedChoice2
 	});
-	var dialogWithNestedPopup = new DialogWithPopupWidget({
+	var dialogWithNestedPopup = new Dialog({
 		id: "buttonInComplexDialog",
 		label: 'show nested menu',
 		popup: dialogNestedPopupOpener
@@ -499,7 +554,7 @@ require([
 	a stub node to execute blur events for wd.js
 </button>
 
-<div style="height: 200px; overflow: auto; margin: 10px 0; clear: both;">
+<div style="height: 200px; overflow: auto; margin: 10px 0; clear: both; border: solid 1px gray;">
 	<p>Div containing buttons to open dialogs.  Scroll down if necessary.</p>
 	<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis cursus odio eu nisl ultrices dictum. Sed tincidunt
 		metus et magna placerat eget vehicula dolor faucibus. Nunc nec augue ac mi rutrum congue. Donec at augue felis.
