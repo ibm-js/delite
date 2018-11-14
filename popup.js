@@ -480,21 +480,46 @@ define([
 			// Handle size changes due to added/removed DOM or changed attributes.
 			var self = this,
 				oldHeight = widget.offsetHeight,
-				oldWidth = widget.offsetWidth,
-				resizeTimer;
+				oldWidth = widget.offsetWidth;
 
-			function resizeIfNecessary() {
+			function repositionIfNecessary() {
+				var repositioned = false;
+
+				var origStyle = widget._originalStyle || "",
+					curStyle = widget.style.cssText,
+					savedScrollTop = widget.scrollTop;		// safeguard against losing scroll due to setting style
+				if (curStyle !== origStyle) {
+					widget.style.cssText = origStyle;
+				}
+
 				var newHeight = widget.offsetHeight,
 					newWidth = widget.offsetWidth;
+
+				if (curStyle !== origStyle) {
+					widget.style.cssText = curStyle;
+					widget.scrollTop = savedScrollTop;
+				}
 
 				if (newHeight !== oldHeight || newWidth !== oldWidth) {
 					oldHeight = newHeight;
 					oldWidth = newWidth;
 					self._repositionAll(true);
+					repositioned = true;
 				}
+
+				// Ignore notifications due to what happened in this method.
+				observer.takeRecords();
+				
+				return repositioned;
 			}
 
-			var observer = new MutationObserver(resizeIfNecessary);
+			var observer = new MutationObserver(function () {
+				// Reposition immediately to avoid 50ms display of incorrectly positioned/sized popup.
+				repositionIfNecessary();
+				
+				// The DOM mutation may have kicked off an animation, so start polling for changes from that.
+				startResizePolling();
+			});
 			observer.observe(widget, {
 					attributes: true,
 					characterData: true,
@@ -510,13 +535,19 @@ define([
 
 			// Handle size changes from in-progress animations.  Since there's no cross-browser
 			// "transitionstart" event, and since animations could start on a delay, just need to poll.
+			var resizeTimer;
 			function startResizePolling() {
 				resizeTimer = setTimeout(function () {
-					resizeIfNecessary();
-					startResizePolling();
+					var repositioned = repositionIfNecessary();
+					if (repositioned) {
+						// Keep polling until size stops changing.
+						startResizePolling();
+					} else {
+						// Stop polling, there was no animation, or there was one but it already completed.
+						resizeTimer = null;
+					}
 				}, 50);
 			}
-			startResizePolling();
 
 			handlers.push({
 				remove: function stopResizePolling() {
@@ -549,7 +580,8 @@ define([
 
 			var cs = getComputedStyle(widget),
 				verticalMargin = parseFloat(cs.marginTop) + parseFloat(cs.marginBottom),
-				horizontalMargin = parseFloat(cs.marginLeft) + parseFloat(cs.marginRight);
+				horizontalMargin = parseFloat(cs.marginLeft) + parseFloat(cs.marginRight),
+				savedScrollTop = widget.scrollTop;		// safeguard against losing scroll due to setting style
 
 			if (measureSize) {
 				// Get natural size of popup (i.e. when not squashed to fit within viewport).  First, remove any
@@ -603,6 +635,8 @@ define([
 					widget.style.height = maxHeight - verticalMargin + "px";
 				}
 			}
+
+			widget.scrollTop = savedScrollTop;
 		},
 
 		/**
