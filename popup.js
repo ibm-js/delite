@@ -202,13 +202,12 @@ define([
 
 		/**
 		 * Reposition all the popups. It may need to be called when popup's content changes.
-		 * @param {boolean} measureSize force to calculate natural height and width of the popup.
 		 * @private
 		 * @fires module:delite/popup#delite-repositioned
 		 */
-		_repositionAll: function (measureSize) {
+		_repositionAll: function () {
 			this._stack.forEach(function (args) {
-				this._size(args, measureSize);
+				this._size(args);
 				this._position(args);
 				on.emit(args.popup, "delite-repositioned", {args: args});
 			}, this);
@@ -261,12 +260,6 @@ define([
 				widget.classList.remove("d-hidden");
 				widget.classList.remove("d-invisible");
 				widget.classList.remove("d-offscreen");
-
-				// Save any styling on the widget root node.  Do it here since we removed the display:none
-				// but haven't applied width/height setting to fit popup into viewport etc.
-				if (!("_originalStyle" in widget)) {
-					widget._originalStyle = widget.style.cssText;
-				}
 
 				widget._popupWrapper = wrapper;
 				advise.after(widget, "destroy", destroyWrapper);
@@ -323,10 +316,6 @@ define([
 
 			wrapper.style.display = "none";
 			wrapper.style.height = "auto";		// Open may have limited the height to fit in the viewport
-
-			if (widget.style.cssText !== widget._originalStyle) {
-				widget.style.cssText = widget._originalStyle;
-			}
 		},
 
 		/**
@@ -477,7 +466,8 @@ define([
 				}));
 			}
 
-			// Handle size changes due to added/removed DOM or changed attributes.
+			// Handle size changes due to added/removed DOM or changed attributes,
+			// including changes that happen gradually due to animations.
 			var self = this,
 				oldHeight = widget.offsetHeight,
 				oldWidth = widget.offsetWidth;
@@ -485,56 +475,22 @@ define([
 			function repositionIfNecessary() {
 				var repositioned = false;
 
-				var origStyle = widget._originalStyle || "",
-					curStyle = widget.style.cssText,
-					savedScrollTop = widget.scrollTop;		// safeguard against losing scroll due to setting style
-				if (curStyle !== origStyle) {
-					widget.style.cssText = origStyle;
-				}
-
 				var newHeight = widget.offsetHeight,
 					newWidth = widget.offsetWidth;
-
-				if (curStyle !== origStyle) {
-					widget.style.cssText = curStyle;
-					widget.scrollTop = savedScrollTop;
-				}
 
 				if (newHeight !== oldHeight || newWidth !== oldWidth) {
 					oldHeight = newHeight;
 					oldWidth = newWidth;
-					self._repositionAll(true);
+					self._repositionAll();
 					repositioned = true;
 				}
 
 				// Ignore notifications due to what happened in this method.
 				observer.takeRecords();
-				
+
 				return repositioned;
 			}
 
-			var observer = new MutationObserver(function () {
-				// Reposition immediately to avoid 50ms display of incorrectly positioned/sized popup.
-				repositionIfNecessary();
-				
-				// The DOM mutation may have kicked off an animation, so start polling for changes from that.
-				startResizePolling();
-			});
-			observer.observe(widget, {
-					attributes: true,
-					characterData: true,
-					childList: true,
-					subtree: true
-				}
-			);
-			handlers.push({
-				remove: function () {
-					observer.disconnect();
-				}
-			});
-
-			// Handle size changes from in-progress animations.  Since there's no cross-browser
-			// "transitionstart" event, and since animations could start on a delay, just need to poll.
 			var resizeTimer;
 			function startResizePolling() {
 				resizeTimer = setTimeout(function () {
@@ -549,8 +505,24 @@ define([
 				}, 50);
 			}
 
+			var observer = new MutationObserver(function () {
+				// Reposition immediately to avoid 50ms display of incorrectly positioned/sized popup.
+				repositionIfNecessary();
+
+				// The DOM mutation may have kicked off an animation, so start polling for changes from that.
+				startResizePolling();
+			});
+			observer.observe(widget, {
+					attributes: true,
+					characterData: true,
+					childList: true,
+					subtree: true
+				}
+			);
+
 			handlers.push({
-				remove: function stopResizePolling() {
+				remove: function () {
+					observer.disconnect();
 					if (resizeTimer) {
 						clearTimeout(resizeTimer);
 						resizeTimer = null;
@@ -567,58 +539,30 @@ define([
 		/**
 		 * Size or resize the popup specified by args.
 		 * @param {module:delite/popup.OpenArgs} args
-		 * @param {boolean} measureSize
 		 * @returns {*} If orient !== center then returns the alignment of the popup relative to the anchor node.
 		 * @private
 		 */
-		_size: function (args, measureSize) {
+		_size: function (args) {
 			/* jshint maxcomplexity:15 */
 			var widget = args.popup,
 				around = args.around,
 				orient = args.orient || ["below", "below-alt", "above", "above-alt"],
 				viewport = Viewport.getEffectiveBox(widget.ownerDocument);
 
-			var cs = getComputedStyle(widget),
-				verticalMargin = parseFloat(cs.marginTop) + parseFloat(cs.marginBottom),
-				horizontalMargin = parseFloat(cs.marginLeft) + parseFloat(cs.marginRight),
-				savedScrollTop = widget.scrollTop;		// safeguard against losing scroll due to setting style
-
-			if (measureSize) {
-				// Get natural size of popup (i.e. when not squashed to fit within viewport).  First, remove any
-				// previous size restriction set on popup.  Note that setting popups's height and width to "auto"
-				// erases scroll position, so should only be done when popup is first shown, before user has scrolled.
-				if (widget.style.cssText !== widget._originalStyle) {
-					widget.style.cssText = widget._originalStyle;
-				}
-
-				args._naturalHeight = widget.offsetHeight + verticalMargin;
-				args._naturalWidth = widget.offsetWidth + horizontalMargin;
-			}
-
 			if (orient[0] === "center") {
 				// Limit height and width so dialog fits within viewport.
-				// Note: It would be preferable to do this all with CSS, but we can't due to
-				// IE11 bugs with the combination of flex and max-height.
 				var minSize = this.getMinCenteredPopupSize(widget),
 					maxSize = this.getMaxCenteredPopupSize(widget);
-				if (args._naturalHeight < minSize.h)  {
-					widget.style.height = minSize.h + "px";
-				}
-				if (args._naturalWidth < minSize.w)  {
-					widget.style.width = minSize.w + "px";
-				}
-				if (args._naturalHeight > maxSize.h)  {
-					widget.style.height = maxSize.h + "px";
-				}
-				if (args._naturalWidth > maxSize.w)  {
-					widget.style.width = maxSize.w + "px";
-				}
+				widget.style.minHeight = minSize.h + "px";
+				widget.style.minWidth = minSize.w + "px";
+				widget.style.maxHeight = maxSize.h + "px";
+				widget.style.maxWidth = maxSize.w + "px";
 			} else {
 				// Limit height to space available in viewport either above or below aroundNode (whichever side has
 				// more room).  This may make the popup widget display a scrollbar (or multiple scrollbars).
 				var maxHeight;
 				if ("maxHeight" in args && args.maxHeight !== -1) {
-					maxHeight = args.maxHeight || Infinity;
+					maxHeight = args.maxHeight;
 				} else {
 					// Get aroundNode position, doing correction if iOS auto-scroll has moved it off screen.
 					var aroundPos = around ? around.getBoundingClientRect() : {
@@ -631,12 +575,11 @@ define([
 					maxHeight = Math.floor(Math.max(aroundPosTop, viewport.h - aroundPosBottom));
 				}
 
-				if (args._naturalHeight > maxHeight) {
-					widget.style.height = maxHeight - verticalMargin + "px";
-				}
-			}
+				var cs = getComputedStyle(widget),
+					verticalMargin = parseFloat(cs.marginTop) + parseFloat(cs.marginBottom);
 
-			widget.scrollTop = savedScrollTop;
+				widget.style.maxHeight = maxHeight - verticalMargin + "px";
+			}
 		},
 
 		/**

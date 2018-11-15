@@ -40,15 +40,14 @@
 }
 .d-popup {
   position: absolute;
-  background-color: white;
+  display: flex;
   margin: 0;
   border: 0;
   padding: 0;
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);
-  box-sizing: border-box;
 }
 .d-popup > * {
   box-sizing: border-box;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);
 }
 .d-tooltip-dialog-popup,
 .d-date-picker-popup {
