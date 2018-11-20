@@ -469,8 +469,16 @@ define([
 			// Handle size changes due to added/removed DOM or changed attributes,
 			// including changes that happen gradually due to animations.
 			var self = this,
+				oldClassName = widget.className,
 				oldHeight = widget.offsetHeight,
 				oldWidth = widget.offsetWidth;
+
+			function resizeIfNecessary() {
+				if (widget.className !== oldClassName) {
+					self._size(args);
+					oldClassName = widget.className;
+				}
+			}
 
 			function repositionIfNecessary() {
 				var repositioned = false;
@@ -492,12 +500,12 @@ define([
 			}
 
 			var resizeTimer;
-			function startResizePolling() {
+			function startRepositionPolling() {
 				resizeTimer = setTimeout(function () {
 					var repositioned = repositionIfNecessary();
 					if (repositioned) {
 						// Keep polling until size stops changing.
-						startResizePolling();
+						startRepositionPolling();
 					} else {
 						// Stop polling, there was no animation, or there was one but it already completed.
 						resizeTimer = null;
@@ -506,11 +514,15 @@ define([
 			}
 
 			var observer = new MutationObserver(function () {
+				// If class has changed, then recompute maxHeight etc.  Useful when app overrides
+				// getMaxCenteredPopupSize() etc.
+				resizeIfNecessary();
+
 				// Reposition immediately to avoid 50ms display of incorrectly positioned/sized popup.
 				repositionIfNecessary();
 
 				// The DOM mutation may have kicked off an animation, so start polling for changes from that.
-				startResizePolling();
+				startRepositionPolling();
 			});
 			observer.observe(widget, {
 					attributes: true,
@@ -537,7 +549,7 @@ define([
 		},
 
 		/**
-		 * Size or resize the popup specified by args.
+		 * Size or resets the minHeight, maxHeight, minWidth, and maxWidth of the popup specified by args.
 		 * @param {module:delite/popup.OpenArgs} args
 		 * @returns {*} If orient !== center then returns the alignment of the popup relative to the anchor node.
 		 * @private
