@@ -481,8 +481,6 @@ define([
 			}
 
 			function repositionIfNecessary() {
-				var repositioned = false;
-
 				var newHeight = widget.offsetHeight,
 					newWidth = widget.offsetWidth;
 
@@ -490,27 +488,7 @@ define([
 					oldHeight = newHeight;
 					oldWidth = newWidth;
 					self._repositionAll();
-					repositioned = true;
 				}
-
-				// Ignore notifications due to what happened in this method.
-				observer.takeRecords();
-
-				return repositioned;
-			}
-
-			var resizeTimer;
-			function startRepositionPolling() {
-				resizeTimer = setTimeout(function () {
-					var repositioned = repositionIfNecessary();
-					if (repositioned) {
-						// Keep polling until size stops changing.
-						startRepositionPolling();
-					} else {
-						// Stop polling, there was no animation, or there was one but it already completed.
-						resizeTimer = null;
-					}
-				}, 50);
 			}
 
 			var observer = new MutationObserver(function () {
@@ -521,8 +499,8 @@ define([
 				// Reposition immediately to avoid 50ms display of incorrectly positioned/sized popup.
 				repositionIfNecessary();
 
-				// The DOM mutation may have kicked off an animation, so start polling for changes from that.
-				startRepositionPolling();
+				// Ignore notifications due to what happened in this method.
+				observer.takeRecords();
 			});
 			observer.observe(widget, {
 					attributes: true,
@@ -531,6 +509,15 @@ define([
 					subtree: true
 				}
 			);
+
+			var resizeTimer;
+			function startRepositionPolling() {
+				resizeTimer = setTimeout(function () {
+					repositionIfNecessary();
+					startRepositionPolling();
+				}, 25);
+			}
+			startRepositionPolling();
 
 			handlers.push({
 				remove: function () {
