@@ -71,7 +71,7 @@ define([
 		/**
 		 * If true, make the drop down at least as wide as this widget.
 		 * If false, leave the drop down at its default width.
-		 * Has no effect when `dropDownPosition = ["center"]`.
+		 * Has no effect when `dropDownPosition === ["center"]`.
 		 * @member {boolean}
 		 * @default true
 		 */
@@ -79,7 +79,7 @@ define([
 
 		/**
 		 * If true, make the drop down exactly as wide as this widget.  Overrides `autoWidth`.
-		 * Has no effect when `dropDownPosition = ["center"]`.
+		 * Has no effect when `dropDownPosition === ["center"]`.
 		 * @member {boolean}
 		 * @default false
 		 */
@@ -446,7 +446,7 @@ define([
 			var loadDropDownPromise = this.loadDropDown();
 
 			this._openDropDownPromise = Promise.resolve(loadDropDownPromise).then(function (dropDown) {
-				/* jshint maxcomplexity:12 */
+				/* jshint maxcomplexity:14 */
 				if (this._previousDropDown && this._previousDropDown !== dropDown) {
 					popup.detach(this._previousDropDown);
 					delete this._previousDropDown;
@@ -466,9 +466,10 @@ define([
 				}
 
 				// Set width of drop down if necessary, so that dropdown width [including scrollbar]
-				// matches width of aroundNode.  Don't do anything for when dropDownPosition=["center"] though,
-				// in which case popup.open() doesn't return a value.
-				if (this.dropDownPosition[0] !== "center") {
+				// matches width of aroundNode.  Don't do anything for when dropDownPosition === ["center"] though.
+				var initialOrient = typeof this.dropDownPosition === "function" ?
+					this.dropDownPosition() : this.dropDownPosition;
+				if (initialOrient[0] !== "center") {
 					if (this.forceWidth) {
 						dropDown.style.width = aroundNode.offsetWidth + "px";
 					} else if (this.autoWidth) {
@@ -480,7 +481,8 @@ define([
 					parent: behaviorNode,
 					popup: dropDown,
 					around: aroundNode,
-					orient: this.dropDownPosition,
+					orient: typeof this.dropDownPosition === "function" ?
+						this.dropDownPosition.bind(this) : this.dropDownPosition,
 					maxHeight: this.maxHeight,
 					onExecute: function () {
 						self.closeDropDown(true);

@@ -545,7 +545,7 @@ define([
 			/* jshint maxcomplexity:15 */
 			var widget = args.popup,
 				around = args.around,
-				orient = args.orient || ["below", "below-alt", "above", "above-alt"],
+				orient = this._getOrient(args),
 				viewport = Viewport.getEffectiveBox(widget.ownerDocument);
 
 			if (orient[0] === "center") {
@@ -605,6 +605,14 @@ define([
 		},
 
 		/**
+		 * Get the array of orientations to try based on hash passed to open().
+		 */
+		_getOrient: function (args) {
+			return typeof args.orient === "function" ? args.orient() :
+				(args.orient || ["below", "below-alt", "above", "above-alt"]);
+		},
+
+		/**
 		 * Position the popup specified by args.
 		 * @param args
 		 * @returns {*} If orient !== center then returns the alignment of the popup relative to the anchor node.
@@ -614,7 +622,7 @@ define([
 			var widget = args.popup,
 				wrapper = widget._popupWrapper,
 				around = args.around,
-				orient = args.orient || ["below", "below-alt", "above", "above-alt"],
+				orient = this._getOrient(args),
 				ltr = args.parent ? args.parent.effectiveDir !== "rtl" : isDocLtr(widget.ownerDocument);
 
 			// position the wrapper node
