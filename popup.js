@@ -620,6 +620,7 @@ define([
 			// position the wrapper node
 			if (orient[0] === "center") {
 				place.center(wrapper);
+				widget.emit("popup-after-position");
 			} else {
 				var position = around ?
 					place.around(wrapper, around, orient, ltr) :
