@@ -43,12 +43,12 @@
 define([
 	"dcl/advise",
 	"dcl/dcl",
-	"requirejs-dplugins/jquery!attributes/classes",	// hasClass()
 	"decor/Evented",
+	"decor/sniff",
 	"./on",
 	"dpointer/events",		// so can just monitor for "pointerdown"
 	"requirejs-domready/domReady!"
-], function (advise, dcl, $, Evented, on) {
+], function (advise, dcl, Evented, has, on) {
 
 	// Time of the last touch/mouse event.
 	var lastPointerDownTime;
@@ -99,8 +99,10 @@ define([
 				}
 
 				lastPointerDownTime = (new Date()).getTime();
+			}
 
-				_this._pointerDownOrFocusHandler(evt.target, "mouse");
+			function clickHandler(evt) {
+				_this._activateHandler(evt.target, "mouse");
 			}
 
 			function focusHandler(evt) {
@@ -155,7 +157,16 @@ define([
 			if (body) {
 				// Listen for touches or mousedowns.
 				body.addEventListener("pointerdown", pointerDownHandler, true);
-				body.addEventListener("focus", focusHandler, true);	// need true since focus doesn't bubble
+				body.addEventListener("click", clickHandler, true);
+
+				// Listen for focus events due to tabbing or programmatic focus.  But don't do it on iOS
+				// since iOS doesn't allow programmatic focus and VoiceOver emits pointerdown / click events
+				// as the user swipes left / right to traverse the elements.
+				if (!has("ios")) {
+					// need true since focus doesn't bubble
+					body.addEventListener("focus", focusHandler, true);
+				}
+
 				body.addEventListener("touchend", touchendHandler, true);
 				body.addEventListener("mouseover", mouseOverHandler);
 
@@ -165,7 +176,10 @@ define([
 				return {
 					remove: function () {
 						body.removeEventListener("pointerdown", pointerDownHandler, true);
-						body.removeEventListener("focus", focusHandler, true);
+						body.removeEventListener("click", clickHandler, true);
+						if (!has("ios")) {
+							body.removeEventListener("focus", focusHandler, true);
+						}
 						body.removeEventListener("mouseover", mouseOverHandler);
 						observeHandle.disconnect();
 					}
@@ -213,12 +227,12 @@ define([
 		},
 
 		/**
-		 * Callback when node is focused or pointerdown'd.
+		 * Callback when node is focused or clicked.
 		 * @param {Element} node - The node.
-		 * @param {string} by - "mouse" if the focus/pointerdown was caused by a mouse down event.
+		 * @param {string} by - "mouse" if the focus/click was caused by a mousedown event.
 		 * @private
 		 */
-		_pointerDownOrFocusHandler: function (node, by) {
+		_activateHandler: function (node, by) {
 			// Compute stack of active widgets ending at node (ex: ComboButton --> Menu --> MenuItem).
 			var newStack = this._getStack(node, by !== "mouse");
 
@@ -251,14 +265,7 @@ define([
 				return;
 			}
 
-			// There was probably a blur event right before this event, but since we have a new focus,
-			// forget about the blur
-			if (this._clearFocusTimer) {
-				clearTimeout(this._clearFocusTimer);
-				delete this._clearFocusTimer;
-			}
-
-			this._pointerDownOrFocusHandler(node);
+			this._activateHandler(node);
 		},
 
 		/**

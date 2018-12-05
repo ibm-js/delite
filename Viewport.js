@@ -16,8 +16,13 @@
 define([
 	"decor/Evented",
 	"decor/sniff",	// has("ios")
+	"./activationTracker",
 	"requirejs-domready/domReady!"
-], function (Evented, has) {
+], function (
+	Evented,
+	has,
+	activationTracker
+) {
 	var Viewport = new Evented();
 
 	// Get the size of the viewport without size adjustment needed for iOS soft keyboard.
@@ -42,7 +47,7 @@ define([
 		var box = getBox();
 
 		// Account for iOS virtual keyboard, if it's being shown.  Unfortunately no direct way to check or measure.
-		var focusedNode = document.activeElement,
+		var focusedNode = activationTracker.activeStack[activationTracker.activeStack.length - 1],
 			tag = focusedNode && focusedNode.tagName && focusedNode.tagName.toLowerCase();
 		if (has("ios") && focusedNode && !focusedNode.readOnly && (tag === "textarea" || (tag === "input" &&
 			/^(color|email|number|password|search|tel|text|url)$/.test(focusedNode.type)))) {
