@@ -3,7 +3,6 @@
  * @module delite/popup
  */
 define([
-	"dcl/advise",
 	"dcl/dcl",
 	"./BackgroundIframe",
 	"./DialogUnderlay",
@@ -12,7 +11,15 @@ define([
 	"./place",
 	"./Viewport",
 	"./theme!" // d-popup class
-], function (advise, dcl, BackgroundIframe, DialogUnderlay, has, on, place, Viewport) {
+], function (
+	dcl,
+	BackgroundIframe,
+	DialogUnderlay,
+	has,
+	on,
+	place,
+	Viewport
+) {
 
 	function isDocLtr(doc) {
 		return !(/^rtl$/i).test(doc.body.dir || doc.documentElement.dir);
@@ -144,16 +151,6 @@ define([
 	 * closed by clicking on a blank part of the screen.
 	 */
 
-	/**
-	 * Function to destroy wrapper when popup widget is destroyed.
-	 */
-	function destroyWrapper() {
-		if (this._popupWrapper) {
-			this._popupWrapper.parentNode.removeChild(this._popupWrapper);
-			delete this._popupWrapper;
-		}
-	}
-
 	// TODO: convert from singleton to just a hash of functions; easier to doc that way.
 
 	var PopupManager = dcl(/** @lends module:delite/popup */ {
@@ -233,13 +230,13 @@ define([
 		 * @returns {HTMLElement} The wrapper DIV.
 		 * @private
 		 */
-		_createWrapper: function (widget) {
+		createWrapper: function (widget) {
 			var wrapper = widget._popupWrapper;
 			if (!wrapper) {
 				// Create wrapper <div> for when this widget [in the future] will be used as a popup.
 				// This is done early because of IE bugs where creating/moving DOM nodes causes focus
 				// to go wonky, see tests/robot/Toolbar.html to reproduce
-				wrapper = widget.ownerDocument.createElement("div");
+				wrapper = widget._popupWrapper = widget.ownerDocument.createElement("div");
 				wrapper.className = "d-popup";
 				wrapper.style.display = "none";
 				wrapper.setAttribute("role", "region");
@@ -261,8 +258,15 @@ define([
 				widget.classList.remove("d-invisible");
 				widget.classList.remove("d-offscreen");
 
-				widget._popupWrapper = wrapper;
-				advise.after(widget, "destroy", destroyWrapper);
+				// Destroy wrapper when popup widget is destroyed.
+				widget.own({
+					destroy: function destroyWrapper() {
+						if (widget._popupWrapper) {
+							widget._popupWrapper.parentNode.removeChild(widget._popupWrapper);
+							delete widget._popupWrapper;
+						}
+					}
+				});
 			}
 
 			return wrapper;
@@ -277,7 +281,7 @@ define([
 		moveOffScreen: function (widget) {
 			// Create wrapper if not already there, then besides setting visibility:hidden,
 			// move it out of the viewport, see #5776, #10111, #13604
-			var wrapper = this._createWrapper(widget);
+			var wrapper = this.createWrapper(widget);
 			wrapper.style.display = "";
 			wrapper.classList.add("d-offscreen");
 			return wrapper;
@@ -312,7 +316,7 @@ define([
 			widget.emit("popup-before-hide");
 
 			// Create wrapper if not already there
-			var wrapper = this._createWrapper(widget);
+			var wrapper = this.createWrapper(widget);
 
 			wrapper.style.display = "none";
 			wrapper.style.height = "auto";		// Open may have limited the height to fit in the viewport
@@ -348,6 +352,9 @@ define([
 		 * popup.open({parent: this, popup: menuWidget, around: this, onClose: function(){...}});
 		 */
 		open: function (args) {
+			// Make copy of args so we don't modify original struct.
+			args = Object.create(args);
+
 			var eventNode = args.parent || document.body,
 				popup = args.popup;
 
@@ -492,8 +499,7 @@ define([
 			}
 
 			var observer = new MutationObserver(function () {
-				// If class has changed, then recompute maxHeight etc.  Useful when app overrides
-				// getMaxCenteredPopupSize() etc.
+				// If class has changed, then recompute maxHeight etc.
 				resizeIfNecessary();
 
 				// Reposition immediately to avoid 50ms display of incorrectly positioned/sized popup.
@@ -503,12 +509,11 @@ define([
 				observer.takeRecords();
 			});
 			observer.observe(widget, {
-					attributes: true,
-					characterData: true,
-					childList: true,
-					subtree: true
-				}
-			);
+				attributes: true,
+				characterData: true,
+				childList: true,
+				subtree: true
+			});
 
 			var resizeTimer;
 			function startRepositionPolling() {
@@ -529,10 +534,23 @@ define([
 				}
 			});
 
-			var stackEntry = Object.create(args);
-			stackEntry.wrapper = wrapper;
-			stackEntry.handlers = handlers;
-			stack.push(stackEntry);
+			// Stop recentering dialogs that the user has dragged or resized.
+			handlers.push(
+				widget.on("delite-dragged", function (evt) {
+					if (evt.target === widget) {
+						args.dragged = true;
+					}
+				}),
+				widget.on("delite-manually-resized", function (evt) {
+					if (evt.target === widget) {
+						args.resized = true;
+					}
+				})
+			);
+
+			args.wrapper = wrapper;
+			args.handlers = handlers;
+			stack.push(args);
 		},
 
 		/**
@@ -546,14 +564,21 @@ define([
 			var widget = args.popup,
 				around = args.around,
 				orient = this._getOrient(args),
-				viewport = Viewport.getEffectiveBox(widget.ownerDocument);
+				viewport = Viewport.getEffectiveBox();
 
 			if (orient[0] === "center") {
-				// Limit height and width so dialog fits within viewport.
-				var minSize = this.getMinCenteredPopupSize(widget),
-					maxSize = this.getMaxCenteredPopupSize(widget);
-				widget.style.minHeight = minSize.h + "px";
-				widget.style.minWidth = minSize.w + "px";
+				// Limit height and width so popup fits within viewport.
+				var minSize = typeof widget.getMinSize === "function" && widget.getMinSize();
+				if (minSize)  {
+					widget.style.minHeight = minSize.h + "px";
+					widget.style.minWidth = minSize.w + "px";
+				} else {
+					widget.style.removeProperty("min-height");
+					widget.style.removeProperty("min-width");
+				}
+
+				var maxSize = typeof widget.getMaxSize === "function" ? widget.getMaxSize() :
+					this.getMaxCenteredPopupSize(widget);
 				widget.style.maxHeight = maxSize.h + "px";
 				widget.style.maxWidth = maxSize.w + "px";
 			} else {
@@ -582,25 +607,15 @@ define([
 		},
 
 		/**
-		 * Overridable method to return the maximum size allowed for a centered popup,
+		 * Return the default maximum size allowed for a centered popup,
 		 * presumably based on the viewport size.  Used to control how much margin is
-		 * displayed between the dialog border and the edges of the viewport.
+		 * displayed between the popup border and the edges of the viewport.
 		 */
-		getMaxCenteredPopupSize: function (widget) {
-			var viewport = Viewport.getEffectiveBox(widget.ownerDocument);
+		getMaxCenteredPopupSize: function () {
+			var viewport = Viewport.getEffectiveBox();
 			return  {
 				w: Math.floor(viewport.w * 0.9),
 				h: Math.floor(viewport.h * 0.9)
-			};
-		},
-
-		/**
-		 * Overridable method to return the minimum size allowed for a centered popup.
-		 */
-		getMinCenteredPopupSize: function () {
-			return  {
-				w: 0,
-				h: 0
 			};
 		},
 
@@ -619,6 +634,7 @@ define([
 		 * @private
 		 */
 		_position: function (args) {
+			/* jshint maxcomplexity:11 */
 			var widget = args.popup,
 				wrapper = widget._popupWrapper,
 				around = args.around,
@@ -626,7 +642,30 @@ define([
 				ltr = args.parent ? args.parent.effectiveDir !== "rtl" : isDocLtr(widget.ownerDocument);
 
 			// position the wrapper node
-			if (orient[0] === "center") {
+			if (args.dragged || args.resized) {
+				// Don't recenter popups that have been dragged and/or manually resized.
+				var win = widget.ownerDocument.defaultView,
+					viewport = Viewport.getEffectiveBox(),
+					bcr = wrapper.getBoundingClientRect();
+
+				// Drag popup up and to the left if necessary because browser window is being shrunk.
+				var curTop = parseFloat(wrapper.style.top),
+					curLeft = parseFloat(wrapper.style.left),
+					maxTop = viewport.h - bcr.height,
+					maxLeft = viewport.w - bcr.width;
+				if (curTop > maxTop || curLeft > maxLeft) {
+					var top = Math.min(curTop, maxTop),
+						left = Math.min(curLeft, maxLeft);
+
+					// Adjust for document scroll.  (Would be nicer if centered and dragged popups were position:fixed.)
+					wrapper.style.top = (top + win.pageYOffset) + "px";
+					wrapper.style.left = (left + win.pageXOffset) + "px";
+
+					args.dragged = true;
+
+					widget.emit("popup-after-position");
+				}
+			} else if (orient[0] === "center") {
 				place.center(wrapper);
 				widget.emit("popup-after-position");
 			} else {
