@@ -401,6 +401,7 @@ define([
 					node.ownerDocument.documentElement.dir);
 			style.top = "-9999px";
 			style[rtl ? "right" : "left"] = "-9999px";
+			style[rtl ? "left" : "right"] = "auto";
 
 			// Then set position so node is centered.
 			var view = Viewport.getEffectiveBox(),
