@@ -569,7 +569,7 @@ define([
 			if (orient[0] === "center") {
 				// Limit height and width so popup fits within viewport.
 				var minSize = typeof widget.getMinSize === "function" && widget.getMinSize();
-				if (minSize)  {
+				if (minSize) {
 					widget.style.minHeight = minSize.h + "px";
 					widget.style.minWidth = minSize.w + "px";
 				} else {
@@ -642,32 +642,11 @@ define([
 				ltr = args.parent ? args.parent.effectiveDir !== "rtl" : isDocLtr(widget.ownerDocument);
 
 			// position the wrapper node
-			if (args.dragged || args.resized) {
-				// Don't recenter popups that have been dragged and/or manually resized.
-				var win = widget.ownerDocument.defaultView,
-					viewport = Viewport.getEffectiveBox(),
-					bcr = wrapper.getBoundingClientRect();
-
-				// Drag popup up and to the left if necessary because browser window is being shrunk.
-				var curTop = parseFloat(wrapper.style.top),
-					curLeft = parseFloat(wrapper.style.left),
-					maxTop = viewport.h - bcr.height,
-					maxLeft = viewport.w - bcr.width;
-				if (curTop > maxTop || curLeft > maxLeft) {
-					var top = Math.min(curTop, maxTop),
-						left = Math.min(curLeft, maxLeft);
-
-					// Adjust for document scroll.  (Would be nicer if centered and dragged popups were position:fixed.)
-					wrapper.style.top = (top + win.pageYOffset) + "px";
-					wrapper.style.left = (left + win.pageXOffset) + "px";
-
-					args.dragged = true;
-
+			if (orient[0] === "center") {
+				if (!args.dragged && !args.resized) {
+					place.center(wrapper);
 					widget.emit("popup-after-position");
 				}
-			} else if (orient[0] === "center") {
-				place.center(wrapper);
-				widget.emit("popup-after-position");
 			} else {
 				var position = around ?
 					place.around(wrapper, around, orient, ltr) :
@@ -686,6 +665,32 @@ define([
 			// but args can explicitly specify underlay=true or underlay=false.
 			if ("underlay" in args ? args.underlay : (orient[0] === "center")) {
 				DialogUnderlay.showFor(wrapper);
+			}
+		},
+
+		/**
+		 * If the specified widget is fully or partially offscreen, bring it fully into view.
+		 * @param widget
+		 */
+		moveFullyIntoView: function (widget) {
+			var win = widget.ownerDocument.defaultView,
+				viewport = Viewport.getEffectiveBox(),
+				wrapper = this.createWrapper(widget),
+				bcr = wrapper.getBoundingClientRect(),
+				curTop = parseFloat(wrapper.style.top),
+				curLeft = parseFloat(wrapper.style.left),
+				maxTop = Math.max(viewport.h - bcr.height, 0),
+				maxLeft = Math.max(viewport.w - bcr.width, 0);
+
+			if (curTop > maxTop || curLeft > maxLeft) {
+				var top = Math.min(curTop, maxTop),
+					left = Math.min(curLeft, maxLeft);
+
+				// Adjust for document scroll.  (Would be nicer if centered and dragged popups were position:fixed.)
+				wrapper.style.top = (top + win.pageYOffset) + "px";
+				wrapper.style.left = (left + win.pageXOffset) + "px";
+
+				widget.emit("popup-after-position");
 			}
 		},
 
