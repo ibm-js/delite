@@ -5,7 +5,6 @@
 		"dcl": "^2.0.6",
 		"decor": "master",
 		"dpointer": "0.5.x",
-		"jquery": ">=2.1",
 		"requirejs": "2.1.x",
 		"requirejs-domready": "2.0.x",
 		"requirejs-dplugins": "0.6.x",

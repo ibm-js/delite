@@ -92,8 +92,6 @@ define(function () {
 		var bubbles = "bubbles" in eventObj ? eventObj.bubbles : true;
 		var cancelable = "cancelable" in eventObj ? eventObj.cancelable : true;
 
-		// Note: can't use jQuery.trigger() because it doesn't work with addEventListener(),
-		// see http://bugs.jquery.com/ticket/11047.
 		var nativeEvent = node.ownerDocument.createEvent("HTMLEvents");
 		nativeEvent.initEvent(type, bubbles, cancelable);
 		for (var i in eventObj) {

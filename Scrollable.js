@@ -1,10 +1,11 @@
 /** @module delite/Scrollable */
 define([
 	"dcl/dcl",
-	"requirejs-dplugins/jquery!attributes/classes,effects",	// toggleClass()
+	"./classList",
+	"./ScrollAnimation",
 	"./Widget",
 	"./theme!./Scrollable/themes/{{theme}}/Scrollable.css"
-], function (dcl, $, Widget) {
+], function (dcl, classList, ScrollAnimation, Widget) {
 
 	/**
 	 * A mixin which adds scrolling capabilities to a widget.
@@ -82,10 +83,12 @@ define([
 
 		refreshRendering: function (oldVals) {
 			if ("scrollDirection" in oldVals) {
-				$(this.scrollableNode)
-					.toggleClass("d-scrollable", this.scrollDirection !== "none")
-					.toggleClass("d-scrollable-h", /^(both|horizontal)$/.test(this.scrollDirection))
-					.toggleClass("d-scrollable-v", /^(both|vertical)$/.test(this.scrollDirection));
+				classList.toggleClass(this.scrollableNode,
+					"d-scrollable", this.scrollDirection !== "none");
+				classList.toggleClass(this.scrollableNode,
+					"d-scrollable-h", /^(both|horizontal)$/.test(this.scrollDirection));
+				classList.toggleClass(this.scrollableNode,
+					"d-scrollable-v", /^(both|vertical)$/.test(this.scrollDirection));
 			}
 		},
 
@@ -198,6 +201,7 @@ define([
 		scrollTo: function (to, duration) {
 			var scrollableNode = this.scrollableNode;
 			this._stopAnimation();
+
 			if (!duration || duration <= 0) { // shortcut
 				if (to.x !== undefined) {
 					scrollableNode.scrollLeft = to.x;
@@ -210,29 +214,16 @@ define([
 					x: to.x !== undefined ? scrollableNode.scrollLeft : undefined,
 					y: to.y !== undefined ? scrollableNode.scrollTop : undefined
 				};
-				// See http://james.padolsey.com/javascript/fun-with-jquerys-animate/
-				var self = this;
-				self._animation = $(from).animate(to, {
-					duration: duration,
-					rate: 20, // TODO: IMPROVEME
-					step: function () {
-						if (this.x !== undefined) {
-							scrollableNode.scrollLeft = this.x;
-						}
-						if (this.y !== undefined) {
-							scrollableNode.scrollTop = this.y;
-						}
-					},
-					complete: function () {
-						if (this.x !== undefined) {
-							scrollableNode.scrollLeft = this.x;
-						}
-						if (this.y !== undefined) {
-							scrollableNode.scrollTop = this.y;
-						}
-						delete self._animation;
-					}
+
+				this._animation = new ScrollAnimation(scrollableNode, {
+					from: from,
+					to: to,
+					duration: duration
 				});
+
+				this._animation.on("ended", function () {
+					this._animation = null;
+				}.bind(this), true);
 			}
 		},
 

@@ -3,14 +3,13 @@ define([
 	"intern!object",
 	"intern/chai!assert",
 	"dcl/dcl",
-	"requirejs-dplugins/jquery!attributes/classes",	// hasClass()
 	"requirejs-dplugins/Promise!",
 	"delite/features",
 	"delite/register",
 	"delite/Widget",
 	"delite/Bidi",
 	"requirejs-domready/domReady!"
-], function (registerSuite, assert, dcl, $, Promise, has, register, Widget, Bidi) {
+], function (registerSuite, assert, dcl, Promise, has, register, Widget, Bidi) {
 	var container, div, input, defaultDir;
 	var ltrText = "abc\u05d0\u05d1\u05d2";
 	var rtlText = "@#$123\u05d0\u05d1\u05d2abc";
@@ -49,7 +48,7 @@ define([
 			widget.textDir = "auto";
 			assert.strictEqual(widget.getTextDir(neutralText), defaultDir, "neutral, auto");
 		},
-		
+
 		"applyTextDirection": function () {
 			widget.textDir = "ltr";
 			assert.strictEqual(widget.applyTextDirection(rtlText), "\u202a" + rtlText + "\u202c", "bidi, ltr");
@@ -63,7 +62,7 @@ define([
 			widget.textDir = "";
 			assert.strictEqual(widget.applyTextDirection(wrappedWithUccText), ltrText, "wrapped, default");
 		},
-		
+
 		"applyTextDir": function () {
 			div.innerHTML = rtlText;
 			input.value = rtlText;
@@ -83,7 +82,7 @@ define([
 			widget.applyTextDir(input);
 			assert.strictEqual(input.dir, defaultDir, "input, textDir: default");
 		},
-		
+
 		"enforceTextDirWithUcc": function () {
 			div.innerHTML = rtlText;
 			widget.textDir = "ltr";
@@ -124,11 +123,11 @@ define([
 			};
 			init("ltr");
 			return delay(10).then(function () {
-				assert($(widget).hasClass("d-rtl"), "has d-rtl class");
+				assert(widget.classList.contains("d-rtl"), "has d-rtl class");
 				assert.strictEqual(widget.effectiveDir, div.dir, "effectiveDir is " + div.dir);
 				init("rtl");
 			}).then(function () { return delay(10); }).then(function () {
-				assert.isFalse($(widget).hasClass("d-rtl"), "doesn't have d-rtl class");
+				assert.isFalse(widget.classList.contains("d-rtl"), "doesn't have d-rtl class");
 				assert.strictEqual(widget.effectiveDir, div.dir, "effectiveDir is " + div.dir);
 				document.body.dir = bodyOriginalDir;
 			}).catch(function (err) {

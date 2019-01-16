@@ -1,3 +1,4 @@
+/* eslint-disable quote-props */
 define([
 	"intern!object",
 	"intern/chai!assert",
@@ -49,7 +50,7 @@ define([
 				var myWidget = container.firstChild;
 
 				// Check that aria-label was moved
-				assert.strictEqual(myWidget.attributes.length, 1, "aria-label removed from root");
+				assert.isUndefined(myWidget.attributes["aria-label"], "aria-label removed from root");
 				assert.strictEqual(myWidget.focusNode.getAttribute("aria-label"), "test label",
 					"aria-label added to focusNode");
 
@@ -69,7 +70,8 @@ define([
 
 				myWidget.setAttribute("foo", "bar 2");
 				myWidget.setAttribute("aria-label", "label 2");
-				assert.strictEqual(myWidget.attributes.length, 1, "root has foo but not aria-label");
+				assert.isUndefined(myWidget.attributes["aria-label"], "root has foo but not aria-label");
+				assert.strictEqual(myWidget.attributes.foo.value, "bar 2", "root has foo but not aria-label");
 				assert.strictEqual(myWidget.focusNode.getAttribute("aria-label"), "label 2",
 					"aria-label added to focusNode");
 			},
@@ -83,9 +85,8 @@ define([
 				var myWidget = container.firstChild;
 
 				assert.strictEqual(myWidget.moveAriaAttributes, false, "moveAriaAttributes should be false");
-				assert.strictEqual(myWidget.attributes.length, 2, "aria-label not on the root");
 				assert.strictEqual(myWidget.attributes["aria-label"].nodeValue,
-					"test", "aria-label should be equals test");
+					"test", "aria-label should not be on the root and be equals test");
 			},
 
 			"#disabled": function () {
@@ -127,7 +128,7 @@ define([
 			},
 
 			"#inputID": function () {
-				var myWidget = new FormWidgetTest({id : "widget-id"});
+				var myWidget = new FormWidgetTest({ id: "widget-id" });
 
 				myWidget.deliver();
 
@@ -223,7 +224,8 @@ define([
 				assert.isFalse(HTMLElement.prototype.hasAttribute.call(myWidget, "tabindex"), "no tabIndex on root 1");
 
 				// In this case we don't move aria-label because the subnodes may already have their own labels.
-				assert.strictEqual(myWidget.attributes.length, 2, "aria-label etc. still on root");
+				assert.strictEqual(myWidget.attributes["aria-label"].value,
+					"test label", "aria-label etc. still on root");
 			},
 
 			"#disabled": function () {
@@ -291,7 +293,7 @@ define([
 					this.setAttribute("role", "textbox");
 				}
 			});
-			
+
 			// Create test widget with disabled and required properties.
 			var WidgetWithDisabledAndRequired = register("form-widget-dis-req", [HTMLElement, Widget], {
 				disabled: true,
@@ -343,7 +345,7 @@ define([
 			// Likewise for Button widget, except that we shouldn't set aria-required on buttons.
 			assert.strictEqual(container.button.getAttribute("aria-disabled"), "true", "aria-disabled on ButtonWidget");
 			assert.isFalse(container.button.hasAttribute("aria-required"), "aria-required on ButtonWidget");
-			
+
 			// Since  WidgetWithDisabledAndRequired has disabled and required properties, they should be set
 			// and aria properties shouldn't be set.
 			assert.isFalse(container.form.hasAttribute("aria-disabled"),

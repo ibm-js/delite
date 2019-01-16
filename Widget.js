@@ -1,13 +1,13 @@
 /** @module delite/Widget */
 define([
 	"dcl/dcl",
-	"requirejs-dplugins/jquery!attributes/classes",	// addClass(), removeClass()
 	"./features",
 	"decor/Invalidating",
 	"./CustomElement",
 	"./register",
+	"./classList",
 	"./features!bidi?./Bidi"
-], function (dcl, $, has, Invalidating, CustomElement, register, Bidi) {
+], function (dcl, has, Invalidating, CustomElement, register, classList, Bidi) {
 	// Used to generate unique id for each widget
 	var cnt = 0;
 
@@ -141,10 +141,11 @@ define([
 			}
 
 			if ("baseClass" in oldVals) {
-				$(this).removeClass(oldVals.baseClass).addClass(this.baseClass);
+				this.removeClass(oldVals.baseClass);
+				this.addClass(this.baseClass);
 			}
 			if ("effectiveDir" in oldVals) {
-				$(this).toggleClass("d-rtl", this.effectiveDir === "rtl");
+				this.toggleClass("d-rtl", this.effectiveDir === "rtl");
 			}
 			if ("dir" in oldVals) {
 				this.style.direction = this._get("dir");
@@ -204,7 +205,8 @@ define([
 		setClassComponent: function (component, value, node) {
 			if (!node) { node = this; }
 			var oldValProp = "_" + component + "Class";
-			$(node).removeClass(node[oldValProp] || "").addClass(value);
+			classList.removeClass(node, node[oldValProp]);
+			classList.addClass(node, value);
 			node[oldValProp] = value;
 		},
 
@@ -350,6 +352,52 @@ define([
 				}
 			} while ((node = node.parentNode));
 			return null;
+		},
+
+		/**
+		 * Toggle class helper method.
+		 *
+		 * @param {string} value Single or space-separated string representing the classes to toggled.
+		 * @param {boolean} [force]
+		 *		If force evaluates to true, add the specified class name, and if it evaluates to false, remove it.
+		 * @returns {module:delite/Widget} This widget, for chaining.
+		 */
+		toggleClass: function (value, force) {
+			classList.toggleClass(this, value, force);
+			return this;
+		},
+
+		/**
+		 * Adds the specified class values.
+		 * If these classes already exist in the element's class attribute they are ignored.
+		 *
+		 * @param {string} value Single or space-separated string representing the classes to be added.
+		 * @returns {module:delite/Widget} This widget, for chaining.
+		 */
+		addClass: function (value) {
+			classList.addClass(this, value);
+			return this;
+		},
+
+		/**
+		 * Remove one or multiple classes.
+		 *
+		 * @param {string} value Single or space-separated string representing the classes to be removed.
+		 * @returns {module:delite/Widget} This widget, for chaining.
+		 */
+		removeClass: function (value) {
+			classList.removeClass(this, value);
+			return this;
+		},
+
+		/**
+		 * Determine if this widget contains the given class.
+		 *
+		 * @param {string} value The class name to search for.
+		 * @returns {boolean} True if this widget contains the given class. False otherwise.
+		 */
+		hasClass: function (className) {
+			return classList.hasClass(this, className);
 		}
 	});
 
