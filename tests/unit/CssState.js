@@ -22,9 +22,9 @@ define([
 			});
 			widget.deliver();
 
-			assert(widget.classList.contains("d-error"), "error state");
-			assert(widget.classList.contains("d-disabled"), "disabled");
-			assert(widget.classList.contains("d-checked"), "checked");
+			assert(widget.hasClass("d-error"), "error state");
+			assert(widget.hasClass("d-disabled"), "disabled");
+			assert(widget.hasClass("d-checked"), "checked");
 
 			widget.mix({
 				state: "incomplete",
@@ -33,11 +33,11 @@ define([
 			});
 			widget.deliver();
 
-			assert(!widget.classList.contains("d-error"), "not error state");
-			assert(widget.classList.contains("d-incomplete"), "incomplete state");
-			assert.isFalse(widget.classList.contains("d-disabled"), "not disabled");
-			assert(widget.classList.contains("d-mixed"), "half checked");
-			assert.isFalse(widget.classList.contains("d-checked"), "original checked removed");
+			assert(!widget.hasClass("d-error"), "not error state");
+			assert(widget.hasClass("d-incomplete"), "incomplete state");
+			assert.isFalse(widget.hasClass("d-disabled"), "not disabled");
+			assert(widget.hasClass("d-mixed"), "half checked");
+			assert.isFalse(widget.hasClass("d-checked"), "original checked removed");
 		}
 	});
 });

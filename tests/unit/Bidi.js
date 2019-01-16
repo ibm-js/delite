@@ -123,11 +123,11 @@ define([
 			};
 			init("ltr");
 			return delay(10).then(function () {
-				assert(widget.classList.contains("d-rtl"), "has d-rtl class");
+				assert(widget.hasClass("d-rtl"), "has d-rtl class");
 				assert.strictEqual(widget.effectiveDir, div.dir, "effectiveDir is " + div.dir);
 				init("rtl");
 			}).then(function () { return delay(10); }).then(function () {
-				assert.isFalse(widget.classList.contains("d-rtl"), "doesn't have d-rtl class");
+				assert.isFalse(widget.hasClass("d-rtl"), "doesn't have d-rtl class");
 				assert.strictEqual(widget.effectiveDir, div.dir, "effectiveDir is " + div.dir);
 				document.body.dir = bodyOriginalDir;
 			}).catch(function (err) {

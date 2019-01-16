@@ -47,7 +47,7 @@ define([
 			assert.strictEqual(w.scrollableNodeInRefreshRendering, w.scrollableNode,
 				"The scrollableNode should been already set to 'this' when refreshRendering() was called!");
 			// The CSS class d-scrollable is expected to be added by the mixin delite/Scrollable
-			assert.isTrue(w.scrollableNode.classList.contains("d-scrollable"),
+			assert.isTrue(w.scrollableNode.hasClass("d-scrollable"),
 				"Expecting d-scrollable CSS class!");
 		},
 

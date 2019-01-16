@@ -7,10 +7,13 @@ define([
 	// Uncomment this line (and modify machine name) for testing against remote VM.
 	// intern.proxyUrl = "http://mac.local:9000";
 
+	// intern.leaveRemoveOpen = true;
 	intern.environments = [
 		{
-			"browserName": "chrome",
-			"chromeOptions": { "args": ["headless", "disable-gpu"] }
+			browserName: "chrome",
+			chromeOptions: {
+				args: ["headless", "disable-gpu"]
+			}
 		}
 	];
 

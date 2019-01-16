@@ -360,13 +360,13 @@ define([
 		 * If the class exists then remove it and return false,
 		 * if not, then add it and return true.
 		 *
-		 * @param {String} className Single or space-separated string representing the classes to be added.
+		 * @param {String} value Single or space-separated string representing the classes to be added.
 		 * @param {Boolean} force
 		 *		If force evaluates to true, add the specified class name, and if it evaluates to false, remove it.
 		 * @returns {Widget} This widget instance.
 		 */
-		toggleClass: function (className, force) {
-			classList.toggleClass(this, className, force);
+		toggleClass: function (value, force) {
+			classList.toggleClass(this, value, force);
 			return this;
 		},
 
@@ -374,10 +374,11 @@ define([
 		 * Adds the specified class values.
 		 * If these classes already exist in the element's class attribute they are ignored.
 		 *
-		 * @param {String} className Single or space-separated string representing the classes to be added.
+		 * @param {String} value Single or space-separated string representing the classes to be added.
+		 * @returns {Widget} This widget instance.
 		 */
-		addClass: function (className) {
-			classList.addClass(this, className);
+		addClass: function (value) {
+			classList.addClass(this, value);
 			return this;
 		},
 
@@ -385,10 +386,21 @@ define([
 		 * Remove one or multiple classes.
 		 *
 		 * @param {String} value Single or space-separated string representing the classes to be removed.
+		 * @returns {Widget} This widget instance.
 		 */
-		removeClass: function (className) {
-			classList.removeClass(this, className);
+		removeClass: function (value) {
+			classList.removeClass(this, value);
 			return this;
+		},
+
+		/**
+		 * Determine if this widget contains the given class.
+		 *
+		 * @param {String} value The class name to search for.
+		 * @returns {Boolean} True if this widget contains the given class. False otherwise.
+		 */
+		hasClass: function (className) {
+			return classList.hasClass(this, className);
 		}
 	});
 

@@ -313,8 +313,8 @@ define([
 
 				setTimeout(this.async().callback(function () {
 					var embeddedWidget = widget.querySelector("handlebars-embedded-widget");
-					assert(embeddedWidget.classList.contains("foo"), "has original foo class");
-					assert(embeddedWidget.classList.contains("bar"), "has user specified bar class");
+					assert(embeddedWidget.hasClass("foo"), "has original foo class");
+					assert(embeddedWidget.hasClass("bar"), "has user specified bar class");
 				}), 0);
 			},
 

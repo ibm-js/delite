@@ -291,7 +291,7 @@ define([
 					this.setAttribute("role", "textbox");
 				}
 			});
-			
+
 			// Create test widget with disabled and required properties.
 			var WidgetWithDisabledAndRequired = register("form-widget-dis-req", [HTMLElement, Widget], {
 				disabled: true,
@@ -343,7 +343,7 @@ define([
 			// Likewise for Button widget, except that we shouldn't set aria-required on buttons.
 			assert.strictEqual(container.button.getAttribute("aria-disabled"), "true", "aria-disabled on ButtonWidget");
 			assert.isFalse(container.button.hasAttribute("aria-required"), "aria-required on ButtonWidget");
-			
+
 			// Since  WidgetWithDisabledAndRequired has disabled and required properties, they should be set
 			// and aria properties shouldn't be set.
 			assert.isFalse(container.form.hasAttribute("aria-disabled"),
