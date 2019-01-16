@@ -1,10 +1,10 @@
 /** @module delite/Scrollable */
 define([
 	"dcl/dcl",
-	"requirejs-dplugins/jquery!attributes/classes,effects",	// toggleClass()
 	"./Widget",
+	"./classList",
 	"./theme!./Scrollable/themes/{{theme}}/Scrollable.css"
-], function (dcl, $, Widget) {
+], function (dcl, Widget, classList) {
 
 	/**
 	 * A mixin which adds scrolling capabilities to a widget.
@@ -82,15 +82,15 @@ define([
 
 		refreshRendering: function (oldVals) {
 			if ("scrollDirection" in oldVals) {
-				$(this.scrollableNode)
-					.toggleClass("d-scrollable", this.scrollDirection !== "none")
-					.toggleClass("d-scrollable-h", /^(both|horizontal)$/.test(this.scrollDirection))
-					.toggleClass("d-scrollable-v", /^(both|vertical)$/.test(this.scrollDirection));
-			}
-		},
+				classList.toggleClass(this.scrollableNode,
+					"d-scrollable", this.scrollDirection !== "none");
 
-		disconnectedCallback: function () {
-			this._stopAnimation();
+				classList.toggleClass(this.scrollableNode,
+					"d-scrollable-h", /^(both|horizontal)$/.test(this.scrollDirection));
+
+				classList.toggleClass(this.scrollableNode,
+					"d-scrollable-v", /^(both|vertical)$/.test(this.scrollDirection));
+			}
 		},
 
 		/**
@@ -192,57 +192,14 @@ define([
 		 * Scrolls to the given position.
 		 * @param {Object} to - The scroll destination position. An object with w and/or y properties,
 		 * for example `{x: 0, y: -5}` or `{y: -29}`.
-		 * @param {number} [duration] - Duration of scrolling animation in milliseconds.
-		 * If 0 or unspecified, scrolls without animation.
 		 */
-		scrollTo: function (to, duration) {
+		scrollTo: function (to) {
 			var scrollableNode = this.scrollableNode;
-			this._stopAnimation();
-			if (!duration || duration <= 0) { // shortcut
-				if (to.x !== undefined) {
-					scrollableNode.scrollLeft = to.x;
-				}
-				if (to.y !== undefined) {
-					scrollableNode.scrollTop = to.y;
-				}
-			} else {
-				var from = {
-					x: to.x !== undefined ? scrollableNode.scrollLeft : undefined,
-					y: to.y !== undefined ? scrollableNode.scrollTop : undefined
-				};
-				// See http://james.padolsey.com/javascript/fun-with-jquerys-animate/
-				var self = this;
-				self._animation = $(from).animate(to, {
-					duration: duration,
-					rate: 20, // TODO: IMPROVEME
-					step: function () {
-						if (this.x !== undefined) {
-							scrollableNode.scrollLeft = this.x;
-						}
-						if (this.y !== undefined) {
-							scrollableNode.scrollTop = this.y;
-						}
-					},
-					complete: function () {
-						if (this.x !== undefined) {
-							scrollableNode.scrollLeft = this.x;
-						}
-						if (this.y !== undefined) {
-							scrollableNode.scrollTop = this.y;
-						}
-						delete self._animation;
-					}
-				});
+			if (to.x !== undefined) {
+				scrollableNode.scrollLeft = to.x;
 			}
-		},
-
-		/**
-		 * Stops the scrolling animation if it is currently playing.
-		 * Does nothing otherwise.
-		 */
-		_stopAnimation: function () {
-			if (this._animation) {
-				this._animation.stop();
+			if (to.y !== undefined) {
+				scrollableNode.scrollTop = to.y;
 			}
 		}
 	});

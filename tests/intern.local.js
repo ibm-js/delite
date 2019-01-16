@@ -8,14 +8,17 @@ define([
 	// intern.proxyUrl = "http://mac.local:9000";
 
 	intern.environments = [
-		{ browserName: "chrome" }
+		{
+			"browserName": "chrome",
+			"chromeOptions": { "args": ["headless", "disable-gpu"] }
+		}
 	];
 
 	// Instrumentation is disabled for the remote tests due to internal errors on iOS,
 	// but we can still turn it on locally.
 	intern.excludeInstrumentation =
 		/*jshint maxlen:1000*/
-		/^(?:dcl|decor|dijit|dojo|dstore|jquery|lie|requirejs.*|webcomponentsjs|dpointer|delite\/(tests|node_modules)|.*\/themes)\//;
+		/^(?:dcl|decor|dijit|dojo|dstore|lie|requirejs.*|webcomponentsjs|dpointer|delite\/(tests|node_modules)|.*\/themes)\//;
 
 	return intern;
 });

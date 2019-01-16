@@ -411,6 +411,69 @@ define([
 			assert.strictEqual(w2.getParent(), w, "getParent() finds grandparent widget");
 		},
 
+		"addClass": function () {
+			var MyWidget = register("test-add-class", [HTMLElement, Widget], {
+				name: "",
+				attr1: 0,
+				attr2: 0
+			});
+
+			var w = new MyWidget();
+			w.addClass("foo bar");
+			assert.isTrue(w.classList.contains("foo"), "should contain foo in the classList");
+			assert.isTrue(w.classList.contains("bar"), "should contain bar in the classList");
+
+			w.addClass("another");
+			assert.isTrue(w.classList.contains("another"), "should contain another in the classList");
+		},
+
+		"removeClass": function () {
+			var MyWidget = register("test-remove-class", [HTMLElement, Widget], {
+				name: "",
+				attr1: 0,
+				attr2: 0
+			});
+
+			var w = new MyWidget();
+			w.addClass("foo bar another");
+			assert.isTrue(w.classList.contains("foo"), "should contain foo in the classList");
+			assert.isTrue(w.classList.contains("bar"), "should contain bar in the classList");
+			assert.isTrue(w.classList.contains("another"), "should contain another in the classList");
+			w.removeClass("foo bar");
+			assert.isFalse(w.classList.contains("foo"), "should not contain foo in the classList");
+			assert.isFalse(w.classList.contains("bar"), "should not contain bar in the classList");
+			assert.isTrue(w.classList.contains("another"), "should contain another in the classList");
+			w.removeClass("another");
+			assert.isFalse(w.classList.contains("another"), "should not contain another in the classList");
+		},
+
+		"toggleClass": function () {
+			var MyWidget = register("test-toggle-class", [HTMLElement, Widget], {
+				name: "",
+				attr1: 0,
+				attr2: 0
+			});
+
+			var w = new MyWidget();
+			w.addClass("foo bar");
+			assert.isTrue(w.classList.contains("foo"), "should contain foo in the classList");
+			assert.isTrue(w.classList.contains("bar"), "should contain bar in the classList");
+
+			w.toggleClass("foo");
+			assert.isFalse(w.classList.contains("foo"), "should not contain foo in the classList");
+			assert.isTrue(w.classList.contains("bar"), "should contain bar in the classList");
+
+			w.toggleClass("foo bar");
+			assert.isTrue(w.classList.contains("foo"), "should contain foo in the classList");
+			assert.isFalse(w.classList.contains("bar"), "should not contain bar in the classList");
+
+			w.toggleClass("another", false);
+			assert.isFalse(w.classList.contains("another"), "should not contain another in the classList");
+
+			w.toggleClass("another", true);
+			assert.isTrue(w.classList.contains("another"), "should contain another in the classList");
+		},
+
 		teardown: function () {
 			container.parentNode.removeChild(container);
 		}

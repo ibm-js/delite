@@ -3,13 +3,12 @@ define([
 	"intern!object",
 	"intern/chai!assert",
 	"requirejs-dplugins/Promise!",
-	"requirejs-dplugins/jquery!attributes/classes",	// hasClass()
 	"delite/handlebars",
 	"delite/register",
 	"delite/Widget",
 	"delite/handlebars!./templates/HandlebarsButton.html",
 	"delite/theme!"		// to get CSS rules for d-hidden
-], function (require, registerSuite, assert, Promise, $, handlebars, register, Widget, buttonHBTmpl) {
+], function (require, registerSuite, assert, Promise, handlebars, register, Widget, buttonHBTmpl) {
 
 	var container;
 
@@ -52,7 +51,7 @@ define([
 			assert.strictEqual(myButton.firstChild.tagName.toLowerCase(), "span", "icon node exists too");
 			assert.strictEqual(myButton.firstChild.className, "d-reset originalClass", "icon class set");
 			assert.strictEqual(myButton.textContent.trim(), "original label", "label set");
-			
+
 			myButton.label = "new label";
 			myButton.iconClass = "newClass";
 			myButton.deliver();
@@ -314,11 +313,11 @@ define([
 
 				setTimeout(this.async().callback(function () {
 					var embeddedWidget = widget.querySelector("handlebars-embedded-widget");
-					assert($(embeddedWidget).hasClass("foo"), "has original foo class");
-					assert($(embeddedWidget).hasClass("bar"), "has user specified bar class");
+					assert(embeddedWidget.classList.contains("foo"), "has original foo class");
+					assert(embeddedWidget.classList.contains("bar"), "has user specified bar class");
 				}), 0);
 			},
-			
+
 			/*
 			// Customized built in elements not support cross browser.
 			buttons: function () {

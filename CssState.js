@@ -1,9 +1,8 @@
 /** @module delite/CssState */
 define([
 	"dcl/dcl",
-	"requirejs-dplugins/jquery!attributes/classes",	// addClass(), removeClass()
 	"./Widget"
-], function (dcl, $, Widget) {
+], function (dcl, Widget) {
 
 	/**
 	 * Update the visual state of the widget by setting CSS classes on widget root node
@@ -34,17 +33,20 @@ define([
 			// Monitoring changes to disabled, readonly, etc. state, and update CSS class of root node
 			this.booleanCssProps.forEach(function (name) {
 				if (name in oldVals) {
-					$(this).toggleClass("d-" + name.toLowerCase(), this[name]);
+					this.toggleClass("d-" + name.toLowerCase(), this[name]);
 				}
 			}, this);
+
 			if ("checked" in oldVals) {
-				$(this).removeClass(oldVals.checked === "mixed" ? "d-mixed" : "d-checked");
+				this.removeClass(oldVals.checked === "mixed" ? "d-mixed" : "d-checked");
 				if (this.checked) {
-					$(this).addClass(this.checked === "mixed" ? "d-mixed" : "d-checked");
+					this.addClass(this.checked === "mixed" ? "d-mixed" : "d-checked");
 				}
 			}
+
 			if ("state" in oldVals) {
-				$(this).removeClass("d-" + oldVals.state.toLowerCase()).addClass("d-" + this.state.toLowerCase());
+				this.removeClass("d-" + oldVals.state.toLowerCase());
+				this.addClass("d-" + this.state.toLowerCase());
 			}
 		}
 	});
