@@ -172,12 +172,12 @@ define([
 				myWidget.connectedCallback();
 
 				assert.strictEqual(myWidget.style.direction, "rtl", "style.direction");
-				assert(myWidget.hasClass("d-rtl"), "has d-rtl class");
+				assert(myWidget.classList.contains("d-rtl"), "has d-rtl class");
 
 				myWidget.dir = "ltr";
 				myWidget.deliver();
 				assert.strictEqual(myWidget.style.direction, "ltr", "style.direction 2");
-				assert.isFalse(myWidget.hasClass("d-rtl"), "doesn't have d-rtl class 1");
+				assert.isFalse(myWidget.classList.contains("d-rtl"), "doesn't have d-rtl class 1");
 
 				var bodyOriginalDir = window.getComputedStyle(document.body).direction;
 				try {
@@ -186,7 +186,7 @@ define([
 					myWidget.dir = "";
 					myWidget.deliver();
 					assert.strictEqual(myWidget.style.direction, "", "style.direction 3");
-					assert(myWidget.hasClass("d-rtl"), "has d-rtl class 2");
+					assert(myWidget.classList.contains("d-rtl"), "has d-rtl class 2");
 				} finally {
 					// Revert changes made to body.dir.   Should be able to just say dir = "" but due to
 					// apparent bugs in Safari 7 (used during saucelabs testing), that leaves the browser
@@ -201,7 +201,7 @@ define([
 				setTimeout(this.async().callback(function () {
 					var declarative = document.getElementById("dirTest");
 					assert.strictEqual(declarative.style.direction, "rtl", "style.direction");
-					assert(declarative.hasClass("d-rtl"), "has d-rtl class");
+					assert(declarative.classList.contains("d-rtl"), "has d-rtl class");
 				}), 0);
 			}
 		},
@@ -225,7 +225,7 @@ define([
 			container.appendChild(myWidget);
 			myWidget.connectedCallback();
 
-			assert(myWidget.hasClass("base2"), "baseClass is base2");
+			assert(myWidget.classList.contains("base2"), "baseClass is base2");
 
 			// Then test that baseClass specified as widget parameter gets set
 			var myWidgetCustom = new TestWidget();
@@ -234,7 +234,7 @@ define([
 			myWidgetCustom.connectedCallback();
 			myWidgetCustom.deliver();
 
-			assert(myWidgetCustom.hasClass("customBase"), "baseClass is customBase");
+			assert(myWidgetCustom.classList.contains("customBase"), "baseClass is customBase");
 		},
 
 		placeAt: {
@@ -420,11 +420,11 @@ define([
 
 			var w = new MyWidget();
 			w.addClass("foo bar");
-			assert.isTrue(w.hasClass("foo"), "should contain foo in the classList");
-			assert.isTrue(w.hasClass("bar"), "should contain bar in the classList");
+			assert.isTrue(w.classList.contains("foo"), "should contain foo in the classList");
+			assert.isTrue(w.classList.contains("bar"), "should contain bar in the classList");
 
 			w.addClass("another");
-			assert.isTrue(w.hasClass("another"), "should contain another in the classList");
+			assert.isTrue(w.classList.contains("another"), "should contain another in the classList");
 		},
 
 		"removeClass": function () {
@@ -436,17 +436,17 @@ define([
 
 			var w = new MyWidget();
 			w.addClass("foo bar another");
-			assert.isTrue(w.hasClass("foo"), "should contain foo in the classList");
-			assert.isTrue(w.hasClass("bar"), "should contain bar in the classList");
-			assert.isTrue(w.hasClass("another"), "should contain another in the classList");
+			assert.isTrue(w.classList.contains("foo"), "should contain foo in the classList");
+			assert.isTrue(w.classList.contains("bar"), "should contain bar in the classList");
+			assert.isTrue(w.classList.contains("another"), "should contain another in the classList");
 
 			w.removeClass("foo bar");
-			assert.isFalse(w.hasClass("foo"), "should not contain foo in the classList");
-			assert.isFalse(w.hasClass("bar"), "should not contain bar in the classList");
-			assert.isTrue(w.hasClass("another"), "should contain another in the classList");
+			assert.isFalse(w.classList.contains("foo"), "should not contain foo in the classList");
+			assert.isFalse(w.classList.contains("bar"), "should not contain bar in the classList");
+			assert.isTrue(w.classList.contains("another"), "should contain another in the classList");
 
 			w.removeClass("another");
-			assert.isFalse(w.hasClass("another"), "should not contain another in the classList");
+			assert.isFalse(w.classList.contains("another"), "should not contain another in the classList");
 		},
 
 		"toggleClass": function () {
@@ -458,22 +458,22 @@ define([
 
 			var w = new MyWidget();
 			w.addClass("foo bar");
-			assert.isTrue(w.hasClass("foo"), "should contain foo in the classList");
-			assert.isTrue(w.hasClass("bar"), "should contain bar in the classList");
+			assert.isTrue(w.classList.contains("foo"), "should contain foo in the classList");
+			assert.isTrue(w.classList.contains("bar"), "should contain bar in the classList");
 
 			w.toggleClass("foo");
-			assert.isFalse(w.hasClass("foo"), "should not contain foo in the classList");
-			assert.isTrue(w.hasClass("bar"), "should contain bar in the classList");
+			assert.isFalse(w.classList.contains("foo"), "should not contain foo in the classList");
+			assert.isTrue(w.classList.contains("bar"), "should contain bar in the classList");
 
 			w.toggleClass("foo bar");
-			assert.isTrue(w.hasClass("foo"), "should contain foo in the classList");
-			assert.isFalse(w.hasClass("bar"), "should not contain bar in the classList");
+			assert.isTrue(w.classList.contains("foo"), "should contain foo in the classList");
+			assert.isFalse(w.classList.contains("bar"), "should not contain bar in the classList");
 
 			w.toggleClass("another", false);
-			assert.isFalse(w.hasClass("another"), "should not contain another in the classList");
+			assert.isFalse(w.classList.contains("another"), "should not contain another in the classList");
 
 			w.toggleClass("another", true);
-			assert.isTrue(w.hasClass("another"), "should contain another in the classList");
+			assert.isTrue(w.classList.contains("another"), "should contain another in the classList");
 		},
 
 		teardown: function () {
