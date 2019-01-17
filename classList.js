@@ -35,9 +35,9 @@ define([], function () {
 		 * @param {string} value Single or space-separated string representing the classes to be added.
 		 */
 		addClass: function (node, value) {
-			if (value) {
-				node.classList.add.apply(node.classList, this._getValues(value));
-			}
+			this._getValues(value).forEach(function (v) {
+				node.classList.add(v);
+			});
 		},
 
 		/**
@@ -49,9 +49,9 @@ define([], function () {
 		 *		string representing the classes to be removed.
 		 */
 		removeClass: function (node, value) {
-			if (value) {
-				node.classList.remove.apply(node.classList, this._getValues(value));
-			}
+			this._getValues(value).forEach(function (v) {
+				node.classList.remove(v);
+			});
 		},
 
 		/**
