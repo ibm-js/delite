@@ -5,6 +5,25 @@
 define([], function () {
 
 	var classList = /** @lends module:delite/classList */ {
+
+		/**
+		 * Execute a classList method a given node.
+		 *
+		 * @param {Element} node The node.
+		 * @param {string} values Single or space-separated string representing the classes.
+		 * @param {string} method The method. Should be one of "add", "remove" or "toggle".
+		 */
+		process: function (node, values, method) {
+			if (values) {
+				values = values.trim();
+			}
+			if (values) {
+				values.split(/\s+/).forEach(function (v) {
+					node.classList[method](v);
+				});
+			}
+		},
+
 		/**
 		 * Toggle one or multiple classes helper method.
 		 *
@@ -13,19 +32,7 @@ define([], function () {
 		 * @param {boolean} force A boolean value to determine whether the class should be added or removed.
 		 */
 		toggleClass: function (node, value, force) {
-			if (force === true) {
-				classList.addClass(node, value);
-			}
-			else if (force === false) {
-				classList.removeClass(node, value);
-			}
-			else {
-				var method;
-				this._getValues(value).forEach(function (v) {
-					method = classList.hasClass(node, v) ? "removeClass" : "addClass";
-					classList[method](node, v);
-				}, this);
-			}
+			this.process(node, value, force ? "add" : force === false ? "remove" : "toggle");
 		},
 
 		/**
@@ -35,9 +42,7 @@ define([], function () {
 		 * @param {string} value Single or space-separated string representing the classes to be added.
 		 */
 		addClass: function (node, value) {
-			this._getValues(value).forEach(function (v) {
-				node.classList.add(v);
-			});
+			this.process(node, value, "add");
 		},
 
 		/**
@@ -49,9 +54,7 @@ define([], function () {
 		 *		string representing the classes to be removed.
 		 */
 		removeClass: function (node, value) {
-			this._getValues(value).forEach(function (v) {
-				node.classList.remove(v);
-			});
+			this.process(node, value, "remove");
 		},
 
 		/**
@@ -63,21 +66,6 @@ define([], function () {
 		 */
 		hasClass: function (node, value) {
 			return node.classList.contains(value);
-		},
-
-		/**
-		 * Get value as a list and handles a space-separated string.
-		 *
-		 * @param {string} value
-		 *		Single or space-separated string representing the classes.
-		 * @returns {string[]} A single entry list or a list of string values if value is space-separated.
-		 */
-		_getValues: function (value) {
-			if (value) {
-				value = value.trim();
-			}
-
-			return value ? value.split(/\s+/) : [];
 		}
 	};
 
