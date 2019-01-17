@@ -357,10 +357,10 @@ define([
 		/**
 		 * Toggle class helper method.
 		 *
-		 * @param {String} value Single or space-separated string representing the classes to toggled.
-		 * @param {Boolean} [force]
+		 * @param {string} value Single or space-separated string representing the classes to toggled.
+		 * @param {boolean} [force]
 		 *		If force evaluates to true, add the specified class name, and if it evaluates to false, remove it.
-		 * @returns {Widget} This instance.
+		 * @returns {module:delite/Widget} This widget, for chaining.
 		 */
 		toggleClass: function (value, force) {
 			classList.toggleClass(this, value, force);
@@ -371,8 +371,8 @@ define([
 		 * Adds the specified class values.
 		 * If these classes already exist in the element's class attribute they are ignored.
 		 *
-		 * @param {String} value Single or space-separated string representing the classes to be added.
-		 * @returns {Widget} This instance.
+		 * @param {string} value Single or space-separated string representing the classes to be added.
+		 * @returns {module:delite/Widget} This widget, for chaining.
 		 */
 		addClass: function (value) {
 			classList.addClass(this, value);
@@ -382,8 +382,8 @@ define([
 		/**
 		 * Remove one or multiple classes.
 		 *
-		 * @param {String} value Single or space-separated string representing the classes to be removed.
-		 * @returns {Widget} This instance.
+		 * @param {string} value Single or space-separated string representing the classes to be removed.
+		 * @returns {module:delite/Widget} This widget, for chaining.
 		 */
 		removeClass: function (value) {
 			classList.removeClass(this, value);
@@ -393,8 +393,8 @@ define([
 		/**
 		 * Determine if this widget contains the given class.
 		 *
-		 * @param {String} value The class name to search for.
-		 * @returns {Boolean} True if this widget contains the given class. False otherwise.
+		 * @param {string} value The class name to search for.
+		 * @returns {boolean} True if this widget contains the given class. False otherwise.
 		 */
 		hasClass: function (className) {
 			return classList.hasClass(this, className);
