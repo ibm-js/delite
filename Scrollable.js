@@ -1,10 +1,11 @@
 /** @module delite/Scrollable */
 define([
 	"dcl/dcl",
-	"./Widget",
 	"./classList",
+	"./ScrollAnimation",
+	"./Widget",
 	"./theme!./Scrollable/themes/{{theme}}/Scrollable.css"
-], function (dcl, Widget, classList) {
+], function (dcl, classList, ScrollAnimation, Widget) {
 
 	/**
 	 * A mixin which adds scrolling capabilities to a widget.
@@ -84,13 +85,15 @@ define([
 			if ("scrollDirection" in oldVals) {
 				classList.toggleClass(this.scrollableNode,
 					"d-scrollable", this.scrollDirection !== "none");
-
 				classList.toggleClass(this.scrollableNode,
 					"d-scrollable-h", /^(both|horizontal)$/.test(this.scrollDirection));
-
 				classList.toggleClass(this.scrollableNode,
 					"d-scrollable-v", /^(both|vertical)$/.test(this.scrollDirection));
 			}
+		},
+
+		disconnectedCallback: function () {
+			this._stopAnimation();
 		},
 
 		/**
@@ -192,14 +195,45 @@ define([
 		 * Scrolls to the given position.
 		 * @param {Object} to - The scroll destination position. An object with w and/or y properties,
 		 * for example `{x: 0, y: -5}` or `{y: -29}`.
+		 * @param {number} [duration] - Duration of scrolling animation in milliseconds.
+		 * If 0 or unspecified, scrolls without animation.
 		 */
-		scrollTo: function (to) {
+		scrollTo: function (to, duration) {
 			var scrollableNode = this.scrollableNode;
-			if (to.x !== undefined) {
-				scrollableNode.scrollLeft = to.x;
+			this._stopAnimation();
+
+			if (!duration || duration <= 0) { // shortcut
+				if (to.x !== undefined) {
+					scrollableNode.scrollLeft = to.x;
+				}
+				if (to.y !== undefined) {
+					scrollableNode.scrollTop = to.y;
+				}
+			} else {
+				var from = {
+					x: to.x !== undefined ? scrollableNode.scrollLeft : undefined,
+					y: to.y !== undefined ? scrollableNode.scrollTop : undefined
+				};
+
+				this._animation = new ScrollAnimation(scrollableNode, {
+					from: from,
+					to: to,
+					duration: duration
+				});
+
+				this._animation.on("ended", function () {
+					this._animation = null;
+				}.bind(this), true);
 			}
-			if (to.y !== undefined) {
-				scrollableNode.scrollTop = to.y;
+		},
+
+		/**
+		 * Stops the scrolling animation if it is currently playing.
+		 * Does nothing otherwise.
+		 */
+		_stopAnimation: function () {
+			if (this._animation) {
+				this._animation.stop();
 			}
 		}
 	});
