@@ -357,13 +357,10 @@ define([
 		/**
 		 * Toggle class helper method.
 		 *
-		 * If the class exists then remove it and return false,
-		 * if not, then add it and return true.
-		 *
-		 * @param {String} value Single or space-separated string representing the classes to be added.
-		 * @param {Boolean} force
+		 * @param {String} value Single or space-separated string representing the classes to toggled.
+		 * @param {Boolean} [force]
 		 *		If force evaluates to true, add the specified class name, and if it evaluates to false, remove it.
-		 * @returns {Widget} This widget instance.
+		 * @returns {Widget} This instance.
 		 */
 		toggleClass: function (value, force) {
 			classList.toggleClass(this, value, force);
@@ -375,7 +372,7 @@ define([
 		 * If these classes already exist in the element's class attribute they are ignored.
 		 *
 		 * @param {String} value Single or space-separated string representing the classes to be added.
-		 * @returns {Widget} This widget instance.
+		 * @returns {Widget} This instance.
 		 */
 		addClass: function (value) {
 			classList.addClass(this, value);
@@ -386,7 +383,7 @@ define([
 		 * Remove one or multiple classes.
 		 *
 		 * @param {String} value Single or space-separated string representing the classes to be removed.
-		 * @returns {Widget} This widget instance.
+		 * @returns {Widget} This instance.
 		 */
 		removeClass: function (value) {
 			classList.removeClass(this, value);

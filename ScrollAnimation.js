@@ -6,7 +6,7 @@ define([
 	"use strict";
 
 	/**
-	 * A class which animate the scrolling on a given widget.
+	 * A class which animates the scrolling on a given widget.
 	 *
 	 * This class should be imported and a new instance should be created
 	 * for each animation.
@@ -33,7 +33,7 @@ define([
 		 * Constructor
 		 *
 		 * @param {Element} node The node that will scroll.
-		 * @param {object} options
+		 * @param {Object} options
 		 *		An object containing { to: { x: Number, y: Number }, duration: Number }
 		 */
 		constructor: function (node, options) {

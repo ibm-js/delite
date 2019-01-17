@@ -7,7 +7,7 @@ define([], function () {
 	var classList = /** @lends module:delite/classList */ {
 
 		/**
-		 * Execute a classList method a given node.
+		 * Execute a classList method on a given node.
 		 *
 		 * @param {Element} node The node.
 		 * @param {string} values Single or space-separated string representing the classes.
@@ -29,7 +29,7 @@ define([], function () {
 		 *
 		 * @param {HTMLElement} node The node.
 		 * @param {string} value Single or space-separated string representing the classes to be toggled.
-		 * @param {boolean} force A boolean value to determine whether the class should be added or removed.
+		 * @param {boolean} [force] A boolean value to determine whether the class should be added or removed.
 		 */
 		toggleClass: function (node, value, force) {
 			this.process(node, value, force ? "add" : force === false ? "remove" : "toggle");
