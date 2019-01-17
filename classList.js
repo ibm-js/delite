@@ -16,11 +16,12 @@ define([], function () {
 		process: function (node, values, method) {
 			if (values) {
 				values = values.trim();
-			}
-			if (values) {
-				values.split(/\s+/).forEach(function (v) {
-					node.classList[method](v);
-				});
+
+				if (values !== "") {
+					values.split(/\s+/).forEach(function (v) {
+						node.classList[method](v);
+					});
+				}
 			}
 		},
 
