@@ -33,7 +33,7 @@ define([
 		 * Constructor
 		 *
 		 * @param {Element} node The node that will scroll.
-		 * @param {Object} options
+		 * @param {object} options
 		 *		An object containing { to: { x: Number, y: Number }, duration: Number }
 		 */
 		constructor: function (node, options) {
@@ -92,11 +92,11 @@ define([
 	/**
 	 * Easing function: easeInOutQuad
 	 *
-	 * @param {Number} t The current time.
-	 * @param {Number} b The initial value.
-	 * @param {Number} c The target value.
-	 * @param {Number} d The duration.
-	 * @returns {Number} The interval between initial and target.
+	 * @param {number} t The current time.
+	 * @param {number} b The initial value.
+	 * @param {number} c The target value.
+	 * @param {number} d The duration.
+	 * @returns {number} The interval between initial and target.
 	 */
 	ScrollAnimation.easeInOutQuad = function (t, b, c, d) {
 		t /= d / 2;
