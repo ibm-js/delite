@@ -9,10 +9,8 @@ define([], function () {
 		 * Toggle one or multiple classes helper method.
 		 *
 		 * @param {HTMLElement} node The node.
-		 * @param {String|Function} value
-		 *		String or function that returns a single or space-separated
-		 *		string representing the classes to be toggled.
-		 * @param {Boolean} force
+		 * @param {string} value Single or space-separated string representing the classes to be toggled.
+		 * @param {boolean} force A boolean value to determine whether the class should be added or removed.
 		 */
 		toggleClass: function (node, value, force) {
 			if (force === true) {
@@ -23,7 +21,7 @@ define([], function () {
 			}
 			else {
 				var method;
-				this._getValues(node, value).forEach(function (v) {
+				this._getValues(value).forEach(function (v) {
 					method = classList.hasClass(node, v) ? "removeClass" : "addClass";
 					classList[method](node, v);
 				}, this);
@@ -33,37 +31,35 @@ define([], function () {
 		/**
 		 * Add one or multiple classes.
 		 *
-		 * @param {HTMLElement} node The node.
-		 * @param {String|Function} value
-		 *		String or function that returns a single or space-separated
-		 *		string representing the classes to be added.
+		 * @param {Element} node The node.
+		 * @param {string} value Single or space-separated string representing the classes to be added.
 		 */
 		addClass: function (node, value) {
 			if (value) {
-				node.classList.add.apply(node.classList, this._getValues(node, value));
+				node.classList.add.apply(node.classList, this._getValues(value));
 			}
 		},
 
 		/**
 		 * Remove one or multiple classes.
 		 *
-		 * @param {HTMLElement} node The node.
-		 * @param {String|Function} value
+		 * @param {Element} node The node.
+		 * @param {string|function} value
 		 *		String or function that returns a single or space-separated
 		 *		string representing the classes to be removed.
 		 */
 		removeClass: function (node, value) {
 			if (value) {
-				node.classList.remove.apply(node.classList, this._getValues(node, value));
+				node.classList.remove.apply(node.classList, this._getValues(value));
 			}
 		},
 
 		/**
 		 * Determine whether the node contains a given class.
 		 *
-		 * @param {HTMLElement} node The node.
-		 * @param {String|Function} value
-		 * @returns {Boolean} Return true if the node contains the given class. False otherwise.
+		 * @param {Element} node The node.
+		 * @param {string} value String representing the class to be verified.
+		 * @returns {boolean} Return true if the node contains the given class. False otherwise.
 		 */
 		hasClass: function (node, value) {
 			return node.classList.contains(value);
@@ -72,35 +68,16 @@ define([], function () {
 		/**
 		 * Get value as a list and handles a space-separated string.
 		 *
-		 * @param {Element} node
-		 * @param {String|Function} value
-		 *		String or function that returns a single or space-separated
-		 *		string representing the classes to be toggled.
-		 * @returns {Array} A single entry list or a list of values if value is space-separated.
+		 * @param {string} value
+		 *		Single or space-separated string representing the classes.
+		 * @returns {string[]} A single entry list or a list of string values if value is space-separated.
 		 */
-		_getValues: function (node, value) {
-			var values = [];
-
-			// If value is a function evaluate using node as the scope
-			if (typeof value === "function") {
-				value = value.apply(node);
+		_getValues: function (value) {
+			if (value) {
+				value = value.trim();
 			}
 
-			if (!value) {
-				return values;
-			}
-
-			value = value.toString().trim();
-
-			if (value !== "") {
-				values.push(value);
-
-				if (value.indexOf(" ") >= 0) {
-					values = value.split(" ");
-				}
-			}
-
-			return values;
+			return value ? value.split(/\s+/) : [];
 		}
 	};
 

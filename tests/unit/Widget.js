@@ -425,11 +425,6 @@ define([
 
 			w.addClass("another");
 			assert.isTrue(w.hasClass("another"), "should contain another in the classList");
-
-			w.addClass(function () {
-				return "test";
-			});
-			assert.isTrue(w.hasClass("test"), "should contain test in the classList");
 		},
 
 		"removeClass": function () {
@@ -452,13 +447,6 @@ define([
 
 			w.removeClass("another");
 			assert.isFalse(w.hasClass("another"), "should not contain another in the classList");
-
-			w.addClass("test");
-			assert.isTrue(w.hasClass("test"), "should contain test in the classList");
-			w.removeClass(function () {
-				return "test";
-			});
-			assert.isFalse(w.hasClass("test"), "should not contain test in the classList");
 		},
 
 		"toggleClass": function () {
@@ -486,11 +474,6 @@ define([
 
 			w.toggleClass("another", true);
 			assert.isTrue(w.hasClass("another"), "should contain another in the classList");
-
-			w.toggleClass(function () {
-				return "test";
-			}, true);
-			assert.isTrue(w.hasClass("test"), "should contain test in the classList");
 		},
 
 		teardown: function () {
