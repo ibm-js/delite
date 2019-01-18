@@ -71,7 +71,7 @@ define([
 				myWidget.setAttribute("foo", "bar 2");
 				myWidget.setAttribute("aria-label", "label 2");
 				assert.isUndefined(myWidget.attributes["aria-label"], "root has foo but not aria-label");
-				assert.strictEqual(myWidget.attributes["foo"].value, "bar 2", "root has foo but not aria-label");
+				assert.strictEqual(myWidget.attributes.foo.value, "bar 2", "root has foo but not aria-label");
 				assert.strictEqual(myWidget.focusNode.getAttribute("aria-label"), "label 2",
 					"aria-label added to focusNode");
 			},
