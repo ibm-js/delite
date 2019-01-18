@@ -128,7 +128,7 @@ define([
 			},
 
 			"#inputID": function () {
-				var myWidget = new FormWidgetTest({ id: "widget-id"});
+				var myWidget = new FormWidgetTest({ id: "widget-id" });
 
 				myWidget.deliver();
 
