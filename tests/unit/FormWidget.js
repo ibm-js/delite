@@ -1,3 +1,4 @@
+/* eslint-disable quote-props */
 define([
 	"intern!object",
 	"intern/chai!assert",
@@ -49,7 +50,7 @@ define([
 				var myWidget = container.firstChild;
 
 				// Check that aria-label was moved
-				assert.isUndefined(myWidget.attributes['aria-label'], "aria-label removed from root");
+				assert.isUndefined(myWidget.attributes["aria-label"], "aria-label removed from root");
 				assert.strictEqual(myWidget.focusNode.getAttribute("aria-label"), "test label",
 					"aria-label added to focusNode");
 
@@ -69,7 +70,8 @@ define([
 
 				myWidget.setAttribute("foo", "bar 2");
 				myWidget.setAttribute("aria-label", "label 2");
-				assert.isUndefined(myWidget.attributes['aria-label'], "root has foo but not aria-label");
+				assert.isUndefined(myWidget.attributes["aria-label"], "root has foo but not aria-label");
+				assert.strictEqual(myWidget.attributes["foo"].value, "bar 2", "root has foo but not aria-label");
 				assert.strictEqual(myWidget.focusNode.getAttribute("aria-label"), "label 2",
 					"aria-label added to focusNode");
 			},
@@ -84,7 +86,7 @@ define([
 
 				assert.strictEqual(myWidget.moveAriaAttributes, false, "moveAriaAttributes should be false");
 				assert.strictEqual(myWidget.attributes["aria-label"].nodeValue,
-					"test", "aria-label should be on the root and be equals test");
+					"test", "aria-label should not be on the root and be equals test");
 			},
 
 			"#disabled": function () {
@@ -126,7 +128,7 @@ define([
 			},
 
 			"#inputID": function () {
-				var myWidget = new FormWidgetTest({id : "widget-id"});
+				var myWidget = new FormWidgetTest({ id: "widget-id"});
 
 				myWidget.deliver();
 
@@ -222,7 +224,8 @@ define([
 				assert.isFalse(HTMLElement.prototype.hasAttribute.call(myWidget, "tabindex"), "no tabIndex on root 1");
 
 				// In this case we don't move aria-label because the subnodes may already have their own labels.
-				assert.strictEqual(myWidget.attributes['aria-label'].value, "test label", "aria-label etc. still on root");
+				assert.strictEqual(myWidget.attributes["aria-label"].value,
+					"test label", "aria-label etc. still on root");
 			},
 
 			"#disabled": function () {
