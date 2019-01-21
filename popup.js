@@ -673,24 +673,23 @@ define([
 		 * @param widget
 		 */
 		moveFullyIntoView: function (widget) {
-			var win = widget.ownerDocument.defaultView,
-				viewport = Viewport.getEffectiveBox(),
+			var viewport = Viewport.getEffectiveBox(),
 				wrapper = this.createWrapper(widget),
 				bcr = wrapper.getBoundingClientRect(),
 				curTop = parseFloat(wrapper.style.top),
 				curLeft = parseFloat(wrapper.style.left),
-				maxTop = Math.max(viewport.h - bcr.height, 0),
-				maxLeft = Math.max(viewport.w - bcr.width, 0);
+				minTop = viewport.t,
+				minLeft = viewport.l,
+				maxTop = Math.max(viewport.t + viewport.h - bcr.height, 0),
+				maxLeft = Math.max(viewport.l + viewport.w - bcr.width, 0);
 
-			if (curTop > maxTop || curLeft > maxLeft) {
-				var top = Math.min(curTop, maxTop),
-					left = Math.min(curLeft, maxLeft);
+			if (curTop < 0 || curTop > maxTop || curLeft < minLeft || curLeft > maxLeft) {
+				var top = Math.min(Math.max(curTop, minTop), maxTop),
+					left = Math.min(Math.max(curLeft, minLeft), maxLeft);
+				wrapper.style.top = top  + "px";
+				wrapper.style.left = left + "px";
 
-				// Adjust for document scroll.  (Would be nicer if centered and dragged popups were position:fixed.)
-				wrapper.style.top = (top + win.pageYOffset) + "px";
-				wrapper.style.left = (left + win.pageXOffset) + "px";
-
-				widget.emit("popup-after-position");
+				wrapper.emit("popup-after-position");
 			}
 		},
 
