@@ -12,6 +12,11 @@ define([
 	return dcl(Widget, /** @lends module:delite/Dialog# */ {
 		declaredClass: "delite/Dialog",
 
+		/**
+		 * Whether or not dialog is modal.
+		 */
+		modal: true,
+
 		constructor: function () {
 			this.on("keydown", this._dialogKeyDownHandler.bind(this));
 		},
@@ -37,7 +42,7 @@ define([
 		},
 
 		_dialogKeyDownHandler: function (/*Event*/ evt) {
-			if (evt.key === "Tab") {
+			if (this.modal && evt.key === "Tab") {
 				this._getFocusItems(this);
 				var node = evt.target;
 				if (this._firstFocusItem === this._lastFocusItem) {
