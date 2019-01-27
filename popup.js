@@ -689,7 +689,7 @@ define([
 				wrapper.style.top = top  + "px";
 				wrapper.style.left = left + "px";
 
-				wrapper.emit("popup-after-position");
+				widget.emit("popup-after-position");
 			}
 		},
 
