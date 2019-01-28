@@ -639,7 +639,8 @@ define([
 				wrapper = widget._popupWrapper,
 				around = args.around,
 				orient = this._getOrient(args),
-				ltr = args.parent ? args.parent.effectiveDir !== "rtl" : isDocLtr(widget.ownerDocument);
+				ltr = args.parent ? args.parent.effectiveDir !== "rtl" : isDocLtr(widget.ownerDocument),
+				position;
 
 			// position the wrapper node
 			if (orient[0] === "center") {
@@ -648,7 +649,7 @@ define([
 					widget.emit("popup-after-position");
 				}
 			} else {
-				var position = around ?
+				position = around ?
 					place.around(wrapper, around, orient, ltr) :
 					place.at(wrapper, args, orient === "R" ? ["TR", "BR", "TL", "BL"] : ["TL", "BL", "TR", "BR"],
 						args.padding);
@@ -657,15 +658,17 @@ define([
 				var event = Object.create(position);
 				event.around = around;
 				widget.emit("popup-after-position", event);
-
-				return position;
 			}
 
 			// Setup underlay for popups that want one.  By default it's done for centered popups,
 			// but args can explicitly specify underlay=true or underlay=false.
 			if ("underlay" in args ? args.underlay : (orient[0] === "center")) {
 				DialogUnderlay.showFor(wrapper);
+			} else {
+				DialogUnderlay.hideFor(wrapper);
 			}
+
+			return position;
 		},
 
 		/**
