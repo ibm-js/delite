@@ -99,8 +99,11 @@ define([
 				}
 
 				lastPointerDownTime = (new Date()).getTime();
+				_this._activateHandler(evt.target, "mouse");
 			}
 
+			// Track click events too because webdriver doesn't emit pointerdown events
+			// on some (or all?) platforms.
 			function clickHandler(evt) {
 				_this._activateHandler(evt.target, "mouse");
 			}
