@@ -31,6 +31,12 @@ define([
 		constructor: dcl.after(function () {
 			// Automatically append the underlay to <body> on creation.
 			this.ownerDocument.body.appendChild(this);
+
+			// Prevent scrolling content behind the dialog.
+			// See https://stackoverflow.com/questions/7768269/ipad-safari-disable-scrolling-and-bounce-effect.
+			this.addEventListener("touchmove", function (evt) {
+				evt.preventDefault();
+			}, { passive: false });
 		}),
 
 		connectedCallback: function () {
