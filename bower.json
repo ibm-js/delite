@@ -12,9 +12,9 @@
 		"custom-elements": "https://github.com/webcomponents/custom-elements/archive/v1.1.2.zip"
 	},
 	"devDependencies": {
-		"dojo": ">=1.9.1",
+		"dojo": "^1.9.1",
 		"dstore": "1.1.x",
-		"dijit": ">=1.9.1"
+		"dijit": "^1.9.1"
 	},
 	"keywords": [
 		"web-components",
