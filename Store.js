@@ -329,7 +329,10 @@ define([
 		 * @private
 		 */
 		_itemUpdated: function (event) {
-			if (event.index === undefined) {
+			if (event.previousIndex === undefined && event.index === undefined) {
+				// Workaround SitePen/dstore#188, can be removed when dstore 1.1.3 (or 1.2.0) released.
+				return;
+			} else if (event.index === undefined) {
 				// this is actually a remove
 				this.itemRemoved(event.previousIndex, this.renderItems);
 			} else if (event.previousIndex === undefined) {
