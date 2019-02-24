@@ -97,6 +97,10 @@ define([
 		return box;
 	};
 
+	// Catch viewport resizes due to rotation, browser window size change, or the virtual keyboard
+	// popping up/down.
+	// Use setTimeout() to debounce and throttle notifications.
+
 	var oldEffectiveSize = Viewport.getEffectiveBox(),
 		oldEffectiveScroll = oldEffectiveSize;
 
@@ -110,6 +114,7 @@ define([
 			return false;
 		}
 	}
+
 	function checkForScroll() {
 		var newBox = Viewport.getEffectiveBox();
 		if (newBox.t !== oldEffectiveScroll.t || newBox.l !== oldEffectiveScroll.l) {
@@ -121,14 +126,21 @@ define([
 		}
 	}
 
-	// Poll for viewport resizes due to rotation, browser window size change, or the virtual keyboard
-	// popping up/down.
-	function poll() {
-		var resized = checkForResize(),
-			scrolled = checkForScroll();
-		setTimeout(poll, resized || scrolled ? 10 : 50);
+	var resizeTimer;
+	function scheduleCheck() {
+		if (!resizeTimer) {
+			resizeTimer = setTimeout(function () {
+				checkForResize();
+				checkForScroll();
+				resizeTimer = null;
+			}, 10);
+		}
 	}
-	poll();
+
+	window.addEventListener("resize", scheduleCheck);
+	window.addEventListener("orientationchange", scheduleCheck);
+	window.addEventListener("scroll", scheduleCheck);
+	activationTracker.on("active-stack", scheduleCheck);
 
 	return Viewport;
 });

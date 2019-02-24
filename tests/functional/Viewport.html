@@ -15,14 +15,14 @@
 		], function (Viewport) {
 			var initialBox = Viewport.getEffectiveBox(document);
 
-			size.innerHTML = "height: " + initialBox.h + ", width: " + initialBox.w;
+			size.textContent = "height: " + initialBox.h + ", width: " + initialBox.w;
 			Viewport.on("resize", function (newBox) {
-				size.innerHTML = "height: " + newBox.h + ", width: " + newBox.w;
+				size.textContent = "height: " + newBox.h + ", width: " + newBox.w;
 			});
 
-			scrollpos.innerHTML = "scroll top: " + initialBox.t + ", left: " + initialBox.l;
+			scrollpos.textContent = "scroll top: " + initialBox.t + ", left: " + initialBox.l;
 			Viewport.on("scroll", function (newBox) {
-				scrollpos.innerHTML = "scroll top: " + newBox.t + ", left: " + newBox.l;
+				scrollpos.textContent = "scroll top: " + newBox.t + ", left: " + newBox.l;
 			});
 
 			// Set global variable to signal that the test page is ready
