@@ -171,34 +171,16 @@ define([
 		_idGen: 1,
 
 		constructor: function () {
+			// Monitor resize of the viewport and scrolling of any node (including the document itself).
+			// Any of these events could require repositioning and resizing.
 			Viewport.on("resize", this._repositionAll.bind(this));
-			Viewport.on("scroll", this._viewportScrollHandler.bind(this));
+			document.addEventListener("scroll", this._repositionAll.bind(this), true);
 		},
 
 		/**
-		 * We check for viewport scroll above, but this code checks for scrolling an inner `<div>`,
-		 * thus moving the anchor node.  Using the scrollbar will close all the popups on the screen, but not
-		 * if you scroll via a mousewheel or a mousepad double-finger gesture.
-		 * @private
-		 */
-		_checkScroll: function () {
-			if (this._firstAroundNode) {	// guard for when clearTimeout() on IE doesn't work
-				var oldPos = this._firstAroundPosition,
-					newPos = place.position(this._firstAroundNode),
-					dx = newPos.x - oldPos.x,
-					dy = newPos.y - oldPos.y;
-
-				if (dx || dy) {
-					this._firstAroundPosition = newPos;
-					this._repositionAll();
-				}
-
-				this._aroundMoveListener = setTimeout(this._checkScroll.bind(this), dx || dy ? 10 : 50);
-			}
-		},
-
-		/**
-		 * Reposition all the popups. It may need to be called when popup's content changes.
+		 * Reposition all the popups. It may need to be called when popup's content changes,
+		 * when the anchornode has moved, or when the viewport has been resized.
+		 * Handles both centered popups and dropdowns.
 		 * @private
 		 * @fires module:delite/popup#delite-repositioned
 		 */
@@ -207,19 +189,6 @@ define([
 				this._size(args);
 				this._position(args);
 				on.emit(args.popup, "delite-repositioned", {args: args});
-			}, this);
-		},
-
-		/**
-		 * Reposition [and resize] all the popups due to viewport scroll.  The main purpose of the function is to handle
-		 * automatic scrolling on mobile from the keyboard popping up or when the browser tries to scroll the
-		 * focused element to the upper part of the screen.
-		 * @private
-		 */
-		_viewportScrollHandler: function () {
-			this._stack.forEach(function (args) {
-				this._size(args);
-				this._position(args);
 			}, this);
 		},
 
@@ -421,13 +390,6 @@ define([
 			wrapper.className = wrapperClasses.join(" ");
 			wrapper.style.zIndex = this._beginZIndex + stack.length * 2;   // *2 leaves z-index slot for DialogUnderlay
 			wrapper._popupParent = args.parent ? args.parent : null;
-
-			if (stack.length === 0 && around) {
-				// First element on stack. Save position of aroundNode and setup listener for changes to that position.
-				this._firstAroundNode = around;
-				this._firstAroundPosition = place.position(around);
-				this._aroundMoveListener = setTimeout(this._checkScroll.bind(this), 50);
-			}
 
 			if (has("config-bgIframe") && !widget.bgIframe) {
 				// setting widget.bgIframe triggers cleanup in Widget.destroy()
@@ -734,11 +696,6 @@ define([
 				if (onClose) {
 					onClose();
 				}
-			}
-
-			if (stack.length === 0 && this._aroundMoveListener) {
-				clearTimeout(this._aroundMoveListener);
-				this._firstAroundNode = this._firstAroundPosition = this._aroundMoveListener = null;
 			}
 		}
 	});
