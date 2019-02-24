@@ -4,10 +4,29 @@ define([
 	"delite/on",
 	"delite/popup",
 	"delite/register",
-	"delite/Widget"
-], function (registerSuite, assert, on, popup, register, Widget) {
+	"delite/Widget",
+	"delite/Viewport"
+], function (
+	registerSuite,
+	assert,
+	on,
+	popup,
+	register,
+	Widget,
+	Viewport
+) {
 
 	var myMenu, anchorNode;
+
+	function isVisible(element) {
+		var elRect = element.getBoundingClientRect(),
+			elTop = elRect.top,
+			elBottom = elRect.bottom;
+
+		// Check if element out of viewport.
+		var viewport = Viewport.getEffectiveBox();
+		return elBottom >= 0 && elTop < viewport.h;
+	}
 
 	registerSuite({
 		name: "popup",
@@ -16,7 +35,8 @@ define([
 			var Menu = register("my-menu", [HTMLElement, Widget], {
 				render: function () {
 					this.style.cssText = "display: block; position: absolute; width: 75px;";
-					this.innerHTML = "I'm a drop down, wider and taller than the around nodes I'm placed next to.";
+					this.innerHTML =
+						"<div>I'm a drop down, wider and taller than the around nodes I'm placed next to.</div>";
 				}
 			});
 			myMenu = new Menu();
@@ -25,10 +45,9 @@ define([
 
 		around: {
 			setup: function () {
-				// These around nodes are meant to be used with the document scrolled down 100px
 				anchorNode = document.createElement("div");
 				anchorNode.style.cssText =
-					"position: absolute; width: 20px; height: 20px; background: yellow; top: 100px; left: 50%;";
+					"position: absolute; width: 20px; height: 20px; background: yellow; top: 0; left: 0;";
 				document.body.appendChild(anchorNode);
 			},
 
@@ -48,6 +67,8 @@ define([
 				});
 
 				// Open popup and check that correct events were fired.
+				window.scrollTo(0, 0);
+				assert(isVisible(anchorNode), "anchor visible before popup.open()");
 				popup.open({
 					parent: anchorNode,
 					popup: myMenu,
@@ -65,20 +86,30 @@ define([
 				});
 				assert.strictEqual(openEvents, 1, "popup-after-show");
 				assert.strictEqual(positionEvents, 1, "popup-after-position");
+				assert(isVisible(myMenu), "menu visible #1");
 
-				myMenu.innerHTML += "<br>Another line.";
+				var dfd = this.async();
 
-				setTimeout(this.async().callback(function () {
-					// Test that the popup is repositioned when its size changes.
-					// For some reason it might get a few reposition calls.  Don't fail the test for that.
-					assert.strictEqual(openEvents, 1, "popup-after-show didn't fire");
-					assert(positionEvents >= 2 && positionEvents <= 3,
-						"popup-after-position, positionEvents = " + positionEvents);
+				setTimeout(dfd.rejectOnError(function () {
+					assert(isVisible(myMenu), "menu visible #2");
 
-					// Close popup and check that correct event was fired.
-					popup.close(myMenu);
-					assert.strictEqual(closeEvents, 1, "popup-before-hide");
-				}, 50));
+					var div = document.createElement("div");
+					div.textContent = "Another line.";
+					myMenu.appendChild(div);
+
+					setTimeout(dfd.callback(function () {
+						// Test that the popup is repositioned when its size changes.
+						// For some reason it might get a few reposition calls.  Don't fail the test for that.
+						assert(isVisible(myMenu), "menu visible #3");
+						assert.strictEqual(openEvents, 1, "popup-after-show didn't fire");
+						assert(positionEvents >= 2 && positionEvents <= 5,
+							"popup-after-position, positionEvents = " + positionEvents);
+
+						// Close popup and check that correct event was fired.
+						popup.close(myMenu);
+						assert.strictEqual(closeEvents, 1, "popup-before-hide");
+					}), 50);
+				}), 50);
 			}
 		},
 

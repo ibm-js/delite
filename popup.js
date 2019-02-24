@@ -5,6 +5,7 @@
 define([
 	"dcl/dcl",
 	"dojo/window",
+	"resize-observer-polyfill/dist/ResizeObserver",
 	"./BackgroundIframe",
 	"./DialogUnderlay",
 	"./features", // has("config-bgIframe")
@@ -15,6 +16,7 @@ define([
 ], function (
 	dcl,
 	win,
+	ResizeObserver,
 	BackgroundIframe,
 	DialogUnderlay,
 	has,
@@ -514,62 +516,39 @@ define([
 
 			// Handle size changes due to added/removed DOM or changed attributes,
 			// including changes that happen gradually due to animations.
-			var self = this,
-				oldClassName = widget.className,
-				oldHeight = widget.offsetHeight,
-				oldWidth = widget.offsetWidth;
-
-			function resizeIfNecessary() {
+			var oldClassName = widget.className;
+			var classChangeObserver = new MutationObserver(function () {
+				// If class has changed, then recompute maxHeight etc.
 				if (widget.className !== oldClassName) {
-					self._size(args);
+					this._size(args);
 					oldClassName = widget.className;
 				}
-			}
 
-			function repositionIfNecessary() {
+				// Ignore notifications due to what happened in this method.
+				classChangeObserver.takeRecords();
+			}.bind(this));
+			classChangeObserver.observe(widget, {
+				attributes: true
+			});
+
+			var oldHeight = widget.offsetHeight,
+				oldWidth = widget.offsetWidth;
+			var sizeChangeObserver = new ResizeObserver(function () {
 				var newHeight = widget.offsetHeight,
 					newWidth = widget.offsetWidth;
 
 				if (newHeight !== oldHeight || newWidth !== oldWidth) {
 					oldHeight = newHeight;
 					oldWidth = newWidth;
-					self._repositionAll();
+					this._repositionAll();
 				}
-			}
-
-			var observer = new MutationObserver(function () {
-				// If class has changed, then recompute maxHeight etc.
-				resizeIfNecessary();
-
-				// Reposition immediately to avoid 50ms display of incorrectly positioned/sized popup.
-				repositionIfNecessary();
-
-				// Ignore notifications due to what happened in this method.
-				observer.takeRecords();
-			});
-			observer.observe(widget, {
-				attributes: true,
-				characterData: true,
-				childList: true,
-				subtree: true
-			});
-
-			var resizeTimer;
-			function startRepositionPolling() {
-				resizeTimer = setTimeout(function () {
-					repositionIfNecessary();
-					startRepositionPolling();
-				}, 25);
-			}
-			startRepositionPolling();
+			}.bind(this));
+			sizeChangeObserver.observe(widget);
 
 			handlers.push({
 				remove: function () {
-					observer.disconnect();
-					if (resizeTimer) {
-						clearTimeout(resizeTimer);
-						resizeTimer = null;
-					}
+					classChangeObserver.disconnect();
+					sizeChangeObserver.disconnect();
 				}
 			});
 

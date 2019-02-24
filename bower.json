@@ -9,6 +9,7 @@
 		"requirejs-domready": "2.0.x",
 		"requirejs-dplugins": "0.6.x",
 		"requirejs-text": "2.0.x",
+		"resize-observer-polyfill": "1.5.x",
 		"custom-elements": "https://github.com/webcomponents/custom-elements/archive/v1.1.2.zip"
 	},
 	"devDependencies": {
