@@ -1,9 +1,13 @@
 define([
-	"intern!object",
-	"intern/chai!assert",
 	"delite/register",
 	"delite/Selection"
-], function (registerSuite, assert, register, Selection) {
+], function (
+	register,
+	Selection
+) {
+	var registerSuite = intern.getPlugin("interface.object").registerSuite;
+	var assert = intern.getPlugin("chai").assert;
+
 	var C = register("test-selection", [HTMLElement, Selection], {
 		updateRenderers: function () {
 		},
@@ -12,9 +16,7 @@ define([
 		}
 	});
 
-	registerSuite({
-		name: "Selection",
-
+	registerSuite("Selection", {
 		setGet: function () {
 			var o = new C();
 			o.selectedItem = "1";

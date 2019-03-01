@@ -242,14 +242,14 @@
 				var as = fs.map(function(elem){ return elem.id || elem.tagName.toLowerCase(); }).join(", ");
 				console.log("New active stack: " + as);
 				activeStack.value = as;
-				activeStackChangeNotifications.value = +activeStackChangeNotifications.value + 1;
+				activeStackChanges.value = +activeStackChanges.value + 1;
 			});
 
 			activationTracker.on("hover-stack", function (fs) {
 				var hs = fs.map(function(elem){ return elem.id || elem.tagName.toLowerCase(); }).join(", ");
 				console.log("New hover stack: " + hs);
 				hoverStack.value = hs;
-				hoverStackChangeNotifications.value = +hoverStackChangeNotifications.value + 1;
+				hoverStackChanges.value = +hoverStackChanges.value + 1;
 			});
 
 			register.deliver();
@@ -283,9 +283,9 @@
 		function clearLog() {
 			setTimeout(function () {
 				activeStack.value = "";
-				activeStackChangeNotifications.value = 0;
+				activeStackChanges.value = 0;
 				hoverStack.value = "";
-				hoverStackChangeNotifications.value = 0;
+				hoverStackChanges.value = 0;
 				log.value = "";
 			}, 50);
 		}
@@ -299,16 +299,16 @@
 	<label for="activeStack">Active stack:</label>
 	<input id="activeStack" style="width: 100%;" disabled autocomplete="off">
 
-	<label for="activeStackChangeNotifications">Active stack notifications:</label>
-	<input id="activeStackChangeNotifications" disabled value="0">
+	<label for="activeStackChanges">Active stack notifications:</label>
+	<input id="activeStackChanges" disabled value="0">
 
 	<br>
 	
 	<label for="hoverStack">Hover stack:</label>
 	<input id="hoverStack" style="width: 100%;" disabled autocomplete="off">
 
-	<label for="hoverStackChangeNotifications">Hover stack notifications:</label>
-	<input id="hoverStackChangeNotifications" disabled value="0">
+	<label for="hoverStackChanges">Hover stack notifications:</label>
+	<input id="hoverStackChanges" disabled value="0">
 
 	<br><br>
 

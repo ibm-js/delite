@@ -1,11 +1,12 @@
 define([
-	"intern!object",
-	"intern/chai!assert",
 	"delite/uacss"
-], function (registerSuite, assert, has) {
-	registerSuite({
-		name: "uacss",
+], function (
+	has
+) {
+	var registerSuite = intern.getPlugin("interface.object").registerSuite;
+	var assert = intern.getPlugin("chai").assert;
 
+	registerSuite("uacss", {
 		uacss: function () {
 			if (has("edge")) {
 				assert(/d-edge/.test(document.body.className), "edge");

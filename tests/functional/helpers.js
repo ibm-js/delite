@@ -3,7 +3,6 @@ define([
 	"requirejs-dplugins/Promise!",
 	"../../a11y"	// isTabNavigable, _isElementShown
 ], function (Promise, a11y) {
-
 	// Globals used by onFocus()
 	var curFocusNode, focusListener, focusCallback, focusCallbackDelay;
 

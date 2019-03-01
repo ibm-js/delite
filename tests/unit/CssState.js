@@ -1,13 +1,15 @@
 /* eslint-disable quote-props */
 define([
-	"intern!object",
-	"intern/chai!assert",
 	"delite/register",
 	"delite/CssState"
-], function (registerSuite, assert, register, CssState) {
-	registerSuite({
-		name: "CssState",
+], function (
+	register,
+	CssState
+) {
+	var registerSuite = intern.getPlugin("interface.object").registerSuite;
+	var assert = intern.getPlugin("chai").assert;
 
+	registerSuite("CssState", {
 		"basic": function () {
 			var CssWidget = register("css-widget", [HTMLElement, CssState], {
 				state: "",

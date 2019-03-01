@@ -1,0 +1,210 @@
+{
+	"environments": [
+		{
+			"browserName": "chrome",
+			"chromeOptions": {
+				"args": ["headless", "disable-gpu"]
+			},
+			"fixSessionCapabilities": "no-detect"
+		}
+	],
+
+	"leaveRemoteOpen": false,
+
+	"basePath": "../",
+
+	"node": {
+		"loader": {
+			"script": "./intern-requirejs-loader.js",
+			"options": {
+				"baseUrl": "."
+			}
+		}
+	},
+
+	"browser": {
+		"loader": {
+			"script": "delite/intern-requirejs-loader.js",
+			"options": {
+				"baseUrl": "../../..",
+				"packages": [
+					{ "name": "intern", "location": "delite/node_modules/intern" }
+				]
+			}
+		}
+	},
+
+	"suites": [
+		"delite/tests/unit/theme",
+		"delite/tests/unit/DisplayContainer",
+		"delite/tests/unit/register",
+		"delite/tests/unit/CustomElement",
+		"delite/tests/unit/Widget",
+		"delite/tests/unit/handlebars",
+		"delite/tests/unit/CssState",
+		"delite/tests/unit/Container",
+		"delite/tests/unit/a11y",
+		"delite/tests/unit/place",
+		"delite/tests/unit/popup",
+		"delite/tests/unit/uacss",
+		"delite/tests/unit/Selection",
+		"delite/tests/unit/StoreMap",
+		"delite/tests/unit/StoreMap-ObservableArray",
+		"delite/tests/unit/Store",
+		"delite/tests/unit/Store-ObservableArray",
+		"delite/tests/unit/Scrollable",
+		"delite/tests/unit/KeyNav",
+		"delite/tests/unit/FormWidget",
+		"delite/tests/unit/FormValueWidget",
+		"delite/tests/unit/Bidi",
+		"delite/tests/unit/HasDropDown"
+	],
+
+	"functionalSuites": [
+		"./tests/functional/activationTracker",
+		"./tests/functional/Widget",
+		"./tests/functional/DialogUnderlay",
+		"./tests/functional/FormValueWidget",
+		"./tests/functional/HasDropDown",
+		"./tests/functional/HasDropDownHover",
+		"./tests/functional/TabIndex",
+		"./tests/functional/KeyNav",
+		"./tests/functional/on",
+		"./tests/functional/popup",
+		"./tests/functional/register",
+		"./tests/functional/DojoParser"
+	],
+
+	"coverage": [
+		"**/*.js",
+		"!nls/**",
+		"!node_modules/**",
+		"!samples/**",
+		"!tests/**",
+		"!intern*",
+		"!Gruntfile.js"
+	],
+
+	"tunnelOptions": {
+		"drivers": [ "firefox", "internet explorer", "MicrosoftEdge" ]
+	},
+
+	"WAIT_TIMEOUT": 30000,
+	"POLL_INTERVAL": 500,
+
+	"defaultTimeout": 120000,
+	"functionalTimeouts": {
+		"connectTimeout": 60000,
+		"executeAsync": 30000,
+		"find": 10000,
+		"pageLoad": 60000
+	},
+
+	"configs": {
+		"local": {
+			"description": "Run tests on local system, automatically downloading and starting chromedriver."
+		},
+
+		"chrome-debug": {
+			"description": "Run with visible browser and leave it open at end",
+			"leaveRemoteOpen": true,
+			"environments": [
+				{ "browser": "chrome" }
+			]
+		},
+
+		"grid": {
+			"description": "Run tests against selenium grid, must specify serverUrl and tunnelOptions.hostname on command line",
+			"tunnel": "null",
+			"environments": [
+				{ "browser": "chrome" }
+			]
+		},
+
+		"browserstack": {
+			"description": "Run tests on BrowserStack.",
+			"tunnel": "browserstack",
+			"maxConcurrency": 2,
+			"capabilities": {
+				"idle-timeout": 60,
+				"fixSessionCapabilities": "no-detect"
+			},
+			"environments": [
+				{ "browser": "internet explorer", "version": ["11"] },
+				{
+					"browser": "firefox",
+					"version": ["latest"],
+					"platform": ["WINDOWS"]
+				},
+				{
+					"browser": "chrome",
+					"version": ["latest"],
+					"platform": ["WINDOWS"]
+				},
+				{ "browser": "safari", "version": ["10"] }
+			]
+		},
+
+		"browserstack-ie": {
+			"description": "Run tests on IE on BrowserStack.",
+			"extends": ["browserstack"],
+			"environments": [
+				{ "browserName": "internet explorer", "version": "11", "name": "delite"}
+			]
+		},
+
+		"sauce": {
+			"description": "Run tests on SauceLabs",
+			"environments": [
+				{ "browserName": "MicrosoftEdge", "fixSessionCapabilities": false, "name": "delite"},
+				{ "browserName": "internet explorer", "version": "11", "fixSessionCapabilities": false, "name": "delite"},
+				{ "browserName": "firefox", "platform": [ "Windows 10" ], "fixSessionCapabilities": false, "name": "delite" },
+				{ "browserName": "chrome", "platform": [ "Windows 10" ], "fixSessionCapabilities": false, "name": "delite" },
+				{ "browserName": "safari", "fixSessionCapabilities": false, "name": "delite" },
+				{ "browserName": "android", "platform": "Linux", "version": "6.0", "deviceName": "Android Emulator",
+					"deviceType": "tablet", "fixSessionCapabilities": "no-detect", "name": "delite" }
+			],
+
+			"proxyPort": 9000,
+			"maxConcurrency": 5,
+			"coverage": false,
+			"tunnel": "saucelabs"
+		},
+
+		"sauce-ie": {
+			"description": "Run tests on IE on SauceLabs.",
+			"extends": ["sauce"],
+			"environments": [
+				{ "browserName": "internet explorer", "version": "11", "fixSessionCapabilities": "no-detect",
+					"name": "delite" }
+			],
+			"coverage": null
+		},
+
+		"sauce-ios": {
+			"description": "Run tests on iOS on SauceLabs (currently hangs).",
+			"extends": [
+				"sauce"
+			],
+			"environments": [
+				{ "browserName": "Safari", "platformName": "iOS", "platformVersion": "12.2", "deviceName": "iPad Simulator",
+					"name": "delite" }
+			],
+			"coverage": null
+		},
+
+
+		"sauce-android": {
+			"description": "Run tests on android on SauceLabs.",
+			"extends": [
+				"sauce"
+			],
+			"environments": [
+				{ "browserName": "android", "platform": "Linux", "version": "6.0", "deviceName": "Android Emulator",
+					"deviceType": "tablet", "fixSessionCapabilities": "no-detect", "name": "delite" }
+			],
+			"coverage": null
+		}
+
+	}
+}

@@ -1,13 +1,28 @@
 define([
-	"intern!object",
-	"intern/chai!assert", "dcl/dcl", "dojo/_base/declare", "delite/register", "delite/Widget", "delite/Store",
-	"decor/Observable", "decor/ObservableArray", "dstore/Filter"
-], function (registerSuite, assert, dcl, declare, register, Widget, Store,
-			 Observable, ObservableArray, Filter) {
-	var C = register("test-store-observablearray", [HTMLElement, Widget, Store]);
-	registerSuite({
-		name: "Store-ObservableArray",
+	"dcl/dcl",
+	"dojo/_base/declare",
+	"delite/register",
+	"delite/Widget",
+	"delite/Store",
+	"decor/Observable",
+	"decor/ObservableArray",
+	"dstore/Filter"
+], function (
+	dcl,
+	declare,
+	register,
+	Widget,
+	Store,
+	Observable,
+	ObservableArray,
+	Filter
+) {
+	var registerSuite = intern.getPlugin("interface.object").registerSuite;
+	var assert = intern.getPlugin("chai").assert;
 
+	var C = register("test-store-observablearray", [HTMLElement, Widget, Store]);
+
+	registerSuite("Store-ObservableArray", {
 		Updates: function () {
 			var refreshRenderingCallCount = 0;
 			var store = new C();

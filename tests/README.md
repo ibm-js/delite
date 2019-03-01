@@ -4,66 +4,44 @@ This directory contains the Delite unit tests.
 
 ## Setup
 
-Before starting, install Intern by running
-
 ```
 $ npm install
+$ bower install
 ```
 
 Also, if you are going to run against Sauce Labs, then
 setup your SAUCE_USERNAME and SAUCE_ACCESS_KEY environment variables as they are listed
 on https://saucelabs.com/appium/tutorial/3.
 
+## Running locally (from Node)
 
-## Running the unit tests in a browser
-
-Navigate to:
-
-```
-http://localhost/delite/node_modules/intern/client.html?config=tests/intern
-```
-
-Note that this won't run the functional tests.
-
-
-## Running the unit and functional tests in Sauce Labs
-
-In the delite directory:
+Run:
 
 ```
-$ grunt test:remote
+$ npx intern
 ```
 
-## Running the unit and functional tests locally
+It doesn't seem necessary to manually start selenium / chromedriver anymore.
 
-1) Download selenium server (http://www.seleniumhq.org/download/) and start it on the default port (4444):
+## Running against SauceLabs
+
+Set up a SauceLabs account and register user/password as
+explained in https://theintern.io/docs.html#Intern/4/docs/docs%2Frunning.md/cloud-service.
 
 ```
-$ java -jar selenium-server-standalone-2.37.0.jar
+$ npx intern config=@sauce
 ```
 
-2) Edit intern.local.js to list which browsers to test
+## Running from browser
 
-3) In the delite directory:
+Start local HTTP server in directory above delite:
 
-   ```
-   $ grunt test:local
-   ```
+```
+$ http-server
+```
 
+Then in browser, navigate to:
 
-## Adjusting reports
+http://localhost:8080/delite/node_modules/intern/
 
-Optional reports can be added via grunt flags e.g.
-
-    $ grunt test:local:console // run the console reporter for a local test
-    $ grunt test:remote:lcovhtml // run the console reporter for a remote (saucelabs) test with the lcovhtml coverage reporter
-    $ grunt test:local:console:lcovhtml // multiple reporters can be specified
-
-Currently only the reporters are provided as optional flags
-   * lcovhtml
-   * console
-
-
-
-
-
+(Adjust port to whatever http-server started on.)

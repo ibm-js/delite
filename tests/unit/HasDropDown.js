@@ -1,12 +1,19 @@
 define([
-	"intern!object",
-	"intern/chai!assert",
 	"dcl/dcl",
 	"delite/register",
 	"delite/HasDropDown",
 	"delite/Widget",
 	"../functional/helpers"
-], function (registerSuite, assert, dcl, register, HasDropDown, Widget, helpers) {
+], function (
+	dcl,
+	register,
+	HasDropDown,
+	Widget,
+	helpers
+) {
+	var registerSuite = intern.getPlugin("interface.object").registerSuite;
+	var assert = intern.getPlugin("chai").assert;
+
 	var container;
 
 	// ------------
@@ -67,106 +74,107 @@ define([
 		}
 	});
 
-	registerSuite({
-		name: "HasDropDown",
-		setup: function () {
+	registerSuite("HasDropDown", {
+		before: function () {
 			container = document.createElement("div");
 			document.body.appendChild(container);
 		},
 
-		// Note: most of the HasDropDown tests are in tests/functional
+		tests: {
+			// Note: most of the HasDropDown tests are in tests/functional
 
-		basic: function () {
-			// basic drop down with menu
-			var sdd = new SimpleDropDownButton({
-				id: "dd",
-				label: "basic",
-				dropDownConstructor: Menu,
-				focusOnPointerOpen: false	// traditionally you only focus drop down menus when opened by the keyboard
-			}).placeAt(container);
+			basic: function () {
+				// basic drop down with menu
+				var sdd = new SimpleDropDownButton({
+					id: "dd",
+					label: "basic",
+					dropDownConstructor: Menu,
+					focusOnPointerOpen: false // traditionally, only focus drop down menus when opened by the keyboard
+				}).placeAt(container);
 
-			return sdd.openDropDown().then(function () {
-				var popup = document.getElementById("dd_popup");
-				assert(helpers.isVisible(popup), "visible");
-
-				sdd.closeDropDown();
-				assert.isFalse(helpers.isVisible(popup), "not visible");
-			});
-		},
-
-		detach: function () {
-			// basic drop down with menu
-			var sdd = new SimpleDropDownButton({
-				id: "dd2",
-				label: "detach",
-				dropDownConstructor: Menu,
-				focusOnPointerOpen: false	// traditionally you only focus drop down menus when opened by the keyboard
-			}).placeAt(container);
-
-			return sdd.openDropDown().then(function () {
-				var popup = document.getElementById("dd2_popup");
-				assert(helpers.isVisible(popup), "visible");
-
-				sdd.closeDropDown();
-				assert.isFalse(helpers.isVisible(popup), "not visible");
-
-				sdd.parentNode.removeChild(sdd);
-
-				assert.isFalse(document.body.contains(popup), "removeChild() detaches popup too");
-
-				container.appendChild(sdd);
 				return sdd.openDropDown().then(function () {
-					assert(document.body.contains(popup), "openDropDown() reattaches popup");
+					var popup = document.getElementById("dd_popup");
 					assert(helpers.isVisible(popup), "visible");
+
+					sdd.closeDropDown();
+					assert.isFalse(helpers.isVisible(popup), "not visible");
 				});
-			});
-		},
+			},
 
-		"dom leaks": function () {
-			var ddb = new CreateEveryTimeDropdownButton({
-				id: "cetdb",
-				label: "create every time",
-				dropDownConstructor: Menu,
-				focusOnPointerOpen: false	// traditionally you only focus drop down menus when opened by the keyboard
-			}).placeAt(container);
+			detach: function () {
+				// basic drop down with menu
+				var sdd = new SimpleDropDownButton({
+					id: "dd2",
+					label: "detach",
+					dropDownConstructor: Menu,
+					focusOnPointerOpen: false // traditionally, only focus drop down menus when opened by the keyboard
+				}).placeAt(container);
 
-			var input = document.createElement("input");
-			container.appendChild(input);
+				return sdd.openDropDown().then(function () {
+					var popup = document.getElementById("dd2_popup");
+					assert(helpers.isVisible(popup), "visible");
 
-			var origNumWrappers = document.querySelectorAll(".d-popup").length,
-				origNumDropdowns = document.querySelectorAll("d-hasdropdown-menu").length;
+					sdd.closeDropDown();
+					assert.isFalse(helpers.isVisible(popup), "not visible");
 
-			// Open the dropdown
-			ddb.focus();
-			ddb.click();
+					sdd.parentNode.removeChild(sdd);
 
-			var dfd = this.async();
+					assert.isFalse(document.body.contains(popup), "removeChild() detaches popup too");
 
-			setTimeout(dfd.rejectOnError(function () {
-				// Close the dropdown and then blur the SimpleDropDownButton.
-				// (Makes two calls to closeDropDown().)
+					container.appendChild(sdd);
+					return sdd.openDropDown().then(function () {
+						assert(document.body.contains(popup), "openDropDown() reattaches popup");
+						assert(helpers.isVisible(popup), "visible");
+					});
+				});
+			},
+
+			"dom leaks": function () {
+				var ddb = new CreateEveryTimeDropdownButton({
+					id: "cetdb",
+					label: "create every time",
+					dropDownConstructor: Menu,
+					focusOnPointerOpen: false // traditionally only focus drop down menus when opened by the keyboard
+				}).placeAt(container);
+
+				var input = document.createElement("input");
+				container.appendChild(input);
+
+				var origNumWrappers = document.querySelectorAll(".d-popup").length,
+					origNumDropdowns = document.querySelectorAll("d-hasdropdown-menu").length;
+
+				// Open the dropdown
+				ddb.focus();
 				ddb.click();
-				input.focus();
 
-				// Reopen the dropdown.
+				var dfd = this.async();
+
 				setTimeout(dfd.rejectOnError(function () {
-					ddb.focus();
+					// Close the dropdown and then blur the SimpleDropDownButton.
+					// (Makes two calls to closeDropDown().)
 					ddb.click();
+					input.focus();
 
-					// Check that old dropdown and wrapper were removed from doc.
-					setTimeout(dfd.callback(function () {
-						// Make sure that there's no DOM leak
-						var newNumWrappers = document.querySelectorAll(".d-popup").length,
-							newNumDropdowns = document.querySelectorAll("d-hasdropdown-menu").length;
+					// Reopen the dropdown.
+					setTimeout(dfd.rejectOnError(function () {
+						ddb.focus();
+						ddb.click();
 
-						assert.strictEqual(newNumWrappers, origNumWrappers + 1, "wrapper leak");
-						assert.strictEqual(newNumDropdowns, origNumDropdowns + 1, "dropdown widget leak");
+						// Check that old dropdown and wrapper were removed from doc.
+						setTimeout(dfd.callback(function () {
+							// Make sure that there's no DOM leak
+							var newNumWrappers = document.querySelectorAll(".d-popup").length,
+								newNumDropdowns = document.querySelectorAll("d-hasdropdown-menu").length;
+
+							assert.strictEqual(newNumWrappers, origNumWrappers + 1, "wrapper leak");
+							assert.strictEqual(newNumDropdowns, origNumDropdowns + 1, "dropdown widget leak");
+						}, 10));
 					}, 10));
 				}, 10));
-			}, 10));
+			}
 		},
 
-		teardown: function () {
+		after: function () {
 			container.parentNode.removeChild(container);
 		}
 	});

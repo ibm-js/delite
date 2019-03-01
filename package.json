@@ -2,16 +2,15 @@
 	"name": "delite",
 	"version": "0.8.2",
 	"devDependencies": {
-		"intern": "3.4.x",
-		"jsdom": "7.x",
-		"leadfoot": "1.x",
+		"clean-css": "~2.2.6",
 		"grunt": "~0.4.2",
 		"grunt-contrib-jshint": "~0.6.3",
 		"grunt-contrib-less": "~0.8.3",
 		"grunt-contrib-uglify": "~0.2.2",
+		"intern": "^4.4.2",
 		"jsdoc-amddcl": "git+https://github.com/ibm-js/jsdoc-amddcl#master",
-		"clean-css": "~2.2.6",
-		"requirejs": "2.1.x"
+		"jsdom": "7.x",
+		"requirejs": "^2.3.6"
 	},
 	"jsdocDependencies": [
 		"decor"
@@ -23,5 +22,8 @@
 		}
 	],
 	"bugs": "https://github.com/ibm-js/delite/issues",
-	"private": true
+	"private": true,
+	"dependencies": {
+		"dojo": "^1.15.0"
+	}
 }
