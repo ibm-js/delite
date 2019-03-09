@@ -16,12 +16,10 @@
 define([
 	"decor/Evented",
 	"decor/sniff",	// has("ios")
-	"./activationTracker",
 	"requirejs-domready/domReady!"
 ], function (
 	Evented,
-	has,
-	activationTracker
+	has
 ) {
 	var Viewport = new Evented();
 
@@ -36,6 +34,8 @@ define([
 		};
 	}
 
+	var focusedNode;
+
 	/**
 	 * Get the size of the viewport, or on mobile devices, the part of the viewport not obscured by the
 	 * virtual keyboard.
@@ -47,8 +47,7 @@ define([
 		var box = getBox();
 
 		// Account for iOS virtual keyboard, if it's being shown.  Unfortunately no direct way to check or measure.
-		var focusedNode = activationTracker.activeStack[activationTracker.activeStack.length - 1],
-			tag = focusedNode && focusedNode.tagName && focusedNode.tagName.toLowerCase();
+		var tag = focusedNode && focusedNode.tagName && focusedNode.tagName.toLowerCase();
 		if (has("ios") && focusedNode && !focusedNode.readOnly && (tag === "textarea" || (tag === "input" &&
 			/^(color|email|number|password|search|tel|text|url)$/.test(focusedNode.type)))) {
 
@@ -102,37 +101,21 @@ define([
 	// Use setTimeout() to debounce and throttle notifications.
 
 	var oldEffectiveSize = Viewport.getEffectiveBox(),
-		oldEffectiveScroll = oldEffectiveSize;
-
-	function checkForResize() {
-		var newBox = Viewport.getEffectiveBox();
-		if (newBox.h !== oldEffectiveSize.h || newBox.w !== oldEffectiveSize.w) {
-			oldEffectiveSize = newBox;
-			Viewport.emit("resize", newBox);
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	function checkForScroll() {
-		var newBox = Viewport.getEffectiveBox();
-		if (newBox.t !== oldEffectiveScroll.t || newBox.l !== oldEffectiveScroll.l) {
-			oldEffectiveScroll = newBox;
-			Viewport.emit("scroll", newBox);
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	var resizeTimer;
+		oldEffectiveScroll = oldEffectiveSize,
+		timer;
 	function scheduleCheck() {
-		if (!resizeTimer) {
-			resizeTimer = setTimeout(function () {
-				checkForResize();
-				checkForScroll();
-				resizeTimer = null;
+		if (!timer) {
+			timer = setTimeout(function () {
+				var newBox = Viewport.getEffectiveBox();
+				if (newBox.h !== oldEffectiveSize.h || newBox.w !== oldEffectiveSize.w) {
+					oldEffectiveSize = newBox;
+					Viewport.emit("resize", newBox);
+				}
+				if (newBox.t !== oldEffectiveScroll.t || newBox.l !== oldEffectiveScroll.l) {
+					oldEffectiveScroll = newBox;
+					Viewport.emit("scroll", newBox);
+				}
+				timer = null;
 			}, 10);
 		}
 	}
@@ -140,7 +123,17 @@ define([
 	window.addEventListener("resize", scheduleCheck);
 	window.addEventListener("orientationchange", scheduleCheck);
 	window.addEventListener("scroll", scheduleCheck);
-	activationTracker.on("active-stack", scheduleCheck);
+
+	// Recompute viewport size when keyboard is hidden or shown.
+	// Use "click" event rather than "focus" event because "focus" reports programmatic focus, which is
+	// effectively meaningless. Also, don't use "pointerdown", as it triggers dialog resizing/scrolling
+	// before the <input> has actually gotten focus, which leads to problems, see #507.
+	if (has("ios")) {
+		window.addEventListener("click", function (evt) {
+			focusedNode = evt.target;
+			scheduleCheck();
+		}, true);
+	}
 
 	return Viewport;
 });
