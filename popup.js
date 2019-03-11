@@ -4,6 +4,7 @@
  */
 define([
 	"dcl/dcl",
+	"dojo/window",
 	"./BackgroundIframe",
 	"./DialogUnderlay",
 	"./features", // has("config-bgIframe")
@@ -13,6 +14,7 @@ define([
 	"./theme!" // d-popup class
 ], function (
 	dcl,
+	win,
 	BackgroundIframe,
 	DialogUnderlay,
 	has,
@@ -185,11 +187,31 @@ define([
 		 * @fires module:delite/popup#delite-repositioned
 		 */
 		_repositionAll: function () {
+			if (this._repositioning) {
+				return;
+			}
+			this._repositioning = true;
+
 			this._stack.forEach(function (args) {
+				// Anchor node must be in view, otherwise the popup/dropdown appears to be hanging in mid-air.
+				if (args.around) {
+					win.scrollIntoView(args.around);
+				}
+
 				this._size(args);
 				this._position(args);
+
+				// If the resizing (or repositioning) scrolled the active element out of view, then fix it.
+				// Use dojo/window.scrollIntoView() because it does minimal scrolling (and only scrolls if necessary),
+				// unlike iOS's native scrollIntoView() method.
+				if (args.popup.contains(document.activeElement)) {
+					win.scrollIntoView(document.activeElement);
+				}
+
 				on.emit(args.popup, "delite-repositioned", {args: args});
 			}, this);
+
+			this._repositioning = false;
 		},
 
 		/**
@@ -365,7 +387,7 @@ define([
 
 			// Generate id for popup if it doesn't already have one.
 			if (!widget.id) {
-				widget.id = args.around && args.around.id ? args.around.id + "_dropdown" : "popup_" + this._idGen++;
+				widget.id = around && around.id ? around.id + "_dropdown" : "popup_" + this._idGen++;
 			}
 
 			// If we are opening a new popup that isn't a child of a currently opened popup, then
