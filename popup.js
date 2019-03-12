@@ -175,18 +175,73 @@ define([
 		constructor: function () {
 			// Monitor resize of the viewport and scrolling of any node (including the document itself).
 			// Any of these events could require repositioning and resizing.
-			Viewport.on("resize", this._repositionAll.bind(this));
-			document.addEventListener("scroll", this._repositionAll.bind(this), true);
+			Viewport.on("resize", function () {
+				this._repositionAll(true);
+			}.bind(this));
+
+			document.addEventListener("scroll", function () {
+				// Close dropdowns where the user has scrolled the anchor node out of view, so that they aren't hanging
+				// in mid-air.
+				this._closeScrolledOutOfView();
+
+				// Avoid closing the dropdown when a user was scrolling inside the dropdown and then reaches the end,
+				// and inadvertently scrolls the main page or containing <div>.  Instead, just reposition the dropdown.
+				this._repositionAll();
+			}.bind(this), true);
+		},
+
+		/**
+		 * Test if element is fully or partially visible.  Only checks scrolling on y-axis. Based loosely on
+		 * https://stackoverflow.com/questions/487073/how-to-check-if-element-is-visible-after-scrolling.
+		 * @param element
+		 * @returns {boolean}
+		 */
+		isVisibleY: function (element) {
+			var elRect = element.getBoundingClientRect(),
+				elTop = elRect.top,
+				elBottom = elRect.bottom;
+
+			// Check if element out of viewport.
+			var viewport = Viewport.getEffectiveBox();
+			if (elBottom < 0 || elTop >= viewport.h) {
+				return false;
+			}
+
+			// Check if element hidden by containing <div>'s.
+			var body = element.ownerDocument.body;
+			for (var container = element.parentNode; container !== body; container = container.parentNode) {
+				var containerRect = container.getBoundingClientRect();
+				if (elTop > containerRect.bottom || elBottom <= containerRect.top) {
+					return false;
+				}
+			}
+
+			return true;
+		},
+
+		/**
+		 * Close dropdowns where user has scrolled anchor out of view.  Touching a scrollbar (outside of a dropdown)
+		 * closes it, but this is about scrolling on mobile, or via trackpad or mousewheel.
+		 */
+		_closeScrolledOutOfView: function () {
+			for (var i = 0; i < this._stack.length; i++) {
+				var args = this._stack[i];
+				if (args.around && !this.isVisibleY(args.around)) {
+					this.close(args.popup);
+					break;
+				}
+			}
 		},
 
 		/**
 		 * Reposition all the popups. It may need to be called when popup's content changes,
 		 * when the anchornode has moved, or when the viewport has been resized.
 		 * Handles both centered popups and dropdowns.
+		 * @param {boolean} scroll - Scroll elements so that anchors and focused node are in view.
 		 * @private
 		 * @fires module:delite/popup#delite-repositioned
 		 */
-		_repositionAll: function () {
+		_repositionAll: function (scroll) {
 			if (this._repositioning) {
 				return;
 			}
@@ -194,7 +249,7 @@ define([
 
 			this._stack.forEach(function (args) {
 				// Anchor node must be in view, otherwise the popup/dropdown appears to be hanging in mid-air.
-				if (args.around) {
+				if (scroll && args.around) {
 					win.scrollIntoView(args.around);
 				}
 
@@ -204,7 +259,7 @@ define([
 				// If the resizing (or repositioning) scrolled the active element out of view, then fix it.
 				// Use dojo/window.scrollIntoView() because it does minimal scrolling (and only scrolls if necessary),
 				// unlike iOS's native scrollIntoView() method.
-				if (args.popup.contains(document.activeElement)) {
+				if (scroll && args.popup.contains(document.activeElement)) {
 					win.scrollIntoView(document.activeElement);
 				}
 
