@@ -155,9 +155,11 @@ define([
 			side -= cs.marginLeft;
 		}
 
-		style.top = top + "px";
-		style.left = side + "px";
-		style.right = "auto";	// needed for FF or else tooltip goes to far left
+		if (style.top !== top + "px" || style.left !== side + "px" || style.right !== "auto") {
+			style.top = top + "px";
+			style.left = side + "px";
+			style.right = "auto";	// needed for FF or else tooltip goes to far left
+		}
 
 		return best;
 	}
@@ -394,18 +396,27 @@ define([
 		 * @param {Element} node - The popup node to be positioned.
 		 */
 		center: function (node) {
-			// First move node off screen so we can get accurate size.
-			// TODO: move this code [and RTL detect code) to separate methods, and leverage from popup.moveOffScreen()
-			var style = node.style,
-				rtl = (/^rtl$/i).test(node.dir || node.ownerDocument.body.dir ||
+			var view = Viewport.getEffectiveBox(),
+				bb = node.getBoundingClientRect(),
+				style = node.style;
+
+			// If neither node nor viewport has changed size, then just return, to avoid breaking momentum scrolling.
+			if (style.top === view.t + (view.h - bb.height) / 2 + "px" &&
+				style.left === view.l + (view.w - bb.width) / 2 + "px" &&
+				style.right === "auto") {
+				return;
+			}
+
+			// Move node off screen so we can get accurate size.
+			// TODO: move this code [and RTL detect code] to separate methods, and leverage from popup.moveOffScreen()
+			var rtl = (/^rtl$/i).test(node.dir || node.ownerDocument.body.dir ||
 					node.ownerDocument.documentElement.dir);
 			style.top = "-9999px";
 			style[rtl ? "right" : "left"] = "-9999px";
 			style[rtl ? "left" : "right"] = "auto";
+			bb = node.getBoundingClientRect();
 
 			// Then set position so node is centered.
-			var view = Viewport.getEffectiveBox(),
-				bb = node.getBoundingClientRect();
 			style.top = view.t + (view.h - bb.height) / 2 + "px";
 			style.left = view.l + (view.w - bb.width) / 2 + "px";
 			style.right = "auto";
