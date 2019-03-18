@@ -125,12 +125,18 @@ define([
 	window.addEventListener("scroll", scheduleCheck);
 
 	// Recompute viewport size when keyboard is hidden or shown.
-	// Use "click" event rather than "focus" event because "focus" reports programmatic focus, which is
-	// effectively meaningless. Also, don't use "pointerdown", as it triggers dialog resizing/scrolling
-	// before the <input> has actually gotten focus, which leads to problems, see #507.
 	if (has("ios")) {
+		// Use "click" event rather than "focus" event because "focus" reports programmatic focus, which is
+		// effectively meaningless. Also, don't use "pointerdown", as it triggers dialog resizing/scrolling
+		// before the <input> has actually gotten focus, which leads to problems, see #507.
 		window.addEventListener("click", function (evt) {
 			focusedNode = evt.target;
+			scheduleCheck();
+		}, true);
+
+		// Detect when virtual keyboard is manually hidden.
+		window.addEventListener("focusout", function () {
+			focusedNode = document.activeElement;
 			scheduleCheck();
 		}, true);
 	}
