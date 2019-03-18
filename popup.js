@@ -27,13 +27,6 @@ define([
 		return !(/^rtl$/i).test(doc.body.dir || doc.documentElement.dir);
 	}
 
-	// Mysterious code to workaround iOS problem where clicking a button  below an input will just keep the input
-	// focused.  Button gets pointerdown event but not click event.  Test case: popup.html, press "show centered dialog"
-	// and first click the <input>, then click the <button> below it.
-	document.addEventListener("pointerdown", function () {
-		document.body.scrollTop = document.body.scrollTop;
-	}, true);
-
 	/**
 	 * Dispatched on a popup after the popup is shown.
 	 * @event module:delite/popup#popup-after-show
@@ -177,16 +170,23 @@ define([
 			// Any of these events could require repositioning and resizing.
 			Viewport.on("resize", function () {
 				this._repositionAll(true);
+				this._lastResize = new Date();
 			}.bind(this));
 
 			document.addEventListener("scroll", function () {
-				// Close dropdowns where the user has scrolled the anchor node out of view, so that they aren't hanging
-				// in mid-air.
-				this._closeScrolledOutOfView();
+				if ((new Date()) - this._lastResize < 500) {
+					// Treat scroll events right after a resize like resize events.  Because iOS fires scroll events as
+					// it does automatic scrolling after the virtual keyboard pops up
+					this._repositionAll(true);
+				} else {
+					// Close dropdowns where the user has scrolled the anchor node out of view,
+					// so that they aren't hanging in mid-air.
+					this._closeScrolledOutOfView();
 
-				// Avoid closing the dropdown when a user was scrolling inside the dropdown and then reaches the end,
-				// and inadvertently scrolls the main page or containing <div>.  Instead, just reposition the dropdown.
-				this._repositionAll();
+					// But avoid closing the dropdown when a user was scrolling inside it and then reaches the end,
+					// and inadvertently scrolls the main page or containing <div>.  Instead, reposition the dropdown.
+					this._repositionAll();
+				}
 			}.bind(this), true);
 		},
 
