@@ -88,7 +88,7 @@ define([
 					inputValue: "original value",	// must be set as property
 					role: "originalRole",			// must be set as attribute
 					template: handlebars.compile(
-						"<template>" +
+						"<template role='presentation'>" +
 							"<input class='{{inputClass}}' value='{{inputValue}}' role='{{role}}'/>" +
 						"</template>"
 					)
@@ -98,10 +98,11 @@ define([
 
 				var input = mySpecialPropsWidget.children[0];
 
+				assert.strictEqual(mySpecialPropsWidget.getAttribute("role"), "presentation", "role (root node)");
 				assert.strictEqual(input.value, "original value", "value set as property");
 				assert.strictEqual(input.className, "originalClass",
 					"class set even though property is called className, not class");
-				assert.strictEqual(input.getAttribute("role"), "originalRole", "role set as attribute");
+				assert.strictEqual(input.getAttribute("role"), "originalRole", "role (input)");
 
 				mySpecialPropsWidget.mix({
 					inputClass: "newClass",

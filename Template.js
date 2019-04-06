@@ -254,6 +254,7 @@ define([
 			for (var prop in proto) {
 				map[prop.toLowerCase()] = prop;
 			}
+			delete map.role;	// workaround safari issue, see #509
 			map.style = "style.cssText";
 		}
 		return attrMap[tag][attrName];
