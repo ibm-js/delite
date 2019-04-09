@@ -213,7 +213,8 @@ define([
 			var body = element.ownerDocument.body;
 			for (var container = element.parentNode; container !== body; container = container.parentNode) {
 				var containerRect = container.getBoundingClientRect();
-				if (elTop > containerRect.bottom || elBottom <= containerRect.top) {
+				if ((elTop > containerRect.bottom || elBottom <= containerRect.top) &&
+					getComputedStyle(container).overflowY !== "visible") {
 					return false;
 				}
 			}
