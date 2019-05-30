@@ -158,6 +158,12 @@ define([
 		opened: false,
 
 		/**
+		 * Use underlay behind popup.
+		 * By default, turns on (only) for centered popups.
+		 */
+		underlay: undefined,
+
+		/**
 		 * Computed element to set aria attributes on.
 		 * @private
 		 */
@@ -484,6 +490,7 @@ define([
 					orient: typeof this.dropDownPosition === "function" ?
 						this.dropDownPosition.bind(this) : this.dropDownPosition,
 					maxHeight: this.maxHeight,
+					underlay: this.underlay,
 					onExecute: function () {
 						self.closeDropDown(true);
 					},

@@ -681,7 +681,7 @@ define([
 
 			// Setup underlay for popups that want one.  By default it's done for centered popups,
 			// but args can explicitly specify underlay=true or underlay=false.
-			if ("underlay" in args ? args.underlay : (orient[0] === "center")) {
+			if (args.underlay !== undefined ? args.underlay : (orient[0] === "center")) {
 				DialogUnderlay.showFor(wrapper);
 			} else {
 				DialogUnderlay.hideFor(wrapper);
