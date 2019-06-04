@@ -569,6 +569,18 @@ define([
 
 			args.wrapper = wrapper;
 			args.handlers = handlers;
+
+			// Set aria-hidden on all the nodes that aren't the specified popup
+			// so that VoiceOver doesn't navigate to those nodes.
+			if (has("ios") || has("android")) {
+				var hiddenNodes = Array.prototype.slice.call(document.body.querySelectorAll(
+					"body > *:not(#" + wrapper.id + "):not([aria-hidden=true])"));
+				hiddenNodes.forEach(function (node) {
+					node.setAttribute("aria-hidden", "true");
+				});
+				args.hiddenNodes = hiddenNodes;
+			}
+
 			stack.push(args);
 		},
 
@@ -744,6 +756,13 @@ define([
 				var h;
 				while ((h = top.handlers.pop())) {
 					h.remove();
+				}
+
+				// Remove aria-hidden on background nodes set in _prepareToOpen().
+				if (top.hiddenNodes) {
+					top.hiddenNodes.forEach(function (node) {
+						node.removeAttribute("aria-hidden");
+					});
 				}
 
 				// Hide the widget and its wrapper unless it has already been destroyed in above onClose() etc.
