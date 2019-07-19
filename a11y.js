@@ -25,7 +25,7 @@ define([], function () {
 		 * @returns {boolean}
 		 */
 		hasDefaultTabStop: function (elem) {
-			/* jshint maxcomplexity:11 */
+			/* jshint maxcomplexity:12 */
 
 			// No explicit tabIndex setting, need to investigate node type
 			switch (elem.nodeName.toLowerCase()) {
@@ -41,8 +41,14 @@ define([], function () {
 				// These are navigable by default
 				return true;
 			case "iframe":
-				// If it's an editor <iframe> then it's tab navigable.
 				var contentDocument = elem.contentDocument;
+
+				// If it's a cross-domain <iframe> then contentDocument is null for security.  Just return false.
+				if (!contentDocument) {
+					return false;
+				}
+
+				// Otherwise, if it's an editor <iframe> then it's tab navigable.
 				if ("designMode" in contentDocument && contentDocument.designMode === "on") {
 					return true;
 				}
