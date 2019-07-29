@@ -10,7 +10,7 @@ define([
 	"./activationTracker",		// for delite-deactivated event
 	"dpointer/events"		// for "pointerenter", "pointerleave"
 ], function (dcl, Promise, on, place, popup, register, Widget) {
-	
+
 	/**
 	 * Base class for widgets that need drop down ability.
 	 * @mixin module:delite/HasDropDown
@@ -509,7 +509,8 @@ define([
 				this._effectivePopupStateNode.setAttribute("aria-owns", dropDown.id);
 
 				// Set aria-labelledby on dropdown if it's not already set to something more meaningful
-				if (dropDown.getAttribute("role") !== "presentation" && !dropDown.getAttribute("aria-labelledby")) {
+				if (dropDown.getAttribute("role") !== "presentation" && !dropDown.hasAttribute("aria-label")
+						&& !dropDown.hasAttribute("aria-labelledby")) {
 					dropDown.setAttribute("aria-labelledby", behaviorNode.id);
 				}
 
