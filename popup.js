@@ -12,6 +12,7 @@ define([
 	"./on",
 	"./place",
 	"./Viewport",
+	"requirejs-dplugins/i18n!./nls/common",
 	"./theme!" // d-popup class
 ], function (
 	dcl,
@@ -22,7 +23,8 @@ define([
 	has,
 	on,
 	place,
-	Viewport
+	Viewport,
+	messages
 ) {
 
 	function isDocLtr(doc) {
@@ -289,7 +291,7 @@ define([
 				wrapper.className = "d-popup";
 				wrapper.style.display = "none";
 				wrapper.setAttribute("role", "region");
-				wrapper.setAttribute("aria-label", widget["aria-label"] || widget.label || widget.name || widget.id);
+				wrapper.setAttribute("aria-label", messages.popup);
 				widget.ownerDocument.body.appendChild(wrapper);
 
 				wrapper.appendChild(widget);

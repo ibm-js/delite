@@ -4,7 +4,8 @@ define({
 		buttonOk: "OK",
 		buttonCancel: "Cancel",
 		buttonSave: "Save",
-		itemClose: "Close"
+		itemClose: "Close",
+		popup: "Popup"
 	},
 	// end v1.x content
 
