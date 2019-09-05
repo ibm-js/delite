@@ -158,6 +158,14 @@ define([
 		opened: false,
 
 		/**
+		 * True if the user has clicked or focused this control, the associated dropdown,
+		 * or a descendant dropdown.
+		 * @member {boolean}
+		 * @readonly
+		 */
+		activated: false,
+
+		/**
 		 * Use underlay behind popup.
 		 * By default, turns on (only) for centered popups.
 		 */
@@ -229,6 +237,7 @@ define([
 				on(keystrokeNode, "keydown", this._dropDownKeyDownHandler.bind(this)),
 				on(keystrokeNode, "keyup", this._dropDownKeyUpHandler.bind(this)),
 
+				on(behaviorNode, "delite-activated", this._activatedHandler.bind(this)),
 				on(behaviorNode, "delite-deactivated", this._deactivatedHandler.bind(this)),
 
 				// set this.hovering when mouse is over widget so we can differentiate real mouse clicks
@@ -248,6 +257,11 @@ define([
 						this.openDropDown();
 					}.bind(this)),
 					on(buttonNode, "delite-hover-deactivated", function () {
+						if (this.activated) {
+							// If the user has clicked the dropdown or a descendant, then don't close the
+							// dropdown unless the user clicks somewhere else.
+							return;
+						}
 						this.closeDropDown();
 					}.bind(this))
 				);
@@ -366,8 +380,15 @@ define([
 			});
 		},
 
+		_activatedHandler: function () {
+			// Called when focus has shifted to this widget or its dropdown.
+			this.activated = true;
+		},
+
 		_deactivatedHandler: function () {
 			// Called when focus has shifted away from this widget and its dropdown.
+
+			this.activated = false;
 
 			// Close dropdown but don't focus my <input>.  User may have focused somewhere else (ex: clicked another
 			// input), and even if they just clicked a blank area of the screen, focusing my <input> will unwantedly
@@ -514,7 +535,11 @@ define([
 					dropDown.setAttribute("aria-labelledby", behaviorNode.id);
 				}
 
-				if (dropDown.focus && (keyboard ? this.focusOnKeyboardOpen : this.focusOnPointerOpen)) {
+				// Focus the dropdown if it was opened by clicking, and focusOnPointerOpen is true,
+				// or if it was opened by keyboard, and focusOnKeyboardOpen is true.
+				// Don't focus it if it was opened by hovering, in which case this.activated is false.
+				if (dropDown.focus && (keyboard ? this.focusOnKeyboardOpen : this.focusOnPointerOpen)
+						&& this.activated) {
 					this._focusDropDownTimer = this.defer(function () {
 						dropDown.focus();
 						delete this._focusDropDownTimer;
