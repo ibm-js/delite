@@ -41,7 +41,7 @@ define([
 							assert.strictEqual(role, "region", "popup's wrapper node needs role=region");
 						})
 						.getAttribute("aria-label").then(function (label) {
-							assert.strictEqual(label, "choiceDropDown", "popup's wrapper node needs aria-label");
+							assert.strictEqual(label, "Popup", "popup's wrapper node needs aria-label");
 						})
 						.end();
 			},
