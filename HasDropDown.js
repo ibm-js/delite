@@ -9,7 +9,15 @@ define([
 	"./Widget",
 	"./activationTracker",		// for delite-deactivated event
 	"dpointer/events"		// for "pointerenter", "pointerleave"
-], function (dcl, Promise, on, place, popup, register, Widget) {
+], function (
+	dcl,
+	Promise,
+	on,
+	place,
+	popup,
+	register,
+	Widget
+) {
 
 	/**
 	 * Base class for widgets that need drop down ability.
@@ -254,6 +262,20 @@ define([
 			if (this.openOnHover) {
 				this._HasDropDownListeners.push(
 					on(buttonNode, "delite-hover-activated", function () {
+						// Hovering my dropdown will cause me to get a delite-hover-activated event.
+						// Ignore this case.
+						if (this.opened) {
+							return;
+						}
+
+						// Opening a dropdown can cause already opened dropdowns to close.  (Delite/popup.open() -->
+						// _prepareToOpen() --> while() loop calling close).  Don't let hovering cause another dropdown
+						// to close, especially if the other dropdown was opened by clicking.
+						var topPopup = popup._stack.length > 0 ? popup._stack[popup._stack.length - 1].popup : null;
+						if (topPopup && !topPopup.contains(this)) {
+							return;
+						}
+
 						this.openDropDown();
 					}.bind(this)),
 					on(buttonNode, "delite-hover-deactivated", function () {
