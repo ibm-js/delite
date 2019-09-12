@@ -37,8 +37,8 @@ define([
 		 */
 		_getFocusItems: function () {
 			var elems = a11y._getTabNavigable(this);
-			this._firstFocusItem = elems.lowest || elems.first || this.closeButtonNode || this;
-			this._lastFocusItem = elems.last || elems.highest || this._firstFocusItem;
+			this._firstFocusItem = elems[0] || this.closeButtonNode || this;
+			this._lastFocusItem = elems[elems.length - 1] || this._firstFocusItem;
 		},
 
 		_dialogKeyDownHandler: function (/*Event*/ evt) {
