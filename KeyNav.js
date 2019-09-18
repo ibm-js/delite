@@ -2,13 +2,29 @@
 define([
 	"dcl/dcl",
 	"./features",
+	"./on",
 	"./Widget",
 	"dpointer/events"		// so can just monitor for "pointerdown"
 ], function (
 	dcl,
 	has,
+	on,
 	Widget
 ) {
+	// Keep track of if the user just pressed tab, so we can have different focus behavior for mouse vs. keyboard.
+	// Note: I didn't do this in KeyNav#constructor() since it would cause memory leaks if KeyNav#destroy() wasn't
+	// called.  But it could be done in connectedCallback() and disconnectedCallback().
+	var tabKeyJustPressed;
+	if (typeof document !== "undefined") {
+		on(document.body, "keydown", function (evt) {
+			if (evt.key === "Tab") {
+				tabKeyJustPressed = true;
+				setTimeout(function () {
+					tabKeyJustPressed = false;
+				}, 0);
+			}
+		}, true);
+	}
 
 	/**
 	 * Dispatched after the user has selected a different descendant, by clicking, arrow keys,
@@ -159,6 +175,12 @@ define([
 				this.keyNavContainerNode = this.containerNode || this;
 			}
 
+			// When this is the first element in a Dialog, Dialog will call this.containerNode.focus() rather than
+			// this.focus().  However, the effect should be the same: focus my first navigable descendant.
+			if (this.containerNode && this.containerNode !== this) {
+				this.containerNode.focus = this.focus.bind(this);
+			}
+
 			this.on("keypress", this._keynavKeyPressHandler.bind(this), this.keyNavContainerNode);
 			this.on("keydown", this._keynavKeyDownHandler.bind(this), this.keyNavContainerNode);
 
@@ -205,14 +227,10 @@ define([
 		focusinHandler: function (evt) {
 			var container = this.keyNavContainerNode;
 			if (this.focusDescendants) {
-				if (evt.target === this || evt.target === container) {
-					// Ignore spurious focus event:
-					// On IE, clicking the scrollbar of a select dropdown moves focus from the focused child item to me
-					if (!this.navigatedDescendant) {
-						// Focus the first child but do it on a delay so that activationTracker sees my "focus"
-						// event before seeing the "focus" event on the child widget.
-						this.defer(this.focus);
-					}
+				if (tabKeyJustPressed && !container.contains(evt.relatedTarget)) {
+					// When tabbing into this widget, focus the first child but do it on a delay so that
+					// activationTracker sees my "focus" event before seeing the "focus" event on the child widget.
+					this.defer(this.focus);
 				} else {
 					// When container's descendant gets focus,
 					// remove the container's tabIndex so that tab or shift-tab

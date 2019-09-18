@@ -5,10 +5,13 @@ define(function () {
 	 * @param {Element} [node] - Element to attach handler to.
 	 * @param {string} type - Name of event (ex: "click").
 	 * @param {Function} callback - Callback function.
+	 * @param {boolean} capture - Catch event at capturing phase rather than bubbling phase.
 	 * @returns {Object} Handle with `remove()` method to cancel the listener.
 	 */
-	var on = function (node, type, callback) {
-		var capture = false;
+	var on = function (node, type, callback, capture) {
+		if (capture === undefined) {
+			capture = false;
+		}
 
 		// Shim support for focusin/focusout where necessary.
 		// Don't shim on IE since IE supports focusin/focusout natively, and conversely
@@ -19,7 +22,7 @@ define(function () {
 			capture = true;
 		}
 
-		// Shim support for Event.key, and fix some wrong/outdated Event.key values
+		// Shim support for Event.key, and fix some wrong/outdated KeyboardEvent.key values
 		if (/^key(down|press|up)$/.test(type)) {
 			var origFunc = callback;
 			callback = function (event) {
