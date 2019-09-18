@@ -148,6 +148,13 @@ define([
 		openOnHover: false,
 
 		/**
+`		 * Open the popup from the arrow-down key (in addition to Enter and Spacebar).
+		 * @member {boolean}
+		 * @default true
+		 */
+		openOnArrowDown: true,
+
+		/**
 		 * Value to set aria-haspopup to.  Describes the type of the popup.  Values:
 		 *
 		 * - menu
@@ -357,7 +364,7 @@ define([
 			} else if (!this.opened) {
 				var openOnKeyUp,
 					tagName = target.tagName && target.tagName.toLowerCase();
-				if (e.key === "ArrowDown") {
+				if (e.key === "ArrowDown" && this.openOnArrowDown) {
 					openOnKeyUp = true;
 				} else if (target._hasDropDownClickListener && tagName === "button") {
 					// Ignore space/enter key for a <button> because we already do toggling for
