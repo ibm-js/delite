@@ -174,7 +174,7 @@ define([
 					});
 			},
 
-			"multi char search with spaces": function () {
+			"multi char search": function () {
 				return this.remote
 					.findById("keyboardInput")
 					.click()
@@ -186,15 +186,6 @@ define([
 					.execute("return clicks.textContent")
 					.then(function (value) {
 						assert.strictEqual(value, "0", "no click events yet");
-					})
-					.pressKeys("new m")
-					.execute("return document.activeElement.textContent")
-					.then(function (value) {
-						assert.strictEqual(value, "New Mexico", "new m");
-					})
-					.execute("return clicks.textContent")
-					.then(function (value) {
-						assert.strictEqual(value, "0", "no click events after 'new m' search");
 					})
 					.sleep(1000)
 					// Now that 1000ms have elapsed, the search should be canceled, and each space typed
@@ -208,7 +199,7 @@ define([
 					.pressKeys("n")
 					.execute("return document.activeElement.textContent")
 					.then(function (value) {
-						assert.strictEqual(value, "New York", "n");
+						assert.strictEqual(value, "New Hampshire", "n");
 					});
 			},
 

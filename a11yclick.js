@@ -39,7 +39,7 @@ define([
 		} else {
 			lastKeyDownNode = null;
 		}
-	});
+	}, true);
 
 	on(document, "keyup", function (e) {
 		//console.log("a11yclick: onkeyup, e.target = ", e.target, ", lastKeyDownNode was ",
@@ -73,7 +73,7 @@ define([
 			);
 			e.target.dispatchEvent(clickEvent);
 		}
-	});
+	}, true);
 
 	/**
 	 * When this module is loaded, pressing SPACE or ENTER while focused on an Element with a `d-keyboard-click`

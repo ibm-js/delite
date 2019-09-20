@@ -481,8 +481,7 @@ define([
 				// If the user types some string like "new york", interpret the space as part of the search rather
 				// than to perform some action, even if there is a key handler method defined.
 
-				// Stop a11yclick from interpreting key as a click event.
-				// Also stop IE from scrolling, and most browsers (except FF) from emitting keypress event.
+				// Stop IE from scrolling, and most browsers (except FF) from emitting keypress event.
 				evt.preventDefault();
 
 				this._keyboardSearch(evt, " ");
