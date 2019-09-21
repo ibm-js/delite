@@ -52,12 +52,19 @@ define([
 	}
 
 	/**
-	 * Return true if node is "clickable" via keyboard space / enter key
+	 * Return true if node is "clickable" via keyboard space / enter key:
+	 *
+	 * - buttons
+	 * - links
+	 * - checkboxes and radio buttons
+	 *
+	 * Does not [yet] handle aria equivalents (<div role=button> etc.).
+	 *
 	 * @param {Element} node
 	 * @returns {boolean}
 	 */
 	function keyboardClickable(node) {
-		return !node.readOnly && /^(button|a)$/i.test(node.nodeName);
+		return !node.readOnly && /^(button|a|input)$/i.test(node.nodeName);
 	}
 
 	/**
@@ -137,8 +144,6 @@ define([
 		 *
 		 * By default, the direct DOM children of this widget are considered the selectable descendants.
 		 *
-		 * Must be set in the prototype rather than on the instance.
-		 *
 		 * @member {string|Function}
 		 * @protected
 		 * @constant
@@ -162,7 +167,7 @@ define([
 		 */
 		_getTargetElement: function (evt) {
 			for (var child = evt.target; child !== this; child = child.parentNode) {
-				if (this._selectorFunc(child)) {
+				if (this.isNavigable(child)) {
 					return child;
 				}
 			}
@@ -187,17 +192,20 @@ define([
 			this.on("pointerdown", this.pointerdownHandler.bind(this), this.keyNavContainerNode);
 			this.on("focusin", this.focusinHandler.bind(this), this.keyNavContainerNode);
 			this.on("focusout", this.focusoutHandler.bind(this), this.keyNavContainerNode);
+		},
 
+		/**
+		 * Test if specified element is navigable.
+		 */
+		isNavigable: function (elem) {
 			// Setup function to check which child nodes are navigable.
 			if (typeof this.descendantSelector === "string") {
 				var matchesFuncName = has("dom-matches");
-				this._selectorFunc = function (elem) {
-					return elem[matchesFuncName](this.descendantSelector);
-				};
+				return elem[matchesFuncName](this.descendantSelector);
 			} else if (this.descendantSelector) {
-				this._selectorFunc = this.descendantSelector;
+				return this.descendantSelector(elem);
 			} else {
-				this._selectorFunc = function (elem) { return elem.parentNode === this.containerNode; };
+				return elem.parentNode === this.containerNode;
 			}
 		},
 
@@ -630,7 +638,7 @@ define([
 				child = dir > 0 ? dfsNext(child) : dfsPrev(child);
 				if (child === origChild) {
 					return null;	// looped back to original child
-				} else if (this._selectorFunc(child)) {
+				} else if (this.isNavigable(child)) {
 					return child;	// this child matches
 				}
 			}
