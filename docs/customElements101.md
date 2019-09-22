@@ -9,12 +9,11 @@ The heart of delite is its support for custom elements.
 In a nutshell, this means that an app has the ability to define new tags (often called widgets),
 for example `<my-combobox>`, which can be used interchangeably with the native HTML tags like `<input>`.
 
-Delite's support of custom elements is mainly split across four components:
+Delite's support of custom elements is mainly split across three components:
 
 * [register](register.md) - utility for defining new custom elements
 * [Widget](Widget.md) - base class for all widgets
 * [handlebars!](handlebars.md) - AMD plugin to compile templates
-* [theme!](theme.md) - AMD plugin to load CSS for this widget for the current theme
 
 
 ## Defining Custom Elements
@@ -46,15 +45,15 @@ Example:
 define([
 	"delite/register",
 	"delite/Widget",
-	"delite/handlebars!./MyWidget/MyWidget.html",				// the template
-	"delite/theme!./MyWidget/themes/{{theme}}/MyWidget.css"		// the CSS
+	"delite/handlebars!./MyWidget/MyWidget.html",			// the template
+	"requirejs-dplugins/css!./MyWidget/MyWidget.css"		// the CSS
 ], function (register, Widget, template) {
 	MyWidget = register(
 		"my-widget",				// the custom tag name
 		[HTMLElement, Widget],		// the superclasses
 		{
 			// my template
-			template: template
+			template: template,
 
 			// my public properties
 			stringProp: "",

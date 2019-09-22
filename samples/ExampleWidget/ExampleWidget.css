@@ -1,0 +1,10 @@
+.d-example-widget {
+  color: #dff0d8;
+  background: #3c763d;
+}
+.d-example-widget.d-rtl {
+  text-align: right;
+}
+.d-example-widget.d-rtl::before {
+  content: "(RTL variant)";
+}

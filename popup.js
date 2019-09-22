@@ -12,8 +12,7 @@ define([
 	"./on",
 	"./place",
 	"./Viewport",
-	"requirejs-dplugins/i18n!./nls/common",
-	"./theme!" // d-popup class
+	"requirejs-dplugins/i18n!./nls/common"
 ], function (
 	dcl,
 	win,

@@ -365,83 +365,8 @@ If you refresh the page you can see how we've added this HTML to the `containerN
 Click here to see the live demo:
 [Delite Introduction Tutorial - Part 4](http://ibm-js.github.io/delite-tutorial/runnable/introduction-part4/samples/BlogPost.html)
 
-###Theming
-Whilst we're on a roll we'll quickly discuss the `delite` theming capabilities and make our widget appear more aesthetically pleasing.
-Documentation on this is provided [here](http://ibm-js.github.io/delite/docs/master/theme.html).
-
-In our custom element module `./BlogPost.js` instead of using the `requirejs-dplugins/css!` to load our CSS i.e.
-`"requirejs-dplugins/css!./BlogPost/css/BlogPost.css"`, we'll switch to using the `"delite/theme!` plugin.
-
-Update `./BlogPost.js` to the following:
-
-```js
-
-define([
-	"delite/register",
-	"delite/Widget",
-	"delite/Container",
-	"delite/handlebars!./BlogPost/BlogPost.html",
-	"delite/theme!./BlogPost/css/{%raw%}{{theme}}{%endraw%}/BlogPost.css"
-], function (register, Widget, Container, template) {
-	return register("blog-post", [HTMLElement, Widget, Container], {
-		baseClass: "blog-post",
-		value: "",
-		publishDate: new Date().toString(),
-		author: "",
-		template: template
-	});
-});
-
-```
-
-Note the `{%raw%}{{theme}}{%endraw%}` placeholder. As explained in the theme documentation, this is used to load whatever theme is detected automatically
-based on the platform/browser, from a request parameter on the URL or set specifically via a `require`. You can also configure themes using the
-loader `require.config`.
-The default theme is the bootstrap theme; have a look at some of the existing less/CSS variables in https://github.com/ibm-js/delite/tree/master/themes/bootstrap.
-
-This isn't the place to discuss the `less` variables `delite` provides but an example of how they are used can be seen in the `deliteful`
-project e.g. [https://github.com/ibm-js/deliteful/tree/master/StarRating/themes](https://github.com/ibm-js/deliteful/tree/master/StarRating/themes).
-
-To load a widget theme you must create a folder with the name of the theme you want to load for each widget CSS file, if the theme/folder name doesn't exist you'll
-see 404's in your browser developer tools.
-
-For example our `./BlogPost/css/BlogPost.css` should be updated so that the bootstrap theme of our widget is located at
-`./BlogPost/css/bootstrap/BlogPost.css` (therefore create a bootstrap directory at that location and copy the `BlogPost.css` to it).
-Assuming you're not testing this on an IOS device, setting the theme via a request parameter etc you shouldn't need to create anymore
-theme folders (the default bootstrap theme will be loaded).
-
 ####Sample usage
-Update our existing `./samples/BlogPost.html` JavaScript content from:
-
-```js
-
-require(["blogging-package/BlogPost"], function (BlogPost) {
-    var anotherCustomElement = new BlogPost({value : 'The day after', publishDate : 'Nov 28th 2014', author : "My good self"});
-    anotherCustomElement.placeAt(document.body, 'last');
-    var containerNodeContent = "<b>boooooo</b> it's the day after, back to work soon :(" +
-            "<pre># time to start thinking about code again</pre>";
-    anotherCustomElement.containerNode.innerHTML = containerNodeContent;
-});
-
-```
-
-to:
-
-```js
-
-require(["blogging-package/BlogPost", "delite/theme!delite/themes/{%raw%}{{theme}}{%endraw%}/global.css"], function (BlogPost) {
-    var anotherCustomElement = new BlogPost({value : 'The day after', publishDate : 'Nov 28th 2014', author : "My good self"});
-    anotherCustomElement.placeAt(document.body, 'last');
-    var containerNodeContent = "<b>boooooo</b> it's the day after, back to work soon :(" +
-            "<pre># time to start thinking about code again</pre>";
-    anotherCustomElement.containerNode.innerHTML = containerNodeContent;
-});
-
-```
-
-i.e. a minor difference but we're now loading `"delite/theme!delite/themes/{%raw%}{{theme}}{%endraw%}/global.css"` for the page level theming.
-
-Let's also update the boostrap `./BlogPost/css/boostrap/BlogPost.css` theme CSS slightly to the following:
+Update the boostrap `./BlogPost/css/boostrap/BlogPost.css` theme CSS slightly to the following:
 
 
 ```css
@@ -469,10 +394,9 @@ You should see something like the following if you refresh your browser:
 Click here to see the live demo:
 [Delite Introduction Tutorial - Part 5](http://ibm-js.github.io/delite-tutorial/runnable/introduction-part5/samples/BlogPost.html)
 
-If you look at your debugger network tools, notice how the `./bower_components/delite/themes/bootstrap/common.css` and
-`./bower_components/delite/themes/bootstrap/global.css` CSS files are also loaded. The `"delite/theme!` plugin provides
-basic less variables/CSS classes and structure for loading your theme files. Have a look through the less/CSS files in the
-`./bower_components/delite/themes/` directory.
+If you look at your debugger network tools, notice how the `./bower_components/delite/themes/common.css` and
+`./bower_components/delite/themes/global.css` CSS files are also loaded.
+Have a look through the less/CSS files in the `./bower_components/delite/themes/` directory.
 
 ---
 

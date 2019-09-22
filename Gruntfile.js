@@ -20,22 +20,13 @@ module.exports = function (grunt) {
 		},
 
 		// Task for compiling less files into CSS files
-		less : {
-			// Compile theme independent files
-			transitions: {
-				expand: true,
-				cwd: "themes/common/transitions",
-				src: ["*.less"],
-				dest: "themes/common/transitions",
-				ext: ".css"
-			},
-
-			// Infrastructure per-theme files
+		less: {
+			// Infrastructure
 			common : {
 				files: [
 					{
 						expand: true,
-						src: ["themes/*/common.less", "themes/*/global.less", "!themes/common/*.less"],
+						src: ["css/common.less", "css/global.less"],
 						ext: ".css"
 					}
 				]
@@ -47,8 +38,9 @@ module.exports = function (grunt) {
 					{
 						expand: true,
 						src: [
-							"*/themes/*/*.less",
-							"samples/ExampleWidget/themes/*/*.less"
+							"DialogUnderlay/*.less",
+							"Scrollable/*.less",
+							"samples/ExampleWidget/*.less"
 						],
 						ext: ".css"
 					}

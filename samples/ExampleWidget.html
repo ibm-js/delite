@@ -12,21 +12,10 @@
 
 	<script type="text/javascript">
 		require({
-			baseUrl:"../..",
-			config: {
-				// Automatic selection of iOS and holodark is temporarily disabled in delite/theme, but
-				// enable it for this sample.
-				"delite/theme": {
-					themeMap: [
-						[/Holodark|Android/, "holodark"],
-						[/iPhone|iPad/, "ios"],
-						[/.*/, "bootstrap"]			// chrome, firefox, IE
-					]
-				}
-			}
-		},[
+			baseUrl:"../.."
+		}, [
 			"delite/samples/ExampleWidget",
-			"delite/theme!delite/themes/{{theme}}/global.css"	// page level CSS
+			"requirejs-dplugins/css!delite/themes/global.css"	// page level CSS
 		]);
 	</script>
 
@@ -35,13 +24,6 @@
 	<h1>Example Widget</h1>
 
 	<d-example></d-example>
-
-	<br><br><br>
-	Switch theme:
-	<a href="./ExampleWidget.html">platform default</a>
-	<a href="./ExampleWidget.html?theme=ios">iOS</a>
-	<a href="./ExampleWidget.html?theme=holodark">holodark</a>
-	<a href="./ExampleWidget.html?theme=bootstrap">bootstrap</a>
 </body>
 
 </html>

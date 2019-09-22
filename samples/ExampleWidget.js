@@ -2,7 +2,7 @@ define([
 	"delite/register",
 	"delite/CssState",
 	"delite/handlebars!./ExampleWidget/ExampleWidget.html",
-	"delite/theme!./ExampleWidget/themes/{{theme}}/ExampleWidget.css"
+	"requirejs-dplugins/css!./ExampleWidget/ExampleWidget.css"
 ], function (register, CssState, template) {
 
 	/**

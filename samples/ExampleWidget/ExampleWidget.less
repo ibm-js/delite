@@ -1,0 +1,14 @@
+@import "../../css/variables";
+
+.d-example-widget {
+	color: @state-success-bg;
+	background: @state-success-text;
+}
+
+.d-example-widget.d-rtl {
+	text-align: right;
+}
+
+.d-example-widget.d-rtl::before {
+	content: "(RTL variant)";
+}

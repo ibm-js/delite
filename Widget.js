@@ -5,8 +5,16 @@ define([
 	"decor/Invalidating",
 	"./CustomElement",
 	"./register",
-	"./classList"
-], function (dcl, has, Invalidating, CustomElement, register, classList) {
+	"./classList",
+	"requirejs-dplugins/css!./css/common.css"
+], function (
+	dcl,
+	has,
+	Invalidating,
+	CustomElement,
+	register,
+	classList
+) {
 	// Used to generate unique id for each widget
 	var cnt = 0;
 

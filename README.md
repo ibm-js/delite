@@ -18,8 +18,8 @@ Bugs and open issues are tracked in the
 ## Licensing
 
 This project is distributed by the Dojo Foundation and licensed under the ["New" BSD License](./LICENSE) except the 
-[Bootstrap variables.less](./themes/bootstrap/variables.less) file which is distributed under 
-[MIT](./themes/bootstrap/LICENSE) license.
+[Bootstrap variables.less](css/variables.less) file which is distributed under 
+[MIT](css/LICENSE) license.
 
 All contributions require a [Dojo Foundation CLA](http://dojofoundation.org/about/claForm).
 

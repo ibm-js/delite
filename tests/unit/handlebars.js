@@ -4,8 +4,7 @@ define([
 	"delite/handlebars",
 	"delite/register",
 	"delite/Widget",
-	"delite/handlebars!./templates/HandlebarsButton.html",
-	"delite/theme!"		// to get CSS rules for d-hidden
+	"delite/handlebars!./templates/HandlebarsButton.html"
 ], function (
 	require,
 	Promise,

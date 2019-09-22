@@ -4,7 +4,7 @@ define([
 	"./classList",
 	"./ScrollAnimation",
 	"./Widget",
-	"./theme!./Scrollable/themes/{{theme}}/Scrollable.css"
+	"requirejs-dplugins/css!./Scrollable/Scrollable.css"
 ], function (dcl, classList, ScrollAnimation, Widget) {
 
 	/**

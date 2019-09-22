@@ -25,7 +25,6 @@ Specifically, it's based on the following concepts:
 * [Introduction to delite and custom elements](customElements101.md)
 * [Delite internal architecture documentation](architecture.md)
 * [Migration notes for dijit based applications](migration.md)
-* [Notes on theme generation](themes.md)
 * [How to load delite modules](setup.md)
 * [Internationalization and localization](g11n.md)
 
@@ -41,7 +40,6 @@ Specifically, it's based on the following concepts:
 * [popup](popup.md) - popup manager
 * [register](register.md) - utility module for declaring new custom element types
 * [Template](Template.md) - code generation library used by [handlebars!](handlebars.md) plugin
-* [theme!](theme.md) - Plugin loading CSS file based on the current theme
 * [uacss](uacss.md) - utility to set CSS classes on document root based on the current browser
 * [Viewport](Viewport.md) - utility to notify the application when the viewport size is changed, and
   also to get the effective viewport size on mobile devices when the virtual keyboard is displayed

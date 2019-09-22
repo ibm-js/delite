@@ -5,7 +5,7 @@ define([
 	"./Widget",
 	"./BackgroundIframe",
 	"./Viewport",
-	"./theme!./DialogUnderlay/themes/{{theme}}/DialogUnderlay.css"
+	"requirejs-dplugins/css!./DialogUnderlay/DialogUnderlay.css"
 ], function (
 	dcl,
 	register,

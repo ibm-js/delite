@@ -156,13 +156,6 @@ Although we don't support {% raw %}`{{#if}}`{% endraw %}, you can show/hide node
 ```
 {% endraw %}
 
-Note that this requires including the common CSS defined by the themes (coming from themes/common/global.less),
-so your widget must reference the `delite/theme!` plugin:
-
-```js
-define([..., "delite/theme!"], function(...) { ...
-```
-
 ## Attach points and events
 
 Special attribute names allow setting up references to nodes in the template,
