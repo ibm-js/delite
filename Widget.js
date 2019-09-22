@@ -5,9 +5,8 @@ define([
 	"decor/Invalidating",
 	"./CustomElement",
 	"./register",
-	"./classList",
-	"./features!bidi?./Bidi"
-], function (dcl, has, Invalidating, CustomElement, register, classList, Bidi) {
+	"./classList"
+], function (dcl, has, Invalidating, CustomElement, register, classList) {
 	// Used to generate unique id for each widget
 	var cnt = 0;
 
@@ -19,7 +18,6 @@ define([
 	 * @mixin module:delite/Widget
 	 * @augments module:delite/CustomElement
 	 * @augments module:decor/Invalidating
-	 * @mixes module:delite/Bidi
 	 */
 	var Widget = dcl([CustomElement, Invalidating], /** @lends module:delite/Widget# */ {
 		declaredClass: "delite/Widget",
@@ -124,12 +122,13 @@ define([
 		},
 
 		/**
-		 * Get the direction setting for the page itself.
+		 * Return the direction setting for the page itself, or if `has("inherited-dir")` is defined and the widget is
+		 * attached to the page, then returns the `dir` setting inherited from any ancestor node.
 		 * @returns {string} "ltr" or "rtl"
 		 * @protected
 		 */
 		getInheritedDir: function () {
-			return (this.ownerDocument.body.dir || this.ownerDocument.documentElement.dir || "ltr").toLowerCase();
+			return this._inheritedDir || this.ownerDocument.body.dir || this.ownerDocument.documentElement.dir || "ltr";
 		},
 
 		// Override Invalidating#refreshRendering() to execute the template's refreshRendering() code, etc.
@@ -153,6 +152,12 @@ define([
 		},
 
 		connectedCallback: function () {
+			if (has("inherited-dir")) {
+				// Now that the widget is attached to the document, trigger computation of effectiveDir.
+				this._inheritedDir = window.getComputedStyle(this, null).direction;
+				this.notifyCurrentValue("dir");
+			}
+
 			this.initializeInvalidating();
 		},
 
@@ -400,10 +405,6 @@ define([
 			return classList.hasClass(this, className);
 		}
 	});
-
-	if (has("bidi")) {
-		Widget = dcl(Widget, Bidi);
-	}
 
 	// Setup automatic chaining for lifecycle methods, except for render().
 	// destroy() is chained in Destroyable.js.

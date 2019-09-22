@@ -67,12 +67,7 @@ require = {
 		// TODO: when all tests converted from doh to intern, remove entry for doh
 		{name: "doh", location: "util/doh"}
 	],
-	locale: locale || "en-us",
-	config: {
-		"requirejs-dplugins/has": {
-			"bidi": dir === "rtl"
-		}
-	}
+	locale: locale || "en-us"
 };
 for (var key in overrides) {
 	require[key] = overrides[key];

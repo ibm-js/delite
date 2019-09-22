@@ -2,6 +2,12 @@
   color: #ffffff;
   background: #333333;
 }
+.d-example-widget.d-rtl {
+  text-align: right;
+}
+.d-example-widget.d-rtl:before {
+  content: "(RTL variant) ";
+}
 .d-example-widget:after {
   content: " (holodark theme)";
 }

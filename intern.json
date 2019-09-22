@@ -56,7 +56,6 @@
 		"delite/tests/unit/KeyNav",
 		"delite/tests/unit/FormWidget",
 		"delite/tests/unit/FormValueWidget",
-		"delite/tests/unit/Bidi",
 		"delite/tests/unit/HasDropDown"
 	],
 
