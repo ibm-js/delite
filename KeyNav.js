@@ -11,21 +11,6 @@ define([
 	on,
 	Widget
 ) {
-	// Keep track of if the user just pressed tab, so we can have different focus behavior for mouse vs. keyboard.
-	// Note: I didn't do this in KeyNav#constructor() since it would cause memory leaks if KeyNav#destroy() wasn't
-	// called.  But it could be done in connectedCallback() and disconnectedCallback().
-	var tabKeyJustPressed;
-	if (typeof document !== "undefined") {
-		on(document.body, "keydown", function (evt) {
-			if (evt.key === "Tab") {
-				tabKeyJustPressed = true;
-				setTimeout(function () {
-					tabKeyJustPressed = false;
-				}, 0);
-			}
-		}, true);
-	}
-
 	/**
 	 * Dispatched after the user has selected a different descendant, by clicking, arrow keys,
 	 * or keyboard search.
@@ -180,10 +165,18 @@ define([
 				this.keyNavContainerNode = this.containerNode || this;
 			}
 
-			// When this is the first element in a Dialog, Dialog will call this.containerNode.focus() rather than
-			// this.focus().  However, the effect should be the same: focus my first navigable descendant.
+			// There are two cases when this.containerNode.focus() is called rather than this.focus():
+			// - When this is the first element in a Dialog (a11y.getFirstInTabbingOrder()).
+			// - When tabbing/shift-tabbing from one deliteful/List to another (a11y.getNextInTabbingOrder()).
+			// In either case, focus my first navigable descendant.
 			if (this.containerNode && this.containerNode !== this) {
-				this.containerNode.focus = this.focus.bind(this);
+				this.containerNode.focus = function () {
+					// Avoid focusinHandler() making recursive call to focus().
+					this._tabKeyJustPressed = false;
+
+					// Focus first navigable descendant.
+					this.focus();
+				}.bind(this);
 			}
 
 			this.on("keypress", this._keynavKeyPressHandler.bind(this), this.keyNavContainerNode);
@@ -215,7 +208,22 @@ define([
 			if (this.focusDescendants && !container.hasAttribute("tabindex")) {
 				container.tabIndex = "0";
 			}
+
+			// Keep track of if user just pressed tab, so we can have different focus behavior for mouse vs. keyboard.
+			this._keynavTabKeyListener = on(this.ownerDocument.body, "keydown", function (evt) {
+				if (evt.key === "Tab") {
+					this._tabKeyJustPressed = true;
+					this.defer(function () {
+						this._tabKeyJustPressed = false;
+					}, 0);
+				}
+			}.bind(this), true);
 		}),
+
+		disconnectedCallback: function () {
+			// Remove listener here rather than using this.own() so that there's no need to call destroy().
+			this._keynavTabKeyListener.remove();
+		},
 
 		/**
 		 * Called on pointerdown event (on container or child of container).
@@ -235,9 +243,11 @@ define([
 		focusinHandler: function (evt) {
 			var container = this.keyNavContainerNode;
 			if (this.focusDescendants) {
-				if (tabKeyJustPressed && !container.contains(evt.relatedTarget)) {
-					// When tabbing into this widget, focus the first child but do it on a delay so that
+				if (this._tabKeyJustPressed && !container.contains(evt.relatedTarget)) {
+					// When tabbing/shift-tabbing into this widget, focus the first child but do it on a delay so that
 					// activationTracker sees my "focus" event before seeing the "focus" event on the child widget.
+					// Note that shift-tab (from outside this widget) might go to an embedded widget rather than
+					// keyNavContainerNode.
 					this.defer(this.focus);
 				} else {
 					// When container's descendant gets focus,
