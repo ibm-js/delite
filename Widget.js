@@ -122,13 +122,12 @@ define([
 		},
 
 		/**
-		 * Return the direction setting for the page itself, or if `has("inherited-dir")` is defined and the widget is
-		 * attached to the page, then returns the `dir` setting inherited from any ancestor node.
+		 * Return the direction setting for the page.
 		 * @returns {string} "ltr" or "rtl"
 		 * @protected
 		 */
 		getInheritedDir: function () {
-			return this._inheritedDir || this.ownerDocument.body.dir || this.ownerDocument.documentElement.dir || "ltr";
+			return (this.ownerDocument.body.dir || this.ownerDocument.documentElement.dir || "ltr").toLowerCase();
 		},
 
 		// Override Invalidating#refreshRendering() to execute the template's refreshRendering() code, etc.
@@ -152,12 +151,6 @@ define([
 		},
 
 		connectedCallback: function () {
-			if (has("inherited-dir")) {
-				// Now that the widget is attached to the document, trigger computation of effectiveDir.
-				this._inheritedDir = window.getComputedStyle(this, null).direction;
-				this.notifyCurrentValue("dir");
-			}
-
 			this.initializeInvalidating();
 		},
 

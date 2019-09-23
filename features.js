@@ -3,9 +3,6 @@ define(["requirejs-dplugins/has"], function (has) {
 	// A background iframe is useful to prevent problems with popups appearing behind applets/pdf files.
 	has.add("config-bgIframe", false);
 
-	// Flag to enable inheritance direction from any ancestor
-	has.add("inherited-dir", false);
-
 	if (typeof window !== "undefined") {
 		// Returns the name of the method to test if an element matches a CSS selector.
 		has.add("dom-matches", function () {
