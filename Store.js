@@ -4,11 +4,9 @@ define([
 	"requirejs-dplugins/has",
 	"decor/Invalidating",
 	"requirejs-dplugins/Promise!",
-	"decor/ObservableArray",
-	"decor/Observable",
 	"./ArrayQueryAdapter",
 	"./DstoreQueryAdapter"
-], function (dcl, has, Invalidating, Promise, ObservableArray, Observable, ArrayQueryAdapter, DstoreQueryAdapter) {
+], function (dcl, has, Invalidating, Promise, ArrayQueryAdapter, DstoreQueryAdapter) {
 
 	/**
 	 * Dispatched once the query has been executed and the `renderItems` array
@@ -22,7 +20,7 @@ define([
 	 * @property {boolean} cancelable - Indicates whether the event is cancelable or not.
 	 * @property {boolean} bubbles - Indicates whether the given event bubbles up through the DOM or not.
 	 */
-	
+
 	/**
 	 * Mixin for store management that creates render items from store items after
 	 * querying the store. The receiving class must extend decor/Evented or delite/Widget.
@@ -39,7 +37,7 @@ define([
 
 		/**
 		 * The source that contains the items to display.
-		 * @member {(dstore/Store|decor/ObservableArray|Array)}
+		 * @member {(dstore/Store|Array)}
 		 * @default null
 		 */
 		source: null,
@@ -63,7 +61,7 @@ define([
 
 		/**
 		 * The render items corresponding to the store items for this widget. This is filled from the store and
-		 * is not supposed to be modified directly. Initially null. 
+		 * is not supposed to be modified directly. Initially null.
 		 * @member {Object[]}
 		 * @default null
 		 */
@@ -90,16 +88,15 @@ define([
 		},
 
 		preRender: function () {
-			// If the control seems to contain JSON, then parse it as our data source.
+			// If the control seems to contain JSON, then parse it as our read-only data source.
 			if (!this.firstElementChild && this.textContent.trim()) {
 				var data = JSON.parse("[" + this.textContent + "]");
 				if (data.length) {
-					this.source = new ObservableArray();
+					this.source = data;
 					for (var j = 0; j < data.length; j++) {
 						if (!data[j].id) {
 							data[j].id = Math.random();
 						}
-						this.source[j] = new Observable(data[j]);
 					}
 				}
 				this.textContent = "";
@@ -224,7 +221,7 @@ define([
 		},
 
 		_untrack: function () {
-			if (this._storeAdapter) {
+			if (this._storeAdapter && this._storeAdapter.untrack) {
 				this._storeAdapter.untrack();
 			}
 			if (this._addListener) {
@@ -301,7 +298,7 @@ define([
 			this.itemRemoved(previousIndex, renderItems);
 			this.itemAdded(newIndex, renderItem, renderItems);
 		},
-		
+
 		_refreshHandler: function () {
 			this.queryStoreAndInitItems(this.processQueryResult);
 		},
