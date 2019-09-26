@@ -115,9 +115,7 @@ define([
 
 						return {
 							anchorId: anchor.id,
-							anchorAriaHasPopup: anchor.getAttribute("aria-haspopup"),
 							anchorRect: {left: anchorRect.left, width: anchorRect.width},
-							anchorAriaOwns: anchor.getAttribute("aria-owns"),
 							dropDownId: dropDown.id,
 							dropDownRect: {left: dropDownRect.left, width: dropDownRect.width},
 							dropDownLabelledBy: dropDown.getAttribute("aria-labelledby")
@@ -132,11 +130,7 @@ define([
 						// check tha aria-owns points from button to dropdown, even though there was no id
 						// specified for the button or the drop down
 						assert(ret.anchorId, "anchor has generated id");
-						assert(ret.dropDownId, "dropdown has generated id");
-						assert.strictEqual(ret.anchorAriaOwns, ret.dropDownId, "aria-owns points to dropdown id");
 						assert.strictEqual(ret.dropDownLabelledBy, ret.anchorId, "aria-labelledby --> anchor id");
-
-						assert.strictEqual(ret.anchorAriaHasPopup, "dialog", "aria-haspopup");
 					})
 					// test close by clicking submit button
 					.findByCssSelector("button[type=submit]").click().end()

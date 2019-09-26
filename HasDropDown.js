@@ -225,11 +225,12 @@ define([
 		},
 
 		refreshRendering: function (oldVals) {
-			if ("_effectivePopupStateNode" in oldVals) {
+			if ("_effectivePopupStateNode" in oldVals || "dropDownType" in oldVals) {
 				if (oldVals._effectivePopupStateNode) {
 					oldVals._effectivePopupStateNode.removeAttribute("aria-haspopup");
 				}
-				if (this._effectivePopupStateNode) {
+				if (this._effectivePopupStateNode && this.dropDownType !== "dialog") {
+					// Note: Not setting when dropDownType is dialog to workaround JAWS bug #511.
 					this._effectivePopupStateNode.setAttribute("aria-haspopup", this.dropDownType);
 				}
 			}
@@ -502,7 +503,7 @@ define([
 			var loadDropDownPromise = this.loadDropDown();
 
 			this._openDropDownPromise = Promise.resolve(loadDropDownPromise).then(function (dropDown) {
-				/* jshint maxcomplexity:14 */
+				/* jshint maxcomplexity:15 */
 				if (this._previousDropDown && this._previousDropDown !== dropDown) {
 					popup.detach(this._previousDropDown);
 					delete this._previousDropDown;
@@ -556,7 +557,10 @@ define([
 				this._effectivePopupStateNode.classList.add("d-drop-down-open");
 				this.opened = true;
 
-				this._effectivePopupStateNode.setAttribute("aria-owns", dropDown.id);
+				if (this.dropDownType !== "dialog") {
+					// Note: Not setting when dropDownType is dialog to workaround JAWS bug #511.
+					this._effectivePopupStateNode.setAttribute("aria-owns", dropDown.id);
+				}
 
 				// Set aria-labelledby on dropdown if it's not already set to something more meaningful
 				if (dropDown.getAttribute("role") !== "presentation" && !dropDown.hasAttribute("aria-label")
