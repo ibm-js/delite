@@ -394,10 +394,6 @@ You should see something like the following if you refresh your browser:
 Click here to see the live demo:
 [Delite Introduction Tutorial - Part 5](http://ibm-js.github.io/delite-tutorial/runnable/introduction-part5/samples/BlogPost.html)
 
-If you look at your debugger network tools, notice how the `./bower_components/delite/themes/common.css` and
-`./bower_components/delite/themes/global.css` CSS files are also loaded.
-Have a look through the less/CSS files in the `./bower_components/delite/themes/` directory.
-
 ---
 
 
