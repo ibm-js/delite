@@ -339,7 +339,7 @@ define([
 		 * @private
 		 */
 		_dropDownKeyDownHandler: function (e) {
-			/* jshint maxcomplexity:18 */
+			/* jshint maxcomplexity:19 */
 
 			if (this.disabled || this.readOnly) {
 				return;
@@ -351,6 +351,10 @@ define([
 					this.closeDropDown();
 					e.stopPropagation();
 					e.preventDefault();
+				} else if (e.key === "Tab") {
+					// Let the browser handle the TAB navigation.  Don't forward the keystroke to the dropdown.
+					// Note that this code doesn't apply to dialogs, where the focus is on the dropdown.
+					this.closeDropDown();
 				} else {
 					// Forward the keystroke to the dropdown widget.
 					// deliteful/List (the dropdown for deliteful/Combobox)
