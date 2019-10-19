@@ -1,12 +1,14 @@
 /** @module delite/KeyNav */
 define([
 	"dcl/dcl",
+	"dojo/window",
 	"./features",
 	"./on",
 	"./Widget",
 	"dpointer/events"		// so can just monitor for "pointerdown"
 ], function (
 	dcl,
+	win,
 	has,
 	on,
 	Widget
@@ -381,6 +383,7 @@ define([
 
 				// _descendantNavigateHandler() will be called automatically from child's focus event.
 			} else {
+				win.scrollIntoView(child);
 				this._descendantNavigateHandler(child, triggerEvent);
 			}
 		},
