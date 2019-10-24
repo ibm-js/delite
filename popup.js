@@ -413,6 +413,11 @@ define([
 				cancelable: false
 			});
 
+			// Anchor node must be in view, otherwise the popup/dropdown could appear off screen, or hanging in mid-air.
+			if (args.around) {
+				win.scrollIntoView(args.around);
+			}
+
 			// Size and position the popup.
 			this._prepareToOpen(args);
 			this._size(args, true);
