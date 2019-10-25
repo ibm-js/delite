@@ -215,9 +215,12 @@ define([
 			this._keynavTabKeyListener = on(this.ownerDocument.body, "keydown", function (evt) {
 				if (evt.key === "Tab") {
 					this._tabKeyJustPressed = true;
+
+					// Clear _tabKeyJustPressed after focusinHandler() has been called.  Note that 0ms is not long
+					// enough in some cases on Firefox, although that problem doesn't reproduce in the delite tests.
 					this.defer(function () {
 						this._tabKeyJustPressed = false;
-					}, 0);
+					}, 10);
 				}
 			}.bind(this), true);
 		}),
