@@ -173,9 +173,26 @@ define([
 				assert.strictEqual(a11y.getLastInTabbingOrder("multiDigitTabIndex").name, "eleven", "last");
 			},
 
-			"getNextInTabbingOrder": function () {
-				assert.strictEqual(a11y.getNextInTabbingOrder("table", 1).id, "after-table-1", "next");
-				assert.strictEqual(a11y.getNextInTabbingOrder("table", -1).id, "before-table-2", "previous");
+			"getNextInTabbingOrder": {
+				"basic": function () {
+					assert.strictEqual(a11y.getNextInTabbingOrder("table", 1).id, "after-table-1", "next");
+					assert.strictEqual(a11y.getNextInTabbingOrder("table", -1).id, "before-table-2", "previous");
+				},
+
+				"loop to top": function () {
+					assert.strictEqual(a11y.getNextInTabbingOrder("table-at-end", 1).id,
+						"before-table-at-end-1", "next");
+				},
+
+				"loop to bottom": function () {
+					assert.strictEqual(a11y.getNextInTabbingOrder("table-at-start", -1).id,
+						"after-table-at-start-2", "prev");
+				},
+
+				"returns null when nothing navigable besides element itself": function () {
+					assert.isNull(a11y.getNextInTabbingOrder("only-table", 1), "next");
+					assert.isNull(a11y.getNextInTabbingOrder("only-table", -1), "prev");
+				}
 			}
 		},
 

@@ -102,7 +102,7 @@ define([], function () {
 		 * @param {Element} root - The Element.
 		 * @param {Element} [pruneElement] - If specified, this element will be added to the returned array but
 		 * none of its descendants will.
-		 * @returns [{Element}]
+		 * @returns {Element}
 		 * @private
 		 */
 		_getTabNavigable: function (root, pruneElement) {
@@ -220,21 +220,36 @@ define([], function () {
 		},
 
 		/**
-		 * Returns the next or previous navigable node relative to the specified element,
+		 * Returns the next or previous navigable element relative to the specified element,
 		 * not including descendants of the specified element.  Element itself must be
 		 * tab-navigable.
 		 * @param {Element} element
-		 * @param {Document} [doc]
 		 * @param {number} dir - 1 = after, -1 = before
-		 * @returns {Element}
+		 * @param {Document} [doc]
+		 * @returns {Element} Next or previous element, or null if nothing is tab-navigable
+		 * besides `element` itself.
 		 */
 		getNextInTabbingOrder: function (element, dir, doc) {
 			if (typeof element === "string") {
 				element = (doc || document).getElementById(element);
 			}
-			var elems = this._getTabNavigable(element.ownerDocument.body, element);
+
+			// Find root node, either the document root or the root of the dialog.
+			var root = element;
+			while (root.tagName !== "BODY" && root.getAttribute("aria-modal") !== "true") {
+				root = root.parentNode;
+			}
+
+			var elems = a11y._getTabNavigable(root, element);
+
+			// Return null if nothing is navigable besides "element" itself.
+			if (elems.length === 1 && elems[0] === element) {
+				return null;
+			}
+
+			// Return next or previous navigable element, looping around if necessary.
 			var idx = elems.indexOf(element);
-			return elems[idx + dir];
+			return elems[(idx + dir + elems.length) % elems.length];
 		}
 	};
 
