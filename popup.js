@@ -5,6 +5,7 @@
 define([
 	"dcl/dcl",
 	"dojo/window",
+	"messageformat/messageformat",
 	"resize-observer-polyfill/dist/ResizeObserver",
 	"./BackgroundIframe",
 	"./DialogUnderlay",
@@ -16,6 +17,7 @@ define([
 ], function (
 	dcl,
 	win,
+	MessageFormat,
 	ResizeObserver,
 	BackgroundIframe,
 	DialogUnderlay,
@@ -25,6 +27,8 @@ define([
 	Viewport,
 	messages
 ) {
+	var messageFormat = new MessageFormat(navigator.language.replace(/-.*$/, ""));
+	var getWrapperLabel = messageFormat.compile(messages.popupLabel);
 
 	function isDocLtr(doc) {
 		return !(/^rtl$/i).test(doc.body.dir || doc.documentElement.dir);
@@ -290,7 +294,6 @@ define([
 				wrapper.className = "d-popup";
 				wrapper.style.display = "none";
 				wrapper.setAttribute("role", "region");
-				wrapper.setAttribute("aria-label", messages.popup);
 				widget.ownerDocument.body.appendChild(wrapper);
 
 				wrapper.appendChild(widget);
@@ -572,6 +575,9 @@ define([
 					}
 				})
 			);
+
+			// Set unique label for wrapper of each visible popup.
+			wrapper.setAttribute("aria-label", getWrapperLabel({ level: stack.length }));
 
 			args.wrapper = wrapper;
 			args.handlers = handlers;

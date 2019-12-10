@@ -41,7 +41,7 @@ define([
 							assert.strictEqual(role, "region", "popup's wrapper node needs role=region");
 						})
 						.getAttribute("aria-label").then(function (label) {
-							assert.strictEqual(label, "Popup", "popup's wrapper node needs aria-label");
+							assert.strictEqual(label, "popup", "popup's wrapper node needs aria-label");
 						})
 						.end();
 			},
@@ -85,6 +85,9 @@ define([
 					.sleep(500)
 					.findById("nestedChoice1").isDisplayed().then(function (displayed) {
 						assert.isTrue(displayed, "nestedChoice1 popup wasn't visible");
+					}).end()
+					.findById("nestedChoice1_wrapper").getAttribute("aria-label").then(function (label) {
+						assert.strictEqual(label, "nested popup", "nestedChoice1 wrapper unique aria-label");
 					}).end()
 					.findById("stub-for-blurring").click().end()
 					.sleep(500)
