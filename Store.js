@@ -176,7 +176,7 @@ define([
 		 */
 		deliver: dcl.superCall(function (sup) {
 			return function () {
-				sup.call();
+				sup.apply(this, arguments);
 				if (this._storeAdapter && typeof this._storeAdapter.deliver === "function") {
 					this._storeAdapter.deliver();
 				}
@@ -188,7 +188,7 @@ define([
 		 */
 		discardChanges: dcl.superCall(function (sup) {
 			return function () {
-				sup.call();
+				sup.apply(this, arguments);
 				if (this._storeAdapter && typeof this._storeAdapter.discardChanges === "function") {
 					this._storeAdapter.discardChanges();
 				}
