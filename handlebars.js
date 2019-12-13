@@ -238,8 +238,9 @@ define([
 			// For self-closing tags like <input> that have been converted to <template-input>, we need to add a
 			// closing </template-input> tag.
 			templateText = templateText.replace(
-				/* jshint maxlen:200 */
+				/* jshint ignore:start */
 				/<template-(area|base|br|col|command|embed|hr|img|input|keygen|link|meta|param|source|track|wbr)([^>]*?)\/?>/g,
+				/* jshint ignore:end */
 				"<template-$1$2></template-$1>");
 
 			// Also rename style attribute, because IE will drop style="..." if the ... is an illegal value
