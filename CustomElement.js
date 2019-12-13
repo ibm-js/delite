@@ -2,8 +2,8 @@
 define([
 	"dcl/advise",
 	"dcl/dcl",
-	"decor/Destroyable",
-	"decor/Stateful",
+	"ibm-decor/Destroyable",
+	"ibm-decor/Stateful",
 	"requirejs-dplugins/has",
 	"./on"
 ], function (

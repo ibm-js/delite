@@ -29,7 +29,7 @@ require.config({
 			"config-bgIframe": true
 		}
 	}
-}
+}).
 ```
 
 This can also be done as part of the build.

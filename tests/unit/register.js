@@ -1,8 +1,8 @@
 define([
 	"dcl/dcl",
-	"decor/sniff",
+	"ibm-decor/sniff",
 	"delite/register",
-	"decor/Stateful",
+	"ibm-decor/Stateful",
 	"requirejs-domready/domReady!"
 ], function (
 	dcl,

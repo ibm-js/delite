@@ -1,17 +1,13 @@
-define([
-	"require"
-], function (
-	require
-) {
+define([], function () {
 	var registerSuite = intern.getPlugin("interface.object").registerSuite;
 	var assert = intern.getPlugin("chai").assert;
-	var keys = require("@theintern/leadfoot/keys").default;
-	var pollUntil = require("@theintern/leadfoot/helpers/pollUntil").default;
+	var keys = requirejs.nodeRequire("@theintern/leadfoot/keys").default;
+	var pollUntil = requirejs.nodeRequire("@theintern/leadfoot/helpers/pollUntil").default;
 
 	registerSuite("HasDropDown \"open on hover\" functional tests", {
 		before: function () {
 			return this.remote
-				.get(require.toUrl("delite/tests/functional/HasDropDownHover.html"))
+				.get("delite/tests/functional/HasDropDownHover.html")
 				.then(pollUntil("return ready || null;", [], intern.config.WAIT_TIMEOUT, intern.config.POLL_INTERVAL));
 		},
 

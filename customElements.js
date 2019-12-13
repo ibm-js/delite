@@ -22,8 +22,8 @@ define([
 			if (has("builder") || typeof customElements !== "undefined") {
 				onload();
 			} else {
-				// Use variable to prevent overzealous builders from including custom-elements.min into the layer.
-				var x = "custom-elements/custom-elements.min";
+				// Use variable to prevent overzealous builders from including custom-elements.min.js into a layer.
+				var x = "@webcomponents/custom-elements/custom-elements.min";
 				require([x], function () {
 					onload();
 				});

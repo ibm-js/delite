@@ -8,11 +8,14 @@
 
 	<title>Delite - ExampleWidget</title>
 
-	<script type="text/javascript" src="../../requirejs/require.js"></script>
+	<script type="text/javascript" src="../node_modules/requirejs/require.js"></script>
 
 	<script type="text/javascript">
 		require({
-			baseUrl:"../.."
+			baseUrl: "../node_modules",
+			packages: [
+				{ name: "delite", location: ".." }
+			]
 		}, [
 			"delite/samples/ExampleWidget",
 			"requirejs-dplugins/css!delite/css/global.css"	// page level CSS

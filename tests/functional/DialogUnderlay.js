@@ -1,11 +1,7 @@
-define([
-	"require"
-], function (
-	require
-) {
+define([], function () {
 	var registerSuite = intern.getPlugin("interface.object").registerSuite;
 	var assert = intern.getPlugin("chai").assert;
-	var pollUntil = require("@theintern/leadfoot/helpers/pollUntil").default;
+	var pollUntil = requirejs.nodeRequire("@theintern/leadfoot/helpers/pollUntil").default;
 
 	function clickMainScreen(remote) {
 		return function () {
@@ -20,7 +16,7 @@ define([
 
 	registerSuite("DialogUnderlay functional tests", {
 		before: function () {
-			return this.remote.get(require.toUrl("delite/tests/functional/DialogUnderlay.html"))
+			return this.remote.get("delite/tests/functional/DialogUnderlay.html")
 				.then(pollUntil("return ready || null;", [], intern.config.WAIT_TIMEOUT, intern.config.POLL_INTERVAL));
 		},
 

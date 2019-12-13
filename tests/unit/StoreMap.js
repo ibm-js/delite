@@ -4,8 +4,8 @@ define([
 	"delite/register",
 	"delite/Widget",
 	"delite/StoreMap",
-	"dstore/Trackable",
-	"dstore/Memory"
+	"dojo-dstore/Trackable",
+	"dojo-dstore/Memory"
 ], function (
 	dcl,
 	declare,

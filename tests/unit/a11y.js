@@ -1,6 +1,6 @@
 define([
 	"delite/a11y",
-	"decor/sniff",
+	"ibm-decor/sniff",
 	"requirejs-text/text!./resources/a11y.html"
 ], function (
 	a11y,

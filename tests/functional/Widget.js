@@ -1,18 +1,14 @@
-define([
-	"require"
-], function (
-	require
-) {
+define([], function () {
 	var registerSuite = intern.getPlugin("interface.object").registerSuite;
 	var assert = intern.getPlugin("chai").assert;
-	var pollUntil = require("@theintern/leadfoot/helpers/pollUntil").default;
+	var pollUntil = requirejs.nodeRequire("@theintern/leadfoot/helpers/pollUntil").default;
 
 	// Most of Widget's functionality is checked via the unit tests, but we have a functional test for checking
 	// that focusin/focusout event handlers work.
 	registerSuite("Widget functional tests", {
 		before: function () {
 			return this.remote
-				.get(require.toUrl("delite/tests/functional/Widget.html"))
+				.get("delite/tests/functional/Widget.html")
 				.then(pollUntil("return ready || null;", [], intern.config.WAIT_TIMEOUT, intern.config.POLL_INTERVAL));
 		},
 

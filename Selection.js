@@ -1,6 +1,6 @@
 /** @module delite/Selection */
-define(["dcl/dcl", "decor/sniff", "./Widget"], function (dcl, has, Widget) {
-	
+define(["dcl/dcl", "ibm-decor/sniff", "./Widget"], function (dcl, has, Widget) {
+
 	/**
 	 * Selection change event. Dispatched after the selection has
 	 * been modified through user interaction.
@@ -15,7 +15,7 @@ define(["dcl/dcl", "decor/sniff", "./Widget"], function (dcl, has, Widget) {
 	 * @property {Object} renderer - The visual renderer of the selected/deselected item.
 	 * @property {Event} triggerEvent - The event that lead to the selection of the item.
 	 */
-	
+
 	/**
 	 * Mixin for widgets that manage a list of selected data items.
 	 * @mixin module:delite/Selection
@@ -27,7 +27,7 @@ define(["dcl/dcl", "decor/sniff", "./Widget"], function (dcl, has, Widget) {
 		constructor: function () {
 			this._set("selectedItems", []);
 		},
-		
+
 		/**
 		 * The chosen selection mode.
 		 *
@@ -36,9 +36,9 @@ define(["dcl/dcl", "decor/sniff", "./Widget"], function (dcl, has, Widget) {
 		 * 1. "none": No selection can be done.
 		 * 2. "single": Only one or zero items can be selected at a time. Interactively selecting a new item deselects
 		 * the previously selected one.
-		 * 3. "radio":  Initially only one or zero items can be selected. Once an item has been selected, interactively 
-		 * selecting another item deselects the previously selected item, and the user cannot deselect the currently 
-		 * selected item. 
+		 * 3. "radio":  Initially only one or zero items can be selected. Once an item has been selected, interactively
+		 * selecting another item deselects the previously selected item, and the user cannot deselect the currently
+		 * selected item.
 		 * 4. "multiple": Multiple items can be selected. By default ctrl key must be used to select additional items.
 		 * However that behavior might be specialized by subclasses.
 		 *

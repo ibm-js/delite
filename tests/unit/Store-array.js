@@ -4,7 +4,7 @@ define([
 	"delite/register",
 	"delite/Widget",
 	"delite/Store",
-	"dstore/Filter"
+	"dojo-dstore/Filter"
 ], function (
 	dcl,
 	declare,

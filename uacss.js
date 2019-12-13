@@ -1,6 +1,6 @@
 /**
  * Applies pre-set CSS classes to the top-level HTML node, based on:
- * 
+ *
  * - browser: `d-webkit`, `d-safari`, `d-chrome`, `d-ff`, `d-edge`, `d-ie`, `d-ios`, `d-android`
  * - browser version (ex: `d-ie-9`, `d-ff-26`)
  *
@@ -8,7 +8,7 @@
  *
  * @module delite/uacss
  */
-define(["decor/sniff"], function (has) {
+define(["ibm-decor/sniff"], function (has) {
 	var ie = has("ie"),
 		maj = Math.floor,
 		ff = has("ff"),

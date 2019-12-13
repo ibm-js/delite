@@ -17,7 +17,10 @@
 		"loader": {
 			"script": "./intern-requirejs-loader.js",
 			"options": {
-				"baseUrl": "."
+				"baseUrl": "./node_modules",
+				"packages": [
+					{ "name": "delite", "location": ".." }
+				]
 			}
 		}
 	},
@@ -26,9 +29,9 @@
 		"loader": {
 			"script": "delite/intern-requirejs-loader.js",
 			"options": {
-				"baseUrl": "../../..",
+				"baseUrl": "../../../delite/node_modules",
 				"packages": [
-					{ "name": "intern", "location": "delite/node_modules/intern" }
+					{ "name": "delite", "location": ".." }
 				]
 			}
 		}
@@ -59,18 +62,18 @@
 	],
 
 	"functionalSuites": [
-		"./tests/functional/activationTracker",
-		"./tests/functional/Widget",
-		"./tests/functional/DialogUnderlay",
-		"./tests/functional/FormValueWidget",
-		"./tests/functional/HasDropDown",
-		"./tests/functional/HasDropDownHover",
-		"./tests/functional/TabIndex",
-		"./tests/functional/KeyNav",
-		"./tests/functional/on",
-		"./tests/functional/popup",
-		"./tests/functional/register",
-		"./tests/functional/DojoParser"
+		"delite/tests/functional/activationTracker",
+		"delite/tests/functional/Widget",
+		"delite/tests/functional/DialogUnderlay",
+		"delite/tests/functional/FormValueWidget",
+		"delite/tests/functional/HasDropDown",
+		"delite/tests/functional/HasDropDownHover",
+		"delite/tests/functional/TabIndex",
+		"delite/tests/functional/KeyNav",
+		"delite/tests/functional/on",
+		"delite/tests/functional/popup",
+		"delite/tests/functional/register",
+		"delite/tests/functional/DojoParser"
 	],
 
 	"coverage": [

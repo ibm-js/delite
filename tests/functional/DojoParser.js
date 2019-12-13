@@ -1,16 +1,12 @@
-define([
-	"require"
-], function (
-	require
-) {
+define([], function () {
 	var registerSuite = intern.getPlugin("interface.object").registerSuite;
 	var assert = intern.getPlugin("chai").assert;
-	var pollUntil = require("@theintern/leadfoot/helpers/pollUntil").default;
+	var pollUntil = requirejs.nodeRequire("@theintern/leadfoot/helpers/pollUntil").default;
 
 	registerSuite("delite/dojo parser compatibility test", {
 		before: function () {
 			return this.remote
-				.get(require.toUrl("delite/tests/functional/DojoParser.html"))
+				.get("delite/tests/functional/DojoParser.html")
 				.then(pollUntil("return (readyDijit && readyDelite) || null;", [],
 					intern.config.WAIT_TIMEOUT, intern.config.POLL_INTERVAL));
 		},

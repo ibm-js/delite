@@ -2,7 +2,7 @@
 define([
 	"dcl/dcl",
 	"requirejs-dplugins/has",
-	"decor/Invalidating",
+	"ibm-decor/Invalidating",
 	"requirejs-dplugins/Promise!",
 	"./ArrayQueryAdapter",
 	"./DstoreQueryAdapter"

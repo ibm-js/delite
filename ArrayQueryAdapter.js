@@ -1,7 +1,7 @@
 /** @module delite/ArrayQueryAdapter */
 define([
 	"dcl/dcl",
-	"decor/Evented",
+	"ibm-decor/Evented",
 	"requirejs-dplugins/Promise!"
 ], function (dcl, Evented, Promise) {
 

@@ -1,8 +1,29 @@
 {
 	"name": "delite",
-	"version": "0.8.2",
+	"version": "0.9.0",
+	"description": "core UI infrastructure for building multi channel, enterprise class Web Components to be used in Web & Mobile Hybrid applications",
+	"homepage": "http://ibm-js.github.io/delite/",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/ibm-js/delite"
+	},
+	"bugs": "https://github.com/ibm-js/delite/issues",
+	"dependencies": {
+		"dcl": "^2.0.6",
+		"ibm-decor": "0.8.x",
+		"dojo": "^1.15.0",
+		"dpointer": "0.5.x",
+		"dojo-dstore": "1.1.x",
+		"messageformat": "1.0.2",
+		"requirejs-domready": "2.0.x",
+		"requirejs-dplugins": "0.6.x",
+		"requirejs-text": "2.0.x",
+		"resize-observer-polyfill": "1.5.x",
+		"@webcomponents/custom-elements": "1.1.x"
+	},
 	"devDependencies": {
 		"clean-css": "~2.2.6",
+		"dijit": "1.14.x",
 		"grunt": "~0.4.2",
 		"grunt-contrib-jshint": "~0.6.3",
 		"grunt-contrib-less": "~0.8.3",
@@ -13,17 +34,12 @@
 		"requirejs": "^2.3.6"
 	},
 	"jsdocDependencies": [
-		"decor"
+		"ibm-decor"
 	],
 	"licenses": [
 		{
 			"type": "BSD",
 			"url": "https://github.com/ibm-js/delite/blob/master/LICENSE"
 		}
-	],
-	"bugs": "https://github.com/ibm-js/delite/issues",
-	"private": true,
-	"dependencies": {
-		"dojo": "^1.15.0"
-	}
+	]
 }

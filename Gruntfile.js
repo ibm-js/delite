@@ -61,7 +61,7 @@ module.exports = function (grunt) {
 							"../decor/out"
 						],
 						paths: {
-							"decor": "../../../../decor/docs/api/0.3.0/decor"
+							"ibm-decor": "../../../node_modules/decor/docs/api/0.3.0/decor"
 						},
 						packagePathFormat: "${name}/docs/api/${version}",
 						includeEventsInTOC: "false"

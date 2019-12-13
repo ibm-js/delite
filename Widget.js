@@ -2,7 +2,7 @@
 define([
 	"dcl/dcl",
 	"./features",
-	"decor/Invalidating",
+	"ibm-decor/Invalidating",
 	"./CustomElement",
 	"./register",
 	"./classList",

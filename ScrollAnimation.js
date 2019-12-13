@@ -1,7 +1,7 @@
 /** @module delite/ScrollAnimation */
 define([
 	"dcl/dcl",
-	"decor/Evented"
+	"ibm-decor/Evented"
 ], function (dcl, Evented) {
 	"use strict";
 

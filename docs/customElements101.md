@@ -109,7 +109,7 @@ Therefore, if your custom elements depend on a global variable, like in the exam
 you should make sure it is available before the custom element is loaded.  So you may need code like this:
 
 ```js
-require(["dstore/Memory"], function (Memory) {
+require(["dojo-dstore/Memory"], function (Memory) {
 	myGlobalVar = new Memory();
 	require(["deliteful/List"]);
 });

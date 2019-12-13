@@ -7,15 +7,15 @@
  * Viewport.on("resize", myCallback)
  * Viewport.on("scroll", myOtherCallback)
  * ```
- * 
+ *
  * myCallback() is called without arguments in case it's Widget.resize(),
  * which would interpret the argument as the size to make the widget.
  *
  * @module delite/Viewport
  */
 define([
-	"decor/Evented",
-	"decor/sniff",	// has("ios")
+	"ibm-decor/Evented",
+	"ibm-decor/sniff",	// has("ios")
 	"requirejs-domready/domReady!"
 ], function (
 	Evented,

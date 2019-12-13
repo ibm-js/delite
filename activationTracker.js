@@ -43,8 +43,8 @@
 define([
 	"dcl/advise",
 	"dcl/dcl",
-	"decor/Evented",
-	"decor/sniff",
+	"ibm-decor/Evented",
+	"ibm-decor/sniff",
 	"./on",
 	"dpointer/events",		// so can just monitor for "pointerdown"
 	"requirejs-domready/domReady!"
