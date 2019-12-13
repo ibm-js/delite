@@ -163,7 +163,6 @@
 				{ "browserName": "internet explorer", "version": "11", "fixSessionCapabilities": false, "name": "delite"},
 				{ "browserName": "firefox", "platform": [ "Windows 10" ], "fixSessionCapabilities": false, "name": "delite" },
 				{ "browserName": "chrome", "platform": [ "Windows 10" ], "fixSessionCapabilities": false, "name": "delite" },
-				{ "browserName": "safari", "fixSessionCapabilities": false, "name": "delite" },
 				{ "browserName": "android", "platform": "Linux", "version": "6.0", "deviceName": "Android Emulator",
 					"deviceType": "tablet", "fixSessionCapabilities": "no-detect", "name": "delite" }
 			],
