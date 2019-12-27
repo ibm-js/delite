@@ -1,12 +1,11 @@
-# Delite Unit Tests
+# Delite Tests
 
-This directory contains the Delite unit tests.
+This directory contains the Delite unit and functional tests.
 
 ## Setup
 
 ```
 $ npm install
-$ bower install
 ```
 
 Also, if you are going to run against Sauce Labs, then
@@ -32,7 +31,7 @@ explained in https://theintern.io/docs.html#Intern/4/docs/docs%2Frunning.md/clou
 $ npx intern config=@sauce
 ```
 
-## Running from browser
+## Running unit tests from browser
 
 Start local HTTP server in directory above delite:
 
@@ -42,6 +41,6 @@ $ http-server
 
 Then in browser, navigate to:
 
-http://localhost:8080/delite/node_modules/intern/
+http://localhost:8080/delite/node_modules/intern/?reporters=html
 
 (Adjust port to whatever http-server started on.)

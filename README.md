@@ -25,18 +25,15 @@ All contributions require a [Dojo Foundation CLA](http://dojofoundation.org/abou
 
 ## Installation
 
-_Bower_ release installation:
+_Npm_ release installation:
 
-    $ bower install delite
+    $  npm install delite
 
 _Manual_ master installation:
 
     $ git clone git://github.com/ibm-js/delite.git
-
-Then install dependencies with bower (or manually from github if you prefer to):
-
-	$ cd delite
-	$ bower install
+    $ cd delite
+    $ npm install
 
 ## Documentation
 
