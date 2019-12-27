@@ -9,17 +9,17 @@
 	},
 	"bugs": "https://github.com/ibm-js/delite/issues",
 	"dependencies": {
+		"@webcomponents/custom-elements": "1.1.x",
 		"dcl": "^2.0.6",
-		"ibm-decor": "0.8.x",
-		"dojo": "^1.15.0",
-		"dpointer": "0.5.x",
+		"dojo": "^1.16.0",
 		"dojo-dstore": "1.1.x",
+		"dpointer": "0.5.x",
+		"ibm-decor": "0.8.x",
 		"messageformat": "1.0.2",
 		"requirejs-domready": "2.0.x",
 		"requirejs-dplugins": "0.6.x",
 		"requirejs-text": "2.0.x",
-		"resize-observer-polyfill": "1.5.x",
-		"@webcomponents/custom-elements": "1.1.x"
+		"resize-observer-polyfill": "1.5.x"
 	},
 	"devDependencies": {
 		"clean-css": "^4.2.1",
@@ -28,8 +28,8 @@
 		"grunt-contrib-jshint": "^2.1.0",
 		"grunt-contrib-less": "^2.0.0",
 		"grunt-contrib-uglify": "^4.0.1",
-		"intern": "^4.4.2",
-		"jsdoc-amddcl": "git+https://github.com/ibm-js/jsdoc-amddcl#master",
+		"intern": "^4.7.1",
+		"jsdoc-amddcl": "git+https://github.com/ibm-js/jsdoc-amddcl.git#master",
 		"jsdom": "7.x",
 		"requirejs": "^2.3.6"
 	},
