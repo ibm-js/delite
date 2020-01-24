@@ -154,6 +154,28 @@
 				}
 			});
 
+			// Test that tabKeyHandler() method can return false to make browser handle the tab key.
+			register("tab-testing-node", [HTMLElement, KeyNav], {
+				template: handlebars.compile(
+					"<template>" +
+					"<input value='input'>" +
+					"</template>"
+				),
+
+				descendantSelector: function (child) {
+					return true;
+				},
+
+				// Flag to ignore the tab key (just for testing).
+				ignore: true,
+
+				tabKeyHandler: function () {
+					// Returns true the first time, false the second.
+					this.ignore = !this.ignore;
+					return !this.ignore;
+				}
+			});
+
 			// Test declarative creation
 			register.deliver();
 
@@ -240,6 +262,11 @@
 		/* focused cells in each of my KeyNav subclasses */
 		my-cell:focus, my-list > *:focus, my-list-cust > *:focus {
 			background-color: yellow;
+		}
+
+		tab-testing-node {
+			display: block;
+			border: 1px solid blue;
 		}
 
 		/* Styles for ComboBox dropdown where it doesn't get focus but we need to show which list item is
@@ -361,5 +388,14 @@
 		<my-list-item value="NY">New York</my-list-item>
 	</my-container-node>
 	<input id="keynavroot_after">
+
+	<h3>tabTestingNode</h3>
+	<p>
+		First tab key should go to first &lt;input&gt;, second tab key should do nothing,
+		and third should go to the the &lt;input&gt; after the container.
+	</p>
+	<input id="tabtestingnode_before" placeholder="input before KeyNav subclass">
+	<tab-testing-node id="tabtestingnode" style="border: 1px solid blue;"></tab-testing-node>
+	<input id="tabtestingnode_after" placeholder="input after KeyNav subclass">
 </body>
 </html>

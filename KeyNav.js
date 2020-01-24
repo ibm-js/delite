@@ -70,6 +70,8 @@ define([
 	  *   The method takes two parameters: the event, and the currently navigated node.
 	  *   Most subclasses will want to implement either `previousKeyHandler()`
 	  *   and `nextKeyHandler()`, or `downKeyHandler()` and `upKeyHandler()`.
+	  *   The method should return true if the keystroke was handled, or false if not.
+	  *   For backwards compatibility, not returning any value also indicates that the keystroke was handled.
 	  * - Set all navigable descendants' initial tabIndex to "-1"; both initial descendants and any
 	  *   descendants added later, by for example `addChild()`.  Exception: if `focusDescendants` is false then the
 	  *   descendants shouldn't have any tabIndex at all.
@@ -542,9 +544,15 @@ define([
 			// Call it
 			var func = this[methodName];
 			if (func) {
-				func.call(this, evt, this.navigatedDescendant);
-				evt.stopPropagation();
-				evt.preventDefault();
+				var handled = func.call(this, evt, this.navigatedDescendant);
+
+				// Cancel the event if the handler function returns true, or, for backwards compatibility,
+				// if it doesn't return a value at all.
+				if (handled !== false) {
+					evt.stopPropagation();
+					evt.preventDefault();
+				}
+
 				this._searchString = ""; // so a DOWN_ARROW b doesn't search for ab
 			}
 		},

@@ -411,6 +411,23 @@ define([], function () {
 						assert.strictEqual(text, "before button", "after shift-tab");
 					})
 					.pressKeys(keys.SHIFT);	// release the shift key
+			},
+
+			"return value from tabKeyHandler": function () {
+				return this.remote
+					.findById("tabtestingnode_before").click().end()
+					.pressKeys(keys.TAB)
+					.execute("return document.activeElement.value;").then(function (text) {
+						assert.strictEqual(text, "input", "initial tab in");
+					})
+					.pressKeys(keys.TAB)
+					.execute("return document.activeElement.value;").then(function (text) {
+						assert.strictEqual(text, "input", "first tab, still on input");
+					})
+					.pressKeys(keys.TAB)
+					.execute("return document.activeElement.id;").then(function (text) {
+						assert.strictEqual(text, "tabtestingnode_after", "second tab, handled by browser");
+					});
 			}
 		}
 	});
