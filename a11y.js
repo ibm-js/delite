@@ -30,7 +30,7 @@ define([], function () {
 			// No explicit tabIndex setting, need to investigate node type
 			switch (elem.nodeName.toLowerCase()) {
 			case "a":
-				// An <a> w/out a tabIndex is only navigable if it has an href
+				// An <a> w/out a tabindex is only navigable if it has an href
 				return elem.hasAttribute("href");
 			case "area":
 			case "button":
@@ -96,17 +96,21 @@ define([], function () {
 		},
 
 		/**
-		 * Return array of tab-navigable descendants of the specified root node,
-		 * in the order that they would be navigated by the tab key.
+		 * Finds descendants of the specified root node.
 		 *
-		 * @param {Element} root - The Element.
-		 * @param {Element} [pruneElement] - If specified, this element will be added to the returned array but
-		 * none of its descendants will.
-		 * @returns {Element}
+		 * The following descendants of the specified root node are returned:
+		 *
+		 * - the first tab-navigable element in document order without a tabIndex or with tabIndex="0"
+		 * - the last tab-navigable element in document order without a tabIndex or with tabIndex="0"
+		 * - the first element in document order with the lowest positive tabIndex value
+		 * - the last element in document order with the highest positive tabIndex value
+		 *
+		 * @param Element root - The Element.
+		 * @returns {Object} Hash of the format `{first: Element, last: Element, lowest: Element, highest: Element}`.
 		 * @private
 		 */
-		_getTabNavigable: function (root, pruneElement) {
-			var elements = [], radioButtonByName = {};
+		_getTabNavigable: function (root) {
+			var first, last, lowest, lowestTabindex, highest, highestTabindex, radioSelected = {};
 
 			function radioName(node) {
 				// If this element is part of a radio button group, return the name for that group.
@@ -119,58 +123,34 @@ define([], function () {
 
 			function walkTree(/*Element*/ parent) {
 				/* jshint maxcomplexity:14 */
-				for (var child = parent.firstElementChild; child; child = child.nextElementSibling) {
-					// Special case code used by getNextInTabbingOrder().
-					if (child === pruneElement) {
-						elements.push({
-							tabIndex: "_savedTabIndex" in pruneElement ? pruneElement._savedTabIndex :
-								pruneElement.tabIndex >= 0 ? pruneElement.tabIndex : 0,
-							position: elements.length,
-							element: child
-						});
+				for (var child = parent.firstChild; child; child = child.nextSibling) {
+					// Skip text elements, hidden elements
+					if (child.nodeType !== 1 || !shown(child)) {
 						continue;
 					}
 
-					// Skip hidden DOM trees.
-					if (!shown(child)) {
-						continue;
-					}
-
-					// If node is tab-navigable then add to elements[].
-					var tabIndex = effectiveTabIndex(child);
-					if (tabIndex >= 0) {
-						var rn = radioName(child);
-						if (rn) {
-							// Only register one radio button (for a given group) as tab-navigable.
-							// Note: assumes that all radio buttons in the same group have the same tabindex.
-							if (!(rn in radioButtonByName)) {
-								// First radio button seen with this name.  Register it, and add it to
-								// elements[] array.
-								radioButtonByName[rn] = {
-									tabIndex: tabIndex,
-									position: elements.length,
-									element: child
-								};
-								elements.push(radioButtonByName[rn]);
-							} else if (child.checked) {
-								// This radio button is selected, so it overrides the radio button already added to
-								// elements[].
-								radioButtonByName[rn].element = child;
-							} else {
-								// Ignore this radio button since it's not the first one with seen (with this name),
-								// and it's not selected.
+					var tabindex = effectiveTabIndex(child);
+					if (tabindex >= 0) {
+						if (tabindex === 0) {
+							if (!first) {
+								first = child;
 							}
-						} else {
-							// Not a radio button, so just add it to elements[];
-							elements.push({
-								tabIndex: tabIndex,
-								position: elements.length,
-								element: child
-							});
+							last = child;
+						} else if (tabindex > 0) {
+							if (!lowest || tabindex < lowestTabindex) {
+								lowestTabindex = tabindex;
+								lowest = child;
+							}
+							if (!highest || tabindex >= highestTabindex) {
+								highestTabindex = tabindex;
+								highest = child;
+							}
+						}
+						var rn = radioName(child);
+						if (child.checked && rn) {
+							radioSelected[rn] = child;
 						}
 					}
-
-					// Search child nodes.
 					if (child.nodeName.toUpperCase() !== "SELECT") {
 						walkTree(child);
 					}
@@ -180,15 +160,12 @@ define([], function () {
 			if (shown(root)) {
 				walkTree(root);
 			}
+			function rs(node) {
+				// substitute checked radio button for unchecked one, if there is a checked one with the same name.
+				return radioSelected[radioName(node)] || node;
+			}
 
-			var sortedElements = elements.sort(function (a, b) {
-				// Tab should go to positive tabindexes before tabindex=0, so convert 0 to Infinity.
-				return (a.tabIndex || Infinity) - (b.tabIndex || Infinity) || a.position - b.position;
-			}).map(function (info) {
-				return info.element;
-			});
-
-			return sortedElements;
+			return { first: rs(first), last: rs(last), lowest: rs(lowest), highest: rs(highest) };
 		},
 
 		/**
@@ -202,7 +179,7 @@ define([], function () {
 				root = (doc || document).getElementById(root);
 			}
 			var elems = a11y._getTabNavigable(root);
-			return elems[0];
+			return elems.lowest ? elems.lowest : elems.first;
 		},
 
 		/**
@@ -216,40 +193,7 @@ define([], function () {
 				root = (doc || document).getElementById(root);
 			}
 			var elems = a11y._getTabNavigable(root);
-			return elems[elems.length - 1];
-		},
-
-		/**
-		 * Returns the next or previous navigable element relative to the specified element,
-		 * not including descendants of the specified element.  Element itself must be
-		 * tab-navigable.
-		 * @param {Element} element
-		 * @param {number} dir - 1 = after, -1 = before
-		 * @param {Document} [doc]
-		 * @returns {Element} Next or previous element, or null if nothing is tab-navigable
-		 * besides `element` itself.
-		 */
-		getNextInTabbingOrder: function (element, dir, doc) {
-			if (typeof element === "string") {
-				element = (doc || document).getElementById(element);
-			}
-
-			// Find root node, either the document root or the root of the dialog.
-			var root = element;
-			while (root.tagName !== "BODY" && root.getAttribute("aria-modal") !== "true") {
-				root = root.parentNode;
-			}
-
-			var elems = a11y._getTabNavigable(root, element);
-
-			// Return null if nothing is navigable besides "element" itself.
-			if (elems.length === 1 && elems[0] === element) {
-				return null;
-			}
-
-			// Return next or previous navigable element, looping around if necessary.
-			var idx = elems.indexOf(element);
-			return elems[(idx + dir + elems.length) % elems.length];
+			return elems.last ? elems.last : elems.highest;
 		}
 	};
 

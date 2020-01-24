@@ -65,8 +65,8 @@ define([
 	  *   The methods for up and down arrow keys are `upKeyHandler() and `downKeyHandler()`.
 	  *   For BIDI support, the left and right arrows are handled specially, mapped to the `previousKeyHandler()`
 	  *   and `nextKeyHandler()` methods in LTR mode, or reversed in RTL mode.
-	  *   Otherwise, the method name is based on the key names defined by
-	  *   https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values, for example `homeKeyHandler()`.
+	  *   Otherwise, the method name is based on the key names
+	  *   defined by https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key, for example `homeKeyHandler()`.
 	  *   The method takes two parameters: the event, and the currently navigated node.
 	  *   Most subclasses will want to implement either `previousKeyHandler()`
 	  *   and `nextKeyHandler()`, or `downKeyHandler()` and `upKeyHandler()`.
