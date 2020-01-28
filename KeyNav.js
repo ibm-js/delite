@@ -169,15 +169,9 @@ define([
 				this.keyNavContainerNode = this.containerNode || this;
 			}
 
-			// There are two cases when this.containerNode.focus() is called rather than this.focus():
-			// - When this is the first element in a Dialog (a11y.getFirstInTabbingOrder()).
-			// - When tabbing/shift-tabbing from one deliteful/List to another (a11y.getNextInTabbingOrder()).
-			// In either case, focus my first navigable descendant.
+			// containerNode.focus() called when this is the first element in a Dialog (a11y.getFirstInTabbingOrder()).
 			if (this.containerNode && this.containerNode !== this) {
 				this.containerNode.focus = function () {
-					// Avoid focusinHandler() making recursive call to focus().
-					this._tabKeyJustPressed = false;
-
 					// Focus first navigable descendant.
 					this.focus();
 				}.bind(this);
@@ -187,6 +181,7 @@ define([
 			this.on("keydown", this._keynavKeyDownHandler.bind(this), this.keyNavContainerNode);
 
 			this.on("pointerdown", this.pointerdownHandler.bind(this), this.keyNavContainerNode);
+			this.on("pointerup", this.pointerupHandler.bind(this), this.keyNavContainerNode);
 			this.on("focusin", this.focusinHandler.bind(this), this.keyNavContainerNode);
 			this.on("focusout", this.focusoutHandler.bind(this), this.keyNavContainerNode);
 		},
@@ -212,36 +207,32 @@ define([
 			if (this.focusDescendants && !container.hasAttribute("tabindex")) {
 				container.tabIndex = "0";
 			}
-
-			// Keep track of if user just pressed tab, so we can have different focus behavior for mouse vs. keyboard.
-			this._keynavTabKeyListener = on(this.ownerDocument.body, "keydown", function (evt) {
-				if (evt.key === "Tab") {
-					this._tabKeyJustPressed = true;
-
-					// Clear _tabKeyJustPressed after focusinHandler() has been called.  Note that 0ms is not long
-					// enough in some cases on Firefox, although that problem doesn't reproduce in the delite tests.
-					this.defer(function () {
-						this._tabKeyJustPressed = false;
-					}, 10);
-				}
-			}.bind(this), true);
 		}),
-
-		disconnectedCallback: function () {
-			// Remove listener here rather than using this.own() so that there's no need to call destroy().
-			this._keynavTabKeyListener.remove();
-		},
 
 		/**
 		 * Called on pointerdown event (on container or child of container).
-		 * Navigation occurs on pointerdown, to match behavior of native elements.
-		 * Normally this handler isn't needed as it's redundant w/the focusin event.
 		 */
 		pointerdownHandler: function (evt) {
+			// Focusin handler needs to differentiate between focusin from pointer or tab/shift-tab.
+			this._pointerOperation = true;
+
+			// Navigation occurs on pointerdown, to match behavior of native elements.
+			// Normally this handler isn't needed as it's redundant w/the focusin event.
 			var target = this._getTargetElement(evt);
 			if (target) {
 				this._descendantNavigateHandler(target, evt);
 			}
+		},
+
+		/**
+		 * Called on pointerup event (on container or child of container).
+		 */
+		pointerupHandler: function () {
+			// Clear _pointerOperation after focusinHandler() has been called.  Note that 0ms is not long
+			// enough in some cases on Firefox, although that problem doesn't reproduce in the delite tests.
+			this.defer(function () {
+				delete this._pointerOperation;
+			}, 10);
 		},
 
 		/**
@@ -250,7 +241,8 @@ define([
 		focusinHandler: function (evt) {
 			var container = this.keyNavContainerNode;
 			if (this.focusDescendants) {
-				if (this._tabKeyJustPressed && !container.contains(evt.relatedTarget)) {
+				var focusByTab = !this._pointerOperation && !this._programmaticallyFocusing;
+				if (focusByTab && !container.contains(evt.relatedTarget)) {
 					// When tabbing/shift-tabbing into this widget, focus the first child but do it on a delay so that
 					// activationTracker sees my "focus" event before seeing the "focus" event on the child widget.
 					// Note that shift-tab (from outside this widget) might go to an embedded widget rather than
@@ -384,7 +376,9 @@ define([
 				// If this._savedTabIndex is set, use it instead of this.tabIndex, because it means
 				// the container's tabIndex has already been changed to -1.
 				child.tabIndex = "_savedTabIndex" in this ? this._savedTabIndex : this.keyNavContainerNode.tabIndex;
+				this._programmaticallyFocusing = true;
 				child.focus();
+				delete this._programmaticallyFocusing;
 
 				// _descendantNavigateHandler() will be called automatically from child's focus event.
 			} else {
