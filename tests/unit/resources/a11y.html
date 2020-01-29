@@ -13,7 +13,7 @@
     <button id="button"></button>
 </div>
 <div id="input-container">
-    <input id="input"/>
+    <input id="input">
 </div>
 <div id="object-container">
     <object id="object" type="text/javascript"></object>
@@ -26,9 +26,9 @@
 </div>
 
 <div id="skip-disabled">
-    <input id="disabled-input1" disabled="disabled"/>
-    <input id="not-disabled-input"/>
-    <input id="disabled-input2" disabled="disabled"/>
+    <input id="disabled-input1" disabled="disabled">
+    <input id="not-disabled-input">
+    <input id="disabled-input2" disabled="disabled">
 </div>
 
 <div id="zero-tabindex-div-container">
@@ -40,7 +40,7 @@
 </div>
 
 <div id="zero-tabindex-input-container">
-    <input id="zero-tabindex-input" tabindex="0"/>
+    <input id="zero-tabindex-input" tabindex="0">
 </div>
 
 <div id="iframe-container">
@@ -48,57 +48,57 @@
 </div>
 
 <div id="positive-tabindex-mixed-with-no-tabindex">
-    <input id="no-tabindex-input1"/>
-    <input id="no-tabindex-input2"/>
-    <input id="positive-tabindex-input1a" tabindex="1"/>
-    <input id="positive-tabindex-input1b" tabindex="1"/>
-    <input id="positive-tabindex-input2a" tabindex="2"/>
-    <input id="positive-tabindex-input2b" tabindex="2"/>
+    <input id="no-tabindex-input1">
+    <input id="no-tabindex-input2">
+    <input id="positive-tabindex-input1a" tabindex="1">
+    <input id="positive-tabindex-input2a" tabindex="2">
+    <input id="positive-tabindex-input2b" tabindex="2">
+    <input id="positive-tabindex-input1b" tabindex="1">
 </div>
 
 <div id="positive-tabindex">
-    <input id="positive-tabindex-input3a" tabindex="3"/>
-    <input id="positive-tabindex-input3b" tabindex="3"/>
-    <input id="positive-tabindex-input4a" tabindex="4"/>
-    <input id="positive-tabindex-input4b" tabindex="4"/>
+    <input id="positive-tabindex-input4a" tabindex="4">
+    <input id="positive-tabindex-input4b" tabindex="4">
+    <input id="positive-tabindex-input3a" tabindex="3">
+    <input id="positive-tabindex-input3b" tabindex="3">
 </div>
 
 <div id="skip-minus-one">
-    <input id="minus-one-input1" tabindex="-1"/>
-    <input id="not-minus-one-input"/>
-    <input id="minus-one-input2" tabindex="-1"/>
+    <input id="minus-one-input1" tabindex="-1">
+    <input id="not-minus-one-input">
+    <input id="minus-one-input2" tabindex="-1">
 </div>
 
 <div id="descend">
-    <input disabled="disabled"/>
+    <input disabled="disabled">
 
     <div>
-        <input disabled="disabled"/>
+        <input disabled="disabled">
 
         <div>
-            <input disabled="disabled"/>
+            <input disabled="disabled">
         </div>
     </div>
     <div>
-        <input disabled="disabled"/>
+        <input disabled="disabled">
 
         <div>
-            <input disabled="disabled"/>
+            <input disabled="disabled">
         </div>
         <div>
-            <input id="child-input1"/>
+            <input id="child-input1">
         </div>
         <div>
-            <input id="child-input2"/>
+            <input id="child-input2">
         </div>
     </div>
     <div>
         <div>
-            <input disabled="disabled"/>
+            <input disabled="disabled">
         </div>
-        <input disabled="disabled"/>
+        <input disabled="disabled">
     </div>
-    <input disabled="disabled"/>
+    <input disabled="disabled">
 </div>
 
 <div id="outer-inner-container">
@@ -156,4 +156,65 @@
     <input name="nine" tabindex=9>
     <input name="ten" tabindex=10>
     <input name="eleven" tabindex=11>
+</div>
+
+<div id="tabstops">
+    <div tabindex="1">1 tabindex 1</div>
+    <div tabindex="3">2 tabindex 3</div>
+    <div>3 no tabindex</div>
+    <div tabindex="2">4 tabindex 2</div>
+    <div tabindex="3">5 tabindex 3</div>
+    <div tabindex="0">6 tabindex 0</div>
+</div>
+
+<div id="table-container">
+    <div>
+        <input id="before-table-1">
+        <input id="before-table-2">
+    </div>
+    <table id="table" tabindex="0">
+        <tr>
+            <td><input id="input-in-table-1"></td>
+            <td><input id="input-in-table-2"></td>
+        </tr>
+    </table>
+    <div>
+        <input id="after-table-1">
+        <input id="after-table-2">
+    </div>
+</div>
+
+<div id="table-at-start-container" role="dialog" aria-modal="true">
+   <table id="table-at-start" tabindex="0">
+        <tr>
+            <td><input id="input-in-table-at-start-1"></td>
+            <td><input id="input-in-table-at-start-2"></td>
+        </tr>
+    </table>
+    <div>
+        <input id="after-table-at-start-1">
+        <input id="after-table-at-start-2">
+    </div>
+</div>
+
+<div id="table-at-end-container" role="dialog" aria-modal="true">
+    <div>
+        <input id="before-table-at-end-1">
+        <input id="before-table-at-end-2">
+    </div>
+    <table id="table-at-end" tabindex="0">
+        <tr>
+            <td><input id="input-in-table-at-end-1"></td>
+            <td><input id="input-in-table-at-end-2"></td>
+        </tr>
+    </table>
+</div>
+
+<div id="only-table-container" role="dialog" aria-modal="true">
+    <table id="only-table" tabindex="0">
+        <tr>
+            <td><input id="input-in-only-table-1"></td>
+            <td><input id="input-in-only-table-2"></td>
+        </tr>
+    </table>
 </div>

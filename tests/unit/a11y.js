@@ -19,6 +19,41 @@ define([
 		},
 
 		tests: {
+			"getTabNavigable": function () {
+				// Simple case
+				var container1 = document.getElementById("positive-tabindex-mixed-with-no-tabindex");
+				assert.deepEqual(
+					a11y.getTabNavigable(container1).map(function (element) {
+						return element.id;
+					}),
+					[
+						"positive-tabindex-input1a",
+						"positive-tabindex-input1b",
+						"positive-tabindex-input2a",
+						"positive-tabindex-input2b",
+						"no-tabindex-input1",
+						"no-tabindex-input2"
+					],
+					"getTabNavigable(positive-tabindex-mixed-with-no-tabindex)"
+				);
+
+				// Another simple case
+				var container2 = document.getElementById("tabstops");
+				assert.deepEqual(
+					a11y.getTabNavigable(container2).map(function (element) {
+						return element.textContent;
+					}),
+					[
+						"1 tabindex 1",
+						"4 tabindex 2",
+						"2 tabindex 3",
+						"5 tabindex 3",
+						"6 tabindex 0"
+					],
+					"getTabNavigable(tabstops)"
+				);
+			},
+
 			"isTabNavigable": function () {
 				assert.ok(a11y.isTabNavigable(document.getElementById("a-with-href")), "a-with-href");
 				assert.ok(!a11y.isTabNavigable(document.getElementById("a-without-href")), "a-without-href");
@@ -81,12 +116,11 @@ define([
 			},
 
 			"findTabPositiveTabindex": function () {
-				assert.strictEqual("positive-tabindex-input1a",
-					a11y.getFirstInTabbingOrder("positive-tabindex-mixed-with-no-tabindex").id);
-				assert.strictEqual("positive-tabindex-input3a",
-					a11y.getFirstInTabbingOrder("positive-tabindex").id);
-				assert.strictEqual("no-tabindex-input2",
-					a11y.getLastInTabbingOrder("positive-tabindex-mixed-with-no-tabindex").id);
+				assert.strictEqual(a11y.getFirstInTabbingOrder("positive-tabindex-mixed-with-no-tabindex").id,
+					"positive-tabindex-input1a");
+				assert.strictEqual(a11y.getFirstInTabbingOrder("positive-tabindex").id, "positive-tabindex-input3a");
+				assert.strictEqual(a11y.getLastInTabbingOrder("positive-tabindex-mixed-with-no-tabindex").id,
+					"no-tabindex-input2");
 				assert.strictEqual(a11y.getLastInTabbingOrder("positive-tabindex").id, "positive-tabindex-input4b");
 			},
 
