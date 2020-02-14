@@ -46,8 +46,8 @@ define([
 	"ibm-decor/Evented",
 	"ibm-decor/sniff",
 	"./on",
-	"requirejs-domready/domReady!"
-], function (advise, dcl, Evented, has, on) {
+	"requirejs-domready/domReady"
+], function (advise, dcl, Evented, has, on, domReady) {
 
 	// Time of the last touch/mouse event.
 	var lastPointerDownTime;
@@ -388,7 +388,9 @@ define([
 
 	// Create singleton for top window
 	var singleton = new ActivationTracker();
-	singleton.registerWin(window);
+	domReady(function () {
+		singleton.registerWin(window);
+	});
 
 	return singleton;
 });

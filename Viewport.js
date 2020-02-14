@@ -15,8 +15,7 @@
  */
 define([
 	"ibm-decor/Evented",
-	"ibm-decor/sniff",	// has("ios")
-	"requirejs-domready/domReady!"
+	"ibm-decor/sniff"	// has("ios")
 ], function (
 	Evented,
 	has

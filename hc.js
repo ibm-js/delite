@@ -15,8 +15,8 @@
  */
 define([
 	"requirejs-dplugins/has",
-	"requirejs-domready/domReady!"
-], function (has) {
+	"requirejs-domready/domReady"
+], function (has, domReady) {
 
 	has.add("highcontrast", function () {
 		if (typeof window === "undefined") {
@@ -43,9 +43,11 @@ define([
 		}
 	});
 
-	if (has("highcontrast")) {
-		document.body.className = (document.body.className + " d-hc").trim();
-	}
+	domReady(function () {
+		if (has("highcontrast")) {
+			document.body.className = (document.body.className + " d-hc").trim();
+		}
+	});
 
 	return has;
 });

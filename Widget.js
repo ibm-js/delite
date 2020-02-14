@@ -66,6 +66,14 @@ define([
 		dir: "",
 
 		/**
+		 * Direction inherited from document root (either `<html>` or `<body>`) at the time the element is attached
+		 * to the document.  Used if `dir` property not set explicitly.
+		 * @member {string}
+		 * @readonly
+		 */
+		inheritedDir: "",
+
+		/**
 		 * Actual direction of the widget, which can be set explicitly via `dir` property or inherited from the
 		 * setting on the document root (either `<html>` or `<body>`).
 		 * Value is either "ltr" or "rtl".
@@ -107,11 +115,11 @@ define([
 		},
 
 		computeProperties: function (props) {
-			if ("dir" in props) {
-				if ((/^(ltr|rtl)$/i).test(this._get("dir"))) {
-					this.effectiveDir = this._get("dir").toLowerCase();
+			if ("dir" in props || "inheritedDir" in props) {
+				if ((/^(ltr|rtl)$/i).test(this.dir)) {
+					this.effectiveDir = this.dir.toLowerCase();
 				} else {
-					this.effectiveDir = this.getInheritedDir();
+					this.effectiveDir = this.inheritedDir;
 				}
 			}
 		},
@@ -127,15 +135,6 @@ define([
 			this.render();
 			this.postRender();
 			this.rendered = true;
-		},
-
-		/**
-		 * Return the direction setting for the page.
-		 * @returns {string} "ltr" or "rtl"
-		 * @protected
-		 */
-		getInheritedDir: function () {
-			return (this.ownerDocument.body.dir || this.ownerDocument.documentElement.dir || "ltr").toLowerCase();
 		},
 
 		// Override Invalidating#refreshRendering() to execute the template's refreshRendering() code, etc.
@@ -154,11 +153,17 @@ define([
 				this.toggleClass("d-rtl", this.effectiveDir === "rtl");
 			}
 			if ("dir" in oldVals) {
-				this.style.direction = this._get("dir");
+				this.style.direction = this.dir;
 			}
 		},
 
 		connectedCallback: function () {
+			// After widget is attached to document, find out which direction it inherits.  Will be used if
+			// Widget#dir isn't set explicitly.  For performance, we only check <body> and <html>, not other
+			// ancestor nodes.  Also, we don't monitor changes to the "dir" attributes of <body> or <html>.
+			this.inheritedDir = (this.ownerDocument.body.dir || this.ownerDocument.documentElement.dir ||
+				"ltr").toLowerCase();
+
 			this.initializeInvalidating();
 		},
 

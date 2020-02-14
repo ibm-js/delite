@@ -8,7 +8,7 @@
  *
  * @module delite/uacss
  */
-define(["ibm-decor/sniff"], function (has) {
+define(["ibm-decor/sniff", "requirejs-domready/domReady"], function (has, domReady) {
 	var ie = has("ie"),
 		maj = Math.floor,
 		ff = has("ff"),
@@ -40,7 +40,10 @@ define(["ibm-decor/sniff"], function (has) {
 			classStr += clz + " ";
 		}
 	}
-	document.body.className = (document.body.className + " " + classStr).trim();
+
+	domReady(function () {
+		document.body.className = (document.body.className + " " + classStr).trim();
+	});
 
 	return has;
 });

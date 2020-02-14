@@ -179,16 +179,19 @@ define([
 						myWidget.dir = "ltr";
 						myWidget.deliver();
 						assert.strictEqual(myWidget.style.direction, "ltr", "style.direction 2");
-						assert.isFalse(myWidget.classList.contains("d-rtl"), "doesn't have d-rtl class 1");
+						assert.isFalse(myWidget.classList.contains("d-rtl"), "doesn't have d-rtl class");
+					},
 
+					"programmatic inherit dir": function () {
 						var bodyOriginalDir = window.getComputedStyle(document.body).direction;
+
 						try {
 							// setting dir to "" should inherit from <body>
 							document.body.dir = "rtl";
-							myWidget.dir = "";
-							myWidget.deliver();
-							assert.strictEqual(myWidget.style.direction, "", "style.direction 3");
-							assert(myWidget.classList.contains("d-rtl"), "has d-rtl class 2");
+							var myWidget = new TestDir();
+							container.appendChild(myWidget);
+							myWidget.connectedCallback();
+							assert(myWidget.classList.contains("d-rtl"), "has d-rtl class");
 						} finally {
 							// Revert changes made to body.dir.   Should be able to just say dir = "" but due to
 							// apparent bugs in Safari 7 (used during saucelabs testing), that leaves the browser
