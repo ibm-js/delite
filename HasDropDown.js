@@ -7,8 +7,7 @@ define([
 	"./popup",
 	"./register",
 	"./Widget",
-	"./activationTracker",		// for delite-deactivated event
-	"dpointer/events"		// for "pointerenter", "pointerleave"
+	"./activationTracker"		// for delite-deactivated event
 ], function (
 	dcl,
 	Promise,

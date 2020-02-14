@@ -4,8 +4,7 @@ define([
 	"dojo/window",
 	"./features",
 	"./on",
-	"./Widget",
-	"dpointer/events"		// so can just monitor for "pointerdown"
+	"./Widget"
 ], function (
 	dcl,
 	win,

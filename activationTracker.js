@@ -46,7 +46,6 @@ define([
 	"ibm-decor/Evented",
 	"ibm-decor/sniff",
 	"./on",
-	"dpointer/events",		// so can just monitor for "pointerdown"
 	"requirejs-domready/domReady!"
 ], function (advise, dcl, Evented, has, on) {
 

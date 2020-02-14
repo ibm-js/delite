@@ -20,6 +20,9 @@
 		simple-dialog, focus-menu, non-focus-menu {
 			display: block;
 			border: 1px solid black;
+
+			/* enable fast click, so testing code doesn't to wait 300ms for submit/cancel buttons to take effect */
+			touch-action: none;
 		}
 		non-focusable-drop-down-button {
 			white-space: nowrap;
@@ -46,15 +49,12 @@
 			"delite/Dialog",
 			"delite/HasDropDown",
 			"delite/Widget",
-			"dpointer/events",	// since I'm using touch-action
 			"requirejs-domready/domReady!"
 		], function (dcl, Promise, register, Dialog, HasDropDown, Widget) {
 
 			// A trivial popup widget
 			var SimpleDialog = register("simple-dialog", [HTMLElement, Dialog], {
 				render: function () {
-					// enable fast click, so testing code doesn't to wait 300ms for submit/cancel buttons to take effect
-					this.setAttribute("touch-action", "none");
 					this.innerHTML = "<input><br>" +
 							"<button type=submit>submit</button><br><button type=button>cancel</button>";
 				},
@@ -79,9 +79,6 @@
 
 				render: function () {
 					this.className = "choice";
-
-					// enable fast click, so testing code doesn't to wait 300ms for clicking a choice to take effect
-					this.setAttribute("touch-action", "none");
 
 					this.on("click", this.emit.bind(this, "change"));
 
@@ -214,7 +211,7 @@
 					this.className="button";
 					this.tabIndex = "0";
 				},
-				
+
 				label: dcl.prop({
 					set: function (val) {
 						this.textContent = val;
@@ -409,7 +406,7 @@
 			new SimpleComboButton({
 				id: "cb"
 			}).placeAt(document.body);
-			
+
 			// Set global variable to signal that the test page is ready
 			ready = true;
 		});
