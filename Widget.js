@@ -59,28 +59,20 @@ define([
 		 * a Combobox appears to the right or the left of the input field.
 		 *
 		 * Values are "ltr" and "rtl", or "" which means that the value is inherited from the
-		 * setting on the document root (either `<html>` or `<body>`).
+		 * setting on the document root (`<html>`).
 		 *
 		 * @member {string}
 		 */
 		dir: "",
 
 		/**
-		 * Direction inherited from document root (either `<html>` or `<body>`) at the time the element is attached
-		 * to the document.  Used if `dir` property not set explicitly.
-		 * @member {string}
-		 * @readonly
-		 */
-		inheritedDir: "",
-
-		/**
 		 * Actual direction of the widget, which can be set explicitly via `dir` property or inherited from the
-		 * setting on the document root (either `<html>` or `<body>`).
+		 * setting on the document root (`<html>`).
 		 * Value is either "ltr" or "rtl".
 		 * @member {string}
 		 * @readonly
 		 */
-		effectiveDir: "",
+		effectiveDir: "ltr",
 
 		//////////// INITIALIZATION METHODS ///////////////////////////////////////
 
@@ -115,11 +107,11 @@ define([
 		},
 
 		computeProperties: function (props) {
-			if ("dir" in props || "inheritedDir" in props) {
+			if ("dir" in props) {
 				if ((/^(ltr|rtl)$/i).test(this.dir)) {
 					this.effectiveDir = this.dir.toLowerCase();
 				} else {
-					this.effectiveDir = this.inheritedDir;
+					this.effectiveDir = this.getInheritedDir();
 				}
 			}
 		},
@@ -135,6 +127,16 @@ define([
 			this.render();
 			this.postRender();
 			this.rendered = true;
+		},
+
+		/**
+		 * Return the direction setting for the page.
+		 * @returns {string} "ltr" or "rtl"
+		 * @protected
+		 */
+		getInheritedDir: function () {
+			return ((this.ownerDocument.body && this.ownerDocument.body.dir) ||
+				this.ownerDocument.documentElement.dir || "ltr").toLowerCase();
 		},
 
 		// Override Invalidating#refreshRendering() to execute the template's refreshRendering() code, etc.
@@ -158,12 +160,6 @@ define([
 		},
 
 		connectedCallback: function () {
-			// After widget is attached to document, find out which direction it inherits.  Will be used if
-			// Widget#dir isn't set explicitly.  For performance, we only check <body> and <html>, not other
-			// ancestor nodes.  Also, we don't monitor changes to the "dir" attributes of <body> or <html>.
-			this.inheritedDir = (this.ownerDocument.body.dir || this.ownerDocument.documentElement.dir ||
-				"ltr").toLowerCase();
-
 			this.initializeInvalidating();
 		},
 
