@@ -2,8 +2,7 @@
 define([
 	"dcl/dcl",
 	"ibm-decor/Evented",
-	"requirejs-dplugins/Promise!"
-], function (dcl, Evented, Promise) {
+], function (dcl, Evented) {
 
 	/**
 	 * Returns a thenable on some static data, but unlike Promise, it executes synchronously.

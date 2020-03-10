@@ -191,8 +191,7 @@ define([
 		isNavigable: function (elem) {
 			// Setup function to check which child nodes are navigable.
 			if (typeof this.descendantSelector === "string") {
-				var matchesFuncName = has("dom-matches");
-				return elem[matchesFuncName](this.descendantSelector);
+				return elem.matches(this.descendantSelector);
 			} else if (this.descendantSelector) {
 				return this.descendantSelector(elem);
 			} else {

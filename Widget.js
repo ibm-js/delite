@@ -5,15 +5,13 @@ define([
 	"ibm-decor/Invalidating",
 	"./CustomElement",
 	"./register",
-	"./classList",
 	"requirejs-dplugins/css!./css/common.css"
 ], function (
 	dcl,
 	has,
 	Invalidating,
 	CustomElement,
-	register,
-	classList
+	register
 ) {
 	// Used to generate unique id for each widget
 	var cnt = 0;
@@ -210,10 +208,15 @@ define([
 		 * @protected
 		 */
 		setClassComponent: function (component, value, node) {
+			value = value && value.trim();
 			if (!node) { node = this; }
 			var oldValProp = "_" + component + "Class";
-			classList.removeClass(node, node[oldValProp]);
-			classList.addClass(node, value);
+			if (node[oldValProp]) {
+				node.classList.remove.apply(node.classList, node[oldValProp].split(/ +/));
+			}
+			if (value) {
+				node.classList.add.apply(node.classList, value.split(/ +/));
+			}
 			node[oldValProp] = value;
 		},
 
@@ -370,7 +373,9 @@ define([
 		 * @returns {module:delite/Widget} This widget, for chaining.
 		 */
 		toggleClass: function (value, force) {
-			classList.toggleClass(this, value, force);
+			value.split(" ").forEach(function (singleValue) {
+				this.classList.toggle(singleValue, force);
+			}, this);
 			return this;
 		},
 
@@ -382,7 +387,9 @@ define([
 		 * @returns {module:delite/Widget} This widget, for chaining.
 		 */
 		addClass: function (value) {
-			classList.addClass(this, value);
+			if (value) {
+				this.classList.add.apply(this.classList, value.trim().split(/ +/));
+			}
 			return this;
 		},
 
@@ -393,7 +400,9 @@ define([
 		 * @returns {module:delite/Widget} This widget, for chaining.
 		 */
 		removeClass: function (value) {
-			classList.removeClass(this, value);
+			if (value) {
+				this.classList.remove.apply(this.classList, value.trim().split(/ +/));
+			}
 			return this;
 		},
 
@@ -404,7 +413,7 @@ define([
 		 * @returns {boolean} True if this widget contains the given class. False otherwise.
 		 */
 		hasClass: function (className) {
-			return classList.hasClass(this, className);
+			return this.classList.has(className);
 		}
 	});
 

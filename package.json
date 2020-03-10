@@ -11,7 +11,7 @@
 	"dependencies": {
 		"@webcomponents/custom-elements": "1.1.x",
 		"dcl": "^2.0.6",
-		"dojo": "^1.16.0",
+		"dojo": "^1.16.1",
 		"dojo-dstore": "1.1.x",
 		"ibm-decor": "0.8.x",
 		"messageformat": "1.0.2",
@@ -21,13 +21,13 @@
 		"resize-observer-polyfill": "1.5.x"
 	},
 	"devDependencies": {
-		"clean-css": "^4.2.1",
-		"dijit": "1.14.x",
+		"clean-css": "^4.2.3",
+		"dijit": "^1.14.5",
 		"grunt": "^1.0.4",
 		"grunt-contrib-jshint": "^2.1.0",
 		"grunt-contrib-less": "^2.0.0",
 		"grunt-contrib-uglify": "^4.0.1",
-		"intern": "^4.7.1",
+		"intern": "^4.8.0",
 		"jsdoc-amddcl": "git+https://github.com/ibm-js/jsdoc-amddcl.git#master",
 		"jsdom": "7.x",
 		"requirejs": "^2.3.6"

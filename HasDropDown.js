@@ -1,7 +1,6 @@
 /** @module delite/HasDropDown */
 define([
 	"dcl/dcl",
-	"requirejs-dplugins/Promise!",
 	"./on",
 	"./place",
 	"./popup",
@@ -10,7 +9,6 @@ define([
 	"./activationTracker"		// for delite-deactivated event
 ], function (
 	dcl,
-	Promise,
 	on,
 	place,
 	popup,

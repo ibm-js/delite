@@ -1,13 +1,11 @@
 define([
 	"require",
-	"requirejs-dplugins/Promise!",
 	"delite/DisplayContainer",
 	"delite/Widget",
 	"delite/register",
 	"requirejs-domready/domReady!"
 ], function (
 	require,
-	Promise,
 	DisplayContainer,
 	Widget,
 	register

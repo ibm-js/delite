@@ -39,10 +39,9 @@ define([
 	"module",
 	"require",
 	"requirejs-dplugins/has",
-	"requirejs-dplugins/Promise!",
 	"requirejs-text/text",
 	"./Template"
-], function (module, moduleRequire, has, Promise, textPlugin, Template) {
+], function (module, moduleRequire, has, textPlugin, Template) {
 
 	/**
 	 * Given a string like "hello {{foo}} world", generate JS code to output that string,

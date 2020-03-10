@@ -1,11 +1,10 @@
 /** @module delite/Scrollable */
 define([
 	"dcl/dcl",
-	"./classList",
 	"./ScrollAnimation",
 	"./Widget",
 	"requirejs-dplugins/css!./Scrollable/Scrollable.css"
-], function (dcl, classList, ScrollAnimation, Widget) {
+], function (dcl, ScrollAnimation, Widget) {
 
 	/**
 	 * A mixin which adds scrolling capabilities to a widget.
@@ -83,12 +82,10 @@ define([
 
 		refreshRendering: function (oldVals) {
 			if ("scrollDirection" in oldVals) {
-				classList.toggleClass(this.scrollableNode,
-					"d-scrollable", this.scrollDirection !== "none");
-				classList.toggleClass(this.scrollableNode,
+				this.scrollableNode.classList.toggle("d-scrollable", this.scrollDirection !== "none");
+				this.scrollableNode.classList.toggle(
 					"d-scrollable-h", /^(both|horizontal)$/.test(this.scrollDirection));
-				classList.toggleClass(this.scrollableNode,
-					"d-scrollable-v", /^(both|vertical)$/.test(this.scrollDirection));
+				this.scrollableNode.classList.toggle("d-scrollable-v", /^(both|vertical)$/.test(this.scrollDirection));
 			}
 		},
 

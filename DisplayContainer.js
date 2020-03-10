@@ -1,7 +1,6 @@
 /** @module delite/DisplayContainer */
-define(["dcl/dcl", "requirejs-dplugins/Promise!", "./Container"],
-	function (dcl, Promise, Container) {
-	
+define(["dcl/dcl", "./Container"], function (dcl, Container) {
+
 	/**
 	 * Dispatched before child is shown.
 	 * @example
@@ -11,7 +10,7 @@ define(["dcl/dcl", "requirejs-dplugins/Promise!", "./Container"],
 	 * @event module:delite/DisplayContainer#delite-before-show
 	 * @property {Element} child - reference to child element
 	 */
-	
+
 	/**
 	 * Dispatched after child is shown.
 	 * @example
@@ -21,7 +20,7 @@ define(["dcl/dcl", "requirejs-dplugins/Promise!", "./Container"],
 	 * @event module:delite/DisplayContainer#delite-after-show
 	 * @property {Element} child - reference to child element
 	 */
-	
+
 	/**
 	 * Dispatched to let an application level listener create/load the child node.
 	 * @example
@@ -38,7 +37,7 @@ define(["dcl/dcl", "requirejs-dplugins/Promise!", "./Container"],
 	 * @event module:delite/DisplayContainer#delite-display-load
 	 * @property {Function} setChild - method to set child element, or Promise for child element
 	 */
-	
+
 	/**
 	 * Dispatched before child is hidden.
 	 * @example
@@ -48,7 +47,7 @@ define(["dcl/dcl", "requirejs-dplugins/Promise!", "./Container"],
 	 * @event module:delite/DisplayContainer#delite-before-hide
 	 * @property {Element} child - reference to child element
 	 */
-	
+
 	/**
 	 * Dispatched after child is hidden.
 	 * @example

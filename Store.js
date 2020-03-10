@@ -3,10 +3,9 @@ define([
 	"dcl/dcl",
 	"requirejs-dplugins/has",
 	"ibm-decor/Invalidating",
-	"requirejs-dplugins/Promise!",
 	"./ArrayQueryAdapter",
 	"./DstoreQueryAdapter"
-], function (dcl, has, Invalidating, Promise, ArrayQueryAdapter, DstoreQueryAdapter) {
+], function (dcl, has, Invalidating, ArrayQueryAdapter, DstoreQueryAdapter) {
 
 	/**
 	 * Dispatched once the query has been executed and the `renderItems` array
