@@ -1,13 +1,11 @@
 define([
 	"require",
-	"requirejs-dplugins/Promise!",
 	"delite/handlebars",
 	"delite/register",
 	"delite/Widget",
 	"delite/handlebars!./templates/HandlebarsButton.html"
 ], function (
 	require,
-	Promise,
 	handlebars,
 	register,
 	Widget,
