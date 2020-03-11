@@ -9,15 +9,13 @@ define([
 	var assert = intern.getPlugin("chai").assert;
 
 	var C = register("test-selection", [HTMLElement, Selection], {
-		updateRenderers: function () {
-		},
 		getIdentity: function (item) {
 			return item;
 		}
 	});
 
 	registerSuite("Selection", {
-		setGet: function () {
+		"setGet": function () {
 			var o = new C();
 			o.selectedItem = "1";
 			assert.deepEqual(o.selectedItem, "1");
@@ -81,7 +79,7 @@ define([
 			}
 		},
 
-		events: {
+		"events": {
 			testEvent: function () {
 				var o = new C({selectedItem: "1"});
 				var callbackCalled = false;
@@ -106,7 +104,7 @@ define([
 				o.selectFromEvent({}, "2", null, true);
 				assert.deepEqual(o.selectedItems, ["2"]);
 				o.selectFromEvent({ ctrlKey: true, metaKey: true }, "1", null, true);
-				assert.deepEqual(o.selectedItems, ["1", "2"]);
+				assert.deepEqual(o.selectedItems, ["2", "1"]);
 				o.selectFromEvent({ ctrlKey: true, metaKey: true }, "1", null, true);
 				assert.deepEqual(o.selectedItems, ["2"]);
 				o.selectionMode = "single";

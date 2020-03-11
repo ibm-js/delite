@@ -46,51 +46,52 @@ You can know the selection state by querying either:
 <a name="extending"></a>
 ## Extending Selection
 
-In order for a widget to leverage `delite/Selection` it must extend it and implement the `getIdentity()` and
-`updateRenderers()` functions as follows:
+In order for a widget to leverage `delite/Selection` it must extend it and implement the `getIdentity()`
+method as follows:
 
 ```js
-require(["delite/register", "delite/Selection", "delite/StoreMap"/*, ...*/], 
-  function (register, Widget, Selection, StoreMap/*, ...*/) {
-  return register("my-widget", [HTMElement, Selection, StoreMap], {
-    labelAttr: "label",
-    preRender: function () {
-      this._childHash = {};
-    }
-    refreshRendering: function (props) {
-      if ("renderItems" in props) {
-        // render item has changed, do something to reflect that in the rendering
-        this.innerHTML = "";
-        for (var i = 0; i < renderItems.length; i++) {
-          var child = this.ownerDocument.createElement("div");
-          child.innerText = renderItems[i].label;
-          this._childHash[renderItems[i].id] = child;
-          this.appendChild(child);
-        }
-      }
-    },
-    getIdentity: function (item) {
-      return this.source.getIdentity(item);
-    },
-    updateRenderers: function (items) {
-      for (var i = 0; i < items.length; i++) {
-        var child = this._childHash[this.getIdentity(items[i])];
-        var selected = this.isSelected(items[i]);
-        if (selected) {
-          child.setAttribute("class", "selected");
-        } else {
-          child.setAttribute("class", "");
-        }
-      }    
-    }
-  });
+require([
+	"delite/register",
+	"delite/Selection",
+	"delite/StoreMap"
+	/*, ...*/
+], function (
+	register,
+	Selection,
+	StoreMap
+	/*, ...*/
+) {
+	return register("my-widget", [HTMElement, Selection, StoreMap], {
+		labelAttr: "label",
+		refreshRendering: function (props) {
+			if ("renderItems" in props) {
+				// render item has changed, do something to reflect that in the rendering
+				this.innerHTML = "";
+				this._childHash = {};
+				for (var i = 0; i < this.renderItems.length; i++) {
+					let child = this.ownerDocument.createElement("div");
+					child.innerText = this.renderItems[i].label;
+					this._childHash[this.renderItems[i].id] = child;
+					this.appendChild(child);
+				}
+			}
+			if ("selectedItems" in props) {
+				for (var j = 0; j < this.selectedItems.length; j++) {
+					let child = this._childHash[this.getIdentity(items[j])];
+					let selected = this.isSelected(items[j]);
+					child.classList.toggle("selected", selected);
+				}
+			}
+
+		},
+		getIdentity: function (item) {
+			return this.source.getIdentity(item);
+		}
+	});
 });
 ```
 
-The `getIdentity()` function is in charge of returning a unique identifier for an item to be selected. The
-`updateRenderers()` function is in charge of updating the visual rendering in the DOM based on whether the passed
-item are selected or not. Only items for which the selection state has changed are passed to this function. It is
-possible to check whether an item is selected or not by calling the `isSelected()` function on the selection instance.
+The `getIdentity()` function is in charge of returning a unique identifier for an item to be selected.
 
 If the widget provides a user interaction that leads to select some items, the implementation should call the
 `selectFromEvent()` function in order to update the selection and propagate the notification accordingly.

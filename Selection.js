@@ -24,10 +24,6 @@ define(["dcl/dcl", "ibm-decor/sniff", "./Widget"], function (dcl, has, Widget) {
 	return dcl(Widget, /** @lends module:delite/Selection# */{
 		declaredClass: "delite/Selection",
 
-		constructor: function () {
-			this._set("selectedItems", []);
-		},
-
 		/**
 		 * The chosen selection mode.
 		 *
@@ -78,12 +74,11 @@ define(["dcl/dcl", "ibm-decor/sniff", "./Widget"], function (dcl, has, Widget) {
 		selectedItem: dcl.prop({
 			set: function (value) {
 				if (this.selectedItem !== value) {
-					this.selectedItems = (value == null ? null : [value]);
+					this.selectedItems = (value === null ? null : [value]);
 				}
 			},
 			get: function () {
-				// TODO: stop calling _get()/_set() for "selectedItem" and just use "selectedItems"
-				return this._get("selectedItem") || null;
+				return this.selectedItems[0] || null;
 			},
 			enumerable: true,
 			configurable: true
@@ -96,22 +91,13 @@ define(["dcl/dcl", "ibm-decor/sniff", "./Widget"], function (dcl, has, Widget) {
 		 */
 		selectedItems: dcl.prop({
 			set: function (value) {
-				var oldSelectedItems = this.selectedItems;
-
 				this._set("selectedItems", value);
-
-				if (oldSelectedItems != null && oldSelectedItems.length > 0) {
-					this.updateRenderers(oldSelectedItems);
-				}
-				if (this.selectedItems && this.selectedItems.length > 0) {
-					this._set("selectedItem", this.selectedItems[0]);
-					this.updateRenderers(this.selectedItems);
-				} else {
-					this._set("selectedItem", null);
-				}
+				this.notifyCurrentValue("selectedItem");
+				this.notifyCurrentValue("selectedItems");
 			},
 			get: function () {
-				return this._get("selectedItems") == null ? [] : this._get("selectedItems").concat();
+				// Return copy.
+				return this._get("selectedItems") ? this._get("selectedItems").concat() : [];
 			},
 			enumerable: true,
 			configurable: true
@@ -147,9 +133,6 @@ define(["dcl/dcl", "ibm-decor/sniff", "./Widget"], function (dcl, has, Widget) {
 		 * @returns {Object} The item to test the selection for.
 		 */
 		isSelected: function (item) {
-			if (this.selectedItems == null || this.selectedItems.length === 0) {
-				return false;
-			}
 			var identity = this.getIdentity(item);
 			return this.selectedItems.some(function (sitem) {
 				return this.getIdentity(sitem) === identity;
@@ -161,26 +144,17 @@ define(["dcl/dcl", "ibm-decor/sniff", "./Widget"], function (dcl, has, Widget) {
 		 * @param {item} object - The item the identity of must be returned.
 		 * @returns {string} The identity of the item.
 		 */
-		getIdentity: function (/*jshint unused: vars */item) {
+		getIdentity: function (/* item */) {
 		},
 
 		/**
-		 * This function must be implemented to update the rendering of the items based on whether they are
-		 * selected or not. The implementation must check for their new selection state and update
-		 * accordingly.
-		 * @param {Object[]} items - The array of items changing their selection state.
-		 * @protected
-		 */
-		updateRenderers: function (/*jshint unused: vars */items) {
-		},
-
 		/**
 		 * Change the selection state of an item.
 		 * @param {Object} item - The item to change the selection state for.
 		 * @param {boolean} value - True to select the item, false to deselect it.
 		 */
 		setSelected: function (item, value) {
-			if (this.selectionMode === "none" || item == null) {
+			if (this.selectionMode === "none" || item === null) {
 				return;
 			}
 
@@ -188,36 +162,24 @@ define(["dcl/dcl", "ibm-decor/sniff", "./Widget"], function (dcl, has, Widget) {
 		},
 
 		/* jshint maxcomplexity: 11*/
-		_setSelected: function (item, value) {
-			// copy is returned
-			var sel = this.selectedItems, res, identity;
-
+		_setSelected: function (item, selected) {
 			if (this.selectionMode === "single" || this.selectionMode === "radio") {
-				if (value) {
+				if (selected) {
 					this.selectedItem = item;
 				} else if (this.selectionMode === "single" && this.isSelected(item)) {
 					this.selectedItems = null;
 				}
 			} else { // multiple
-				if (value) {
+				if (selected) {
 					if (this.isSelected(item)) {
 						return; // already selected
 					}
-					if (sel == null) {
-						sel = [item];
-					} else {
-						sel.unshift(item);
-					}
-					this.selectedItems = sel;
+					this.selectedItems = this.selectedItems.concat([item]);
 				} else {
-					identity = this.getIdentity(item);
-					res = sel ? sel.filter(function (sitem) {
+					var identity = this.getIdentity(item);
+					this.selectedItems = this.selectedItems.filter(function (sitem) {
 						return this.getIdentity(sitem) !== identity;
-					}, this) : [];
-					if (res == null || res.length === sel.length) {
-						return; // already not selected
-					}
-					this.selectedItems = res;
+					}, this);
 				}
 			}
 		},
@@ -243,11 +205,11 @@ define(["dcl/dcl", "ibm-decor/sniff", "./Widget"], function (dcl, has, Widget) {
 		_selectFromEvent: function (event, item, renderer, dispatch) {
 			var changed;
 			var oldSelectedItem = this.selectedItem;
-			var selected = item == null ? false : this.isSelected(item);
+			var selected = item === null ? false : this.isSelected(item);
 
-			if (item == null) {
+			if (item === null) {
 				if ((this.selectionMode === "multiple" && !this.hasSelectionModifier(event))
-					&& this.selectedItem != null) {
+					&& this.selectedItem !== null) {
 					this.selectedItem = null;
 					changed = true;
 				}
@@ -261,14 +223,12 @@ define(["dcl/dcl", "ibm-decor/sniff", "./Widget"], function (dcl, has, Widget) {
 				}
 			} else { // single
 				if (this.selectionMode === "single" && this.hasSelectionModifier(event)) {
-					//if the object is selected deselects it.
+					//if the object is selected deselect it.
 					this.selectedItem = (selected ? null : item);
 					changed = true;
-				} else {
-					if (!selected) {
-						this.selectedItem = item;
-						changed = true;
-					}
+				} else if (!selected) {
+					this.selectedItem = item;
+					changed = true;
 				}
 			}
 
