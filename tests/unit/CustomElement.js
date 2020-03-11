@@ -23,7 +23,6 @@ define([
 		}
 	};
 
-	/* jshint multistr: true */
 	var html = "<test-ce-foo id='one' name='bob' attr1=10 attr2=10></test-ce-foo> \
 		<test-ce-foo id='two' name='is' attr1=5 attr2=10></test-ce-foo> \
 		<div id='threeWrapper'> \
@@ -48,14 +47,16 @@ define([
 		},
 
 		tests: {
-			instantiation: {
+			"instantiation": {
 				"declarative attributes": function () {
 					/* global global:true */
 					global = 0;
 
+					// eslint-disable-next-line no-unused-vars
 					/* global globalObj:true */
 					globalObj = {text: "global var"};
 
+					// eslint-disable-next-line no-unused-vars
 					/* global globalInstance:true */
 					globalInstance = {
 						func: function () {
@@ -123,7 +124,7 @@ define([
 				}
 			},
 
-			lifecycle: function () {
+			"lifecycle": function () {
 				// Setup ownership
 				register("test-ce-lifecycle-custom-element", [HTMLElement, CustomElement], {
 					attaches: 0,
@@ -254,7 +255,7 @@ define([
 
 			// Test that Stateful notification of properties works.
 			// Testing specifically here (in addition to decor) because CustomElement redefines Stateful#getProps()
-			stateful: function () {
+			"stateful": function () {
 				var d = this.async(1000);
 
 				// Create a custom element with a custom "foo" event, plus the standard "click" event.

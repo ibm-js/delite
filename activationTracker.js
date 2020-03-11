@@ -89,11 +89,11 @@ define([
 				doc = targetWindow.document,
 				body = doc && doc.body;
 
-			function pointerDownHandler(evt) {
+			function pointerDownHandler (evt) {
 				// workaround weird IE bug where the click is on an orphaned node
 				// (first time clicking a Select/DropDownButton inside a TooltipDialog).
 				// actually, strangely this is happening on latest chrome too.
-				if (evt && evt.target && evt.target.parentNode == null) {
+				if (evt && evt.target && evt.target.parentNode === null) {
 					return;
 				}
 
@@ -103,11 +103,11 @@ define([
 
 			// Track click events too because webdriver doesn't emit pointerdown events
 			// on some (or all?) platforms.
-			function clickHandler(evt) {
+			function clickHandler (evt) {
 				_this._activateHandler(evt.target, "mouse");
 			}
 
-			function focusHandler(evt) {
+			function focusHandler (evt) {
 				// When you refocus the browser window, IE gives an event with an empty srcElement
 				if (!evt.target.tagName) {
 					return;
@@ -123,11 +123,11 @@ define([
 				_this._focusHandler(evt.target);
 			}
 
-			function touchendHandler() {
+			function touchendHandler () {
 				lastTouchendTime = (new Date()).getTime();
 			}
 
-			function mouseOverHandler(evt) {
+			function mouseOverHandler (evt) {
 				// Ignore emulated mouseover events on iOS and android.  Otherwise, when clicking the
 				// [x] to close a TooltipDialog it will immediately reopen (see HasDropDownHover.html).
 				if (lastTouchendTime && (new Date()).getTime() < lastTouchendTime + 500) {
@@ -137,7 +137,7 @@ define([
 				_this._mouseOverHandler(evt.target);
 			}
 
-			function processMutations(mutations) {
+			function processMutations (mutations) {
 				mutations.forEach(function (mutation) {
 					// Update activeStack and hoverStack to not contain any nodes that were detached from the document.
 					var removedRoot, idx = 0;

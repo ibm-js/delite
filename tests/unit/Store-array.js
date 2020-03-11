@@ -258,8 +258,8 @@ define([
 
 		StoreFuncSort: function () {
 			var store = new C();
-			store.processQueryResult = function (store) {
-				return store.sort(function (a, b) {
+			store.processQueryResult = function (theStore) {
+				return theStore.sort(function (a, b) {
 					if (a.index > b.index) {
 						return 1;
 					}

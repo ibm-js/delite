@@ -6,10 +6,10 @@ define([
 
 
 	// Detect if specified instance or its prototypes, not including HTMLElement, have defined the specified property.
-	function overridesProperty(instance, prop) {
+	function overridesProperty (instance, prop) {
 		for (var proto = Object.getPrototypeOf(instance);
-			 proto && proto !== instance._BaseHTMLElement.prototype;
-			 proto = Object.getPrototypeOf(proto)
+			proto && proto !== instance._BaseHTMLElement.prototype;
+			proto = Object.getPrototypeOf(proto)
 		) {
 			var descriptor = Object.getOwnPropertyDescriptor(proto, prop);
 			if (descriptor) {
@@ -149,8 +149,6 @@ define([
 		}),
 
 		refreshRendering: function (oldValues) {
-			/* jshint maxcomplexity:14 */
-
 			// Handle disabled, required and tabIndex, across the tabStops and root node.
 			// No special processing is needed for tabStops other than just to refresh disabled, required and tabIndex.
 

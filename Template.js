@@ -7,7 +7,7 @@ define([
 	// Get list of properties that the javascript expression depends on.
 	// For example, for "this.label + ' hi ' + this.foo", returns ["label", "foo"].
 	// For nested props (ex: this.item.foo), return top level prop (ex: item).
-	function propertiesReferenced(expr) {
+	function propertiesReferenced (expr) {
 		var matches = expr.match(/this\.(\w+)/g);
 		if (matches) {
 			// use hash to remove duplicates, then convert to array to return
@@ -63,7 +63,6 @@ define([
 					"\t}.bind(this)\n" +
 				"};\n";
 
-			/* jshint evil:true */
 			this.func = new Function("document", this.text);
 		},
 
@@ -141,8 +140,6 @@ define([
 		 * @private
 		 */
 		generateNodeCode: function (nodeName, createNode, templateNode) {
-			/* jshint maxcomplexity:16 */
-
 			// Helper string for setting up attach-point(s), ex: "this.foo = this.bar = ".
 			var ap = (templateNode.attachPoints || []).map(function (n) {
 				return "this." + n + " = ";
@@ -152,8 +149,8 @@ define([
 			if (createNode) {
 				this.buildText.push(
 					"var " + nodeName + " = " + ap + (templateNode.xmlns ?
-					"document.createElementNS('" + templateNode.xmlns + "', '" + templateNode.tag + "');" :
-					"document.createElement('" + templateNode.tag + "');")
+						"document.createElementNS('" + templateNode.xmlns + "', '" + templateNode.tag + "');" :
+						"document.createElement('" + templateNode.tag + "');")
 				);
 			} else if (ap) {
 				// weird case that someone set attach-point on root node
@@ -178,7 +175,7 @@ define([
 					this.buildText.push("this.setClassComponent('template'+this.widgetId, " + js + ", " + nodeName +
 						");");
 					this.generateWatchCode(dependsOn,
-							"this.setClassComponent('template'+this.widgetId, " + js + ", " + nodeName + ")");
+						"this.setClassComponent('template'+this.widgetId, " + js + ", " + nodeName + ")");
 				} else {
 					var setJs = propName ? nodeName + "." + propName + " = " + js :
 						"this.setOrRemoveAttribute(" + nodeName + ", '" + attr + "', " + js + ")";

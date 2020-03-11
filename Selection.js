@@ -161,7 +161,6 @@ define(["dcl/dcl", "ibm-decor/sniff", "./Widget"], function (dcl, has, Widget) {
 			this._setSelected(item, value);
 		},
 
-		/* jshint maxcomplexity: 11*/
 		_setSelected: function (item, selected) {
 			if (this.selectionMode === "single" || this.selectionMode === "radio") {
 				if (selected) {
@@ -183,7 +182,6 @@ define(["dcl/dcl", "ibm-decor/sniff", "./Widget"], function (dcl, has, Widget) {
 				}
 			}
 		},
-		/* jshint maxcomplexity: 10*/
 
 		/**
 		 * Applies selection triggered by an user interaction.

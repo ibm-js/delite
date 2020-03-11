@@ -4,14 +4,12 @@ define([
 	"./features",
 	"ibm-decor/Invalidating",
 	"./CustomElement",
-	"./register",
 	"requirejs-dplugins/css!./css/common.css"
 ], function (
 	dcl,
 	has,
 	Invalidating,
-	CustomElement,
-	register
+	CustomElement
 ) {
 	// Used to generate unique id for each widget
 	var cnt = 0;
@@ -326,7 +324,6 @@ define([
 				reference = this.ownerDocument.getElementById(reference);
 			}
 
-			/* jshint maxcomplexity:14 */
 			if (position === "replace") {
 				reference.parentNode.replaceChild(this, reference);
 			} else if (position === "only") {

@@ -1,13 +1,13 @@
 /** @module delite/ArrayQueryAdapter */
 define([
 	"dcl/dcl",
-	"ibm-decor/Evented",
+	"ibm-decor/Evented"
 ], function (dcl, Evented) {
 
 	/**
 	 * Returns a thenable on some static data, but unlike Promise, it executes synchronously.
 	 */
-	function syncThenable(data) {
+	function syncThenable (data) {
 		return {
 			then: function (resolve) {
 				var res = resolve(data);
@@ -69,7 +69,6 @@ define([
 		 * @returns {Function}
 		 * @private
 		 */
-		/* jshint maxcomplexity: 12 */
 		_compileFilterQuery: function (query) {
 			var prop = query.args[0];
 			var value = query.args[1];
@@ -108,7 +107,6 @@ define([
 				throw new Error("Unknown filter operation '" + query.type + "'");
 			}
 		},
-		/* jshint maxcomplexity: 10*/
 
 		/**
 		 * Test if an array contains all the values in parameter values.
@@ -145,9 +143,14 @@ define([
 			var res = this.data.slice(args.start, args.end);
 			if (res.length < (args.end - args.start)) {
 				var promise;
-				var evt = {start: args.start, end: args.end, resLength: res.length, setPromise: function (pro) {
-					promise = pro;
-				}};
+				var evt = {
+					start: args.start,
+					end: args.end,
+					resLength: res.length,
+					setPromise: function (pro) {
+						promise = pro;
+					}
+				};
 				this.emit("_new-query-asked", evt);
 				return promise || syncThenable(res);
 			} else {

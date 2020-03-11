@@ -110,7 +110,7 @@ define([
 				}
 			},
 
-			readonly: function () {
+			"readonly": function () {
 				var myWidget = new FormValueWidgetTest();
 
 				myWidget.readOnly = true;

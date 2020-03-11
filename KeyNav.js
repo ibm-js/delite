@@ -30,7 +30,7 @@ define([
 	 * @param {Element} node
 	 * @returns {boolean}
 	 */
-	function takesInput(node) {
+	function takesInput (node) {
 		var tag = node.nodeName.toLowerCase();
 
 		return !node.readOnly && (tag === "textarea" || (tag === "input" &&
@@ -49,7 +49,7 @@ define([
 	 * @param {Element} node
 	 * @returns {boolean}
 	 */
-	function keyboardClickable(node) {
+	function keyboardClickable (node) {
 		return !node.readOnly && /^(button|a|input)$/i.test(node.nodeName);
 	}
 
@@ -84,7 +84,6 @@ define([
 	return dcl(Widget, /** @lends module:delite/KeyNav# */ {
 		declaredClass: "delite/KeyNav",
 
-		/*jshint -W101*/
 		/**
 		 * When true, focus the descendant widgets as the user navigates to them via arrow keys or keyboard letter
 		 * search.  When false, rather than focusing the widgets, it merely sets `navigatedDescendant`,
@@ -113,7 +112,6 @@ define([
 		 * @protected
 		 */
 		focusDescendants: true,
-		/*jshint +W101*/
 
 		/**
 		 * The currently navigated descendant, or null if there isn't one.
@@ -440,7 +438,7 @@ define([
 		 * @param {number} numMatches
 		 * @private
 		 */
-		_keyboardSearchHandler: function (item, /*jshint unused: vars */ evt, searchString, numMatches) {
+		_keyboardSearchHandler: function (item/*, evt, searchString, numMatches*/) {
 			if (item) {
 				this.navigateTo(item);
 			}
@@ -634,7 +632,7 @@ define([
 		 */
 		getNext: function (child, dir) {
 			var container = this.keyNavContainerNode, origChild = child;
-			function dfsNext(node) {
+			function dfsNext (node) {
 				if (node.firstElementChild) { return node.firstElementChild; }
 				while (node !== container) {
 					if (node.nextElementSibling) { return node.nextElementSibling; }
@@ -642,11 +640,11 @@ define([
 				}
 				return container;	// loop around, plus corner case when no children
 			}
-			function dfsLast(node) {
+			function dfsLast (node) {
 				while (node.lastElementChild) { node = node.lastElementChild; }
 				return node;
 			}
-			function dfsPrev(node) {
+			function dfsPrev (node) {
 				return node === container ? dfsLast(container) : // loop around, plus corner case when no children
 					(node.previousElementSibling && dfsLast(node.previousElementSibling)) || node.parentNode;
 			}

@@ -14,7 +14,7 @@ define([
 	// An alternate approach might be to have the HTMLElement wrapper shim with
 	// browserConstruction and userConstruction flags, like native-shim.js used to have,
 	// see https://github.com/Mindcraft1/custom-element-ie11/blob/master/shim/native-shim.js.
-	function weaveConstructorChain(chain, utils) {
+	function weaveConstructorChain (chain, utils) {
 		var newProp = utils.cloneDescriptor(chain[chain.length - 1]);
 		chain = chain.map(function (prop) {
 			return prop.get || prop.set ? utils.adaptGet(prop.get) : prop.value;
@@ -52,7 +52,7 @@ define([
 	 *                                                element.
 	 * @function module:delite/register
 	 */
-	function register(tag, superclasses, props) {
+	function register (tag, superclasses, props) {
 		// Create the baseCtor class by extending specified superclasses and adding specified properties.
 
 		// Make sure all the bases have their proper constructors for being composited.

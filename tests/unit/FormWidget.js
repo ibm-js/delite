@@ -13,7 +13,7 @@ define([
 	var registerSuite = intern.getPlugin("interface.object").registerSuite;
 	var assert = intern.getPlugin("chai").assert;
 
-	var container, FormWidgetTest, FormWidgetTest2;
+	var container, FormWidgetTest;
 
 	registerSuite("FormWidget", {
 		before: function () {
@@ -34,7 +34,7 @@ define([
 						}
 					});
 
-					FormWidgetTest2 = register("form-widget-test-two", [HTMLElement, FormWidget], {
+					register("form-widget-test-two", [HTMLElement, FormWidget], {
 						moveAriaAttributes: false,
 						render: function () {
 							this.focusNode = this.ownerDocument.createElement("input");
@@ -349,32 +349,32 @@ define([
 					})
 				});
 
-				var container = new Container({
+				var myContainer = new Container({
 					disabled: true,
 					required: true
 				});
-				container.deliver();
+				myContainer.deliver();
 
 				// Since Textbox widget doesn't have disabled and required properties,
 				// the "aria-disabled" and "aria-required" attributes should be set.
-				assert.strictEqual(container.textbox.getAttribute("aria-disabled"), "true",
+				assert.strictEqual(myContainer.textbox.getAttribute("aria-disabled"), "true",
 					"aria-disabled on TextboxWidget");
-				assert.strictEqual(container.textbox.getAttribute("aria-required"), "true",
+				assert.strictEqual(myContainer.textbox.getAttribute("aria-required"), "true",
 					"aria-required on TextboxWidget");
 
 				// Likewise for Button widget, except that we shouldn't set aria-required on buttons.
-				assert.strictEqual(container.button.getAttribute("aria-disabled"), "true",
+				assert.strictEqual(myContainer.button.getAttribute("aria-disabled"), "true",
 					"aria-disabled on ButtonWidget");
-				assert.isFalse(container.button.hasAttribute("aria-required"), "aria-required on ButtonWidget");
+				assert.isFalse(myContainer.button.hasAttribute("aria-required"), "aria-required on ButtonWidget");
 
 				// Since  WidgetWithDisabledAndRequired has disabled and required properties, they should be set
 				// and aria properties shouldn't be set.
-				assert.isFalse(container.form.hasAttribute("aria-disabled"),
+				assert.isFalse(myContainer.form.hasAttribute("aria-disabled"),
 					"aria-disabled on WidgetWithDisabledAndRequired");
-				assert.isFalse(container.form.hasAttribute("aria-required"),
+				assert.isFalse(myContainer.form.hasAttribute("aria-required"),
 					"aria-required on WidgetWithDisabledAndRequired");
-				assert.isTrue(container.form.disabled, "disabled on WidgetWithDisabledAndRequired");
-				assert.isTrue(container.form.required, "required on WidgetWithDisabledAndRequired");
+				assert.isTrue(myContainer.form.disabled, "disabled on WidgetWithDisabledAndRequired");
+				assert.isTrue(myContainer.form.required, "required on WidgetWithDisabledAndRequired");
 			}
 		},
 

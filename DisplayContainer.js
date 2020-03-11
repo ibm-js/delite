@@ -58,7 +58,7 @@ define(["dcl/dcl", "./Container"], function (dcl, Container) {
 	 * @property {Element} child - reference to child element
 	 */
 
-	function mix(a, b) {
+	function mix (a, b) {
 		for (var n in b) {
 			a[n] = b[n];
 		}
@@ -165,7 +165,7 @@ define(["dcl/dcl", "./Container"], function (dcl, Container) {
 		 * @returns {Promise} Optionally a promise that will be resolved when the display & transition effect will have
 		 * been performed.
 		 */
-		changeDisplay: function (widget, /*jshint unused: vars*/params) {
+		changeDisplay: function (widget, params) {
 			if (params.hide === true) {
 				widget.style.visibility = "hidden";
 				widget.style.display = "none";

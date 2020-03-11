@@ -53,7 +53,7 @@ define([
 
 		loadDropDown: function () {
 			if (!this._dropDown) {
-				this._dropDown = new this.dropDownConstructor({
+				this._dropDown = new this.DropDownConstructor({
 					className: this.dropDownClass || "basic-dropdown"
 				});
 				if (this.id) {
@@ -68,7 +68,7 @@ define([
 	// A button that shows a popup
 	var CreateEveryTimeDropdownButton = register("create-every-time-drop-down-button", [SimpleDropDownButton], {
 		loadDropDown: function () {
-			return new this.dropDownConstructor({
+			return new this.DropDownConstructor({
 				className: this.dropDownClass || "create-every-time-dropdown"
 			});
 		}
@@ -83,12 +83,12 @@ define([
 		tests: {
 			// Note: most of the HasDropDown tests are in tests/functional
 
-			basic: function () {
+			"basic": function () {
 				// basic drop down with menu
 				var sdd = new SimpleDropDownButton({
 					id: "dd",
 					label: "basic",
-					dropDownConstructor: Menu,
+					DropDownConstructor: Menu,
 					focusOnPointerOpen: false // traditionally, only focus drop down menus when opened by the keyboard
 				}).placeAt(container);
 
@@ -101,12 +101,12 @@ define([
 				});
 			},
 
-			detach: function () {
+			"detach": function () {
 				// basic drop down with menu
 				var sdd = new SimpleDropDownButton({
 					id: "dd2",
 					label: "detach",
-					dropDownConstructor: Menu,
+					DropDownConstructor: Menu,
 					focusOnPointerOpen: false // traditionally, only focus drop down menus when opened by the keyboard
 				}).placeAt(container);
 
@@ -133,7 +133,7 @@ define([
 				var ddb = new CreateEveryTimeDropdownButton({
 					id: "cetdb",
 					label: "create every time",
-					dropDownConstructor: Menu,
+					DropDownConstructor: Menu,
 					focusOnPointerOpen: false // traditionally only focus drop down menus when opened by the keyboard
 				}).placeAt(container);
 

@@ -1,6 +1,6 @@
 define({
 	// begin v1.x content
-	root: {
+	"root": {
 		buttonOk: "OK",
 		buttonCancel: "Cancel",
 		buttonSave: "Save",

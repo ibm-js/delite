@@ -6,7 +6,7 @@ define([
 	var curFocusNode, focusListener, focusCallback, focusCallbackDelay;
 
 	return {
-		isVisible: function isVisible(/*Element*/ node) {
+		isVisible: function isVisible (/*Element*/ node) {
 			// summary:
 			//		Return true if node/widget is visible
 
@@ -17,7 +17,7 @@ define([
 				(p = node.getBoundingClientRect(), p.bottom >= 0 && p.right >= 0 && p.height > 0 && p.width > 0);
 		},
 
-		isHidden: function isHidden(/*Element*/ node) {
+		isHidden: function isHidden (/*Element*/ node) {
 			// summary:
 			//		Return true if node/widget is hidden
 
@@ -28,20 +28,20 @@ define([
 				(p = node.getBoundingClientRect(), p.bottom < 0 || p.right < 0 && p.height <= 0 || p.width <= 0);
 		},
 
-		innerText: function innerText(/*Element*/ node) {
+		innerText: function innerText (/*Element*/ node) {
 			// summary:
 			//		Browser portable function to get the innerText of specified Element
 			return (node.textContent || "").trim();
 		},
 
-		tabOrder: function tabOrder(/*Element?*/ root) {
+		tabOrder: function tabOrder (/*Element?*/ root) {
 			// summary:
 			//		Return all tab-navigable elements under specified node in the order that
 			//		they will be visited (by repeated presses of the tab key)
 
 			var elems = [];
 
-			function walkTree(/*Element*/ parent) {
+			function walkTree (/*Element*/ parent) {
 				var children = Array.prototype.slice.call(parent.children);
 				children.forEach(function (child) {
 					// Skip hidden elements
@@ -72,7 +72,7 @@ define([
 			});
 		},
 
-		onFocus: function onFocus(func, delay) {
+		onFocus: function onFocus (func, delay) {
 			// summary:
 			//		Wait for the next change of focus, and then delay ms (so widget has time to react to focus event),
 			//		then call func(node) with the currently focused node.  Note that if focus changes again during

@@ -14,7 +14,7 @@ define([
 	 * @returns {Function}
 	 * @private
 	 */
-	function genHandler(eventType, prevValueProp, deferHandleProp) {
+	function genHandler (eventType, prevValueProp, deferHandleProp) {
 		// Set value and fire an input event if the value changed since the last call.
 		// @param {*} newValue - The new value.
 		return function (newValue) {

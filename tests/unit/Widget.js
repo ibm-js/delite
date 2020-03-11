@@ -15,7 +15,7 @@ define([
 
 	var SimpleWidget, TestDir, simple, pane1;
 
-	function getFragment() {
+	function getFragment () {
 		var frag = document.createDocumentFragment();
 		frag.appendChild(document.createElement("div"));
 		frag.appendChild(document.createElement("div"));
@@ -31,7 +31,7 @@ define([
 		},
 
 		tests: {
-			tabIndex: {
+			"tabIndex": {
 				topLevel: function () {
 					// Test when tabIndex is declared top level, in the props passed to register().
 
@@ -127,16 +127,16 @@ define([
 				notInPrototype: function () {
 					// And, test when the widget prototype doesn't declare tabIndex at all.
 					// Then the widget should just act like a simple <div>, passing tabIndex through to root node.
-					var SimpleWidget = register("tabindex-not-in-prototype", [HTMLElement, Widget], { });
-					var simple = new SimpleWidget({ tabIndex: 5 });
-					container.appendChild(simple);
-					simple.connectedCallback();
+					var SimpleWidget2 = register("tabindex-not-in-prototype", [HTMLElement, Widget], { });
+					var simple2 = new SimpleWidget2({ tabIndex: 5 });
+					container.appendChild(simple2);
+					simple2.connectedCallback();
 
 					var d = this.async(1000);
 
 					setTimeout(d.callback(function () {
 						// make sure that tabIndex was correctly set
-						assert.strictEqual(simple.getAttribute("tabindex"), "5", "programmatic set");
+						assert.strictEqual(simple2.getAttribute("tabindex"), "5", "programmatic set");
 					}), 10);
 
 					return d;
@@ -160,13 +160,13 @@ define([
 			},
 
 			// Widget listens for changes to dir and then sets style.direction and the d-rtl class.
-			dir: {
+			"dir": {
 				before: function () {
 					TestDir = register("test-dir", [HTMLElement, Widget], {});
 				},
 
 				tests: {
-					programmatic: function () {
+					"programmatic": function () {
 						var myWidget = new TestDir({
 							dir: "rtl"
 						});
@@ -200,7 +200,7 @@ define([
 						}
 					},
 
-					declarative: function () {
+					"declarative": function () {
 						container.innerHTML = "<test-dir id=dirTest dir='rtl'></test-dir>";
 
 						setTimeout(this.async().callback(function () {
@@ -212,7 +212,7 @@ define([
 				}
 			},
 
-			widgetId: function () {
+			"widgetId": function () {
 				var TestWidget = register("test-lifecycle-widget", [HTMLElement, Widget], { });
 				var w1 = new TestWidget(),
 					w2 = new TestWidget();
@@ -222,7 +222,7 @@ define([
 				assert.notStrictEqual(w1.widgetId, w2.widgetId, "id's are different");
 			},
 
-			baseClass: function () {
+			"baseClass": function () {
 				// First check that baseClass specified in prototype gets set
 				var TestWidget = register("test-lifecycle-widget2", [HTMLElement, Widget], {
 					baseClass: "base2"
@@ -243,7 +243,7 @@ define([
 				assert(myWidgetCustom.classList.contains("customBase"), "baseClass is customBase");
 			},
 
-			placeAt: {
+			"placeAt": {
 				before: function () {
 					SimpleWidget = register("simple-widget-place-at", [HTMLElement, Widget], {
 						render: function () {
@@ -383,7 +383,6 @@ define([
 					attr2: 1
 				});
 
-				/*jshint multistr: true */
 				container.innerHTML = "<test-foo id='one' name='bob' attr1=10 attr2=10></test-foo> \
 				<test-foo id='two' name='is' attr1=5 attr2=10></test-foo> \
 				<div id='threeWrapper'> \

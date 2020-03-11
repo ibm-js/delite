@@ -17,6 +17,7 @@ define([
 				iframe.style.display = "";
 			} else {
 				iframe = document.createElement("iframe");
+				// eslint-disable-next-line no-script-url
 				iframe.src = "javascript:''";
 				iframe.className = "d-background-iframe";
 				iframe.setAttribute("role", "presentation");

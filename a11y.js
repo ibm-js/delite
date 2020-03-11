@@ -25,8 +25,6 @@ define([], function () {
 		 * @returns {boolean}
 		 */
 		hasDefaultTabStop: function (elem) {
-			/* jshint maxcomplexity:12 */
-
 			// No explicit tabIndex setting, need to investigate node type
 			switch (elem.nodeName.toLowerCase()) {
 			case "a":
@@ -105,7 +103,7 @@ define([], function () {
 		getTabNavigable: function (root) {
 			var elements = [], radioButtonByName = {};
 
-			function radioName(node) {
+			function radioName (node) {
 				// If this element is part of a radio button group, return the name for that group.
 				return node && node.tagName.toLowerCase() === "input" &&
 					node.type && node.type.toLowerCase() === "radio" &&
@@ -114,8 +112,7 @@ define([], function () {
 
 			var shown = a11y._isElementShown, effectiveTabIndex = a11y.effectiveTabIndex;
 
-			function walkTree(/*Element*/ parent) {
-				/* jshint maxcomplexity:14 */
+			function walkTree (/*Element*/ parent) {
 				for (var child = parent.firstElementChild; child; child = child.nextElementSibling) {
 					// Skip hidden DOM trees.
 					if (!shown(child)) {

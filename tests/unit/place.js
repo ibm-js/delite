@@ -14,7 +14,7 @@ define([
 		aroundRight,
 		popup;
 
-	function toTheLeftOrRight(anchor) {
+	function toTheLeftOrRight (anchor) {
 		var textboxPos = anchor.getBoundingClientRect(),
 			popupContainerPos = popup.getBoundingClientRect();
 
@@ -27,7 +27,7 @@ define([
 		assert(toTheLeft || toTheRight, "The popup was not to the left or right");
 	}
 
-	function scrollTo(y) {
+	function scrollTo (y) {
 		window.scrollTo(0, y);
 	}
 

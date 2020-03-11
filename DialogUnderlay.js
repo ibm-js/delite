@@ -23,13 +23,13 @@ define([
 	 *
 	 * @class module:delite/DialogUnderlay
 	 */
-	var DialogUnderlay = register("d-dialog-underlay", [HTMLElement, Widget],
-			/** @lends module:delite/DialogUnderlay# */ {
+	// eslint-disable-next-line max-len
+	var DialogUnderlay = register("d-dialog-underlay", [HTMLElement, Widget],  /** @lends module:delite/DialogUnderlay# */ {
 
 		baseClass: "d-dialog-underlay",
 
 		constructor: dcl.after(function () {
-			// Automatically append the underlay to <body> on creation.
+		// Automatically append the underlay to <body> on creation.
 			this.ownerDocument.body.appendChild(this);
 
 			// Prevent scrolling content behind the dialog.

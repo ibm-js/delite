@@ -70,7 +70,7 @@ define([], function () {
 					}).end();
 			},
 
-			nested: function () {
+			"nested": function () {
 				return this.remote
 					.findById("showNestedMenuButton").click().end()
 					.sleep(500)
@@ -162,7 +162,7 @@ define([], function () {
 				}
 			},
 
-			scrollbar: {
+			"scrollbar": {
 				at: function () {
 					return this.remote
 						.execute("openLotsOfChoicesPopupButton.scrollIntoView();")

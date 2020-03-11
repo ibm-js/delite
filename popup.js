@@ -30,7 +30,7 @@ define([
 	var messageFormat = new MessageFormat(navigator.language.replace(/-.*$/, ""));
 	var getWrapperLabel = messageFormat.compile(messages.popupLabel);
 
-	function isDocLtr(doc) {
+	function isDocLtr (doc) {
 		return !(/^rtl$/i).test(doc.body.dir || doc.documentElement.dir);
 	}
 
@@ -313,7 +313,7 @@ define([
 
 				// Destroy wrapper when popup widget is destroyed.
 				widget.own({
-					destroy: function destroyWrapper() {
+					destroy: function destroyWrapper () {
 						if (widget._popupWrapper) {
 							widget._popupWrapper.parentNode.removeChild(widget._popupWrapper);
 							delete widget._popupWrapper;
@@ -381,8 +381,8 @@ define([
 		 * @returns {module:delite/Widget}
 		 */
 		getTopPopup: function () {
-			var stack = this._stack;
-			for (var pi = stack.length - 1; pi > 0 && stack[pi].parent === stack[pi - 1].popup; pi--) {
+			var stack = this._stack, pi;
+			for (pi = stack.length - 1; pi > 0 && stack[pi].parent === stack[pi - 1].popup; pi--) {
 				/* do nothing, just trying to get right value for pi */
 			}
 			return stack[pi];
@@ -446,8 +446,6 @@ define([
 		 * @private
 		 */
 		_prepareToOpen: function (args) {
-			/* jshint maxcomplexity:12 */
-
 			var stack = this._stack,
 				widget = args.popup,
 				around = args.around;
@@ -603,7 +601,6 @@ define([
 		 * @private
 		 */
 		_size: function (args) {
-			/* jshint maxcomplexity:15 */
 			var widget = args.popup,
 				around = args.around,
 				orient = this._getOrient(args),
@@ -677,7 +674,6 @@ define([
 		 * @private
 		 */
 		_position: function (args) {
-			/* jshint maxcomplexity:11 */
 			var widget = args.popup,
 				wrapper = widget._popupWrapper,
 				around = args.around,

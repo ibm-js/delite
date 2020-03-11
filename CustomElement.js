@@ -31,7 +31,7 @@ define([
 	 * Returns undefined to indicate the object doesn't exist (although that
 	 * could also mean that the object does exist, but its value is "undefined".
 	 */
-	function getObject(name) {
+	function getObject (name) {
 		if (!name) {
 			return;
 		}
@@ -96,8 +96,8 @@ define([
 				if (!this.constructor._propCaseMap) {
 					var pcm = this.constructor._propCaseMap = {};
 					for (var proto = Object.getPrototypeOf(this);
-						 proto && proto !== this._BaseHTMLElement.prototype;
-						 proto = Object.getPrototypeOf(proto)
+						proto && proto !== this._BaseHTMLElement.prototype;
+						proto = Object.getPrototypeOf(proto)
 					) {
 						Object.keys(proto).forEach(function (prop) {
 							pcm[prop.toLowerCase()] = prop;
@@ -178,24 +178,23 @@ define([
 		 * @private
 		 */
 		_parsePrototypeAttr: function (name, value) {
-			// inner function useful to reduce cyclomatic complexity when using jshint
-			function stringToObject(value) {
+			// inner function useful to reduce cyclomatic complexity
+			function stringToObject (str) {
 				var obj;
 
 				try {
 					// TODO: remove this code if it isn't being used, so we don't scare people that are afraid of eval.
-					/* jshint evil:true */
 					// This will only be executed when complex parameters are used in markup
 					// <my-tag constraints="max: 3, min: 2"></my-tag>
 					// This can be avoided by using such complex parameters only programmatically or by not using
 					// them at all.
 					// This is harmless if you make sure the JavaScript code that is passed to the attribute
 					// is harmless.
-					obj = eval("(" + (value[0] === "{" ? "" : "{") + value + (value[0] === "{" ? "" : "}") + ")");
+					obj = eval("(" + (str[0] === "{" ? "" : "{") + str + (str[0] === "{" ? "" : "}") + ")");
 				}
 				catch (e) {
 					throw new SyntaxError("Error in attribute conversion to object: " + e.message +
-						"\nAttribute Value: '" + value + "'");
+						"\nAttribute Value: '" + str + "'");
 				}
 				return obj;
 			}
@@ -230,7 +229,6 @@ define([
 		 * @protected
 		 */
 		parseFunctionAttribute: function (value, params) {
-			/* jshint evil:true */
 			// new Function() will only be executed if you have properties that are of function type in your widget
 			// and that you use them in your tag attributes as follows:
 			// <my-tag whatever="console.log(param)"></my-tag>
@@ -356,12 +354,12 @@ define([
 		findCustomElements: function (root) {
 			var outAry = [];
 
-			function getChildrenHelper(root) {
-				for (var node = root.firstChild; node; node = node.nextSibling) {
-					if (node.nodeType === 1 && /-/.test(node.tagName)) {
-						outAry.push(node);
+			function getChildrenHelper (node) {
+				for (var child = node.firstChild; child; child = child.nextSibling) {
+					if (child.nodeType === 1 && /-/.test(child.tagName)) {
+						outAry.push(child);
 					} else {
-						getChildrenHelper(node);
+						getChildrenHelper(child);
 					}
 				}
 			}

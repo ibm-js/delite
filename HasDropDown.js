@@ -335,9 +335,8 @@ define([
 		 * @param {Event} e
 		 * @private
 		 */
+		// eslint-disable-next-line complexity
 		_dropDownKeyDownHandler: function (e) {
-			/* jshint maxcomplexity:19 */
-
 			if (this.disabled || this.readOnly) {
 				return;
 			}
@@ -504,7 +503,6 @@ define([
 			var loadDropDownPromise = this.loadDropDown();
 
 			this._openDropDownPromise = Promise.resolve(loadDropDownPromise).then(function (dropDown) {
-				/* jshint maxcomplexity:15 */
 				if (this._previousDropDown && this._previousDropDown !== dropDown) {
 					popup.detach(this._previousDropDown);
 					delete this._previousDropDown;

@@ -46,7 +46,7 @@ define([
 				return d;
 			},
 
-			Updates: function () {
+			"Updates": function () {
 				var d = this.async(1500);
 				var store = new C();
 				store.deliver();
@@ -92,7 +92,7 @@ define([
 				return d;
 			},
 
-			NullStore: function () {
+			"NullStore": function () {
 				var d = this.async(1500);
 				var store = new C({
 					source: new M({ data: [{id: "foo", name: "Foo" }], model: null})
@@ -109,7 +109,7 @@ define([
 				return d;
 			},
 
-			Destroy: function () {
+			"Destroy": function () {
 				var d = this.async(1500);
 				var store = new C();
 				var myData = [
@@ -144,7 +144,7 @@ define([
 				return d;
 			},
 
-			Query: function () {
+			"Query": function () {
 				var d = this.async(1500);
 				var store = new C();
 				store.query = { id: "foo" };
@@ -216,7 +216,7 @@ define([
 				assert.deepEqual(myStore.storeQueries, [{ id: "foo" }]);
 			},
 
-			StoreFuncRange: function () {
+			"StoreFuncRange": function () {
 				var d = this.async(15000);
 				var store = new C();
 				store.fetch = function (collection) {
@@ -250,11 +250,11 @@ define([
 				return d;
 			},
 
-			StoreFuncSort: function () {
+			"StoreFuncSort": function () {
 				var d = this.async(1500);
 				var store = new C();
-				store.processQueryResult = function (store) {
-					return store.sort("index");
+				store.processQueryResult = function (theStore) {
+					return theStore.sort("index");
 				};
 				var myData = [
 					{ id: "foo", name: "Foo", index: 0 },

@@ -26,7 +26,7 @@ define([
 
 		tests: {
 			// Declare and instantiate a simple widget
-			simple: function () {
+			"simple": function () {
 				TestWidget = register("test-simple-widget", [HTMLElement], {
 					foo: 3,
 					constructor: function () {
@@ -72,7 +72,7 @@ define([
 			},
 
 			// Declare and instantiate a widget from a mixin that extends Stateful
-			stateful: function () {
+			"stateful": function () {
 				// Create a mixin for testing purposes.
 				// register() should call this.introspect() if it's defined, because it isn't called naturally.
 				Mixin = dcl(Stateful, {
@@ -130,7 +130,7 @@ define([
 				assert.strictEqual(tw.cs1, 5, "tw.cs2 after set");
 			},
 
-			extended: function () {
+			"extended": function () {
 				// Create extension of another widget
 				TestExtendedWidget = register("test-extended-widget", [TestWidget], {
 					extFunc: function () {
@@ -206,7 +206,7 @@ define([
 			},
 
 			// Test declarative creation.
-			declarative1: function () {
+			"declarative1": function () {
 				register("test-parser-widget", [HTMLElement, Mixin], {
 					createdCalls: 0,
 					constructor: function () {
@@ -232,7 +232,7 @@ define([
 				}), 0);
 			},
 
-			declarative2: function () {
+			"declarative2": function () {
 				// create dom nodes for not-yet-declared-widget, and attach them to document
 				container.innerHTML = "<test-auto-parse id=ap1></test-auto-parse>" +
 					"<div><test-auto-parse id=ap2></test-auto-parse></div>";
@@ -299,7 +299,7 @@ define([
 			},
 
 			// Test error conditions
-			errors: function () {
+			"errors": function () {
 				var threw;
 
 				try {

@@ -16,7 +16,7 @@ define([], function () {
 		},
 
 		tests: {
-			tabIndex: function () {
+			"tabIndex": function () {
 				return this.remote
 					.findById("focus")
 					.click()
@@ -318,7 +318,7 @@ define([], function () {
 					});
 			},
 
-			combobox: {
+			"combobox": {
 				keyboard: function () {
 					return this.remote.execute("document.body.scrollTop = 10000; combobox.focus();")
 						.pressKeys(keys.ARROW_DOWN)
