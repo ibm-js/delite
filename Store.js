@@ -147,12 +147,14 @@ define([
 		 */
 		queryStoreAndInitItems: function (processQueryResult) {
 			this._untrack();
-			if (this.source != null) {
+			if (this.source) {
 				if (!Array.isArray(this.source)) {
-					this._storeAdapter = new DstoreQueryAdapter({source: this.source, query: this.query,
+					this._storeAdapter = new DstoreQueryAdapter({source: this.source,
+						query: this.query,
 						processQueryResult: processQueryResult});
 				} else {
-					this._storeAdapter = new ArrayQueryAdapter({source: this.source, query: this.query,
+					this._storeAdapter = new ArrayQueryAdapter({source: this.source,
+						query: this.query,
 						processQueryResult: processQueryResult});
 				}
 				var collection = this._storeAdapter;

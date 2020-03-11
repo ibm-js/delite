@@ -97,7 +97,7 @@ define([], function () {
 						}).end();
 				},
 
-				keyboard: function () {
+				"keyboard": function () {
 					if (this.remote.environmentType.brokenSendKeys || !this.remote.environmentType.nativeEvents) {
 						return this.skip("no keyboard support");
 					}

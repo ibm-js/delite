@@ -152,10 +152,10 @@ define(["dcl/dcl", "./Store"], function (dcl, Store) {
 		},
 
 		/**
-		 * Creates a store item based from the widget internal item based on the various mapped properties. Works 
+		 * Creates a store item based from the widget internal item based on the various mapped properties. Works
 		 * asynchronously.
 		 * @param {Object} renderItem - The render item.
-		 * @returns {Promise}		
+		 * @returns {Promise}
 		 */
 		renderItemToItem: function (renderItem) {
 			var tmp = {}, store = this._storeAdapter;
@@ -193,7 +193,7 @@ define(["dcl/dcl", "./Store"], function (dcl, Store) {
 			// Warning: we are using private API from dstore/Store here so let's do that conditionally
 			// the purpose is to workaround the fact in some cases the store might miss the ID and we don't
 			// want to bother people about that.
-			if (id == null && store.setIdentity) {
+			if (id === null && store.setIdentity) {
 				store.setIdentity(item, Math.random());
 			}
 			renderItem.id = this.getIdentity(item);

@@ -19,7 +19,7 @@ define([], function () {
 		},
 
 		tests: {
-			basic: function () {
+			"basic": function () {
 				var environmentType = this.remote.environmentType;
 
 				return this.remote
@@ -91,7 +91,7 @@ define([], function () {
 					});
 			},
 
-			keyboard: function () {
+			"keyboard": function () {
 				if (this.remote.environmentType.brokenSendKeys || !this.remote.environmentType.nativeEvents) {
 					return this.skip("no keyboard support");
 				}
@@ -127,7 +127,7 @@ define([], function () {
 					});
 			},
 
-			dropdown: function () {
+			"dropdown": function () {
 				var environmentType = this.remote.environmentType;
 
 				return this.remote
@@ -155,7 +155,7 @@ define([], function () {
 					});
 			},
 
-			hover: function () {
+			"hover": function () {
 				// note: check specifically for iOS to workaround https://github.com/theintern/leadfoot/issues/62
 				if (!this.remote.environmentType.mouseEnabled || this.remote.environmentType.platformName === "iOS") {
 					return this.skip("touch device, skipping mouse specific test");

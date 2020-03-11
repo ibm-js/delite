@@ -16,7 +16,7 @@ define([
 
 	var myMenu, anchorNode;
 
-	function isVisible(element) {
+	function isVisible (element) {
 		var elRect = element.getBoundingClientRect(),
 			elTop = elRect.top,
 			elBottom = elRect.bottom;

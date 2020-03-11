@@ -3,26 +3,24 @@ module.exports = function (grunt) {
 
 	// Project configuration.
 	grunt.initConfig({
-		pkg: grunt.file.readJSON("package.json"),
+		"pkg": grunt.file.readJSON("package.json"),
 
-		jshint: {
+		"eslint": {
 			src: [
 				"**/*.js",
 				"!node_modules/**/*.js",
-
-				// Note: skip this file since it gives a JSHint error about a character being silently deleted.
-				// It will have to be fixed by the translators.
-				"!nls/he/loading.js"
+				"!tests/**/*.js",
+				"!Gruntfile.js"
 			],
 			options: {
-				jshintrc: ".jshintrc"
+				configFile: ".eslintrc.json"
 			}
 		},
 
 		// Task for compiling less files into CSS files
-		less: {
+		"less": {
 			// Infrastructure
-			common : {
+			common: {
 				files: [
 					{
 						expand: true,
@@ -33,7 +31,7 @@ module.exports = function (grunt) {
 			},
 
 			// Compile less code for each widget
-			widgets : {
+			widgets: {
 				files: [
 					{
 						expand: true,
@@ -49,7 +47,7 @@ module.exports = function (grunt) {
 		},
 
 		"jsdoc-amddcl": {
-			docs: {
+			"docs": {
 				files: [
 					{
 						src: [
@@ -68,7 +66,7 @@ module.exports = function (grunt) {
 					}
 				]
 			},
-			export: {
+			"export": {
 				files: [
 					{
 						args: [
@@ -90,7 +88,7 @@ module.exports = function (grunt) {
 	});
 
 	// Load plugins
-	grunt.loadNpmTasks("grunt-contrib-jshint");
+	grunt.loadNpmTasks("grunt-eslint");
 	grunt.loadNpmTasks("grunt-contrib-less");
 	grunt.loadNpmTasks("grunt-contrib-uglify");
 	grunt.loadNpmTasks("jsdoc-amddcl");

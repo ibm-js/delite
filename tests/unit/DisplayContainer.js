@@ -27,13 +27,13 @@ define([
 				register("test-default-display-container", [HTMLElement, Widget, DisplayContainer]);
 				var dcontainer = document.createElement("test-default-display-container");
 
-				function initView(view) {
+				function initView (view) {
 					dcontainer.appendChild(view);
 					view.style.visibility = "hidden";
 					view.style.display = "none";
 				}
 
-				function testView(view) {
+				function testView (view) {
 					assert.strictEqual(view.style.visibility, "visible", "visibility");
 					assert.strictEqual(view.style.display, "", "display");
 				}
@@ -63,13 +63,13 @@ define([
 				register("test-hide-display-container", [HTMLElement, Widget, DisplayContainer]);
 				var dcontainer = document.createElement("test-hide-display-container");
 
-				function initView(view) {
+				function initView (view) {
 					dcontainer.appendChild(view);
 					view.style.visibility = "visible";
 					view.style.display = "";
 				}
 
-				function testView(view) {
+				function testView (view) {
 					assert.strictEqual(view.style.visibility, "hidden", "visibility");
 					assert.strictEqual(view.style.display, "none", "display");
 				}
@@ -99,7 +99,7 @@ define([
 				this.timeout = 2500;
 				var handler;
 
-				function initView(view, id) {
+				function initView (view, id) {
 					view.style.visibility = "hidden";
 					view.style.display = "none";
 					view.setAttribute("id", id + "-event");
@@ -132,7 +132,7 @@ define([
 				this.tiemout = 2500;
 				var handler;
 
-				function initView(view, id) {
+				function initView (view, id) {
 					view.style.visibility = "hidden";
 					view.style.display = "none";
 					view.setAttribute("id", id);
@@ -151,7 +151,7 @@ define([
 				var dcontainer = document.createElement("test-custom-display-container");
 				dcontainer.setAttribute("id", "dcontainer");
 				dcontainer.placeAt(container);
-				function testView(view) {
+				function testView (view) {
 					assert.strictEqual(view.style.visibility, "visible", "visibility");
 					assert.strictEqual(view.style.display, "", "display");
 					assert.strictEqual(view.parentNode, dcontainer, "parentNode");

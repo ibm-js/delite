@@ -12,6 +12,6 @@ install:
    - npm install
 
 script:
-   - grunt jshint
+   - grunt eslint
    - npx intern config=@sauce
 

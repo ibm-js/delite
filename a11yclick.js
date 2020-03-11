@@ -7,7 +7,7 @@ define([
 
 	// TODO: add functional tests
 
-	function clickKey(/*Event*/ e) {
+	function clickKey (/*Event*/ e) {
 		// Test if this keyboard event should be tracked as the start (if keydown) or end (if keyup) of a click event.
 		// Only track for nodes marked to be tracked, and not for buttons or inputs,
 		// since buttons handle keyboard click natively, and text inputs should not

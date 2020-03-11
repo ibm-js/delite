@@ -37,7 +37,7 @@ define([
 					"<div class=child label='child 6'></div>" +
 					"</div>";
 
-				function scanAll(dir) {
+				function scanAll (dir) {
 					var children = [], child = skn;
 					for (var i = 0; i < 7; i++) {
 						child = skn.getNext(child, dir);

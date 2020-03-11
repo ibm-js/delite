@@ -24,7 +24,7 @@ define([
 
 	// Get the size of the viewport without size adjustment needed for iOS soft keyboard.
 	// On android though, this returns the size of the visible area not including the keyboard.
-	function getBox() {
+	function getBox () {
 		return {
 			w: window.innerWidth,
 			h: window.innerHeight,
@@ -41,8 +41,6 @@ define([
 	 * @function module:delite/Viewport.getEffectiveBox
 	 */
 	Viewport.getEffectiveBox = function () {
-		/* jshint maxcomplexity:11 */
-
 		var box = getBox();
 
 		// Account for iOS virtual keyboard, if it's being shown.  Unfortunately no direct way to check or measure.
@@ -102,7 +100,7 @@ define([
 	var oldEffectiveSize = Viewport.getEffectiveBox(),
 		oldEffectiveScroll = oldEffectiveSize,
 		timer;
-	function scheduleCheck() {
+	function scheduleCheck () {
 		if (!timer) {
 			timer = setTimeout(function () {
 				var newBox = Viewport.getEffectiveBox();

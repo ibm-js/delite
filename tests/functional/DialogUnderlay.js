@@ -3,7 +3,7 @@ define([], function () {
 	var assert = intern.getPlugin("chai").assert;
 	var pollUntil = requirejs.nodeRequire("@theintern/leadfoot/helpers/pollUntil").default;
 
-	function clickMainScreen(remote) {
+	function clickMainScreen (remote) {
 		return function () {
 			// note: check specifically for iOS to workaround https://github.com/theintern/leadfoot/issues/62
 			if (remote.environmentType.touchEnabled || remote.environmentType.platformName === "iOS") {

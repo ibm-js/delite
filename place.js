@@ -53,7 +53,7 @@ define([
 	 * @returns {module:delite/place.ChosenPosition} Best position to place node.
 	 * @private
 	 */
-	function _placeAt(node, choices) {
+	function _placeAt (node, choices) {
 		// get {l: 10, t: 10, w: 100, h:100} type obj representing position of
 		// viewport over document
 		var view = Viewport.getEffectiveBox(node.ownerDocument),
@@ -66,7 +66,7 @@ define([
 			node.ownerDocument.body.appendChild(node);
 		}
 
-		var best = null;
+		var best;
 		choices.some(function (choice) {
 			var corner = choice.corner;
 			var pos = choice.pos;
@@ -75,14 +75,14 @@ define([
 			// calculate amount of space available given specified position of node
 			var spaceAvailable = {
 				w: {
-					"L": view.l + view.w - pos.x,
-					"R": pos.x - view.l,
-					"M": view.w
+					L: view.l + view.w - pos.x,
+					R: pos.x - view.l,
+					M: view.w
 				}[corner.charAt(1)],
 				h: {
-					"T": view.t + view.h - pos.y,
-					"B": pos.y - view.t,
-					"M": view.h
+					T: view.t + view.h - pos.y,
+					B: pos.y - view.t,
+					M: view.h
 				}[corner.charAt(0)]
 			};
 
@@ -105,15 +105,15 @@ define([
 			// and clipped by viewport
 			var
 				startXpos = {
-					"L": pos.x,
-					"R": pos.x - bb.width,
+					L: pos.x,
+					R: pos.x - bb.width,
 					// M orientation is more flexible
-					"M": Math.max(view.l, Math.min(view.l + view.w, pos.x + (bb.width >> 1)) - bb.width)
+					M: Math.max(view.l, Math.min(view.l + view.w, pos.x + (bb.width >> 1)) - bb.width)
 				}[corner.charAt(1)],
 				startYpos = {
-					"T": pos.y,
-					"B": pos.y - bb.height,
-					"M": Math.max(view.t, Math.min(view.t + view.h, pos.y + (bb.height >> 1)) - bb.height)
+					T: pos.y,
+					B: pos.y - bb.height,
+					M: Math.max(view.t, Math.min(view.t + view.h, pos.y + (bb.height >> 1)) - bb.height)
 				}[corner.charAt(0)],
 				startX = Math.max(view.l, startXpos),
 				startY = Math.max(view.t, startYpos),
@@ -124,7 +124,7 @@ define([
 
 			overflow += (bb.width - width) + (bb.height - height);
 
-			if (best == null || overflow < best.overflow) {
+			if (!best || overflow < best.overflow) {
 				best = {
 					corner: corner,
 					aroundCorner: choice.aroundCorner,
@@ -166,10 +166,10 @@ define([
 
 	var reverse = {
 		// Map from corner to kitty-corner
-		"TL": "BR",
-		"TR": "BL",
-		"BL": "TR",
-		"BR": "TL"
+		TL: "BR",
+		TR: "BL",
+		BL: "TR",
+		BR: "TL"
 	};
 
 	var place = /** @lends module:delite/place */ {
@@ -182,7 +182,7 @@ define([
 		 * corners[] where node is fully visible, or the corner where it's most visible.
 		 *
 		 * Node is assumed to be absolutely or relatively positioned.
-		 * 
+		 *
 		 * @param {Element} node - The popup node to be positioned.
 		 * @param {module:delite/place.Position} pos - The point (or if padding specified, rectangle) to place
 		 * the node kitty-corner to.
@@ -252,8 +252,6 @@ define([
 		 * place.around(node, aroundNode, {'BL':'TL', 'TR':'BR'});
 		 */
 		around: function (node, anchor, positions, leftToRight) {
-			/* jshint maxcomplexity:12 */
-
 			// If around is a DOMNode (or DOMNode id), convert to coordinates.
 			var aroundNodePos;
 			if (typeof anchor === "string" || "offsetWidth" in anchor || "ownerSVGElement" in anchor) {
@@ -263,8 +261,8 @@ define([
 				// overlap, preventing a double-border effect.  Unfortunately, difficult to measure the border
 				// width of either anchor or popup because in both cases the border may be on an inner node.
 				if (/^(above|below)/.test(positions[0])) {
-					var border = function (node) {
-						var cs = getComputedStyle(node);
+					var border = function (node2) {
+						var cs = getComputedStyle(node2);
 						return {
 							t: parseFloat(cs.borderTopWidth),	// remove "px"
 							b: parseFloat(cs.borderBottomWidth)	// remove "px"
@@ -320,27 +318,27 @@ define([
 			// Convert positions arguments into choices argument for _placeAt()
 			var choices = [];
 
-			function push(aroundCorner, corner) {
+			function push (aroundCorner, corner) {
 				choices.push({
 					aroundCorner: aroundCorner,
 					corner: corner,
 					pos: {
 						x: {
-							"L": x,
-							"R": x + width,
-							"M": x + (width >> 1)
+							L: x,
+							R: x + width,
+							M: x + (width >> 1)
 						}[aroundCorner.charAt(1)],
 						y: {
-							"T": y,
-							"B": y + height,
-							"M": y + (height >> 1)
+							T: y,
+							B: y + height,
+							M: y + (height >> 1)
 						}[aroundCorner.charAt(0)]
 					}
 				});
 			}
 
+			// eslint-disable-next-line complexity
 			positions.forEach(function (pos) {
-				/* jshint maxcomplexity:25 */	// TODO: rewrite to avoid 25 max complexity
 				var ltr = leftToRight;
 				switch (pos) {
 				case "above-centered":

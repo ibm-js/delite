@@ -23,13 +23,13 @@ define([
 		},
 
 		tests: {
-			types: function () {
+			"types": function () {
 				var MyWidget = register("handlebars-types", [HTMLElement, Widget], {
-					number: 0,
-					boolean: false,
-					string: "hi",
+					"number": 0,
+					"boolean": false,
+					"string": "hi",
 					"null": null,
-					template: handlebars.compile(
+					"template": handlebars.compile(
 						"<template>number {{number}}, boolean {{boolean}}, string {{string}}, null {{null}}</template>"
 					)
 				});
@@ -255,7 +255,7 @@ define([
 			},
 
 			"widgets in templates": {
-				basic: function () {
+				"basic": function () {
 					register("handlebars-heading", [HTMLElement, Widget], {
 						text: "",
 						template: handlebars.compile("<template>{{text}}</template>")
@@ -390,7 +390,7 @@ define([
 				}
 			},
 
-			requires: function () {
+			"requires": function () {
 				// Another test of widgets in templatea.
 				// This makes sure that the requires attribute (in the top level <template> node)
 				// will pull in the specified modules.
@@ -428,7 +428,7 @@ define([
 				});
 			},
 
-			html: function () {
+			"html": function () {
 				// Testing that parsing still works if ending tags are missing
 
 				var TestHtml = register("handlebars-html", [HTMLElement, Widget], {
@@ -452,7 +452,7 @@ define([
 				assert.strictEqual(input.tagName.toLowerCase(), "input", "input exists");
 			},
 
-			svg: function () {
+			"svg": function () {
 				// Testing template with embedded SVG, for:
 				//		1. xmlns attribute recognized, calls createElementNS() not createElement()
 				//		2. class attribute still works
@@ -486,7 +486,7 @@ define([
 				assert.strictEqual(node.namespaceURI, "http://www.w3.org/2000/svg", "rect.namespaceURI");
 			},
 
-			whitespace: function () {
+			"whitespace": function () {
 				var WhiteSpace = register("handlebars-whitespace-one", [HTMLElement, Widget], {
 					template: handlebars.compile(
 						"<template>\n<span>hello</span> <span>world</span>\n</template>"
@@ -525,7 +525,7 @@ define([
 				assert.strictEqual(wsp.innerHTML, "<pre>\thello\n\tworld </pre>", "pre whitespace preserved");
 			},
 
-			"self closing tags":  {
+			"self closing tags": {
 				html: function () {
 					var SelfClosing = register("handlebars-self-closing", [HTMLElement, Widget], {
 						template: handlebars.compile(
@@ -577,7 +577,7 @@ define([
 				assert.strictEqual(node.textContent.trim(), "Hello Tom !", "textContent #2");
 			},
 
-			nestedProperties: function () {
+			"nestedProperties": function () {
 				// Testing that nested properties work, with the caveat that updates are only detected if
 				// the top level property is changed.
 				// Also tests that undefined replacement vars in className and innerHTML
@@ -614,7 +614,7 @@ define([
 				assert.strictEqual(node.textContent.trim(), "Hello Fred Smith!", "textContent #3");
 			},
 
-			attributes: function () {
+			"attributes": function () {
 				// Boolean values like aria-selected must be represented as the strings "true" or "false".
 				// Attributes shouldn't be set if value is "", null, etc.  But 0 should be set.
 
@@ -708,7 +708,7 @@ define([
 
 			// Make sure that .deliver() updates the widget synchronously, including updating widgets in the template,
 			// and make sure that computeProperties() is called before refreshRendering().
-			deliver: function () {
+			"deliver": function () {
 				register("handlebars-text", [HTMLElement, Widget], {
 					text: "",
 					template: handlebars.compile("<template>{{text}}</template>")
@@ -739,7 +739,7 @@ define([
 				assert.strictEqual(myComplexWidget.textContent, "1 + 1 = 2");
 			},
 
-			expressions: function () {
+			"expressions": function () {
 				// Test {{ }} with arbitrary javascript
 
 				var TextExpr = register("handlebars-expr", [HTMLElement, Widget], {
@@ -779,7 +779,7 @@ define([
 				assert.strictEqual(node.getAttribute("d-shown"), "false", "d-shown");
 			},
 
-			img: function () {
+			"img": function () {
 				// Test that <img> tag in template doesn't try to load a file called {{item.src}}.
 				// Unfortunately I can't test that automatically, but this code is here for manual testing.
 

@@ -17,7 +17,6 @@ define([
 	var assert = intern.getPlugin("chai").assert;
 
 	var container, PlainWidget, TestContainer, TestContained, html, zero, two, four;
-	/*jshint multistr: true */
 	html = "<label for='input'>before:</label><input id='input'/> \
 		<test-container id='container'> \
 			<!-- comment just to make sure that numbering isn't thrown off --> \
@@ -33,7 +32,7 @@ define([
 
 
 	// Convert result of querySelectorAll() etc. into array of strings
-	function getStrings(res) {
+	function getStrings (res) {
 		return Array.prototype.map.call(res, function (elem) {
 			return elem.innerHTML;
 		});
@@ -47,7 +46,7 @@ define([
 		},
 
 		tests: {
-			basic: {
+			"basic": {
 				before: function () {
 					container = document.createElement("div");
 					document.body.appendChild(container);
@@ -154,7 +153,7 @@ define([
 				}
 			},
 
-			notifications: function () {
+			"notifications": function () {
 				var log = [], addEventLog = [], removeEventLog = [];
 				var MyContainer = register("my-container", [HTMLElement, Container], {
 					onAddChild: dcl.superCall(function (sup) {
@@ -166,14 +165,14 @@ define([
 				});
 
 				// Create and attach a container.
-				var container = new MyContainer();
-				container.on("delite-add-child", function (evt) {
+				var myContainer = new MyContainer();
+				myContainer.on("delite-add-child", function (evt) {
 					addEventLog.push(evt.child.id);
 				});
-				container.on("delite-remove-child", function (evt) {
+				myContainer.on("delite-remove-child", function (evt) {
 					removeEventLog.push(evt.child.id);
 				});
-				container.placeAt(document.body);
+				myContainer.placeAt(document.body);
 
 				// Adding children should call connectedCallback() on the children, and also call onAddChild(),
 				// and also emit a delite-add-child event.
@@ -182,22 +181,22 @@ define([
 					a3 = new PlainWidget({id: "a3"}),
 					ib1 = new PlainWidget({id: "ib1"}),
 					ib3 = new PlainWidget({id: "ib3"});
-				container.appendChild(a1);
-				container.appendChild(a2);
-				container.appendChild(a3);
-				container.insertBefore(ib1, a1);
-				container.insertBefore(ib3, a3);
+				myContainer.appendChild(a1);
+				myContainer.appendChild(a2);
+				myContainer.appendChild(a3);
+				myContainer.insertBefore(ib1, a1);
+				myContainer.insertBefore(ib3, a3);
 				assert.deepEqual(log, ["a1", "a2", "a3", "ib1", "ib3"], "log");
 				assert.deepEqual(addEventLog, ["a1", "a2", "a3", "ib1", "ib3"], "addEventLog");
 				assert.deepEqual(["ib1", "a1", "a2", "ib3", "a3"],
-					Array.prototype.map.call(container.children, function (child) { return child.id; }), "children");
+					Array.prototype.map.call(myContainer.children, function (child) { return child.id; }), "children");
 
-				assert(Array.prototype.every.call(container.children, function (child) { return child.attached; }),
+				assert(Array.prototype.every.call(myContainer.children, function (child) { return child.attached; }),
 					"all children attached");
 
 				// Removing children should emit a delite-remove-child event.
-				container.removeChild(1);
-				container.removeChild(ib3);
+				myContainer.removeChild(1);
+				myContainer.removeChild(ib3);
 				assert.deepEqual(removeEventLog, ["a1", "ib3"], "removeEventLog");
 
 				// TODO: Add test where placeAt() is called after the appendChild() calls.
@@ -205,11 +204,11 @@ define([
 				// Requires updating placeAt()
 
 				// cleanup
-				container.parentNode.removeChild(container);
+				myContainer.parentNode.removeChild(myContainer);
 			},
 
 			// Test when containerNode points to a different node.
-			containerNode: {
+			"containerNode": {
 				before: function () {
 					TestContainer = register("my-container-node", [HTMLElement, Container], {
 						render: function () {
@@ -257,21 +256,21 @@ define([
 					},
 
 					declarative: function () {
-						var container = document.createElement("div");
-						container.innerHTML = "<my-container-node>" +
+						var myContainer = document.createElement("div");
+						myContainer.innerHTML = "<my-container-node>" +
 							"<span>child 1</span> <span>child 2</span> <span>child 3</span>" +
 							"</my-container-node>";
-						document.body.appendChild(container);
+						document.body.appendChild(myContainer);
 
 						setTimeout(this.async().callback(function () {
-							var myWidget = container.firstElementChild;
+							var myWidget = myContainer.firstElementChild;
 							assert.deepEqual(getStrings(myWidget.getChildren()),
 								["child 1", "child 2", "child 3"], "getChildren()");
 							assert.deepEqual(getStrings(myWidget.querySelectorAll("span")),
 								["first", "child 1", "child 2", "child 3", "last"], "all children, from root node");
 
 							// cleanup
-							container.parentNode.removeChild(container);
+							myContainer.parentNode.removeChild(myContainer);
 						}), 0);
 					}
 				}
@@ -304,14 +303,14 @@ define([
 				});
 
 				// Create widget and test that the "label: containerNode" template is used.
-				var container = document.createElement("div");
-				container.innerHTML = "<dynamic-template-container>" +
+				var myContainer = document.createElement("div");
+				myContainer.innerHTML = "<dynamic-template-container>" +
 					"<span>child 1</span> <span>child 2</span> <span>child 3</span>" +
 					"</dynamic-template-container>";
-				document.body.appendChild(container);
+				document.body.appendChild(myContainer);
 				register.deliver();
 
-				var myWidget = container.children[0];
+				var myWidget = myContainer.children[0];
 				assert.strictEqual(myWidget.children[0], myWidget.labelNode, "reversed=false, first child");
 				assert.strictEqual(myWidget.children[1], myWidget.containerNode, "reversed=false, second child");
 				assert.deepEqual(getStrings(myWidget.getChildren()), ["child 1", "child 2", "child 3"],
@@ -329,7 +328,7 @@ define([
 				assert.strictEqual(myWidget.textContent.trim(), "child 1 child 2 child 3 reversed");
 
 				// cleanup
-				container.parentNode.removeChild(container);
+				myContainer.parentNode.removeChild(myContainer);
 			}
 		}
 	});

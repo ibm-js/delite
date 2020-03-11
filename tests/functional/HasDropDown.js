@@ -286,7 +286,7 @@ define([], function () {
 							// Use delite/Viewport to get size because window.innerWidth not quite right on iOS7.1.
 							// It returns 304 instead of 320.
 							viewport: require("delite/Viewport").getEffectiveBox(),
-							dropDownRect:  {
+							dropDownRect: {
 								left: dropDownRect.left,
 								width: dropDownRect.width,
 								top: dropDownRect.top,
@@ -311,7 +311,7 @@ define([], function () {
 					.findByCssSelector(".centered-dialog button[type=submit]").click().end();
 			},
 
-			events: function () {
+			"events": function () {
 				return this.remote
 					.findById("eventsButton").click().end()
 					.findById("eventsDialog")
@@ -339,7 +339,7 @@ define([], function () {
 			},
 
 			// Test that HasDropDown can be used to apply dropdown behavior to a random node.
-			behavior: function () {
+			"behavior": function () {
 				return this.remote
 					.findById("behavior-button").click().end()
 					.findByCssSelector("[aria-labelledby=behavior-button]")
@@ -384,7 +384,7 @@ define([], function () {
 			},
 
 			// Make sure that destroying a HasDropDown closes the popup
-			destroy: function () {
+			"destroy": function () {
 				return this.remote
 					.findById("dd").click().end()
 					.findById("dd_popup")

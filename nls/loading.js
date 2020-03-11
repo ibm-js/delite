@@ -1,6 +1,6 @@
 define({
 	// begin v1.x content
-	root: {
+	"root": {
 		loadingState: "Loading...",
 		errorState: "Sorry, an error occurred"
 	},

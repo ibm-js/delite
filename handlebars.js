@@ -54,7 +54,7 @@ define([
 	 * @param {boolean} targetIsFunction - This JS expression will be assigned to a function.
 	 * @returns {string} like "'hello' + this.foo + 'world'"
 	 */
-	function toJs(text, convertUndefinedToBlank, targetIsFunction) {
+	function toJs (text, convertUndefinedToBlank, targetIsFunction) {
 		var pos = 0, length = text.length, insideBraces = false, parts = [];
 
 		while (pos < length) {
@@ -237,9 +237,8 @@ define([
 			// For self-closing tags like <input> that have been converted to <template-input>, we need to add a
 			// closing </template-input> tag.
 			templateText = templateText.replace(
-				/* jshint ignore:start */
+				// eslint-disable-next-line max-len
 				/<template-(area|base|br|col|command|embed|hr|img|input|keygen|link|meta|param|source|track|wbr)([^>]*?)\/?>/g,
-				/* jshint ignore:end */
 				"<template-$1$2></template-$1>");
 
 			// Also rename style attribute, because IE will drop style="..." if the ... is an illegal value

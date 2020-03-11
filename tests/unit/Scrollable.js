@@ -17,7 +17,6 @@ define([
 	var assert = intern.getPlugin("chai").assert;
 
 	var container, MyScrollableWidget, MyScrollableTestContainer;
-	/*jshint multistr: true */
 	var html = "<test-scrollable-container id='sc1' \
 			style='position: absolute; width: 200px; height: 200px;'> \
 			<div id='sc1content' style='width: 2000px; height: 2000px;'></div> \

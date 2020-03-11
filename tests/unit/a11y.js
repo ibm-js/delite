@@ -19,7 +19,7 @@ define([
 		},
 
 		tests: {
-			"getTabNavigable": function () {
+			getTabNavigable: function () {
 				// Simple case
 				var container1 = document.getElementById("positive-tabindex-mixed-with-no-tabindex");
 				assert.deepEqual(
@@ -54,7 +54,7 @@ define([
 				);
 			},
 
-			"isTabNavigable": function () {
+			isTabNavigable: function () {
 				assert.ok(a11y.isTabNavigable(document.getElementById("a-with-href")), "a-with-href");
 				assert.ok(!a11y.isTabNavigable(document.getElementById("a-without-href")), "a-without-href");
 				assert.ok(a11y.isTabNavigable(document.getElementById("button")), "button");
@@ -68,12 +68,12 @@ define([
 				assert.ok(!a11y.isTabNavigable(document.getElementById("iframe")), "iframe");
 			},
 
-			"findTabundefinedOnEmpty": function () {
+			findTabundefinedOnEmpty: function () {
 				assert.strictEqual(a11y.getFirstInTabbingOrder("empty"), undefined);
 				assert.strictEqual(a11y.getLastInTabbingOrder("empty"), undefined);
 			},
 
-			"findTabElements": function () {
+			findTabElements: function () {
 				assert.strictEqual(a11y.getFirstInTabbingOrder("div-container"), undefined);
 				assert.strictEqual(a11y.getFirstInTabbingOrder("a-without-href-container"), undefined);
 				assert.strictEqual(a11y.getFirstInTabbingOrder("a-with-href-container").id, "a-with-href");
@@ -94,19 +94,19 @@ define([
 				assert.strictEqual(a11y.getLastInTabbingOrder("textarea-container").id, "textarea");
 			},
 
-			"findTabOnElementRatherThanString": function () {
+			findTabOnElementRatherThanString: function () {
 				assert.strictEqual("a-with-href",
 					a11y.getFirstInTabbingOrder(document.getElementById("a-with-href-container")).id);
 				assert.strictEqual("a-with-href",
 					a11y.getLastInTabbingOrder(document.getElementById("a-with-href-container")).id);
 			},
 
-			"findTabSkipDisabled": function () {
+			findTabSkipDisabled: function () {
 				assert.strictEqual(a11y.getFirstInTabbingOrder("skip-disabled").id, "not-disabled-input");
 				assert.strictEqual(a11y.getLastInTabbingOrder("skip-disabled").id, "not-disabled-input");
 			},
 
-			"findTabZeroTabindex": function () {
+			findTabZeroTabindex: function () {
 				assert.strictEqual(a11y.getFirstInTabbingOrder("zero-tabindex-div-container").id, "zero-tabindex-div");
 				assert.strictEqual(a11y.getFirstInTabbingOrder("zero-tabindex-input-container").id,
 					"zero-tabindex-input");
@@ -115,7 +115,7 @@ define([
 					"zero-tabindex-input");
 			},
 
-			"findTabPositiveTabindex": function () {
+			findTabPositiveTabindex: function () {
 				assert.strictEqual(a11y.getFirstInTabbingOrder("positive-tabindex-mixed-with-no-tabindex").id,
 					"positive-tabindex-input1a");
 				assert.strictEqual(a11y.getFirstInTabbingOrder("positive-tabindex").id, "positive-tabindex-input3a");
@@ -124,22 +124,22 @@ define([
 				assert.strictEqual(a11y.getLastInTabbingOrder("positive-tabindex").id, "positive-tabindex-input4b");
 			},
 
-			"findTabSkipMinusOneTabindex": function () {
+			findTabSkipMinusOneTabindex: function () {
 				assert.strictEqual(a11y.getFirstInTabbingOrder("skip-minus-one").id, "not-minus-one-input");
 				assert.strictEqual(a11y.getLastInTabbingOrder("skip-minus-one").id, "not-minus-one-input");
 			},
 
-			"findTabDescend": function () {
+			findTabDescend: function () {
 				assert.strictEqual(a11y.getFirstInTabbingOrder("descend").id, "child-input1");
 				assert.strictEqual(a11y.getLastInTabbingOrder("descend").id, "child-input2");
 			},
 
-			"findTabOuterInner": function () {
+			findTabOuterInner: function () {
 				assert.strictEqual(a11y.getFirstInTabbingOrder("outer-inner-container").id, "outer1");
 				assert.strictEqual(a11y.getLastInTabbingOrder("outer-inner-container").id, "inner2");
 			},
 
-			"skipNotShown": function () {
+			skipNotShown: function () {
 				assert.strictEqual(a11y.getFirstInTabbingOrder("hidden-element-container"), undefined);
 				assert.strictEqual(a11y.getFirstInTabbingOrder("hidden-container-tabindex-zero"), undefined);
 				assert.strictEqual(a11y.getFirstInTabbingOrder("hidden-container-no-tabindex"), undefined);
@@ -151,7 +151,7 @@ define([
 				assert.strictEqual(a11y.getFirstInTabbingOrder("container-with-display-none-containers"), undefined);
 			},
 
-			"multiDigitTabIndex": function () {
+			multiDigitTabIndex: function () {
 				assert.strictEqual(a11y.getFirstInTabbingOrder("multiDigitTabIndex").name, "one", "first");
 				assert.strictEqual(a11y.getLastInTabbingOrder("multiDigitTabIndex").name, "eleven", "last");
 			}

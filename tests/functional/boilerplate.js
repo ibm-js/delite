@@ -42,7 +42,7 @@ if (dir) {
 
 // Find the <script src="boilerplate.js"> tag, to get test directory.
 var scripts = document.getElementsByTagName("script"), script, testDir;
-for (i = 0; (script = scripts[i]); i++) {
+for (var j = 0; (script = scripts[j]); j++) {
 	var src = script.getAttribute("src"),
 		match = src && src.match(/(.*|^)boilerplate\.js/i);
 	if (match) {
@@ -54,11 +54,10 @@ for (i = 0; (script = scripts[i]); i++) {
 	}
 }
 
-// Add polyfills for IE and legacy Microsoft Edge.
+// Add polyfills for IE.
 if (/Trident/.test(navigator.userAgent)) {
 	document.write("<script type='text/javascript' src='" + testDir + "../ie-polyfills.js'></script>");
 }
-
 
 // Setup configuration options for the loader
 // eslint-disable-next-line no-unused-vars
