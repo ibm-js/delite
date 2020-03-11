@@ -204,7 +204,7 @@ define(["dcl/dcl", "ibm-decor/sniff", "./Widget"], function (dcl, has, Widget) {
 
 		_selectFromEvent: function (event, item, renderer, dispatch) {
 			var changed;
-			var oldSelectedItem = this.selectedItem;
+			var oldVal = this.selectionMode === "multiple" ? this.selectedItems : this.selectedItem;
 			var selected = item === null ? false : this.isSelected(item);
 
 			if (item === null) {
@@ -233,7 +233,9 @@ define(["dcl/dcl", "ibm-decor/sniff", "./Widget"], function (dcl, has, Widget) {
 			}
 
 			if (dispatch && changed) {
-				this.dispatchSelectionChange(oldSelectedItem, this.selectedItem, renderer, event);
+				// Emit event.
+				var newVal = this.selectionMode === "multiple" ? this.selectedItems : this.selectedItem;
+				this.dispatchSelectionChange(oldVal, newVal, renderer, event);
 			}
 
 			return changed;
