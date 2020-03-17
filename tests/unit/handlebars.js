@@ -277,7 +277,7 @@ define([
 
 					var headingWidget = myComplexWidget.getElementsByTagName("handlebars-heading")[0];
 
-					assert.ok(headingWidget.render, "heading widget was instantiated");
+					assert.ok(headingWidget.initializeRendering, "heading widget was instantiated");
 
 
 					assert.ok(myComplexWidget.attached, "myComplexWidget widget was attached");
@@ -423,8 +423,8 @@ define([
 					// Extra then() call gives time for custom widget instantiation to finish.
 					var sub1 = myCompoundWidget.getElementsByTagName("test-widget-1")[0],
 						sub2 = myCompoundWidget.getElementsByTagName("test-widget-2")[0];
-					assert(sub1.render, "sub1 instantiated");
-					assert(sub2.render, "sub2 instantiated");
+					assert(sub1.initializeRendering, "sub1 instantiated");
+					assert(sub2.initializeRendering, "sub2 instantiated");
 				});
 			},
 

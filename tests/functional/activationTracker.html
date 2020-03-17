@@ -60,7 +60,7 @@
 			// Test widgets
 
 			register("fake-editor", [HTMLElement, Widget], {
-				render: function () {
+				initializeRendering: function () {
 					this.innerHTML='<div contenteditable=true tabindex=0>hello world' +
 							'<br>hello world<br>hello world</div>';
 				},
@@ -75,14 +75,14 @@
 			register("fake-fieldset", [HTMLElement, Widget], {});
 
 			register("fake-combobox", [HTMLElement, Widget], {
-				render: function () {
+				initializeRendering: function () {
 					this.innerHTML = "<input><span class='button'>&darr;</span>";
 					this.focusNode = this.firstElementChild;	// the <input>
 				}
 			});
 
 			register("fake-spinner", [HTMLElement, Widget], {
-				render: function () {
+				initializeRendering: function () {
 					this.innerHTML = "<input><span class='button'>&uarr;</span><span class='button'>&darr;</span>";
 					this.focusNode = this.firstElementChild;	// the <input>
 				}
@@ -97,7 +97,7 @@
 			 * A button that shows a popup.
 			 */
 			register("fake-dropdown-button", [HTMLElement, Widget], {
-				postRender: function () {
+				afterInitializeRendering: function () {
 					this.tabIndex = "0";
 					this.on("click", this._clickHandler.bind(this));
 					this.on("delite-deactivated", this._deactivatedHandler.bind(this));
@@ -160,7 +160,7 @@
 					 this.log.push(text);
 				},
 
-				render: function () {
+				initializeRendering: function () {
 					this.style.cssText = "border: dotted gray 2px; padding: 2px;";
 					this.innerHTML = "<span style='border: solid red 1px;'>open on</span> " +
 						"<span style='border: solid blue 1px;'>hover</span>";
@@ -171,7 +171,7 @@
 					});
 				},
 
-				postRender: function () {
+				afterInitializeRendering: function () {
 					this.on("delite-hover-activated", function () {
 						this.addToLog("this delite-hover-activated");
 						this._openPopup();
@@ -303,7 +303,7 @@
 	<input id="activeStackChanges" disabled value="0">
 
 	<br>
-	
+
 	<label for="hoverStack">Hover stack:</label>
 	<input id="hoverStack" style="width: 100%;" disabled autocomplete="off">
 

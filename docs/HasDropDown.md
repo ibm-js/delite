@@ -38,7 +38,7 @@ of the drop-down (see "Dynamic & lazy-loading drop-downs", below).
 
 ## Optional node properties
 
-Note: All of these properties can only be set *before* `Widget#render()` is called.
+Note: All of these properties can only be set *before* `Widget#initializeRendering()` is called.
 
 ### behaviorNode
 

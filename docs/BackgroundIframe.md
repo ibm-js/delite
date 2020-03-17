@@ -13,7 +13,7 @@ a flash, pdf, etc. control on the main page.
 Usage from the main widget is like:
 
 ```js
-render: function () {
+afterInitializeRendering: function () {
 	...
 	this.own(new BackgroundIframe(this));
 }

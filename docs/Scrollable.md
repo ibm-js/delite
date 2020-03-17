@@ -22,7 +22,7 @@ CSS property.
 
 By default, the scrolling capabilities are added to the widget's root node
 (that is, the widget itself). The host widget can chose the node thanks to the property
-`scrollableNode`. This property must be set by the subclass at latest in its `render()`
+`scrollableNode`. This property must be set by the subclass at latest in its `initializeRendering()`
 method.
 
 *First use-case: creating a widget extending `delite/Scrollable`*
@@ -32,7 +32,7 @@ define(["delite/register", "delite/Scrollable", ...],
   function (register, Scrollable, ...) {
     return register("mywidget", [HTMLElement, Scrollable, ...], {
       ...
-      render: dcl.superCall(function (sup) {
+      initializeRendering: dcl.superCall(function (sup) {
         return function () {
           // Create a child element:
           var myScrollableDiv = document.createElement("div");
@@ -59,7 +59,7 @@ define(["delite/register", "delite/Scrollable", ...],
     // In this use-case, does not extend delite/Scrollable
     return register("mywidget", [HTMLElement, ...], {
       ...
-      render: dcl.superCall(function (sup) {
+      initializeRendering: dcl.superCall(function (sup) {
         return function () {
           var scrollableNode =
             new ScrollableWidget(...); // a widget extending delite/Scrollable

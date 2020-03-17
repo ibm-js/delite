@@ -71,7 +71,7 @@
 						this.navigateTo(previousChild);
 					}
 				},
-				postRender: function () {
+				afterInitializeRendering: function () {
 					// If the caller has specified a counter node, increment it whenever there's an click event
 					this.on("click", function () {
 						if (this.clickCountNodeId) {

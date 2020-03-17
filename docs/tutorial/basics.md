@@ -50,15 +50,15 @@ Click here to see the live demo:
 [Delite Basics Tutorial - Part 1](http://ibm-js.github.io/delite-tutorial/runnable/basics-part1/samples/TitleWidget.html)
 
 ###A look at the widget lifecycle methods for our simple widget
-If we look at our custom element module  ``./TitleWidget.js`` we can see two methods have been created for us, `render` and `refreshRendering`.
-`render` is the simplest of [lifecycle](https://github.com/ibm-js/delite/blob/master/docs/Widget.md#lifecycle)
+If we look at our custom element module  ``./TitleWidget.js`` we can see two methods have been created for us, `initializeRendering` and `refreshRendering`.
+`initializeRendering` is the simplest of [lifecycle](https://github.com/ibm-js/delite/blob/master/docs/Widget.md#lifecycle)
 methods we need to create our widget.
 
-#### `render`
-We normally wouldn't create a `render` method because typically we'd be using templates to create the widget UI (which was shown earlier
-on) but because we aren't using a template we need to implement `render` ourselves.
+#### `initializeRendering`
+We normally wouldn't create a `initializeRendering` method because typically we'd be using templates to create the widget UI (which was shown earlier
+on) but because we aren't using a template we need to implement `initializeRendering` ourselves.
 
-In this `render` method we're adding `<span>title</span>` and `<h1></h1>` elements to our widget as well as assigning a property
+In this `initializeRendering` method we're adding `<span>title</span>` and `<h1></h1>` elements to our widget as well as assigning a property
 to the widget named `_h1` i.e. via `this.appendChild(this._h = this.ownerDocument.createElement("h1"));` which we can use to update
 it programmatically or set it declaratively.
 
@@ -134,7 +134,7 @@ on the programmatically written widget to `value : "another custom element title
 
 If you don't set the `value` property of the widget at construction time, the `value` property of our widget is NOT contained in the `props` argument.
 
-Click the 'click to change title button' and the widget will render like:
+Click the 'click to change title button' and the widget will initializeRendering like:
 
 > <img src='./images/custom_element_old_new_props.png'/>
 

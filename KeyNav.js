@@ -160,7 +160,7 @@ define([
 			return null;
 		},
 
-		postRender: function () {
+		afterInitializeRendering: function () {
 			// If keyNavContainerNode unspecified, set to default value.
 			if (!this.keyNavContainerNode) {
 				this.keyNavContainerNode = this.containerNode || this;

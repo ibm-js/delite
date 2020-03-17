@@ -38,7 +38,7 @@ define([
 					var SpecialNames = register("test-tabindex-names", [HTMLElement, Widget], {
 						tabIndex: "0",
 
-						postRender: function () {
+						afterInitializeRendering: function () {
 							this.observe(function (props) {
 								if ("tabIndex" in props) {
 									this.watchedTabIndex = this.tabIndex;
@@ -88,7 +88,7 @@ define([
 						isrange: false,
 						isbool: false,
 
-						postRender: function () {
+						afterInitializeRendering: function () {
 							this.observe(function (props) {
 								if ("tabIndex" in props) {
 									this.watchedTabIndex = this._get("tabIndex");
@@ -246,7 +246,7 @@ define([
 			"placeAt": {
 				before: function () {
 					SimpleWidget = register("simple-widget-place-at", [HTMLElement, Widget], {
-						render: function () {
+						initializeRendering: function () {
 							this.containerNode = document.createElement("div");
 							this.appendChild(this.containerNode);
 						}

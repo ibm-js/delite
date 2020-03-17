@@ -64,7 +64,7 @@ postCreate: function(){
 can (and should) be replaced by:
 
 ```js
-postRender: function(){
+afterInitializeRendering: function(){
     ... do stuff ...
 }
 ```
@@ -89,14 +89,14 @@ Widgets are declared via `register()` rather than `dojo.declare()`, and must ext
 ### lifecycle methods
 
 1. `create()` renamed to `constructor()`
-2. `postscript()` no longer runs; `preCreate()` was renamed to `preRender()`.
-3. The `buildRendering()` method has been renamed to `render()`.  It must not try to create the root DOMNode; it already
+2. `postscript()` no longer runs; `preCreate()` was renamed to `beforeInitializeRendering()`.
+3. The `buildRendering()` method has been renamed to `initializeRendering()`.  It must not try to create the root DOMNode; it already
    exists.  It should just set attributes on the root node, and create sub nodes and/or text inside the root node.
-   However, usually widgets will not redefine `render()` at all, but rather just define the `template` property.
-4. There's no `postMixInProperties()` method any more.  There is one called `preRender()` that
+   However, usually widgets will not redefine `initializeRendering()` at all, but rather just define the `template` property.
+4. There's no `postMixInProperties()` method any more.  There is one called `beforeInitializeRendering()` that
    runs before rendering.
-5. `postCreate()` renamed to `postRender()`
-6. The widget initialization parameters are not applied until after `render()` and `postRender()` complete.
+5. `postCreate()` renamed to `afterInitializeRendering()`
+6. The widget initialization parameters are not applied until after `initializeRendering()` and `afterInitializeRendering()` complete.
 7. Custom setters still exist, but often its preferable to recompute property values in `computeProperties()` and
    to redraw the widget in `refreshRendering()`.  Both these methods are called asynchronously after a batch of
    property changes.

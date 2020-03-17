@@ -13,7 +13,7 @@ define([
 	registerSuite("FormValueWidget", {
 		before: function () {
 			FormValueWidgetTest = register("form-value-widget-test", [HTMLElement, FormValueWidget], {
-				render: function () {
+				initializeRendering: function () {
 					this.focusNode = this.ownerDocument.createElement("input");
 					this.appendChild(this.focusNode);
 					this.valueNode = this.ownerDocument.createElement("input");

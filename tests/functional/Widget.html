@@ -30,7 +30,7 @@
 			"requirejs-domready/domReady!"
 		], function (register, Widget) {
 			register("my-content-pane", [HTMLElement, Widget], {
-				render: function () {
+				initializeRendering: function () {
 					var srcDom = this._srcDom = this.ownerDocument.createDocumentFragment();
 					while (this.firstChild) {
 						srcDom.appendChild(this.firstChild);
@@ -46,7 +46,7 @@
 			});
 
 			register("my-combobox", [HTMLElement, Widget], {
-				render: function () {
+				initializeRendering: function () {
 					this.innerHTML = "<input>";
 				}
 			});

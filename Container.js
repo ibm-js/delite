@@ -49,27 +49,25 @@ define([
 		 */
 		containerNode: undefined,
 
-		render: dcl.advise({
-			before: function () {
-				// Save original markup to put into this.containerNode.
-				var srcDom = this._srcDom = this.ownerDocument.createDocumentFragment();
-				var oldContainer = this.containerNode || this;
-				while (oldContainer.firstChild) {
-					srcDom.appendChild(oldContainer.firstChild);
-				}
-			},
-
-			after: function () {
-				if (!this.containerNode) {
-					// All widgets with descendants must set containerNode.
-					this.containerNode = this;
-				}
-
-				// Put original markup into this.containerNode.  Note that appendChild() on a DocumentFragment will
-				// loop through all the Elements in the document fragment, adding each one.
-				this.containerNode.appendChild(this._srcDom);
+		beforeInitializeRendering: function () {
+			// Save original markup to put into this.containerNode.
+			var srcDom = this._srcDom = this.ownerDocument.createDocumentFragment();
+			var oldContainer = this.containerNode || this;
+			while (oldContainer.firstChild) {
+				srcDom.appendChild(oldContainer.firstChild);
 			}
-		}),
+		},
+
+		afterInitializeRendering: function () {
+			if (!this.containerNode) {
+				// All widgets with descendants must set containerNode.
+				this.containerNode = this;
+			}
+
+			// Put original markup into this.containerNode.  Note that appendChild() on a DocumentFragment will
+			// loop through all the Elements in the document fragment, adding each one.
+			this.containerNode.appendChild(this._srcDom);
+		},
 
 		appendChild: dcl.superCall(function (sup) {
 			return function (child) {

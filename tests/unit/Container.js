@@ -211,8 +211,8 @@ define([
 			"containerNode": {
 				before: function () {
 					TestContainer = register("my-container-node", [HTMLElement, Container], {
-						render: function () {
-							// during render(), this.appendChild() should always go to root node, so
+						initializeRendering: function () {
+							// during initializeRendering(), this.appendChild() should always go to root node, so
 							// "last" should be a sibling of "first"
 							var s1 = this.ownerDocument.createElement("span");
 							s1.innerHTML = "first";

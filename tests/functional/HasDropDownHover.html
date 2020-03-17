@@ -76,7 +76,7 @@
 
 			// A popup with a listener on the popup-after-position event to adjust arrows.
 			var TooltipDialog = register("test-tooltip-dialog", [HTMLElement, Container, Dialog], {
-				render: function () {
+				initializeRendering: function () {
 					this.innerHTML = "<div class='closeButton'>[x]</div><div>My tooltip</div></div><div></div>";
 					this.containerNode = this.children[2];
 					this.on("click", this.closeButtonClickHandler.bind(this), this.children[0]);

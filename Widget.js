@@ -17,8 +17,8 @@ define([
 	/**
 	 * Base class for all widgets, i.e. custom elements that appear visually.
 	 *
-	 * Provides stubs for widget lifecycle methods for subclasses to extend, like `render()`,
-	 * `postRender()`, and `destroy()`, and also public API methods like `observe()`.
+	 * Provides stubs for widget lifecycle methods for subclasses to extend, like `initializeRendering()`,
+	 * `afterInitializeRendering()`, and `destroy()`, and also public API methods like `observe()`.
 	 * @mixin module:delite/Widget
 	 * @augments module:delite/CustomElement
 	 * @augments module:decor/Invalidating
@@ -117,13 +117,37 @@ define([
 			return !this.rendered || "template" in oldVals;
 		},
 
-		initializeRendering: function () {
-			this.rendered = false;
-			this.preRender();
-			this.render();
-			this.postRender();
-			this.rendered = true;
-		},
+		/**
+		 * Construct the UI for this widget, filling in subnodes and/or text inside of this.
+		 * Most widgets will leverage delite/handlebars! to set `template`, rather than defining this method.
+		 * @protected
+		 */
+		initializeRendering: dcl.advise({
+			before: function () {
+				this.rendered = false;
+				this.beforeInitializeRendering();
+			},
+
+			around: function () {
+				return function () {
+					// Tear down old rendering (if there is one).
+					if (this._templateHandle) {
+						this._templateHandle.destroy();
+						delete this._templateHandle;
+					}
+
+					// initializeRendering the widget.
+					if (this.template) {
+						this._templateHandle = this.template(this.ownerDocument);
+					}
+				};
+			},
+
+			after: function () {
+				this.afterInitializeRendering();
+				this.rendered = true;
+			}
+		}),
 
 		/**
 		 * Return the direction setting for the page.
@@ -160,13 +184,13 @@ define([
 		},
 
 		/**
-		 * Processing before `render()`.
+		 * Processing before `initializeRendering()`.
 		 *
 		 * This method is automatically chained, so subclasses generally do not need to use `dcl.superCall()`,
 		 * `dcl.advise()`, etc.
 		 * @protected
 		 */
-		preRender: function () {
+		beforeInitializeRendering: function () {
 		},
 
 		/**
@@ -177,24 +201,6 @@ define([
 		 * @protected
 		 */
 		template: null,
-
-		/**
-		 * Construct the UI for this widget, filling in subnodes and/or text inside of this.
-		 * Most widgets will leverage delite/handlebars! to set `template`, rather than defining this method.
-		 * @protected
-		 */
-		render: function () {
-			// Tear down old rendering (if there is one).
-			if (this._templateHandle) {
-				this._templateHandle.destroy();
-				delete this._templateHandle;
-			}
-
-			// Render the widget.
-			if (this.template) {
-				this._templateHandle = this.template(this.ownerDocument);
-			}
-		},
 
 		/**
 		 * Helper method to set a class (or classes) on a given node, removing the class (or classes) set
@@ -261,7 +267,7 @@ define([
 		 * `dcl.advise()`, etc.
 		 * @protected
 		 */
-		postRender: function () {
+		afterInitializeRendering: function () {
 		},
 
 		//////////// DESTROY FUNCTIONS ////////////////////////////////
@@ -354,7 +360,7 @@ define([
 		 */
 		getEnclosingWidget: function (node) {
 			do {
-				if (node.nodeType === 1 && node.render) {
+				if (node.nodeType === 1 && node.initializeRendering) {
 					return node;
 				}
 			} while ((node = node.parentNode));
@@ -414,10 +420,10 @@ define([
 		}
 	});
 
-	// Setup automatic chaining for lifecycle methods, except for render().
+	// Setup automatic chaining for lifecycle methods, except for initializeRendering().
 	// destroy() is chained in Destroyable.js.
-	dcl.chainAfter(Widget, "preRender");
-	dcl.chainAfter(Widget, "postRender");
+	dcl.chainAfter(Widget, "beforeInitializeRendering");
+	dcl.chainAfter(Widget, "afterInitializeRendering");
 
 	return Widget;
 });

@@ -18,9 +18,9 @@ Declarative creation:
 3. Parameters specified as attributes (ex: `<d-slider max=10>`) are mixed into the widget, thus calling
    custom setters.
 4. `computeProperties(this, true)` executed.
-5. `preRender()` executed.
-6. `render()` executed.  Note though that the root node already exists.
-7. `postRender()` executed.
+5. `beforeInitializeRendering()` executed.
+6. `initializeRendering()` executed.  Note though that the root node already exists.
+7. `afterInitializeRendering()` executed.
 8. `refreshRendering(this, true)` executed.
 9. `connectedCallback()` executed.
 
@@ -37,9 +37,9 @@ Note that the widget is not yet rendered.  When the element is attached to the d
 or you call `deliver()`:
 
 4. `computeProperties(this, true)` executed.
-5. `preRender()` executed.
-6. `render()` executed.  Note though that the root node already exists.
-7. `postRender()` executed.
+5. `beforeInitializeRendering()` executed.
+6. `initializeRendering()` executed.  Note though that the root node already exists.
+7. `afterInitializeRendering()` executed.
 8. `refreshRendering(this, true)` executed.
 9. `connectedCallback()` executed.
 
@@ -49,16 +49,16 @@ not just when you call `deliver()`.)
 There are currently six lifecycle methods which can be extended on the widget:
 
 1. `constructor()`
-2. `preRender()`
-3. `render()`
-4. `postRender()`
+2. `beforeInitializeRendering()`
+3. `initializeRendering()`
+4. `afterInitializeRendering()`
 5. `connectedCallback()`
 6. `disconnectedCallback()`
 
-Note that all of these methods except `render()` are automatically chained,
+Note that all of these methods except `initializeRendering()` are automatically chained,
 so you don't need to worry about setting up code to call the superclasses' methods.
 
-Also, note that widget authors don't typically extend `render()` directly, but rather
+Also, note that widget authors don't typically extend `initializeRendering()` directly, but rather
 specify the `template` property.   See the [`handlebars!`](handlebars.md) documentation for more details.
 
 ## Placement

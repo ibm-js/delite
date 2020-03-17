@@ -29,7 +29,7 @@ define([
 	registerSuite("popup", {
 		before: function () {
 			var Menu = register("my-menu", [HTMLElement, Widget], {
-				render: function () {
+				initializeRendering: function () {
 					this.style.cssText = "display: block; position: absolute; width: 75px;";
 					this.innerHTML =
 						"<div>I'm a drop down, wider and taller than the around nodes I'm placed next to.</div>";

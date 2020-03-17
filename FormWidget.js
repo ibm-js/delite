@@ -312,7 +312,7 @@ define([
 			};
 		}),
 
-		postRender: function () {
+		afterInitializeRendering: function () {
 			this._moveAriaAttributes();
 		},
 

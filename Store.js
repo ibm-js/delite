@@ -86,7 +86,7 @@ define([
 			return item;
 		},
 
-		preRender: function () {
+		beforeInitializeRendering: function () {
 			// If the control seems to contain JSON, then parse it as our read-only data source.
 			if (!this.firstElementChild && this.textContent.trim()) {
 				var data = JSON.parse("[" + this.textContent + "]");

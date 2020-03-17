@@ -27,4 +27,4 @@ Custom Elements specification, specifically `constructor()` and `connectedCallba
 
 Finally, CustomElement provides common methods like `on()` and `destroy()`, but
 it does not provide the [`delite/Widget`](Widget.md) specific lifecycle methods
-like `render()` and `postRender()`.
+like `initializeRendering()` and `afterInitializeRendering()`.

@@ -38,7 +38,7 @@ define([], function () {
 			"Custom elements": {
 				"programmatic custom element": function () {
 					return this.remote
-						.execute("return typeof(document.getElementById('simplewidget').render)")
+						.execute("return typeof(document.getElementById('simplewidget').initializeRendering)")
 						.then(function (value) {
 							assert.strictEqual(value, "function", "simplewidget is a delite custom element");
 						});
@@ -46,7 +46,7 @@ define([], function () {
 
 				"declarative custom element": function () {
 					return this.remote
-						.execute("return typeof(document.getElementById('declarativecustomelement').render)")
+						.execute("return typeof(document.getElementById('declarativecustomelement').initializeRendering)")
 						.then(function (value) {
 							assert.strictEqual(value, "function",
 								"declarativecustomelement is a delite custom element");

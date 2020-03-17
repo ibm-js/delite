@@ -24,7 +24,7 @@ define([
 		choice2: "2",
 		choice3: "3",
 
-		render: function () {
+		initializeRendering: function () {
 			this.className = "choice";
 
 			this.on("click", this.emit.bind(this, "change"));
@@ -47,7 +47,7 @@ define([
 			}
 		}),
 
-		render: function () {
+		initializeRendering: function () {
 			this.tabIndex = 0;
 		},
 

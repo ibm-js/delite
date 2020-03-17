@@ -103,7 +103,7 @@ require(["delite/register", "delite/Selection", "delite/StoreMap"/*, ...*/],
     clickHandler: function (event) {
       // get the DOM Node and the corresponding item at the place where the click event occured
       /* var renderer = ...; var item = ... */ 
-      this.selectFromEvent(event, item, render, true);
+      this.selectFromEvent(event, item, renderer, true);
     }
   });
 });

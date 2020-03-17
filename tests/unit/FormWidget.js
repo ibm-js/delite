@@ -25,7 +25,7 @@ define([
 			"single focusNode": {
 				before: function () {
 					FormWidgetTest = register("form-widget-test", [HTMLElement, FormWidget], {
-						render: function () {
+						initializeRendering: function () {
 							this.focusNode = this.ownerDocument.createElement("input");
 							this.appendChild(this.focusNode);
 							this.valueNode = this.ownerDocument.createElement("input");
@@ -36,7 +36,7 @@ define([
 
 					register("form-widget-test-two", [HTMLElement, FormWidget], {
 						moveAriaAttributes: false,
-						render: function () {
+						initializeRendering: function () {
 							this.focusNode = this.ownerDocument.createElement("input");
 							this.appendChild(this.focusNode);
 							this.valueNode = this.ownerDocument.createElement("input");
@@ -192,7 +192,7 @@ define([
 				before: function () {
 					FormWidgetTest = register("form-widget-test-2", [HTMLElement, FormWidget], {
 						tabStops: ["button1", "input1"],
-						render: function () {
+						initializeRendering: function () {
 							// Widget has four fields.  Initially button1 and input1 are focusable.
 							this.button1 = this.ownerDocument.createElement("span");
 							this.button1.setAttribute("role", "button");
@@ -304,12 +304,12 @@ define([
 			"disabled and required propagation to custom elements": function () {
 				// Create test widgets without disabled and required properties.
 				var ButtonWidget = register("form-widget-button", [HTMLElement, Widget], {
-					render: function () {
+					initializeRendering: function () {
 						this.setAttribute("role", "button");
 					}
 				});
 				var TextboxWidget = register("form-widget-textbox", [HTMLElement, Widget], {
-					render: function () {
+					initializeRendering: function () {
 						this.setAttribute("role", "textbox");
 					}
 				});
@@ -324,7 +324,7 @@ define([
 				var Container = register("form-widget-test-3", [HTMLElement, FormWidget], {
 					tabStops: ["button", "textbox", "form"],
 
-					render: function () {
+					initializeRendering: function () {
 						this.button = new ButtonWidget();
 						this.button.deliver();
 						this.appendChild(this.button);

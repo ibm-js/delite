@@ -54,11 +54,11 @@
 
 			// A trivial popup widget
 			var SimpleDialog = register("simple-dialog", [HTMLElement, Dialog], {
-				render: function () {
+				initializeRendering: function () {
 					this.innerHTML = "<input><br>" +
 							"<button type=submit>submit</button><br><button type=button>cancel</button>";
 				},
-				postRender: function () {
+				afterInitializeRendering: function () {
 					this.on("click", function () {
 						this.emit("execute");
 					}.bind(this), this.querySelector("button[type=submit]"));
@@ -77,7 +77,7 @@
 				choice2: "2",
 				choice3: "3",
 
-				render: function () {
+				initializeRendering: function () {
 					this.className = "choice";
 
 					this.on("click", this.emit.bind(this, "change"));
@@ -118,7 +118,7 @@
 					}.bind(this));
 				},
 
-				postRender: function () {
+				afterInitializeRendering: function () {
 					Array.prototype.forEach.call(this.children, function (child) {
 						child.setAttribute("tabindex", "-1");
 					});
@@ -186,7 +186,7 @@
 					}
 				}),
 
-				render: function () {
+				initializeRendering: function () {
 					this.className="button";
 					this.tabIndex = "0";
 				},
@@ -207,7 +207,7 @@
 
 			// A button that emits the delite-display-load event to get a reference to the dropdown
 			var EventsDropDownButton = register("events-drop-down-button", [HTMLElement, HasDropDown], {
-				render: function () {
+				initializeRendering: function () {
 					this.className="button";
 					this.tabIndex = "0";
 				},
@@ -232,7 +232,7 @@
 
 				dropDownType: "listbox",
 
-				render: function () {
+				initializeRendering: function () {
 					this.innerHTML = "<input>";
 					this.focusNode = this.firstChild;
 				},
@@ -268,7 +268,7 @@
 			// A non-focusable "button" that shows a popup.
 			// Should work for mouse, although not for keyboard.
 			var NonFocusableDropDownButton = register("non-focusable-drop-down-button", [HTMLElement, HasDropDown], {
-				render: function () {
+				initializeRendering: function () {
 					this.className = "button";
 				},
 
@@ -290,7 +290,7 @@
 
 			// A widget consisting of two buttons where the right buttons shows a dropdown.
 			var SimpleComboButton = register("simple-combo-button", [HTMLElement, Widget], {
-				render: function () {
+				initializeRendering: function () {
 					var left = this.ownerDocument.createElement("button");
 					left.id = "cbl";
 					left.textContent = "left";

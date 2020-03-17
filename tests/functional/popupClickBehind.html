@@ -51,7 +51,7 @@ require([
 
 		orient: ["below"],
 
-		postRender: function () {
+		afterInitializeRendering: function () {
 			this.on("click", this._openPopup.bind(this));
 			this.on("delite-deactivated", this._deactivatedHandler.bind(this));
 		},
@@ -97,7 +97,7 @@ require([
 		choice2: "2",
 		choice3: "3",
 
-		render: function () {
+		initializeRendering: function () {
 			this.className = "choice";
 
 			for (var i = 1; i < 4; i++) {

@@ -97,11 +97,11 @@ require([
 	// A button that shows a popup.
 	// Supply popup as parameter when instantiating this widget.
 	var SimpleDropDownButton = register("simple-dropdown-button", [HTMLElement, Widget], {
-		render: function () {
+		initializeRendering: function () {
 			this.className = "button";
 			this.tabIndex = "0";
 		},
-		
+
 		label: dcl.prop({
 			set: function (val) {
 				this.textContent = val;
@@ -113,7 +113,7 @@ require([
 
 		orient: ["below", "above"],
 
-		postRender: function () {
+		afterInitializeRendering: function () {
 			this.on("click", this._openPopup.bind(this));
 			this.on("delite-deactivated", this._deactivatedHandler.bind(this));
 		},
@@ -166,7 +166,7 @@ require([
 			this.on("click", this._clickHandler.bind(this));
 		},
 
-		render: function () {
+		initializeRendering: function () {
 			this.textContent = "i'm a popup";
 		},
 
@@ -183,7 +183,7 @@ require([
 			this.on("click", this._clickHandler.bind(this));
 		},
 
-		render: function () {
+		initializeRendering: function () {
 			this.innerHTML = [
 				"Jan 2016",
 				"S M T W T F S".replace(/([A-Z])/g, "$1&nbsp;"),
@@ -208,7 +208,7 @@ require([
 			this.on("popup-after-position", this.orient.bind(this));
 		},
 
-		render: function () {
+		initializeRendering: function () {
 			this.textContent = "i'm a tooltip";
 		},
 
@@ -228,7 +228,7 @@ require([
 		choice2: "2",
 		choice3: "3",
 
-		render: function () {
+		initializeRendering: function () {
 			this.className = "choice";
 
 			for (var i = 1; i < 4; i++) {
@@ -241,7 +241,7 @@ require([
 	var LotsOfChoicesWidget = register("lots-of-choices-widget", [HTMLElement, SimplePopup], {
 		length: 100,
 
-		render: function () {
+		initializeRendering: function () {
 			this.className = "choice";
 			this.innerHTML = "<div><input value='popup keyboard'></div>";	// for testing popup keyboard
 			for (var i = 0; i < this.length; i++) {
@@ -283,7 +283,7 @@ require([
 		label: "show popup",
 		title: "I'm a dialog",
 
-		render: function () {
+		initializeRendering: function () {
 			this.innerHTML +=
 				"<div>" + this.title + "</div>" +
 				"<input>" +
@@ -400,7 +400,7 @@ require([
 		//		Clicking a value in this list will open a nested popup.
 		//		Specify popup1 and popup2 as parameters to this widget.
 
-		render: function () {
+		initializeRendering: function () {
 			this.className = "choice";
 
 			for (var i = 1; i < 3; i++) {

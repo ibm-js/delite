@@ -41,18 +41,18 @@
 		) {
 			register.deliver();
 			var dExample = document.getElementById("declarativecustomelement");
-			console.log("declarative dExample instance widget has render = " + Boolean(dExample.render !=null && dExample.render != undefined));
+			console.log("declarative dExample instance widget has initializeRendering = " + Boolean(dExample.initializeRendering !=null && dExample.initializeRendering != undefined));
 
 			var SimpleDeliteWidget = register("simple-widget", [HTMLElement, Widget], {
-				render: function () {
+				initializeRendering: function () {
 					this.textContent = "i'm a simple custom element, created at " + new Date() + ", my widgetId is " + this.widgetId;
 				}
 			});
 			new SimpleDeliteWidget({id: "simplewidget"}).placeAt(document.getElementById("simplewidgetholder"));
 			var simplewidgetInstance = document.getElementById("simplewidget");
-			console.log("programmatic simplewidgetInstance has render = " + Boolean(simplewidgetInstance.render !=null && simplewidgetInstance.render != undefined));
+			console.log("programmatic simplewidgetInstance has initializeRendering = " + Boolean(simplewidgetInstance.initializeRendering !=null && simplewidgetInstance.initializeRendering != undefined));
 			var noncustomelement = document.getElementById("noncustomelement");
-			console.log("noncustomelement has render = " + Boolean(noncustomelement.render !=null && noncustomelement.render != undefined));
+			console.log("noncustomelement has initializeRendering = " + Boolean(noncustomelement.initializeRendering !=null && noncustomelement.initializeRendering != undefined));
 			readyDelite = true;
 
 			dijitRegistry = _dijitRegistry;
