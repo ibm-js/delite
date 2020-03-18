@@ -99,14 +99,6 @@ define([
 		 * @param {Element} node
 		 */
 		onAddChild: function (node) {
-			// If I've been started but the child widget hasn't been started,
-			// start it now.  Make sure to do this after widget has been
-			// inserted into the DOM tree, so it can see that it's being controlled by me,
-			// so it doesn't try to size itself.
-			if (this.attached && node.connectedCallback) {
-				node.connectedCallback();
-			}
-
 			this.emit("delite-add-child", {
 				bubbles: false,
 				cancelable: false,

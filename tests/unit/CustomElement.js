@@ -156,22 +156,6 @@ define([
 					obj.foo();
 					assert.strictEqual(calls, 2, "foo() called from each custom element");
 
-
-					// Test attaching and detaching
-					var w1 = window.w1;
-					w1.connectedCallback();	// shouldn't do anything, since already attached
-					assert.strictEqual(w1.attaches, 1, "redundant attach");
-
-					w1.disconnectedCallback();
-					w1.disconnectedCallback();	// shouldn't do anything, since already attached
-					assert.strictEqual(w1.detaches, 1, "detach");
-
-					w1.connectedCallback();	// shouldn't reattach
-					assert.strictEqual(w1.attaches, 2, "reattach");
-
-					w1.disconnectedCallback();	// re-detach
-					assert.strictEqual(w1.detaches, 2, "re-detach");
-
 					// Then destroy
 					var w = document.getElementById("w1");
 					w.destroy();
@@ -307,7 +291,6 @@ define([
 						lang: "new lang"
 					});
 					container.appendChild(myCustomElement);
-					myCustomElement.connectedCallback();
 					assert.strictEqual(myCustomElement._title, "new title");
 					assert.strictEqual(myCustomElement._lang, "new lang");
 

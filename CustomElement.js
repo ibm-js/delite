@@ -123,6 +123,8 @@ define([
 		 * On Safari (and maybe other browsers), the attributes sometimes aren't available until
 		 * connectedCallback().  It's part of the black magic of calling constructor() for elements that
 		 * already exist.  (Of course, only parse the attributes the first time the element is connected.)
+		 *
+		 * TODO: Use attributeChangedCallback() instead?
 		 */
 		applyAttributes: function () {
 			if (!this._parsedAttributes) {
@@ -145,7 +147,6 @@ define([
 		 * @fires module:delite/CustomElement#customelement-attached
 		 */
 		connectedCallback: dcl.advise({
-			// TODO: switch to standard around advice?
 			before: function () {
 				this.applyAttributes();
 			},
@@ -309,7 +310,6 @@ define([
 
 			if (this.parentNode) {
 				this.parentNode.removeChild(this);
-				this.disconnectedCallback();
 			}
 		},
 

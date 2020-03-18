@@ -130,7 +130,6 @@ define([
 					var SimpleWidget2 = register("tabindex-not-in-prototype", [HTMLElement, Widget], { });
 					var simple2 = new SimpleWidget2({ tabIndex: 5 });
 					container.appendChild(simple2);
-					simple2.connectedCallback();
 
 					var d = this.async(1000);
 
@@ -171,7 +170,6 @@ define([
 							dir: "rtl"
 						});
 						container.appendChild(myWidget);
-						myWidget.connectedCallback();
 
 						assert.strictEqual(myWidget.style.direction, "rtl", "style.direction");
 						assert(myWidget.classList.contains("d-rtl"), "has d-rtl class");
@@ -190,7 +188,6 @@ define([
 							document.body.dir = "rtl";
 							var myWidget = new TestDir();
 							container.appendChild(myWidget);
-							myWidget.connectedCallback();
 							assert(myWidget.classList.contains("d-rtl"), "has d-rtl class");
 						} finally {
 							// Revert changes made to body.dir.   Should be able to just say dir = "" but due to
@@ -229,7 +226,6 @@ define([
 				});
 				var myWidget = new TestWidget();
 				container.appendChild(myWidget);
-				myWidget.connectedCallback();
 
 				assert(myWidget.classList.contains("base2"), "baseClass is base2");
 
@@ -237,7 +233,6 @@ define([
 				var myWidgetCustom = new TestWidget();
 				myWidgetCustom.baseClass = "customBase";
 				container.appendChild(myWidgetCustom);
-				myWidgetCustom.connectedCallback();
 				myWidgetCustom.deliver();
 
 				assert(myWidgetCustom.classList.contains("customBase"), "baseClass is customBase");

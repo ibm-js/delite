@@ -101,33 +101,12 @@ define([
 			return elem;
 		};
 		Object.setPrototypeOf(Constructor.prototype, CustomElementClass.prototype);
-		//Object.setPrototypeOf(Constructor, CustomElementClass.prototype);
-		var ConstructorProto = CustomElementClass.prototype;
-
-		// TODO: remove this code, clients shouldn't manually call connectedCallback/disconnectedCallback at all.
-		// Monkey-patch connectedCallback() and detachedCallback() to avoid double executions.
-		// Generally this isn't an issue, but it could happen if the app manually called the functions
-		// and then they were called automatically too.
-		advise.around(ConstructorProto, "connectedCallback", function (sup) {
-			return function () {
-				if (this._attached) { return; }
-				if (sup) { sup.apply(this, arguments); }
-				this._attached = true;
-			};
-		});
-		advise.around(ConstructorProto, "disconnectedCallback", function (sup) {
-			return function () {
-				if (!this._attached) { return; }
-				if (sup) { sup.apply(this, arguments); }
-				this._attached = false;
-			};
-		});
 
 		// Define the custom element.
 		/* global customElements */
 		customElements.define(tag, Constructor);
 
-		// Add some flags for debugging and return the new constructor
+		// Add some flags for debugging and return the new constructor.
 		Constructor.tag = tag;
 		Constructor._ctor = CustomElementClass;
 

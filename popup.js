@@ -297,7 +297,6 @@ define([
 				widget.ownerDocument.body.appendChild(wrapper);
 
 				wrapper.appendChild(widget);
-				widget.connectedCallback();
 
 				// Original popup widget might be hidden (so user doesn't see it prematurely).
 				// Clear that CSS now.  The wrapper itself is hidden.
@@ -348,10 +347,8 @@ define([
 			if (widget._popupWrapper) {
 				widget._popupWrapper.parentNode.removeChild(widget._popupWrapper);
 				delete widget._popupWrapper;
-				widget.disconnectedCallback();
 			} else if (widget.parentNode) {
 				widget.parentNode.removeChild(widget);
-				widget.disconnectedCallback();
 			}
 		},
 
