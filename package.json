@@ -11,7 +11,7 @@
 	"dependencies": {
 		"@webcomponents/custom-elements": "1.1.x",
 		"dcl": "^2.0.6",
-		"dojo": "^1.16.1",
+		"dojo": "^1.16.2",
 		"dojo-dstore": "1.1.x",
 		"ibm-decor": "0.8.x",
 		"messageformat": "1.0.2",
