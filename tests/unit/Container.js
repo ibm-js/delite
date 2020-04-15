@@ -276,6 +276,27 @@ define([
 				}
 			},
 
+			"programmatic": function () {
+				TestContainer = register("my-container-node-2", [HTMLElement, Container], {
+					initializeRendering: function () {
+						this.appendChild(this.containerNode = this.ownerDocument.createElement("div"));
+					}
+				});
+
+				var tc = new TestContainer({
+					content: [
+						document.createElement("p"),
+						document.createElement("br"),
+						document.createElement("a")
+					]
+				});
+
+				document.body.appendChild(tc);
+				tc.deliver();
+				assert.strictEqual(tc.containerNode.children.length, 3, "# of children");
+				tc.destroy();
+			},
+
 			"dynamically updating a template": function () {
 				register("dynamic-template-container", [HTMLElement, Container], {
 					label: "my label",
@@ -305,7 +326,7 @@ define([
 				// Create widget and test that the "label: containerNode" template is used.
 				var myContainer = document.createElement("div");
 				myContainer.innerHTML = "<dynamic-template-container>" +
-					"<span>child 1</span> <span>child 2</span> <span>child 3</span>" +
+					"<span>child 1</span><span>child 2</span><span>child 3</span>" +
 					"</dynamic-template-container>";
 				document.body.appendChild(myContainer);
 				register.deliver();
@@ -315,7 +336,7 @@ define([
 				assert.strictEqual(myWidget.children[1], myWidget.containerNode, "reversed=false, second child");
 				assert.deepEqual(getStrings(myWidget.getChildren()), ["child 1", "child 2", "child 3"],
 					"getChildren()");
-				assert.strictEqual(myWidget.textContent.trim(), "my label: child 1 child 2 child 3");
+				assert.strictEqual(myWidget.textContent.trim(), "my label: child 1child 2child 3");
 
 				// Then test that children moved when widget template changed.
 				myWidget.reversed = true;
@@ -325,7 +346,7 @@ define([
 				assert.strictEqual(myWidget.children[1], myWidget.labelNode, "reversed=true, second child");
 				assert.deepEqual(getStrings(myWidget.getChildren()), ["child 1", "child 2", "child 3"],
 					"getChildren()");
-				assert.strictEqual(myWidget.textContent.trim(), "child 1 child 2 child 3 reversed");
+				assert.strictEqual(myWidget.textContent.trim(), "child 1child 2child 3 reversed");
 
 				// cleanup
 				myContainer.parentNode.removeChild(myContainer);

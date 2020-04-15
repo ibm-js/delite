@@ -39,9 +39,18 @@ define([
 		declaredClass: "delite/Container",
 
 		/**
+		 * Elements to insert as children of this.containerNode, or if this.containerNode
+		 * undefined, then as direct children of this widget.  Currently can only be
+		 * passed as parameter to constructor.
+		 * @member {Element[]}
+		 */
+		content: [],
+
+		/**
 		 * Designates where children of the source DOM node will be placed,
 		 * and also the target for nodes inserted via `.appendChild()`, `.insertBefore()`, etc.
-		 * "Children" in this case refers to both DOM nodes and widgets.
+		 * "Children" in this case refers to both plain Elements and custom elements
+		 * aka widgets.
 		 *
 		 * @member {Element}
 		 * @default Widget root node itself.
@@ -50,11 +59,9 @@ define([
 		containerNode: undefined,
 
 		beforeInitializeRendering: function () {
-			// Save original markup to put into this.containerNode.
-			var srcDom = this._srcDom = this.ownerDocument.createDocumentFragment();
-			var oldContainer = this.containerNode || this;
-			while (oldContainer.firstChild) {
-				srcDom.appendChild(oldContainer.firstChild);
+			// Save original children from markup, unless caller has specified children programatically.
+			if (this.content.length === 0) {
+				this.content = this.getChildren();
 			}
 		},
 
@@ -64,15 +71,20 @@ define([
 				this.containerNode = this;
 			}
 
-			// Put original markup into this.containerNode.  Note that appendChild() on a DocumentFragment will
-			// loop through all the Elements in the document fragment, adding each one.
-			this.containerNode.appendChild(this._srcDom);
+			// Move or add children into this.containerNode.  But don't disconnect/reconnect children
+			// unnecessarily as that triggers spurious calls to disconnectedCallback() and connectedCallback().
+			this.content.forEach(function (child) {
+				if (child.parentNode !== this.containerNode ) {
+					this.containerNode.appendChild(child);
+				}
+			}, this);
 		},
 
 		appendChild: dcl.superCall(function (sup) {
 			return function (child) {
 				if (this.rendered) {
 					var res = sup.call(this.containerNode, child);
+					this.content = this.getChildren();
 					this.onAddChild(child);
 					return res;
 				} else {
@@ -85,6 +97,7 @@ define([
 			return function (newChild, refChild) {
 				if (this.rendered) {
 					var res = sup.call(this.containerNode, newChild, refChild);
+					this.content = this.getChildren();
 					this.onAddChild(newChild);
 					return res;
 				} else {
@@ -116,6 +129,9 @@ define([
 			// Note: insertBefore(node, null) equivalent to appendChild().  Null arg is needed (only) on IE.
 			var cn = this.containerNode || this, nextSibling = cn.children[insertIndex];
 			cn.insertBefore(node, nextSibling || null);
+			if (this.rendered) {
+				this.content = this.getChildren();
+			}
 		},
 
 		/**
@@ -131,6 +147,10 @@ define([
 
 			if (node && node.parentNode) {
 				HTMLElement.prototype.removeChild.call(node.parentNode, node); // detach but don't destroy
+			}
+
+			if (this.rendered) {
+				this.content = this.getChildren();
 			}
 
 			this.emit("delite-remove-child", {
@@ -153,7 +173,7 @@ define([
 		getChildren: function () {
 			// use Array.prototype.slice to transform the live HTMLCollection into an Array
 			var cn = this.containerNode || this;
-			return Array.prototype.slice.call(cn.children);
+			return Array.from(cn.children);
 		},
 
 		/**
@@ -171,6 +191,10 @@ define([
 		 */
 		getIndexOfChild: function (child) {
 			return this.getChildren().indexOf(child);
+		},
+
+		destroy: function () {
+			this.content = null;
 		}
 	});
 });
