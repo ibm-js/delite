@@ -129,6 +129,61 @@ define([
 				register("test-ce-lifecycle-custom-element", [HTMLElement, CustomElement], {
 					attaches: 0,
 					detaches: 0,
+					releaseOnDisconnectCallbacks: 0,
+					connectedCallback: function () {
+						this.attaches++;
+						this.releaseOnDisconnect({
+							remove: function () {
+								this.releaseOnDisconnectCallbacks++;
+							}.bind(this)
+						})
+					},
+					disconnectedCallback: function () {
+						this.detaches++;
+					}
+				});
+
+				// Create and attach.
+				container.innerHTML =
+					"<test-ce-lifecycle-custom-element id='w1'></test-ce-lifecycle-custom-element>" +
+					"<test-ce-lifecycle-custom-element id='w2'></test-ce-lifecycle-custom-element>";
+
+				setTimeout(this.async().rejectOnError(function () {
+					var w = document.getElementById("w1");
+
+					assert.strictEqual(w.attaches, 1, "attach #1");
+
+					// Then detach.
+					w.parentNode.removeChild(w);
+
+					setTimeout(this.async().rejectOnError(function () {
+						assert.strictEqual(w.detaches, 1, "detach #1");
+						assert.strictEqual(w.releaseOnDisconnectCallbacks, 1, "releaseOnDisconnectCallbacks #1");
+
+						// Reattach.
+						container.appendChild(w);
+
+						setTimeout(this.async().rejectOnError(function () {
+							assert.strictEqual(w.attaches, 2, "attach #2");
+
+							// Then detach again.
+							w.parentNode.removeChild(w);
+
+							setTimeout(this.async().callback(function () {
+								assert.strictEqual(w.detaches, 2, "detach #2");
+								assert.strictEqual(w.releaseOnDisconnectCallbacks, 2,
+									"releaseOnDisconnectCallbacks #2");
+							}.bind(this)), 10);
+						}.bind(this)), 10);
+					}.bind(this)), 10);
+				}.bind(this)), 10);
+			},
+
+			"#destroy (deprecated)": function () {
+				// Setup ownership
+				register("test-ce-destroy-custom-element", [HTMLElement, CustomElement], {
+					attaches: 0,
+					detaches: 0,
 					constructor: function () {
 						// Rather odd call to this.own() for testing the connections are dropped on destroy()
 						this.own(advise.after(obj, "foo", function () {
@@ -145,8 +200,8 @@ define([
 
 				// create
 				container.innerHTML =
-					"<test-ce-lifecycle-custom-element id='w1'></test-ce-lifecycle-custom-element>" +
-					"<test-ce-lifecycle-custom-element id='w2'></test-ce-lifecycle-custom-element>";
+					"<test-ce-destroy-custom-element id='w1'></test-ce-destroy-custom-element>" +
+					"<test-ce-destroy-custom-element id='w2'></test-ce-destroy-custom-element>";
 
 				setTimeout(this.async().callback(function () {
 					assert.strictEqual(window.w1.attaches, 1, "attach");

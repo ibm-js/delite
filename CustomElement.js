@@ -170,6 +170,50 @@ define([
 		 */
 		disconnectedCallback: function () {
 			this.attached = false;
+			this._onDisconnected();
+		},
+
+		_onDisconnected: function () {
+			// Hook for releaseOnDisconnect() to work.
+		},
+
+		/**
+		 * Track specified handles and remove/destroy them the next time the element is disconnected.
+		 *
+		 * Each argument must have either a `destroy()`, `remove()`, or `cancel()` method.  If an object has more
+		 * than one of those methods, only the first matching one in the above list is used.
+		 *
+		 * @protected
+		 */
+		releaseOnDisconnect: function () {
+			// Track each argument.
+			Array.from(arguments).forEach(function (handle) {
+				// Figure out name of method to destroy handle.
+				var destroyMethodName = [ "destroy", "remove", "cancel" ].find(function (cleanupMethod) {
+					return cleanupMethod in handle;
+				});
+				if (!destroyMethodName) {
+					throw new TypeError("releaseOnDisconnect() called with handle without destroy method");
+				}
+
+				// Register handle to be destroyed/released when this.destroy() is called.
+				var odh = advise.after(this, "_onDisconnected", function () {
+					handle[destroyMethodName]();
+					odh.remove();
+				});
+
+				// Setup listeners for manual destroy of handle.
+				if (handle.then) {
+					// Special path for Promises.  Detect when Promise is settled and remove listener.
+					handle.then(odh.destroy.bind(odh), odh.destroy.bind(odh));
+				} else {
+					// Path for non-promises.  Use AOP to detect when handle is manually destroyed.
+					var hdh = advise.after(handle, destroyMethodName, function () {
+						odh.destroy();
+						hdh.destroy();
+					});
+				}
+			}, this);
 		},
 
 		/**
