@@ -1,15 +1,15 @@
 /** @module delite/KeyNav */
 define([
 	"dcl/dcl",
-	"dojo/window",
 	"./features",
 	"./on",
+	"./scrollIntoView",
 	"./Widget"
 ], function (
 	dcl,
-	win,
 	has,
 	on,
+	scrollIntoView,
 	Widget
 ) {
 	/**
@@ -378,7 +378,7 @@ define([
 
 				// _descendantNavigateHandler() will be called automatically from child's focus event.
 			} else {
-				win.scrollIntoView(child);
+				scrollIntoView(child);
 				this._descendantNavigateHandler(child, triggerEvent);
 			}
 		},

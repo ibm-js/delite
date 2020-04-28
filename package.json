@@ -11,8 +11,6 @@
 	"dependencies": {
 		"@webcomponents/custom-elements": "1.1.x",
 		"dcl": "^2.0.6",
-		"dojo": "^1.16.2",
-		"dojo-dstore": "1.1.x",
 		"ibm-decor": "0.8.x",
 		"messageformat": "1.0.2",
 		"requirejs-domready": "2.0.x",
@@ -23,6 +21,7 @@
 	"devDependencies": {
 		"clean-css": "^4.2.3",
 		"dijit": "^1.14.5",
+		"dojo-dstore": "1.1.x",
 		"grunt": "^1.0.4",
 		"grunt-contrib-less": "^2.0.0",
 		"grunt-contrib-uglify": "^4.0.1",

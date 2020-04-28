@@ -4,7 +4,6 @@
  */
 define([
 	"dcl/dcl",
-	"dojo/window",
 	"messageformat/messageformat",
 	"resize-observer-polyfill/dist/ResizeObserver",
 	"./BackgroundIframe",
@@ -12,11 +11,11 @@ define([
 	"./features", // has("config-bgIframe")
 	"./on",
 	"./place",
+	"./scrollIntoView",
 	"./Viewport",
 	"requirejs-dplugins/i18n!./nls/common"
 ], function (
 	dcl,
-	win,
 	MessageFormat,
 	ResizeObserver,
 	BackgroundIframe,
@@ -24,6 +23,7 @@ define([
 	has,
 	on,
 	place,
+	scrollIntoView,
 	Viewport,
 	messages
 ) {
@@ -258,17 +258,17 @@ define([
 			this._stack.forEach(function (args) {
 				// Anchor node must be in view, otherwise the popup/dropdown appears to be hanging in mid-air.
 				if (scroll && args.around) {
-					win.scrollIntoView(args.around);
+					scrollIntoView(args.around);
 				}
 
 				this._size(args);
 				this._position(args);
 
 				// If the resizing (or repositioning) scrolled the active element out of view, then fix it.
-				// Use dojo/window.scrollIntoView() because it does minimal scrolling (and only scrolls if necessary),
+				// Use scrollIntoView() because it does minimal scrolling (and only scrolls if necessary),
 				// unlike iOS's native scrollIntoView() method.
 				if (scroll && args.popup.contains(document.activeElement)) {
-					win.scrollIntoView(document.activeElement);
+					scrollIntoView(document.activeElement);
 				}
 
 				on.emit(args.popup, "delite-repositioned", {args: args});
@@ -415,7 +415,7 @@ define([
 
 			// Anchor node must be in view, otherwise the popup/dropdown could appear off screen, or hanging in mid-air.
 			if (args.around) {
-				win.scrollIntoView(args.around);
+				scrollIntoView(args.around);
 			}
 
 			// Size and position the popup.
