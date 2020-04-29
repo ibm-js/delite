@@ -12,6 +12,7 @@
 		"@webcomponents/custom-elements": "1.1.x",
 		"dcl": "^2.0.6",
 		"ibm-decor": "0.8.x",
+		"lit-html": "^1.2.1",
 		"messageformat": "1.0.2",
 		"requirejs-domready": "2.0.x",
 		"requirejs-dplugins": "0.6.x",
