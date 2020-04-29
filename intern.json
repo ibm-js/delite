@@ -13,10 +13,6 @@
 
 	"basePath": "../",
 
-	"plugins": [
-		"../delite/tests/ie-polyfills.js"
-	],
-
 	"node": {
 		"loader": {
 			"script": "./intern-requirejs-loader.js",
@@ -38,7 +34,12 @@
 					{ "name": "delite", "location": ".." }
 				]
 			}
-		}
+		},
+
+		"plugins": [
+			"../delite/tests/ie-polyfills.js",
+			"../delite/node_modules/@webcomponents/custom-elements/custom-elements.min.js"
+		]
 	},
 
 	"suites": [

@@ -1,8 +1,7 @@
 /** @module delite/register */
 define([
 	"dcl/advise",
-	"dcl/dcl",
-	"./customElements!"
+	"dcl/dcl"
 ], function (
 	advise,
 	dcl
