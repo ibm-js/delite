@@ -44,13 +44,12 @@
 
 		require([
 			"dcl/dcl",
-			"requirejs-dplugins/Promise!",
 			"delite/register",
 			"delite/Dialog",
 			"delite/HasDropDown",
 			"delite/Widget",
 			"requirejs-domready/domReady!"
-		], function (dcl, Promise, register, Dialog, HasDropDown, Widget) {
+		], function (dcl, register, Dialog, HasDropDown, Widget) {
 
 			// A trivial popup widget
 			var SimpleDialog = register("simple-dialog", [HTMLElement, Dialog], {
