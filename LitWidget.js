@@ -10,7 +10,6 @@ import { render as shadyRender } from "lit-html/lib/shady-render";
 
 /**
  * Base class for widgts that render using lit-html.
- * TODO: move to delite
  */
 export default dcl([Widget], {
 	/**
@@ -34,6 +33,11 @@ export default dcl([Widget], {
 	},
 
 	refreshRendering: function () {
+		if (!this.attached) {
+			// Reduce rerenders on widget creation by waiting until we are attached to the document for first render.
+			return;
+		}
+
 		if (this.shadow) {
 			shadyRender(this.render(), this.shadowRoot, {scopeName: this.tagName.toLowerCase()});
 		} else {
