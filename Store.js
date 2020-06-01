@@ -149,6 +149,8 @@ define([
 			this._untrack();
 			if (this.source) {
 				if (!Array.isArray(this.source)) {
+					// TODO: Get rid of DstoreQueryAdapter and just use dstore interface.
+					// It's much better for chaining original data --> filter --> sort --> track.
 					this._storeAdapter = new DstoreQueryAdapter({source: this.source,
 						query: this.query,
 						processQueryResult: processQueryResult});
@@ -159,6 +161,7 @@ define([
 				}
 				var collection = this._storeAdapter;
 				if (collection.track) {
+					// TODO: Shouldn't the tracking be set after the sort?
 					this._addListener = collection.on("add", this._itemAdded.bind(this));
 					this._deleteListener = collection.on("delete", this._itemRemoved.bind(this));
 					this._updateListener = collection.on("update", this._itemUpdated.bind(this));
