@@ -137,15 +137,16 @@ define([
 				html = doc.documentElement || body.parentNode,
 				isIE = has("ie") || has("trident"),
 				isWK = has("webkit");
-			// if an untested browser, then use the native method
 			if (node === body || node === html) {
 				return;
 			}
-			if (!(has("mozilla") || isIE || isWK || has("edge"))
-				&& ("scrollIntoView" in node)) {
-				node.scrollIntoView(false); // short-circuit to native if possible
+
+			// if an untested browser, then use the native method
+			if (!(has("ff") || isIE || isWK || has("edge")) && ("scrollIntoView" in node)) {
+				node.scrollIntoView(false);
 				return;
 			}
+
 			var rootWidth = Math.min(body.clientWidth || html.clientWidth, html.clientWidth || body.clientWidth),
 				rootHeight = Math.min(body.clientHeight || html.clientHeight, html.clientHeight || body.clientHeight),
 				scrollRoot = isWK ? body : html,
