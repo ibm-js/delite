@@ -4,8 +4,7 @@ define({
 		buttonOk: "OK",
 		buttonCancel: "Cancel",
 		buttonSave: "Save",
-		itemClose: "Close",
-		popupLabel: "{level, plural, =0{popup} =1{nested popup} other{nested popup #}}"
+		itemClose: "Close"
 	},
 	// end v1.x content
 

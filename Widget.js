@@ -270,15 +270,6 @@ define([
 		afterInitializeRendering: function () {
 		},
 
-		//////////// DESTROY FUNCTIONS ////////////////////////////////
-
-		disconnectedCallback: function () {
-			if (this.bgIframe) {
-				this.bgIframe.destroy();
-				delete this.bgIframe;
-			}
-		},
-
 		/**
 		 * Returns the parent widget of this widget, or null if there is no parent widget.
 		 */

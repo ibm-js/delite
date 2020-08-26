@@ -41,12 +41,21 @@ define([
 	 * @property {number} w - Width of popup in pixels.
 	 * @property {number} h - Height of popup in pixels.
 	 * @property {Object} spaceAvailable - `{w: 30, h: 20}` type object listing the amount of space that
-	 * was available fot the popup in the chosen position.
+	 * was available for the popup in the chosen position.
 	 */
+
+	function marginBox (node) {
+		var bb = node.getBoundingClientRect(),
+			cs = getComputedStyle(node);
+		return {
+			width: bb.width + parseFloat(cs.marginLeft) +  + parseFloat(cs.marginRight), // parseFloat() removes "px"
+			height: bb.height + parseFloat(cs.marginTop) +  + parseFloat(cs.marginBottom)
+		};
+	}
 
 	/**
 	 * Given a list of positions to place node, place it at the first position where it fits,
-	 * of if it doesn't fit anywhere then the position with the least overflow.
+	 * or if it doesn't fit anywhere then the position with the least overflow.
 	 * @param {Element} node
 	 * @param {Array} choices - Array of objects like `{corner: "TL", pos: {x: 10, y: 20} }`.
 	 * This example says to put the top-left corner of the node at (10,20).
@@ -59,10 +68,9 @@ define([
 		var view = Viewport.getEffectiveBox(node.ownerDocument),
 			style = node.style;
 
-		// This won't work if the node is inside a <div style="position: relative">,
-		// so reattach it to <body>.	 (Otherwise, the positioning will be wrong
-		// and also it might get cut off.)
-		if (!node.parentNode || String(node.parentNode.tagName).toLowerCase() !== "body") {
+		// Backwards compatibility code.  Popups should generally be the next-sibling of their anchor node so that
+		// VoiceOver users can swipe from the anchor to the popup.
+		if (!node.parentNode) {
 			node.ownerDocument.body.appendChild(node);
 		}
 
@@ -86,18 +94,18 @@ define([
 				}[corner.charAt(0)]
 			};
 
-			// Clear left/right position settings set earlier so they don't interfere with calculations,
-			// specifically when layoutNode() (a.k.a. Tooltip.orient()) measures natural width of Tooltip
+			// Clear left/right position settings set earlier so they don't interfere with calculations.
+			// Unclear if this is still needed: we no longer call Tooltip#orient() while testing different choices.
 			style.left = style.right = "auto";
 
-			// get node's size
+			// Get node's size.  Use margin-box because Tooltip uses margin to leave space for connector.
 			var oldDisplay = style.display;
 			var oldVis = style.visibility;
 			if (style.display === "none") {
 				style.visibility = "hidden";
 				style.display = "";
 			}
-			var bb = node.getBoundingClientRect();
+			var mb = marginBox(node);
 			style.display = oldDisplay;
 			style.visibility = oldVis;
 
@@ -106,23 +114,23 @@ define([
 			var
 				startXpos = {
 					L: pos.x,
-					R: pos.x - bb.width,
+					R: pos.x - mb.width,
 					// M orientation is more flexible
-					M: Math.max(view.l, Math.min(view.l + view.w, pos.x + (bb.width >> 1)) - bb.width)
+					M: Math.max(view.l, Math.min(view.l + view.w, pos.x + (mb.width >> 1)) - mb.width)
 				}[corner.charAt(1)],
 				startYpos = {
 					T: pos.y,
-					B: pos.y - bb.height,
-					M: Math.max(view.t, Math.min(view.t + view.h, pos.y + (bb.height >> 1)) - bb.height)
+					B: pos.y - mb.height,
+					M: Math.max(view.t, Math.min(view.t + view.h, pos.y + (mb.height >> 1)) - mb.height)
 				}[corner.charAt(0)],
 				startX = Math.max(view.l, startXpos),
 				startY = Math.max(view.t, startYpos),
-				endX = Math.min(view.l + view.w, startXpos + bb.width),
-				endY = Math.min(view.t + view.h, startYpos + bb.height),
+				endX = Math.min(view.l + view.w, startXpos + mb.width),
+				endY = Math.min(view.t + view.h, startYpos + mb.height),
 				width = endX - startX,
 				height = endY - startY;
 
-			overflow += (bb.width - width) + (bb.height - height);
+			overflow += (mb.width - width) + (mb.height - height);
 
 			if (!best || overflow < best.overflow) {
 				best = {
@@ -146,13 +154,26 @@ define([
 		// scrolled to the left).
 
 		var top = best.y,
-			side = best.x,
-			cs = getComputedStyle(node.ownerDocument.body);
+			side = best.x;
 
-		if (/^(relative|absolute)$/.test(cs.position)) {
-			// compensate for margin on <body>, see #16148
-			top -= cs.marginTop;
-			side -= cs.marginLeft;
+		// Find the nearest ancestor set to position:absolute or position: relative.
+		var ancestor = node.parentNode;
+		while (ancestor !== node.ownerDocument.body
+				&& !/^(relative|absolute|fixed)$/.test(getComputedStyle(ancestor).position)) {
+			ancestor = ancestor.parentNode;
+		}
+		var cs = getComputedStyle(ancestor);
+
+		if (ancestor === node.ownerDocument.body) {
+			if (/^(relative|absolute)$/.test(cs.position)) {
+				// compensate for margin on <body>, see #16148
+				top -= cs.marginTop;
+				side -= cs.marginLeft;
+			}
+		} else {
+			var bcr = place.position(ancestor);
+			top -= bcr.y + parseFloat(cs.borderTopWidth);
+			side -= bcr.x + parseFloat(cs.borderLeftWidth);
 		}
 
 		if (style.top !== top + "px" || style.left !== side + "px" || style.right !== "auto") {
@@ -202,6 +223,11 @@ define([
 		 * place.at(node, {x: 10, y: 20}, ["TR", "BL"])
 		 */
 		at: function (node, pos, corners, padding) {
+			// Set position:absolute first since it affects the width.
+			if (node.style.position !== "absolute") {
+				node.style.position = "absolute";
+			}
+
 			var choices = corners.map(function (corner) {
 				var c = {
 					corner: corner,
@@ -252,6 +278,12 @@ define([
 		 * place.around(node, aroundNode, {'BL':'TL', 'TR':'BR'});
 		 */
 		around: function (node, anchor, positions, leftToRight) {
+			// First set popup to position:absolute, since it affects its width,
+			// and also so we can correctly calculate the height of the aroundNode.
+			if (node.style.position !== "absolute") {
+				node.style.position = "absolute";
+			}
+
 			// If around is a DOMNode (or DOMNode id), convert to coordinates.
 			var aroundNodePos;
 			if (typeof anchor === "string" || "offsetWidth" in anchor || "ownerSVGElement" in anchor) {
@@ -292,7 +324,7 @@ define([
 				while (parent && parent.nodeType === 1 && parent.nodeName !== "BODY") {
 					var parentPos = place.position(parent),
 						pcs = getComputedStyle(parent);
-					if (/^(relative|absolute)$/.test(pcs.position)) {
+					if (/^(relative|absolute|fixed)$/.test(pcs.position)) {
 						sawPosAbsolute = false;
 					}
 					if (!sawPosAbsolute && /^(hidden|auto|scroll)$/.test(pcs.overflow)) {
@@ -398,6 +430,11 @@ define([
 				bb = node.getBoundingClientRect(),
 				style = node.style;
 
+			// Set position:fixed first since it affects the width.
+			if (style.position !== "fixed") {
+				style.position = "fixed";
+			}
+
 			// If neither node nor viewport has changed size, then just return, to avoid breaking momentum scrolling.
 			if (style.top === view.t + (view.h - bb.height) / 2 + "px" &&
 				style.left === view.l + (view.w - bb.width) / 2 + "px" &&
@@ -415,8 +452,8 @@ define([
 			bb = node.getBoundingClientRect();
 
 			// Then set position so node is centered.
-			style.top = view.t + (view.h - bb.height) / 2 + "px";
-			style.left = view.l + (view.w - bb.width) / 2 + "px";
+			style.top = (view.h - bb.height) / 2 + "px";
+			style.left = (view.w - bb.width) / 2 + "px";
 			style.right = "auto";
 		},
 

@@ -4,32 +4,23 @@
  */
 define([
 	"dcl/dcl",
-	"messageformat/messageformat",
 	"resize-observer-polyfill/dist/ResizeObserver",
-	"./BackgroundIframe",
+	"ibm-decor/sniff",
 	"./DialogUnderlay",
-	"./features", // has("config-bgIframe")
 	"./on",
 	"./place",
 	"./scrollIntoView",
-	"./Viewport",
-	"requirejs-dplugins/i18n!./nls/common"
+	"./Viewport"
 ], function (
 	dcl,
-	MessageFormat,
 	ResizeObserver,
-	BackgroundIframe,
-	DialogUnderlay,
 	has,
+	DialogUnderlay,
 	on,
 	place,
 	scrollIntoView,
-	Viewport,
-	messages
+	Viewport
 ) {
-	var messageFormat = new MessageFormat(navigator.language.replace(/-.*$/, ""));
-	var getWrapperLabel = messageFormat.compile(messages.popupLabel);
-
 	function isDocLtr (doc) {
 		return !(/^rtl$/i).test(doc.body.dir || doc.documentElement.dir);
 	}
@@ -158,7 +149,7 @@ define([
 	var PopupManager = dcl(/** @lends module:delite/popup */ {
 		/**
 		 * Stack of information about currently popped up widgets.
-		 * See `open()` method to see the properties set in each Object in this stack (widget, wrapper, etc)
+		 * See `open()` method to see the properties set in each Object in this stack (widget, etc)
 		 * (someone opened _stack[0], and then it opened _stack[1], etc.)
 		 * @member {*} PopupManager._stack
 		 */
@@ -279,49 +270,20 @@ define([
 
 		/**
 		 * Initialization for widgets that will be used as popups.
-		 * Puts widget inside a wrapper DIV (if not already in one), and returns pointer to that wrapper DIV.
 		 * @param {module:delite/Widget} widget
-		 * @returns {HTMLElement} The wrapper DIV.
 		 * @private
 		 */
-		createWrapper: function (widget) {
-			var wrapper = widget._popupWrapper;
-			if (!wrapper) {
-				// Create wrapper <div> for when this widget [in the future] will be used as a popup.
-				// This is done early because of IE bugs where creating/moving DOM nodes causes focus
-				// to go wonky, see tests/robot/Toolbar.html to reproduce
-				wrapper = widget._popupWrapper = widget.ownerDocument.createElement("div");
-				wrapper.className = "d-popup";
-				wrapper.style.display = "none";
-				wrapper.setAttribute("role", "region");
-				widget.ownerDocument.body.appendChild(wrapper);
-
-				wrapper.appendChild(widget);
-
-				// Original popup widget might be hidden (so user doesn't see it prematurely).
-				// Clear that CSS now.  The wrapper itself is hidden.
-				if (widget.style.display === "none") {
-					widget.style.display = "";
-				}
-				if (widget.style.visibility === "hidden") {
-					widget.style.visibility = "";
-				}
-				widget.classList.remove("d-hidden");
-				widget.classList.remove("d-invisible");
-				widget.classList.remove("d-offscreen");
-
-				// Destroy wrapper when popup widget is destroyed.
-				widget.own({
-					destroy: function destroyWrapper () {
-						if (widget._popupWrapper) {
-							widget._popupWrapper.parentNode.removeChild(widget._popupWrapper);
-							delete widget._popupWrapper;
-						}
-					}
-				});
+		initializeAsPopup: function (widget) {
+			widget.classList.add("d-popup");
+			widget.style.display = "none";
+			if (!widget.parentNode) {
+				widget.ownerDocument.body.appendChild(widget);
 			}
 
-			return wrapper;
+			// Popups should be position:absolute or position: fixed to get the correct width,
+			// and to not affect the height of the aroundNode.  Set position before _size() measures
+			// sizes of aroundNode.
+			widget.style.position = "absolute";
 		},
 
 		/**
@@ -331,12 +293,10 @@ define([
 		 * @returns {HTMLElement}
 		 */
 		moveOffScreen: function (widget) {
-			// Create wrapper if not already there, then besides setting visibility:hidden,
-			// move it out of the viewport, see #5776, #10111, #13604
-			var wrapper = this.createWrapper(widget);
-			wrapper.style.display = "";
-			wrapper.classList.add("d-offscreen");
-			return wrapper;
+			this.initializeAsPopup(widget);
+			widget.style.display = "";
+			widget.classList.add("d-offscreen");
+			return widget;
 		},
 
 		/**
@@ -344,10 +304,7 @@ define([
 		 * @param {module:delite/Widget} widget
 		 */
 		detach: function (widget) {
-			if (widget._popupWrapper) {
-				widget._popupWrapper.parentNode.removeChild(widget._popupWrapper);
-				delete widget._popupWrapper;
-			} else if (widget.parentNode) {
+			if (widget.parentNode) {
 				widget.parentNode.removeChild(widget);
 			}
 		},
@@ -356,20 +313,19 @@ define([
 		 * Hide this popup widget (until it is ready to be shown).
 		 * Initialization for widgets that will be used as popups.
 		 *
-		 * Also puts widget inside a wrapper DIV (if not already in one).
-		 *
-		 * If popup widget needs to layout it should do so when it is made visible,
+		 * If popup widget needs to do javascript layout it should do so when it is made visible,
 		 * and popup._onShow() is called.
 		 * @param {module:delite/Widget} widget
 		 */
 		hide: function (widget) {
-			widget.emit("popup-before-hide");
+			widget.emit("popup-before-hide", {
+				bubbles: false
+			});
 
-			// Create wrapper if not already there
-			var wrapper = this.createWrapper(widget);
+			this.initializeAsPopup(widget);
 
-			wrapper.style.display = "none";
-			wrapper.style.height = "auto";		// Open may have limited the height to fit in the viewport
+			widget.style.display = "none";
+			widget.style.height = "auto";		// Open may have limited the height to fit in the viewport
 		},
 
 		/**
@@ -422,10 +378,12 @@ define([
 			this._prepareToOpen(args);
 			this._size(args, true);
 			var position = this._position(args);
+			this._afterOpen(args);
 
 			// Emit event on popup.
 			args.popup.emit("popup-after-show", {
-				around: args.around
+				around: args.around,
+				bubbles: false
 			});
 
 			on.emit(eventNode, "delite-after-show", {
@@ -460,46 +418,35 @@ define([
 				this.close(stack[stack.length - 1].popup);
 			}
 
-			// Get reference to popup wrapper, and create wrapper if it doesn't exist.  Remove display:none (but keep
-			// off screen) so we can do sizing calculations.
-			var wrapper = this.moveOffScreen(widget);
+			this.initializeAsPopup(widget);
 
-			var wrapperClasses = ["d-popup"];
-			((widget.baseClass || "") + " " + widget.className).split(/ +/).forEach(function (cls) {
-				if (cls) {
-					wrapperClasses.push(cls + "-popup");
-				}
-			});
-			wrapper.id = widget.id + "_wrapper";
-			wrapper.className = wrapperClasses.join(" ");
-			wrapper.style.zIndex = this._beginZIndex + stack.length * 2;   // *2 leaves z-index slot for DialogUnderlay
-			wrapper._popupParent = args.parent ? args.parent : null;
-
-			if (has("config-bgIframe") && !widget.bgIframe) {
-				// setting widget.bgIframe triggers cleanup in Widget.destroy()
-				widget.bgIframe = new BackgroundIframe(wrapper);
-			}
-
-			wrapper.style.visibility = "visible";
+			widget.style.zIndex = this._beginZIndex + stack.length * 2;   // *2 leaves z-index slot for DialogUnderlay
+			widget._popupParent = args.parent ? args.parent : null;
+			widget.style.position = "absolute";		// avoid flicker due to popup pushing down other content
+			widget.style.display = "";
 			widget.style.visibility = "visible";	// counteract effects from HasDropDown
+		},
+
+		/**
+		 * Setup handlers to detect size change, keypresses, etc.
+		 * @param args
+		 * @private
+		 */
+		_afterOpen: function (args) {
+			var stack = this._stack,
+				widget = args.popup;
 
 			var handlers = [];
 
 			// provide default escape and tab key handling
 			// (this will work for any widget, not just menu)
-			var onKeyDown = function (evt) {
+			handlers.push(widget.on("keydown", function (evt) {
 				if ((evt.key === "Escape" || evt.key === "Tab") && args.onCancel) {
 					evt.stopPropagation();
 					evt.preventDefault();
 					args.onCancel();
 				}
-			}.bind(this);
-			wrapper.addEventListener("keydown", onKeyDown);
-			handlers.push({
-				remove: function () {
-					wrapper.removeEventListener("keydown", onKeyDown);
-				}
-			});
+			}));
 
 			// Watch for cancel/execute events on the popup and notify the caller.
 			// Simple widgets like a Calendar will emit "change" events, whereas complex widgets like
@@ -571,17 +518,13 @@ define([
 				})
 			);
 
-			// Set unique label for wrapper of each visible popup.
-			wrapper.setAttribute("aria-label", getWrapperLabel({ level: stack.length }));
-
-			args.wrapper = wrapper;
 			args.handlers = handlers;
 
 			// Set aria-hidden on all the nodes that aren't the specified popup
 			// so that VoiceOver doesn't navigate to those nodes.
 			if (has("ios") || has("android")) {
 				var hiddenNodes = Array.prototype.slice.call(document.body.querySelectorAll(
-					"body > *:not(#" + wrapper.id + "):not([aria-hidden=true])"));
+					"body > *:not(#" + widget.id + "):not([aria-hidden=true])"));
 				hiddenNodes.forEach(function (node) {
 					node.setAttribute("aria-hidden", "true");
 				});
@@ -672,22 +615,22 @@ define([
 		 */
 		_position: function (args) {
 			var widget = args.popup,
-				wrapper = widget._popupWrapper,
 				around = args.around,
 				orient = this._getOrient(args),
 				ltr = args.parent ? args.parent.effectiveDir !== "rtl" : isDocLtr(widget.ownerDocument),
 				position;
 
-			// position the wrapper node
+			widget.classList.remove("d-offscreen");
+
 			if (orient[0] === "center") {
 				if (!args.dragged && !args.resized) {
-					place.center(wrapper);
+					place.center(widget);
 					widget.emit("popup-after-position");
 				}
 			} else {
 				position = around ?
-					place.around(wrapper, around, orient, ltr) :
-					place.at(wrapper, args, orient === "R" ? ["TR", "BR", "TL", "BL"] : ["TL", "BL", "TR", "BR"],
+					place.around(widget, around, orient, ltr) :
+					place.at(widget, args, orient === "R" ? ["TR", "BR", "TL", "BL"] : ["TL", "BL", "TR", "BR"],
 						args.padding);
 
 				// Emit event telling popup that it was [re]positioned.
@@ -699,9 +642,9 @@ define([
 			// Setup underlay for popups that want one.  By default it's done for centered popups,
 			// but args can explicitly specify underlay=true or underlay=false.
 			if (args.underlay !== undefined ? args.underlay : (orient[0] === "center")) {
-				DialogUnderlay.showFor(wrapper);
+				DialogUnderlay.showFor(widget);
 			} else {
-				DialogUnderlay.hideFor(wrapper);
+				DialogUnderlay.hideFor(widget);
 			}
 
 			return position;
@@ -709,24 +652,22 @@ define([
 
 		/**
 		 * If the specified widget is fully or partially offscreen, bring it fully into view.
+		 * Only works for dialogs, i.e. for widgets that were originally centered using position:fixed.
 		 * @param widget
 		 */
 		moveFullyIntoView: function (widget) {
 			var viewport = Viewport.getEffectiveBox(),
-				wrapper = this.createWrapper(widget),
-				bcr = wrapper.getBoundingClientRect(),
-				curTop = parseFloat(wrapper.style.top),
-				curLeft = parseFloat(wrapper.style.left),
-				minTop = viewport.t,
-				minLeft = viewport.l,
-				maxTop = Math.max(viewport.t + viewport.h - bcr.height, 0),
-				maxLeft = Math.max(viewport.l + viewport.w - bcr.width, 0);
+				bcr = widget.getBoundingClientRect(),
+				curTop = parseFloat(widget.style.top),
+				curLeft = parseFloat(widget.style.left),
+				maxTop = Math.max(viewport.h - bcr.height, 0),
+				maxLeft = Math.max(viewport.w - bcr.width, 0);
 
-			if (curTop < 0 || curTop > maxTop || curLeft < minLeft || curLeft > maxLeft) {
-				var top = Math.min(Math.max(curTop, minTop), maxTop),
-					left = Math.min(Math.max(curLeft, minLeft), maxLeft);
-				wrapper.style.top = top  + "px";
-				wrapper.style.left = left + "px";
+			if (curTop < 0 || curTop > maxTop || curLeft < 0 || curLeft > maxLeft) {
+				var top = Math.min(Math.max(curTop, 0), maxTop),
+					left = Math.min(Math.max(curLeft, 0), maxLeft);
+				widget.style.top = top  + "px";
+				widget.style.left = left + "px";
 
 				widget.emit("popup-after-position");
 			}
@@ -752,27 +693,21 @@ define([
 					widget = top.popup,
 					onClose = top.onClose;
 
-				if (widget.bgIframe) {
-					// push the iframe back onto the stack.
-					widget.bgIframe.destroy();
-					delete widget.bgIframe;
-				}
-
 				var h;
 				while ((h = top.handlers.pop())) {
 					h.remove();
 				}
 
-				// Remove aria-hidden on background nodes set in _prepareToOpen().
+				// Remove aria-hidden on background nodes set in _afterOpen().
 				if (top.hiddenNodes) {
 					top.hiddenNodes.forEach(function (node) {
 						node.removeAttribute("aria-hidden");
 					});
 				}
 
-				// Hide the widget and its wrapper unless it has already been destroyed in above onClose() etc.
+				// Hide the widget.
 				this.hide(widget);
-				DialogUnderlay.hideFor(widget._popupWrapper);
+				DialogUnderlay.hideFor(widget);
 
 				if (onClose) {
 					onClose();

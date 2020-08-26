@@ -77,7 +77,7 @@
 				choice3: "3",
 
 				initializeRendering: function () {
-					this.className = "choice";
+					this.classList.add("choice");
 
 					this.on("click", this.emit.bind(this, "change"));
 
@@ -124,9 +124,6 @@
 				},
 
 				focus: function (selected) {
-					if (this.selected) {
-						this.selected.className = "";
-					}
 					this.selected = selected || this.children[0];
 					this.selected.focus();
 				}
@@ -136,10 +133,10 @@
 			var NonFocusMenu = register("non-focus-menu", [HTMLElement, MenuBase], {
 				_select: function (child) {
 					if (this.selected) {
-						this.selected.className = "";
+						this.selected.classList.remove("selected");
 					}
 					this.selected = child;
-					child.className = "selected";
+					child.classList.add("selected");
 				},
 
 				constructor: function () {
@@ -157,7 +154,7 @@
 				_keydownHandler: function (evt) {
 					if(evt.key === "Enter" || evt.key === "Spacebar") {
 						this.emit("change");
-						this.selected.className = "";
+						this.selected.classList.remove("selected");
 						evt.preventDefault();
 						evt.stopPropagation();
 					} else if(evt.key === "ArrowDown" ) {
@@ -186,15 +183,14 @@
 				}),
 
 				initializeRendering: function () {
-					this.className="button";
+					this.classList.add("button");
 					this.tabIndex = "0";
 				},
 
 				loadDropDown: function () {
 					if (!this._dropDown) {
-						this._dropDown = new this.dropDownConstructor({
-							className: this.dropDownClass || "basic-dropdown"
-						});
+						this._dropDown = new this.dropDownConstructor();
+						this._dropDown.classList.add(this.dropDownClass || "basic-dropdown");
 						if (this.id) {
 							this._dropDown.id = this.id + "_popup";
 						}
@@ -207,7 +203,7 @@
 			// A button that emits the delite-display-load event to get a reference to the dropdown
 			var EventsDropDownButton = register("events-drop-down-button", [HTMLElement, HasDropDown], {
 				initializeRendering: function () {
-					this.className="button";
+					this.classList.add("button");
 					this.tabIndex = "0";
 				},
 
@@ -254,9 +250,9 @@
 					if (!this._dropDownPromise) {
 						this._dropDownPromise = new Promise(function (resolve) {
 							setTimeout(function () {
-								resolve(new this.dropDownConstructor({
-									class: this.dropDownClass
-								}));
+								var dropdown = new this.dropDownConstructor();
+								dropdown.classList.add(this.dropDownClass);
+								resolve(dropdown);
 							}.bind(this), 500);
 						}.bind(this));
 					}
@@ -268,7 +264,7 @@
 			// Should work for mouse, although not for keyboard.
 			var NonFocusableDropDownButton = register("non-focusable-drop-down-button", [HTMLElement, HasDropDown], {
 				initializeRendering: function () {
-					this.className = "button";
+					this.classList.add("button");
 				},
 
 				label: dcl.prop({

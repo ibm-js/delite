@@ -58,8 +58,8 @@ define([
 					evt.preventDefault();
 				}
 
-				// In any case, call stopPropagation() so the popup.js doesn't see the TAB and close the Dialog.
-				evt.stopPropagation();
+				// Call stopImmediatePropagation() so the popup.js doesn't see the TAB and close the Dialog.
+				evt.stopImmediatePropagation();
 			}
 		}
 	});

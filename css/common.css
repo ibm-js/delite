@@ -39,13 +39,6 @@
   right: -9999px;
 }
 .d-popup {
-  position: absolute;
-  display: flex;
-  margin: 0;
-  border: 0;
-  padding: 0;
-}
-.d-popup > * {
   box-sizing: border-box;
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);
 }

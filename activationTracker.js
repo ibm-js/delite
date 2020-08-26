@@ -200,9 +200,7 @@ define([
 
 			try {
 				while (node) {
-					if (node._popupParent) {
-						node = node._popupParent;
-					} else if (node.tagName && node.tagName.toLowerCase() === "body") {
+					if (node.tagName && node.tagName.toLowerCase() === "body") {
 						// is this the root of the document or just the root of an iframe?
 						if (node === document.body) {
 							// node is the root of the main document
@@ -219,7 +217,7 @@ define([
 						} else {
 							stack.unshift(node);
 						}
-						node = node.parentNode;
+						node = node._popupParent || node.parentNode;
 					}
 				}
 			} catch (e) { /* squelch */

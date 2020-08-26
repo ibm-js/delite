@@ -3,14 +3,12 @@ define([
 	"dcl/dcl",
 	"./register",
 	"./Widget",
-	"./BackgroundIframe",
 	"./Viewport",
 	"requirejs-dplugins/css!./DialogUnderlay/DialogUnderlay.css"
 ], function (
 	dcl,
 	register,
 	Widget,
-	BackgroundIframe,
 	Viewport
 ) {
 
@@ -29,7 +27,7 @@ define([
 		baseClass: "d-dialog-underlay",
 
 		constructor: dcl.after(function () {
-		// Automatically append the underlay to <body> on creation.
+			// Automatically append the underlay to <body> on creation.
 			this.ownerDocument.body.appendChild(this);
 
 			// Prevent scrolling content behind the dialog.
@@ -82,7 +80,6 @@ define([
 				this.style.display = "block";
 				this._open = true;
 				this.layout();
-				this.bgIframe = new BackgroundIframe(this);
 			}
 		},
 
@@ -91,8 +88,6 @@ define([
 		 */
 		hide: function () {
 			if (this._open) {
-				this.bgIframe.destroy();
-				delete this.bgIframe;
 				this.style.display = "none";
 				this._open = false;
 			}

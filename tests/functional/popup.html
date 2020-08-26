@@ -86,6 +86,9 @@ function addBoilerplateText() {
 			"hendrerit dui vel fermentum.</p>");
 }
 
+// Test legacy behavior of attaching the popup to document.body rather than as a sibling of the anchor node.
+var attachToBody = /sibling=false/.test(location.search);
+
 require([
 	"dcl/dcl",
 	"delite/popup", "delite/register", "delite/Widget",
@@ -98,7 +101,7 @@ require([
 	// Supply popup as parameter when instantiating this widget.
 	var SimpleDropDownButton = register("simple-dropdown-button", [HTMLElement, Widget], {
 		initializeRendering: function () {
-			this.className = "button";
+			this.classList.add("button");
 			this.tabIndex = "0";
 		},
 
@@ -121,6 +124,13 @@ require([
 		_openPopup: function () {
 			console.log(this.id + " open popup");
 			var self = this;
+
+			this.popup.style.display = "none";
+			if (attachToBody) {
+				document.body.appendChild(this.popup);
+			} else {
+				this.parentNode.insertBefore(this.popup, this.nextSibling);
+			}
 
 			this._openRet = popupUtil.open({
 				popup: this.popup,
@@ -229,7 +239,7 @@ require([
 		choice3: "3",
 
 		initializeRendering: function () {
-			this.className = "choice";
+			this.classList.add("choice");
 
 			for (var i = 1; i < 4; i++) {
 				this.innerHTML += "<div>choice #" + this["choice" + i] + "</div>";
@@ -242,7 +252,7 @@ require([
 		length: 100,
 
 		initializeRendering: function () {
-			this.className = "choice";
+			this.classList.add("choice");
 			this.innerHTML = "<div><input value='popup keyboard'></div>";	// for testing popup keyboard
 			for (var i = 0; i < this.length; i++) {
 				this.innerHTML += "<div>choice #" + i + "</div>";
@@ -401,7 +411,7 @@ require([
 		//		Specify popup1 and popup2 as parameters to this widget.
 
 		initializeRendering: function () {
-			this.className = "choice";
+			this.classList.add("choice");
 
 			for (var i = 1; i < 3; i++) {
 				this.innerHTML += "<div>popup" + i + "</div>";
@@ -419,6 +429,13 @@ require([
 		},
 
 		_openPopup: function (popup) {
+			popup.style.display = "none";
+			if (attachToBody) {
+				document.body.appendChild(popup);
+			} else {
+				this.parentNode.insertBefore(popup, this.nextSibling);
+			}
+
 			this._openRet = popupUtil.open({
 				popup: popup,
 				parent: this,
@@ -538,6 +555,7 @@ require([
 	// Functions for testing scrolling
 	openLotsOfChoicesPopup = function () {
 		lotsOfChoicesPopup = new LotsOfChoicesWidget({id: 'lotsOfChoicesPopup'});
+
 		openRet = popupUtil.open({
 			popup: lotsOfChoicesPopup,
 			orient: 'R',
