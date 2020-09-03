@@ -29,7 +29,7 @@ define(["dcl/dcl", "./Store"], function (dcl, Store) {
 	/**
 	 * Mixin providing store binding management for widgets that extend delite/Store. Classes extending
 	 * this mixin can easily define how store items properties are mapped in the render items properties
-	 * consumable by the widget. The mapping can either occur by property (property A in store item
+	 * consumable by the widget.  The mapping can either occur by property (property A in store item
 	 * corresponds to property B in render item) or by function (a function is specified that mapped the
 	 * store item into the value of a property of the render item)..
 	 *
@@ -115,31 +115,42 @@ define(["dcl/dcl", "./Store"], function (dcl, Store) {
 			};
 		}),
 
+		/**
+		 * Introspect my properties to find mappings like "fooAttr" and "fooFunc", as documented in class description.
+		 * Meant to be called before initial query runs.  Doesn't affect current renderItems.
+		 * Normally this does not need to be called manually.  The call from connectedCallback()
+		 * is usually sufficient.
+		 */
+		introspectMappedProperties: function () {
+			// look into properties of the instance for keys to map
+			var mappedKeys = [];
+			for (var prop in this) {
+				var match = propregexp.exec(prop);
+				if (match && mappedKeys.indexOf(match[0]) === -1) {
+					mappedKeys.push(match[0]);
+				}
+			}
+
+			// which are the considered keys in the store item itself
+			if (this.copyAllItemProps) {
+				this._itemKeys = [];
+				for (var i = 0; i < mappedKeys.length; i++) {
+					this._itemKeys.push(this[mappedKeys[i] + "Attr"] ?
+						this[mappedKeys[i] + "Attr"] : mappedKeys[i]);
+				}
+			}
+
+			this._mappedKeys = mappedKeys;
+		},
+
 		connectedCallback: function () {
 			// This runs after the attributes have been processed (and converted into properties),
 			// and after any properties specified to the constructor have been mixed in.
 			// It should not re-run if the StoreMap is detached and then reattached.
 
 			if (!this._storeMapAttachedOnce) {
-				// look into properties of the instance for keys to map
-				var mappedKeys = [];
-				for (var prop in this) {
-					var match = propregexp.exec(prop);
-					if (match && mappedKeys.indexOf(match[0]) === -1) {
-						mappedKeys.push(match[0]);
-					}
-				}
+				this.introspectMappedProperties();
 
-				// which are the considered keys in the store item itself
-				if (this.copyAllItemProps) {
-					this._itemKeys = [];
-					for (var i = 0; i < mappedKeys.length; i++) {
-						this._itemKeys.push(this[mappedKeys[i] + "Attr"] ?
-							this[mappedKeys[i] + "Attr"] : mappedKeys[i]);
-					}
-				}
-
-				this._mappedKeys = mappedKeys;
 				this.deliver();
 
 				if (this._pendingQuery) {
@@ -214,8 +225,8 @@ define(["dcl/dcl", "./Store"], function (dcl, Store) {
 
 		/**
 		 * If allowRemap is true, the method allows to perform again the mapping between the data item
-		 * and the render items. This might be useful is mapping by function is used and the execution
-		 * context of the mapping function as changed so that the results would need to be updated.
+		 * and the render items. This might be useful if mapping by function is used and the execution
+		 * context of the mapping function is changed so that the results would need to be updated.
 		 * It should not be called if allowRemap is false.
 		 */
 		remap: function () {
