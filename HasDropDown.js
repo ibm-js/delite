@@ -184,12 +184,6 @@ define([
 		underlay: undefined,
 
 		/**
-		 * Computed element to set aria attributes on.
-		 * @private
-		 */
-		_effectivePopupStateNode: null,
-
-		/**
 		 * Callback when the user clicks the arrow icon.
 		 * @private
 		 */
@@ -213,27 +207,30 @@ define([
 			}
 		},
 
-		computeProperties: function (oldVals) {
-			if ("popupStateNode" in oldVals || "focusNode" in oldVals || "buttonNode" in oldVals ||
-				"behaviorNode" in oldVals) {
-				this._effectivePopupStateNode = this.popupStateNode || this.focusNode || this.buttonNode ||
-					this.behaviorNode || this;
-			}
-		},
-
 		refreshRendering: function (oldVals) {
-			if ("_effectivePopupStateNode" in oldVals || "dropDownType" in oldVals) {
-				if (oldVals._effectivePopupStateNode) {
-					oldVals._effectivePopupStateNode.removeAttribute("aria-haspopup");
-				}
-				if (this._effectivePopupStateNode && this.dropDownType !== "dialog") {
+			// Set aria-haspopup after LitWidget renders, so popupStateNode etc. are set.
+			if (this.attached && ("attached" in oldVals || "dropDownType" in oldVals)) {
+				var popupStateNode = this.popupStateNode || this.focusNode || this.buttonNode ||
+					this.behaviorNode || this;
+				if (this.dropDownType === "dialog") {
 					// Note: Not setting when dropDownType is dialog to workaround JAWS bug #511.
-					this._effectivePopupStateNode.setAttribute("aria-haspopup", this.dropDownType);
+					popupStateNode.removeAttribute("aria-haspopup");
+				} else {
+					popupStateNode.setAttribute("aria-haspopup", this.dropDownType);
 				}
 			}
 
-			if ("behaviorNode" in oldVals || "buttonNode" in oldVals || "focusNode" in oldVals ||
+			// Setup listeners for mouse and keyboard after LitWidget renders, so focusNode etc. are set.
+			if ("attached" in oldVals) {
+				if (this.attached) {
+					this._setupHasDropDownListeners();
+				} else {
+					this._removeHasDropDownListeners();
+				}
+			} else if ("behaviorNode" in oldVals || "buttonNode" in oldVals || "focusNode" in oldVals ||
 				"openOnHover" in oldVals) {
+				// Respond to changes to behaviorNode etc. after connection.
+				// Doesn't work when behaviorNode etc. is a custom getter though because there's no change notification.
 				this._removeHasDropDownListeners();
 				this._setupHasDropDownListeners();
 			}
@@ -321,7 +318,7 @@ define([
 			this._removeHasDropDownListeners();
 
 			if (this.dropDown) {
-				// Destroy the drop down, unless it's already been destroyed.  This can happen because
+				// Destroy the drop down, unless it's already been destroyed.  This can happen if
 				// the drop down is a direct child of <body> even though it's logically my child.
 				if (!this.dropDown._destroyed) {
 					this.dropDown.destroy();
@@ -533,6 +530,9 @@ define([
 					}
 				}
 
+				var popupStateNode = this.popupStateNode || this.focusNode || this.buttonNode ||
+					this.behaviorNode || this;
+
 				var retVal = popup.open({
 					parent: behaviorNode,
 					popup: dropDown,
@@ -548,17 +548,20 @@ define([
 						self.closeDropDown(true);
 					},
 					onClose: function () {
-						self._effectivePopupStateNode.classList.remove("d-drop-down-open");
+						popupStateNode.classList.remove("d-drop-down-open");
 						this.opened = false;
+
+						// Avoid complaint about aria-owns pointing to hidden element.
+						popupStateNode.removeAttribute("aria-owns");
 					}
 				});
 
-				this._effectivePopupStateNode.classList.add("d-drop-down-open");
+				popupStateNode.classList.add("d-drop-down-open");
 				this.opened = true;
 
 				if (this.dropDownType !== "dialog") {
 					// Note: Not setting when dropDownType is dialog to workaround JAWS bug #511.
-					this._effectivePopupStateNode.setAttribute("aria-owns", dropDown.id);
+					popupStateNode.setAttribute("aria-owns", dropDown.id);
 				}
 
 				// Set aria-labelledby on dropdown if it's not already set to something more meaningful
@@ -635,9 +638,6 @@ define([
 					child: dropdown,
 					cancelable: false
 				});
-
-				// Avoid complaint about aria-owns pointing to hidden element.
-				this._effectivePopupStateNode.removeAttribute("aria-owns");
 
 				this._previousDropDown = this._currentDropDown;
 				delete this._currentDropDown;
