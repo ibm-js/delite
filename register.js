@@ -132,12 +132,20 @@ define([
 	/**
 	 * Synchronously upgrade any custom tags in the document that have not yet been upgraded.
 	 * Nodes are automatically updated synchronously when the browser has native custom element support,
-	 * but only asynchronously when the polyfill is being used.  Should not be called before domReady event.
+	 * but only asynchronously when the polyfill is being used.
 	 */
 	register.deliver = function () {
 		if (customElements.upgrade) {
 			customElements.upgrade(document.body);
 		}
+
+		// Also make sure all custom elements have rendered.  For LitWidget subclasses, this doesn't
+		// happen synchronously.
+		Array.prototype.forEach.call(document.querySelectorAll("*"), function (elem) {
+			if (typeof elem.deliver === "function") {
+				elem.deliver();
+			}
+		});
 	};
 
 	return register;
