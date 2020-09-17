@@ -1,6 +1,7 @@
 /** @module delite/HasDropDown */
 define([
 	"dcl/dcl",
+	"ibm-decor/sniff",
 	"./on",
 	"./place",
 	"./popup",
@@ -9,6 +10,7 @@ define([
 	"./activationTracker"		// for delite-deactivated event
 ], function (
 	dcl,
+	has,
 	on,
 	place,
 	popup,
@@ -533,6 +535,32 @@ define([
 				var popupStateNode = this.popupStateNode || this.focusNode || this.buttonNode ||
 					this.behaviorNode || this;
 
+				// For modal popups, set aria-hidden on all the nodes that aren't the popup, so that VoiceOver doesn't
+				// navigate to those nodes.  Don't do this for tooltips (that don't get focus).  Differentiate between
+				// modals vs. tooltips by detecting if focus goes into the popup.  Note that checking for dropDown.focus
+				// is unreliable because even unfocusable nodes may have a focus() method, inherited from HTMLElement.
+				var focusinListener, hiddenNodes = [];
+				if (has("ios") || has("android")) {
+					focusinListener = dropDown.on("focusin", function () {
+						focusinListener.remove();
+						focusinListener = null;
+
+						function pruneAriaVisibleNodes (branch) {
+							if (branch === dropDown) {
+								return;
+							} else if (branch.contains(dropDown)) {
+								Array.prototype.forEach.call(branch.children, pruneAriaVisibleNodes);
+							} else {
+								if (!branch.hasAttribute("aria-hidden")) {
+									branch.setAttribute("aria-hidden", "true");
+									hiddenNodes.push(branch);
+								}
+							}
+						}
+						pruneAriaVisibleNodes(dropDown.ownerDocument.body);
+					});
+				}
+
 				var retVal = popup.open({
 					parent: behaviorNode,
 					popup: dropDown,
@@ -553,6 +581,14 @@ define([
 
 						// Avoid complaint about aria-owns pointing to hidden element.
 						popupStateNode.removeAttribute("aria-owns");
+
+						// Remove aria-hidden on background nodes.
+						if (focusinListener) {
+							focusinListener.remove();
+						}
+						hiddenNodes.forEach(function (node) {
+							node.removeAttribute("aria-hidden");
+						});
 					}
 				});
 
