@@ -39,17 +39,17 @@ define([
 		declaredClass: "delite/Container",
 
 		/**
-		 * Elements to insert as children of this.containerNode, or if this.containerNode
+		 * Nodes to insert as children of this.containerNode, or if this.containerNode
 		 * undefined, then as direct children of this widget.  Currently can only be
 		 * passed as parameter to constructor.
-		 * @member {Element[]}
+		 * @member {Node[]}
 		 */
 		content: [],
 
 		/**
-		 * Designates where children of the source DOM node will be placed,
+		 * Designates where childNodes of the source DOM node will be placed,
 		 * and also the target for nodes inserted via `.appendChild()`, `.insertBefore()`, etc.
-		 * "Children" in this case refers to both plain Elements and custom elements
+		 * "Child nodes" in this case refers to both text, Elements and custom elements
 		 * aka widgets.
 		 *
 		 * @member {Element}
@@ -59,9 +59,9 @@ define([
 		containerNode: undefined,
 
 		beforeInitializeRendering: function () {
-			// Save original children from markup, unless caller has specified children programatically.
+			// Save original childNodes from markup, unless caller has specified child nodes programatically.
 			if (this.content.length === 0) {
-				this.content = this.getChildren();
+				this.content = this.getChildNodes();
 			}
 		},
 
@@ -71,10 +71,14 @@ define([
 				this.containerNode = this;
 			}
 
-			// Move or add children into this.containerNode.  But don't disconnect/reconnect children
+			// Move or add child nodes into this.containerNode.  But don't disconnect/reconnect child nodes
 			// unnecessarily as that triggers spurious calls to disconnectedCallback() and connectedCallback().
 			this.content.forEach(function (child) {
 				if (child.parentNode !== this.containerNode ) {
+					if (child instanceof Text && !child.data) {
+						// Avoid exception on IE (and also skip adding meaningless nodes).
+						return;
+					}
 					this.containerNode.appendChild(child);
 				}
 			}, this);
@@ -84,7 +88,7 @@ define([
 			return function (child) {
 				if (this.rendered) {
 					var res = sup.call(this.containerNode, child);
-					this.content = this.getChildren();
+					this.content = this.getChildNodes();
 					this.onAddChild(child);
 					return res;
 				} else {
@@ -97,7 +101,7 @@ define([
 			return function (newChild, refChild) {
 				if (this.rendered) {
 					var res = sup.call(this.containerNode, newChild, refChild);
-					this.content = this.getChildren();
+					this.content = this.getChildNodes();
 					this.onAddChild(newChild);
 					return res;
 				} else {
@@ -130,14 +134,14 @@ define([
 			var cn = this.containerNode || this, nextSibling = cn.children[insertIndex];
 			cn.insertBefore(node, nextSibling || null);
 			if (this.rendered) {
-				this.content = this.getChildren();
+				this.content = this.getChildNodes();
 			}
 		},
 
 		/**
-		 * Detaches the specified node instance from this widget but does
+		 * Detaches the specified element from this widget but does
 		 * not destroy it.  You can also pass in an integer indicating
-		 * the index within the container to remove (ie, removeChild(5) removes the sixth node).
+		 * the index within the container to remove (ie, removeChild(5) removes the sixth element).
 		 * @param {Element|number} node
 		 */
 		removeChild: function (node) {
@@ -150,7 +154,7 @@ define([
 			}
 
 			if (this.rendered) {
-				this.content = this.getChildren();
+				this.content = this.getChildNodes();
 			}
 
 			this.emit("delite-remove-child", {
@@ -161,23 +165,37 @@ define([
 		},
 
 		/**
-		 * Returns all direct children of this widget, i.e. all widgets or DOM nodes underneath
-		 * `this.containerNode`.  Note that it does not return all
-		 * descendants, but rather just direct children.
+		 * Returns all direct child elements of this widget, i.e. all widgets or element children of
+		 * `this.containerNode`.  Note that it does not return all descendants, but rather just direct children.
 		 *
-		 * The result intentionally excludes element outside off `this.containerNode`.  So, it is different than
-		 * accessing the `children` or `childNode` properties.
+		 * The result intentionally excludes elements outside of `this.containerNode`.  So, it is different than
+		 * accessing the `children` property.
 		 *
 		 * @returns {Element[]}
 		 */
 		getChildren: function () {
-			// use Array.prototype.slice to transform the live HTMLCollection into an Array
+			// transform the live HTMLCollection into an Array
 			var cn = this.containerNode || this;
 			return Array.from(cn.children);
 		},
 
 		/**
-		 * Returns true if widget has child nodes, i.e. if `this.containerNode` contains widgets.
+		 * Returns all direct child nodes of this widget, i.e. all children of `this.containerNode`, including text
+		 * nodes.  Note that it does not return all descendants, but rather just direct children.
+		 *
+		 * The result intentionally excludes elements outside of `this.containerNode`.  So, it is different than
+		 * accessing the `childNodes` property.
+		 *
+		 * @returns {Node[]}
+		 */
+		getChildNodes: function () {
+			// transform the live HTMLCollection into an Array
+			var cn = this.containerNode || this;
+			return Array.from(cn.childNodes);
+		},
+
+		/**
+		 * Returns true if widget has child elements, i.e. if `this.containerNode` contains Elements.
 		 * @returns {boolean}
 		 */
 		hasChildren: function () {
