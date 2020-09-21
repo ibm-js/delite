@@ -186,6 +186,11 @@ define([
 		underlay: undefined,
 
 		/**
+		 * Milliseconds to wait between opening the dropdown and trying to focus it.
+		 */
+		focusOnOpenDelay: 10,
+
+		/**
 		 * Callback when the user clicks the arrow icon.
 		 * @private
 		 */
@@ -609,12 +614,14 @@ define([
 				// Focus the dropdown if it was opened by clicking, and focusOnPointerOpen is true,
 				// or if it was opened by keyboard, and focusOnKeyboardOpen is true.
 				// Don't focus it if it was opened by hovering, in which case this.activated is false.
+				// Give some time for popup to initialize, especially when dealing with LitWidget subclasses
+				// which don't render anything until the first refreshRendering() call.
 				if (dropDown.focus && (keyboard ? this.focusOnKeyboardOpen : this.focusOnPointerOpen)
 						&& this.activated) {
 					this._focusDropDownTimer = this.defer(function () {
 						dropDown.focus();
 						delete this._focusDropDownTimer;
-					});
+					}, this.focusOnOpenDelay);
 				}
 
 				return {
