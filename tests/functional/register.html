@@ -1,15 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<script src="../../node_modules/requirejs/require.js"></script>
+	<script type="text/javascript" src="boilerplate.js"></script>
 	<script>
 		var ready = false; // set to true when the test page is ready
-		require.config({
-			baseUrl: "../../node_modules",
-			packages: [
-				{ name: "delite", location: ".." }
-			]
-		});
 		require([
 			"delite/register",
 			"requirejs-domready/domReady!"
