@@ -315,7 +315,7 @@ define([
 				this.closeDropDown(true);
 			}
 
-			if (this._previousDropDown) {
+			if (this._previousDropDown && !this.contains(this._previousDropDown)) {
 				popup.detach(this._previousDropDown);
 				delete this._previousDropDown;
 			}
