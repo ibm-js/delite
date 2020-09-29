@@ -191,10 +191,16 @@ define([
 		focusOnOpenDelay: 10,
 
 		/**
-		 * Callback when the user clicks the arrow icon.
+		 * Callback when the user clicks the button to open the dropdown.
 		 * @private
 		 */
 		_dropDownClickHandler: function (e) {
+			// Ignore event if it happened inside the dropdown.  This happens when the root node
+			// is the button to open the dropdown, but it also contains the dropdown.
+			if (this._currentDropDown && this._currentDropDown.contains(e.target)) {
+				return;
+			}
+
 			e.preventDefault();
 			e.stopPropagation();
 
