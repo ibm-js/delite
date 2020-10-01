@@ -17,6 +17,7 @@ define([
 	register,
 	Widget
 ) {
+	var mobile = has("ios") || has("android");
 
 	/**
 	 * Base class for widgets that need drop down ability.
@@ -191,13 +192,26 @@ define([
 		focusOnOpenDelay: 10,
 
 		/**
+		 * Test if event happened on the dropdown.
+		 * @param {Event} e
+		 * @returns {boolean}
+		 * @private
+		 */
+		_eventOnDropdown: function (e) {
+			// The event may have caused the dropdown to close, then bubbled up to me.  In that
+			// case, the event would be on this._previousDropDown rather than this._currentDropDown.
+			return (this._currentDropDown && this._currentDropDown.contains(e.target)) ||
+				(this._previousDropDown && this._previousDropDown.contains(e.target));
+		},
+
+		/**
 		 * Callback when the user clicks the button to open the dropdown.
 		 * @private
 		 */
 		_dropDownClickHandler: function (e) {
 			// Ignore event if it happened inside the dropdown.  This happens when the root node
 			// is the button to open the dropdown, but it also contains the dropdown.
-			if (this._currentDropDown && this._currentDropDown.contains(e.target)) {
+			if (this._eventOnDropdown(e)) {
 				return;
 			}
 
@@ -351,6 +365,12 @@ define([
 				return;
 			}
 
+			// Ignore event if it happened inside the dropdown.  This happens when the root node
+			// is the button to open the dropdown, but it also contains the dropdown.
+			if (this._eventOnDropdown(e)) {
+				return;
+			}
+
 			var dropDown = this._currentDropDown, target = e.target;
 			if (dropDown && this.opened) {
 				if (e.key === "Escape") {
@@ -406,7 +426,13 @@ define([
 		 * @param {Event} e
 		 * @private
 		 */
-		_dropDownKeyUpHandler: function () {
+		_dropDownKeyUpHandler: function (e) {
+			// Ignore event if it happened inside the dropdown.  This happens when the root node
+			// is the button to open the dropdown, but it also contains the dropdown.
+			if (this._eventOnDropdown(e)) {
+				return;
+			}
+
 			this._justGotKeyUp = true;
 
 			if (this._openOnKeyUp) {
@@ -551,7 +577,7 @@ define([
 				// modals vs. tooltips by detecting if focus goes into the popup.  Note that checking for dropDown.focus
 				// is unreliable because even unfocusable nodes may have a focus() method, inherited from HTMLElement.
 				var focusinListener, hiddenNodes = [];
-				if (has("ios") || has("android")) {
+				if (mobile) {
 					focusinListener = dropDown.on("focusin", function () {
 						focusinListener.remove();
 						focusinListener = null;
@@ -620,10 +646,11 @@ define([
 				// Focus the dropdown if it was opened by clicking, and focusOnPointerOpen is true,
 				// or if it was opened by keyboard, and focusOnKeyboardOpen is true.
 				// Don't focus it if it was opened by hovering, in which case this.activated is false.
+				// However, DO focus when opened on iOS through VoiceOver, in which case this.activated is also false.
 				// Give some time for popup to initialize, especially when dealing with LitWidget subclasses
 				// which don't render anything until the first refreshRendering() call.
 				if (dropDown.focus && (keyboard ? this.focusOnKeyboardOpen : this.focusOnPointerOpen)
-						&& this.activated) {
+						&& (this.activated || mobile)) {
 					this._focusDropDownTimer = this.defer(function () {
 						dropDown.focus();
 						delete this._focusDropDownTimer;
