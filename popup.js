@@ -21,6 +21,8 @@ define([
 	scrollIntoView,
 	Viewport
 ) {
+	var mobile = has("ios") || has("android");
+
 	function isDocLtr (doc) {
 		return !(/^rtl$/i).test(doc.body.dir || doc.documentElement.dir);
 	}
@@ -380,6 +382,33 @@ define([
 			var position = this._position(args);
 			this._afterOpen(args);
 
+			// For modal popups, set aria-hidden on all the nodes that aren't the popup, so that VoiceOver doesn't
+			// navigate to those nodes.  Don't do this for tooltips (that don't get focus).  Differentiate between
+			// modals vs. tooltips by detecting if focus goes into the popup.  Note that checking for dropDown.focus
+			// is unreliable because even unfocusable nodes may have a focus() method, inherited from HTMLElement.
+			args.hiddenNodes = [];
+			if (mobile) {
+				var focusinListener = args.focusinListener = popup.on("focusin", function () {
+					focusinListener.remove();
+					focusinListener = args.focusinListener = null;
+
+					function pruneAriaVisibleNodes (branch) {
+						if (branch === popup) {
+							return;
+						} else if (branch.contains(popup)) {
+							Array.prototype.forEach.call(branch.children, pruneAriaVisibleNodes);
+						} else {
+							if (!branch.hasAttribute("aria-hidden")) {
+								branch.setAttribute("aria-hidden", "true");
+								branch.style.pointerEvents = "none";
+								args.hiddenNodes.push(branch);
+							}
+						}
+					}
+					pruneAriaVisibleNodes(popup.ownerDocument.body);
+				});
+			}
+
 			// Emit event on popup.
 			args.popup.emit("popup-after-show", {
 				around: args.around,
@@ -680,7 +709,9 @@ define([
 				(!popup && stack.length)) {
 				var top = stack.pop(),
 					widget = top.popup,
-					onClose = top.onClose;
+					onClose = top.onClose,
+					focusinListener = top.focusinListener,
+					hiddenNodes = top.hiddenNodes;
 
 				var h;
 				while ((h = top.handlers.pop())) {
@@ -690,6 +721,15 @@ define([
 				// Hide the widget.
 				this.hide(widget);
 				DialogUnderlay.hideFor(widget);
+
+				// Remove aria-hidden on background nodes.
+				if (focusinListener) {
+					focusinListener.remove();
+				}
+				hiddenNodes.forEach(function (node) {
+					node.removeAttribute("aria-hidden");
+					node.style.pointerEvents = "";
+				});
 
 				if (onClose) {
 					onClose();
