@@ -1,6 +1,6 @@
 {
 	"name": "delite",
-	"version": "0.9.11",
+	"version": "0.9.12",
 	"description": "core UI infrastructure for building multi channel, enterprise class Web Components to be used in Web & Mobile Hybrid applications",
 	"homepage": "http://ibm-js.github.io/delite/",
 	"repository": {
