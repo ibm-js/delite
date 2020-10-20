@@ -400,7 +400,6 @@ define([
 						} else {
 							if (!branch.hasAttribute("aria-hidden")) {
 								branch.setAttribute("aria-hidden", "true");
-								branch.style.pointerEvents = "none";
 								args.hiddenNodes.push(branch);
 							}
 						}
@@ -728,7 +727,6 @@ define([
 				}
 				hiddenNodes.forEach(function (node) {
 					node.removeAttribute("aria-hidden");
-					node.style.pointerEvents = "";
 				});
 
 				if (onClose) {
