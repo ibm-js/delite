@@ -1,5 +1,38 @@
 /** @module delite/on */
-define(function () {
+define([
+	"ibm-decor/sniff"
+], function (
+	has
+) {
+	// Ignore phantom click events when virtual keyboard is sliding in or out.  Works around VoiceOver bug.
+	// This code could also be leveraged to ignore phantom clicks after closing a dropdown.
+	// This code fixes all click listeners, even ones created directly, rather than through delite/on.
+	// That's arguably bad in principle, but it does make the code work for activationTracker.js which hasn't
+	// yet been converted to on delite/on.
+	if (has("ios")) {
+		var virtualKeyboardShown = false,
+			lastVirtualKeyboardToggleTime = 0;
+
+		document.addEventListener("click", function (event) {
+			var now = (new Date()).getTime();
+			if (now < lastVirtualKeyboardToggleTime + 400) {
+				event.stopPropagation();
+				event.preventDefault();
+				return;
+			}
+
+			var node = event.target;
+			var tag = node && node.tagName && node.tagName.toLowerCase();
+			var newVirtualKeyboardShown = node && !node.readOnly && (tag === "textarea" || (tag === "input" &&
+				/^(color|email|number|password|search|tel|text|url)$/.test(node.type)));
+
+			if (virtualKeyboardShown !== newVirtualKeyboardShown) {
+				virtualKeyboardShown = newVirtualKeyboardShown;
+				lastVirtualKeyboardToggleTime = now;
+			}
+		}, true);
+	}
+
 	/**
 	 * Call specified function when event occurs.
 	 * @param {Element} [node] - Element to attach handler to.
