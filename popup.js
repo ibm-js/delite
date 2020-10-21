@@ -393,7 +393,7 @@ define([
 					focusinListener = args.focusinListener = null;
 
 					function pruneAriaVisibleNodes (branch) {
-						if (branch === popup) {
+						if (branch === args.around || branch === popup) {
 							return;
 						} else if (branch.contains(popup)) {
 							Array.prototype.forEach.call(branch.children, pruneAriaVisibleNodes);
