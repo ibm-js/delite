@@ -664,16 +664,17 @@ define([
 
 			if (this.opened) {
 				var behaviorNode = this.behaviorNode || this;
-				if (focus && behaviorNode.focus) {
-					behaviorNode.focus();
-				}
 
 				this.emit("delite-before-hide", {
 					child: dropdown,
 					cancelable: false
 				});
 
-				popup.close(dropdown);
+				popup.close(dropdown, function () {
+					if (focus && behaviorNode.focus) {
+						behaviorNode.focus();
+					}
+				});
 				this.opened = false;
 
 				this.emit("delite-after-hide", {

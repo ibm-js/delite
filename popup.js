@@ -400,6 +400,7 @@ define([
 						} else {
 							if (!branch.hasAttribute("aria-hidden")) {
 								branch.setAttribute("aria-hidden", "true");
+								branch.style.pointerEvents = "none";
 								args.hiddenNodes.push(branch);
 							}
 						}
@@ -694,7 +695,7 @@ define([
 		 * Close specified popup and any popups that it parented.  If no popup is specified, closes all popups.
 		 * @param {module:delite/Widget} [popup]
 		 */
-		close: function (popup) {
+		close: function (popup, beforeClose) {
 			var stack = this._stack;
 
 			// Basically work backwards from the top of the stack closing popups
@@ -717,17 +718,24 @@ define([
 					h.remove();
 				}
 
-				// Hide the widget.
-				this.hide(widget);
-				DialogUnderlay.hideFor(widget);
-
 				// Remove aria-hidden on background nodes.
 				if (focusinListener) {
 					focusinListener.remove();
 				}
 				hiddenNodes.forEach(function (node) {
 					node.removeAttribute("aria-hidden");
+					node.style.pointerEvents = "";
 				});
+
+				// Give caller a chance to focus somewhere else before popup closes, but after aria-hidden
+				// attributes removed.
+				if (beforeClose) {
+					beforeClose();
+				}
+
+				// Hide the widget.
+				this.hide(widget);
+				DialogUnderlay.hideFor(widget);
 
 				if (onClose) {
 					onClose();
