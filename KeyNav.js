@@ -1,7 +1,7 @@
 /** @module delite/KeyNav */
 define([
 	"dcl/dcl",
-	"./features",
+	"ibm-decor/sniff",
 	"./on",
 	"./scrollIntoView",
 	"./Widget"
@@ -51,6 +51,14 @@ define([
 	 */
 	function keyboardClickable (node) {
 		return !node.readOnly && /^(button|a|input)$/i.test(node.nodeName);
+	}
+
+	// To workaround iOS VoiceOver bug, track when user has just closed a dropdown.
+	var lastPopupHideTime = 0;
+	if (has("ios")) {
+		document.addEventListener("delite-after-hide", function () {
+			lastPopupHideTime =  (new Date()).getTime();
+		});
 	}
 
 	/**
@@ -237,7 +245,13 @@ define([
 		focusinHandler: function (evt) {
 			var container = this.keyNavContainerNode;
 			if (this.focusDescendants) {
-				var focusByTab = !this._pointerOperation && !this._programmaticallyFocusing;
+				// Compute if user tabbed into this widget.  lastPopupHideTime condition is for when user clicks a
+				// button in a TooltipDialog and VoiceOver (due to a bug) focuses the checkbox etc. behind the
+				// TooltipDialog.  That should not be treated as focus by tab.
+				var now = (new Date()).getTime();
+				var focusByTab = !this._pointerOperation && !this._programmaticallyFocusing &&
+					now > lastPopupHideTime + 1000;
+
 				if (focusByTab && !container.contains(evt.relatedTarget)) {
 					// When tabbing/shift-tabbing into this widget, focus the first child but do it on a delay so that
 					// activationTracker sees my "focus" event before seeing the "focus" event on the child widget.
