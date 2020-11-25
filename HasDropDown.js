@@ -557,18 +557,6 @@ define([
 					this.id = "HasDropDown_" + this.widgetId;
 				}
 
-				// Set width of drop down if necessary, so that dropdown width [including scrollbar]
-				// matches width of aroundNode.  Don't do anything for when dropDownPosition === ["center"] though.
-				var initialOrient = typeof this.dropDownPosition === "function" ?
-					this.dropDownPosition() : this.dropDownPosition;
-				if (initialOrient[0] !== "center") {
-					if (this.forceWidth) {
-						dropDown.style.width = aroundNode.offsetWidth + "px";
-					} else if (this.autoWidth) {
-						dropDown.style.minWidth = aroundNode.offsetWidth + "px";
-					}
-				}
-
 				var popupStateNode = this.popupStateNode || this.focusNode || this.buttonNode ||
 					this.behaviorNode || this;
 
@@ -580,6 +568,22 @@ define([
 						this.dropDownPosition.bind(this) : this.dropDownPosition,
 					maxHeight: this.maxHeight,
 					underlay: this.underlay,
+					beforeSize: function () {
+						// Called on initial display and also when aroundNode's width changes due to viewport resize.
+						// Sets width of dropdown [including scrollbar] to match width of aroundNode.
+						var initialOrient = typeof self.dropDownPosition === "function" ?
+							self.dropDownPosition() : self.dropDownPosition;
+						if (initialOrient[0] !== "center") {
+							dropDown.style.width = "";
+							dropDown.style.minWidth = "";
+
+							if (self.forceWidth) {
+								dropDown.style.width = aroundNode.offsetWidth + "px";
+							} else if (self.autoWidth) {
+								dropDown.style.minWidth = aroundNode.offsetWidth + "px";
+							}
+						}
+					},
 					onExecute: function () {
 						self.closeDropDown(true);
 					},
@@ -588,7 +592,7 @@ define([
 					},
 					onClose: function () {
 						popupStateNode.classList.remove("d-drop-down-open");
-						this.opened = false;
+						self.opened = false;
 
 						// Avoid complaint about aria-owns pointing to hidden element.
 						popupStateNode.removeAttribute("aria-owns");

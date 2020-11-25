@@ -126,6 +126,9 @@ define([
 	 * the viewport, like a dialog.  It will shrink the size of the node if necessary, in which case the node
 	 * must be designed so that scrolling occurs in the right place.
 	 *
+	 * @property {Function} beforeSize - Callback before setting the popup height, called both when popup initially
+	 * shown and when screen resized.
+	 *
 	 * @property {Function} onCancel - Callback when user has canceled the popup by:
 	 *
 	 * 1. hitting ESC or TAB key
@@ -563,6 +566,10 @@ define([
 				around = args.around,
 				orient = this._getOrient(args),
 				viewport = Viewport.getEffectiveBox();
+
+			if (args.beforeSize) {
+				args.beforeSize();
+			}
 
 			if (orient[0] === "center") {
 				// Limit height and width so popup fits within viewport.
