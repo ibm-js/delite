@@ -1,5 +1,5 @@
 import dcl from "dcl/dcl";
-import "delite/activationTracker";
+import "./activationTracker";
 import LitFormWidget from "./LitFormWidget";
 
 /**

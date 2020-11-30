@@ -538,6 +538,7 @@ define([
 
 			var loadDropDownPromise = this.loadDropDown();
 
+			// eslint-disable-next-line complexity
 			this._openDropDownPromise = Promise.resolve(loadDropDownPromise).then(function (dropDown) {
 				if (this._previousDropDown && this._previousDropDown !== dropDown) {
 					popup.detach(this._previousDropDown);
