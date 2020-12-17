@@ -718,7 +718,8 @@ define([
 					widget = top.popup,
 					onClose = top.onClose,
 					focusinListener = top.focusinListener,
-					hiddenNodes = top.hiddenNodes;
+					hiddenNodes = top.hiddenNodes,
+					eventNode = top.parent || document.body;
 
 				var h;
 				while ((h = top.handlers.pop())) {
@@ -740,9 +741,19 @@ define([
 					beforeClose();
 				}
 
+				on.emit(eventNode, "delite-before-hide", {
+					child: widget,
+					cancelable: false
+				});
+
 				// Hide the widget.
 				this.hide(widget);
 				DialogUnderlay.hideFor(widget);
+
+				on.emit(eventNode, "delite-after-hide", {
+					child: widget,
+					cancelable: false
+				});
 
 				if (onClose) {
 					onClose();

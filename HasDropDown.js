@@ -517,8 +517,8 @@ define([
 		 * user presses the down arrow button to open the drop down.
 		 * @returns {Promise} Promise for the drop down widget that fires when drop down is created and loaded.
 		 * @protected
-		 * @fires module:delite/HasDropDown#delite-before-show
-		 * @fires module:delite/HasDropDown#delite-after-show
+		 * @fires module:delite/popup#delite-before-show
+		 * @fires module:delite/popup#delite-after-show
 		 */
 		openDropDown: function () {
 			// If openDropDown() has already been called, don't do anything
@@ -649,8 +649,8 @@ define([
 		 * Closes the drop down on this widget.
 		 * @param {boolean} [focus] - If true, refocus this widget.
 		 * @protected
-		 * @fires module:delite/HasDropDown#delite-before-hide
-		 * @fires module:delite/HasDropDown#delite-after-hide
+		 * @fires module:delite/popup#delite-before-hide
+		 * @fires module:delite/popup#delite-after-hide
 		 */
 		closeDropDown: function (focus) {
 			var dropdown = this._currentDropDown;
@@ -670,22 +670,12 @@ define([
 			if (this.opened) {
 				var behaviorNode = this.behaviorNode || this;
 
-				this.emit("delite-before-hide", {
-					child: dropdown,
-					cancelable: false
-				});
-
 				popup.close(dropdown, function () {
 					if (focus && behaviorNode.focus) {
 						behaviorNode.focus();
 					}
 				});
 				this.opened = false;
-
-				this.emit("delite-after-hide", {
-					child: dropdown,
-					cancelable: false
-				});
 
 				this._previousDropDown = this._currentDropDown;
 				delete this._currentDropDown;
