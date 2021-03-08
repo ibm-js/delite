@@ -1,6 +1,8 @@
 /** @module delite/Selection */
 define(["dcl/dcl", "ibm-decor/sniff", "./Widget"], function (dcl, has, Widget) {
 
+	const emptyArray = [];
+
 	/**
 	 * Selection change event. Dispatched after the selection has
 	 * been modified through user interaction.
@@ -91,13 +93,20 @@ define(["dcl/dcl", "ibm-decor/sniff", "./Widget"], function (dcl, has, Widget) {
 		 */
 		selectedItems: dcl.prop({
 			set: function (value) {
+				// Avoid spurious notifications of value changes when nothing really changed.
+				const o = this.selectedItems, n = value || [];
+				if (n.length === o.length && n.every(function (item, idx) {
+					return item === o[idx];
+				})) {
+					return;
+				}
+
 				this._set("selectedItems", value);
 				this.notifyCurrentValue("selectedItem");
 				this.notifyCurrentValue("selectedItems");
 			},
 			get: function () {
-				// Return copy.
-				return this._get("selectedItems") ? this._get("selectedItems").concat() : [];
+				return this._get("selectedItems") || emptyArray;
 			},
 			enumerable: true,
 			configurable: true
