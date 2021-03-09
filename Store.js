@@ -6,6 +6,22 @@ define([
 	"./ArrayQueryAdapter",
 	"./DstoreQueryAdapter"
 ], function (dcl, has, Invalidating, ArrayQueryAdapter, DstoreQueryAdapter) {
+	var emptyObject = {};
+
+	// Function to compare queries.  Queries can be functions or objects, but the objects
+	// can contain regular expressions, so we can't just use JSON.stringify().
+	function deepEqual (a, b) {
+		if (a instanceof RegExp && b instanceof RegExp || typeof a === "function" && typeof b === "function") {
+			return a.toString() === b.toString();
+		} else if (typeof a === "object" && typeof b === "object") {
+			var aKeys = Object.keys(a);
+			return aKeys.length === Object.keys(b).length && aKeys.every(function (key) {
+				return key in b && deepEqual(a[key], b[key]);
+			});
+		} else {
+			return a === b;
+		}
+	}
 
 	/**
 	 * Dispatched once the query has been executed and the `renderItems` array
@@ -46,7 +62,22 @@ define([
 		 * @member {Object}
 		 * @default {}
 		 */
-		query: {},
+		query: dcl.prop({
+			set: function (newQuery) {
+				// Avoid triggering refresh when query hasn't really changed.
+				if (!newQuery) {
+					newQuery = emptyObject;
+				}
+				if (!deepEqual(newQuery, this.query)) {
+					this._set("query", newQuery);
+				}
+			},
+			get: function () {
+				return this._get("query") || emptyObject;
+			},
+			enumerable: true,
+			configurable: true
+		}),
 
 		/**
 		 * A function that processes the collection or the array returned by the source query and returns a new
