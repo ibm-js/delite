@@ -1,11 +1,10 @@
 /** @module delite/Store */
 define([
 	"dcl/dcl",
+	"dojo-dstore/Memory",
 	"requirejs-dplugins/has",
-	"ibm-decor/Invalidating",
-	"./ArrayQueryAdapter",
-	"./DstoreQueryAdapter"
-], function (dcl, has, Invalidating, ArrayQueryAdapter, DstoreQueryAdapter) {
+	"ibm-decor/Invalidating"
+], function (dcl, Memory, has, Invalidating) {
 	var emptyObject = {};
 
 	// Function to compare queries.  Queries can be functions or objects, but the objects
@@ -179,20 +178,20 @@ define([
 		queryStoreAndInitItems: function (processQueryResult) {
 			this._untrack();
 			if (this.source) {
-				if (!Array.isArray(this.source)) {
-					// TODO: Get rid of DstoreQueryAdapter and just use dstore interface.
-					// It's much better for chaining original data --> filter --> sort --> track.
-					this._storeAdapter = new DstoreQueryAdapter({source: this.source,
-						query: this.query,
-						processQueryResult: processQueryResult});
-				} else {
-					this._storeAdapter = new ArrayQueryAdapter({source: this.source,
-						query: this.query,
-						processQueryResult: processQueryResult});
+				var collection = this._store = Array.isArray(this.source) ? new Memory({
+					data: this.source,
+					getIdentity: function (item) {
+						return item.id !== undefined ? item.id : this.data.indexOf(item);
+					}
+				}) : this.source;
+				if (typeof this.query === "function" || (this.query && Object.keys(this.query).length)) {
+					// Only call filter() when there's a real filter, because applying any filter stops dstore/Cache
+					// from caching.
+					collection = collection.filter(this.query);
 				}
-				var collection = this._storeAdapter;
+				collection = this._collection = processQueryResult(collection);
 				if (collection.track) {
-					// TODO: Shouldn't the tracking be set after the sort?
+					collection = this._tracked = collection.track();
 					this._addListener = collection.on("add", this._itemAdded.bind(this));
 					this._deleteListener = collection.on("delete", this._itemRemoved.bind(this));
 					this._updateListener = collection.on("update", this._itemUpdated.bind(this));
@@ -212,8 +211,8 @@ define([
 		deliver: dcl.superCall(function (sup) {
 			return function () {
 				sup.apply(this, arguments);
-				if (this._storeAdapter && typeof this._storeAdapter.deliver === "function") {
-					this._storeAdapter.deliver();
+				if (this._collection && typeof this._collection.deliver === "function") {
+					this._collection.deliver();
 				}
 			};
 		}),
@@ -224,8 +223,8 @@ define([
 		discardChanges: dcl.superCall(function (sup) {
 			return function () {
 				sup.apply(this, arguments);
-				if (this._storeAdapter && typeof this._storeAdapter.discardChanges === "function") {
-					this._storeAdapter.discardChanges();
+				if (this._collection && typeof this._collection.discardChanges === "function") {
+					this._collection.discardChanges();
 				}
 			};
 		}),
@@ -256,9 +255,6 @@ define([
 		},
 
 		_untrack: function () {
-			if (this._storeAdapter && this._storeAdapter.untrack) {
-				this._storeAdapter.untrack();
-			}
 			if (this._addListener) {
 				this._addListener.remove(this._addListener);
 			}
@@ -270,6 +266,10 @@ define([
 			}
 			if (this._newQueryListener) {
 				this._newQueryListener.remove(this._newQueryListener);
+			}
+			if (this._tracked) {
+				this._tracked.tracking.remove();
+				this._tracked = null;
 			}
 		},
 
@@ -405,7 +405,7 @@ define([
 		 * @protected
 		 */
 		getIdentity: function (item) {
-			return this._storeAdapter.getIdentity(item);
+			return this._store.getIdentity(item);
 		}
 	});
 });

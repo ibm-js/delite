@@ -169,9 +169,9 @@ define(["dcl/dcl", "./Store"], function (dcl, Store) {
 		 * @returns {Promise}
 		 */
 		renderItemToItem: function (renderItem) {
-			var tmp = {}, store = this._storeAdapter;
+			var tmp = {}, store = this._store;
 			// special id case
-			store.setIdentity(tmp, renderItem.id);
+			store._setIdentity(tmp, renderItem.id);
 			for (var key in renderItem) {
 				setvalue(this, tmp, key, store, renderItem[key]);
 			}
@@ -192,7 +192,7 @@ define(["dcl/dcl", "./Store"], function (dcl, Store) {
 		itemToRenderItem: function (item) {
 			var renderItem = {};
 			var mappedKeys = this._mappedKeys;
-			var store = this._storeAdapter;
+			var store = this._store;
 
 			// if we allow remap we need to store the initial item
 			// we need this to be enumerable for dealing with update case (where only enumerable
@@ -204,8 +204,8 @@ define(["dcl/dcl", "./Store"], function (dcl, Store) {
 			// Warning: we are using private API from dstore/Store here so let's do that conditionally
 			// the purpose is to workaround the fact in some cases the store might miss the ID and we don't
 			// want to bother people about that.
-			if (id === null && store.setIdentity) {
-				store.setIdentity(item, Math.random());
+			if (id === null && store._setIdentity) {
+				store._setIdentity(item, Math.random());
 			}
 			renderItem.id = this.getIdentity(item);
 			// general mapping case
