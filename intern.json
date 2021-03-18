@@ -96,7 +96,7 @@
 			"firefox",
 			"internet explorer",
 			"MicrosoftEdge",
-			{"name": "chrome", "version": "87.0.4280.88" }
+			"chrome"
 		]
 	},
 

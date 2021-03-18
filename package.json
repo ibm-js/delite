@@ -27,9 +27,9 @@
 		"grunt-contrib-less": "^2.0.0",
 		"grunt-contrib-uglify": "^4.0.1",
 		"grunt-eslint": "^22.0.0",
-		"intern": "^4.8.4",
+		"intern": "^4.9.0",
 		"jsdoc-amddcl": "git+https://github.com/ibm-js/jsdoc-amddcl.git#master",
-		"jsdom": "7.x",
+		"jsdom": ">=16.5.1",
 		"requirejs": "^2.3.6"
 	},
 	"jsdocDependencies": [
