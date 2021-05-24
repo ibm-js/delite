@@ -7,30 +7,21 @@ import LitFormWidget from "./LitFormWidget";
  * call.  Widget should use `handleOnChange()` or `handleOnInput()`.
  * @param {string} eventType - The event type. Can be "change" or "input".
  * @param {string} prevValueProp - The name of the property to hold the previous value.
- * @param {string} deferHandleProp - The name of the property to hold the defer method that fire the event.
  * @returns {Function}
  * @private
  */
-function genHandler (eventType, prevValueProp, deferHandleProp) {
+function genHandler (eventType, prevValueProp) {
 	// Set value and fire an input event if the value changed since the last call.
 	// @param {*} newValue - The new value.
 	return function (newValue) {
 		this.value = newValue;
 
-		// defer allows debounce, hidden value processing to run, and
-		// also the onChange handler can safely adjust focus, etc.
-		if (this[deferHandleProp]) {
-			this[deferHandleProp].remove();
+		if (typeof newValue !== typeof this[prevValueProp] ||
+			this.compare(newValue, this[prevValueProp]) !== 0) { // ignore if value set to orig val
+			this[prevValueProp] = newValue;
+			this.deliver();			// make sure rendering is in sync when event handlers are called
+			this.emit(eventType);
 		}
-		this[deferHandleProp] = this.defer(function () {
-			delete this[deferHandleProp];
-			if (typeof newValue !== typeof this[prevValueProp] ||
-				this.compare(newValue, this[prevValueProp]) !== 0) { // ignore if value [eventually] set to orig val
-				this[prevValueProp] = newValue;
-				this.deliver();			// make sure rendering is in sync when event handlers are called
-				this.emit(eventType);
-			}
-		});
 	};
 }
 
@@ -106,7 +97,7 @@ export default dcl(LitFormWidget, {
 	 * @function
 	 * @protected
 	 */
-	handleOnChange: genHandler("change", "_previousOnChangeValue", "_onChangeHandle"),
+	handleOnChange: genHandler("change", "_previousOnChangeValue"),
 
 	/**
 	 * Sets value and fires an "input" event if the value changed since the last call.
@@ -120,6 +111,6 @@ export default dcl(LitFormWidget, {
 	 * @function
 	 * @protected
 	 */
-	handleOnInput: genHandler("input", "_previousOnInputValue", "_onInputHandle")
+	handleOnInput: genHandler("input", "_previousOnInputValue")
 });
 
