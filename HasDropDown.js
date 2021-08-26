@@ -540,13 +540,13 @@ define([
 
 			// eslint-disable-next-line complexity
 			this._openDropDownPromise = Promise.resolve(loadDropDownPromise).then(function (dropDown) {
+				if (canceled) { return; }
+				delete this._cancelPendingDisplay;
+
 				if (this._previousDropDown && this._previousDropDown !== dropDown) {
 					popup.detach(this._previousDropDown);
 					delete this._previousDropDown;
 				}
-
-				if (canceled) { return; }
-				delete this._cancelPendingDisplay;
 
 				this._currentDropDown = dropDown;
 				var behaviorNode = this.behaviorNode || this,
@@ -597,6 +597,16 @@ define([
 
 						// Avoid complaint about aria-owns pointing to hidden element.
 						popupStateNode.removeAttribute("aria-owns");
+
+						delete self._openDropDownPromise;
+
+						if (self._focusDropDownTimer) {
+							self._focusDropDownTimer.remove();
+							delete self._focusDropDownTimer;
+						}
+
+						self._previousDropDown = self._currentDropDown;
+						delete self._currentDropDown;
 					}
 				});
 
@@ -653,32 +663,20 @@ define([
 		 * @fires module:delite/popup#delite-after-hide
 		 */
 		closeDropDown: function (focus) {
-			var dropdown = this._currentDropDown;
-
 			if (this._cancelPendingDisplay) {
 				this._cancelPendingDisplay();
-			}
-			if (this._openDropDownPromise) {
-				delete this._openDropDownPromise;
-			}
-
-			if (this._focusDropDownTimer) {
-				this._focusDropDownTimer.remove();
-				delete this._focusDropDownTimer;
 			}
 
 			if (this.opened) {
 				var behaviorNode = this.behaviorNode || this;
+
+				var dropdown = this._currentDropDown;
 
 				popup.close(dropdown, function () {
 					if (focus && behaviorNode.focus) {
 						behaviorNode.focus();
 					}
 				});
-				this.opened = false;
-
-				this._previousDropDown = this._currentDropDown;
-				delete this._currentDropDown;
 			}
 		}
 	});
