@@ -172,8 +172,8 @@ define([
 			}
 		} else {
 			var bcr = place.position(ancestor);
-			top -= bcr.y + parseFloat(cs.borderTopWidth);
-			side -= bcr.x + parseFloat(cs.borderLeftWidth);
+			top -= bcr.y + parseFloat(cs.borderTopWidth) - ancestor.scrollTop;
+			side -= bcr.x + parseFloat(cs.borderLeftWidth) - ancestor.scrollLeft;
 		}
 
 		if (style.top !== top + "px" || style.left !== side + "px" || style.right !== "auto") {
