@@ -12,7 +12,7 @@ define([
 	function deepEqual (a, b) {
 		if (a instanceof RegExp && b instanceof RegExp || typeof a === "function" && typeof b === "function") {
 			return a.toString() === b.toString();
-		} else if (typeof a === "object" && typeof b === "object") {
+		} else if (a && typeof a === "object" && b && typeof b === "object") {
 			var aKeys = Object.keys(a);
 			return aKeys.length === Object.keys(b).length && aKeys.every(function (key) {
 				return key in b && deepEqual(a[key], b[key]);
