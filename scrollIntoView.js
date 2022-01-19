@@ -122,6 +122,32 @@ define([
 	}
 
 	/**
+	 * Test if node is a dropdown/popup than can overflow ancestors, even ancestors with overflow:auto or scroll.
+	 * @param node
+	 * @param computedStyle
+	 * @returns {boolean}
+	 */
+	function isPopup (/*Element*/ node, /*Object*/ computedStyle) {
+		if (computedStyle.position === "fixed") {
+			return true;
+		} else if (computedStyle.position === "absolute") {
+			// This is the tricky case.  From experimentation, the key factor is if there are any intervening
+			// position:relative nodes between "node" and its first scrollable ancestor.
+			for (var a = node.parentNode; a && a.tagName !== "BODY" && a.tagName !== "HTML"; a = a.parentNode) {
+				var ancestorCs = getComputedStyle(a);
+				if (ancestorCs.overflow === "auto" || ancestorCs.overflow === "scroll") {
+					return true;
+				} else if (ancestorCs.position === "relative") {
+					return false;
+				}
+			}
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
 	 * 	Scroll the passed node into view using minimal movement, if it is not already.
 	 *
 	 * Don't rely on node.scrollIntoView working just because the function is there since it forces the node to the
@@ -152,9 +178,6 @@ define([
 				scrollRoot = isWK ? body : html,
 				nodePos = pos || position(node),
 				el = node.parentNode,
-				isFixed = function (elem) {
-					return getComputedStyle(elem).position.toLowerCase() === "fixed";
-				},
 				scrollElementBy = function (elem, x, y) {
 					if (elem.tagName === "BODY" || elem.tagName === "HTML") {
 						scrollBy(x, y);
@@ -167,16 +190,24 @@ define([
 						}
 					}
 				};
-			if (isFixed(node)) {
+
+			if (getComputedStyle(node).position.toLowerCase() === "fixed") {
+				// Nothing to do.
 				return;
-			} // nothing to do
+			}
+
+			// Loop through all the ancestors of "node" up to and including "scrollRoot", scrolling each ancestor
+			// the minimal amount to scroll "node" into view within that ancestor.  Each ancestor is referenced
+			// by the "el" variable.
 			while (el) {
 				if (el === body) {
 					el = scrollRoot;
 				}
+
 				var elPos = position(el),
-					fixedPos = isFixed(el),
-					rtl = getComputedStyle(el).direction.toLowerCase() === "rtl";
+					cs = getComputedStyle(el),
+					cssPosition = cs.position.toLowerCase(),
+					rtl = cs.direction.toLowerCase() === "rtl";
 
 				if (el === scrollRoot) {
 					elPos.w = rootWidth;
@@ -206,7 +237,8 @@ define([
 						elPos.h = clientSize;
 					}
 				}
-				if (fixedPos) { // bounded by viewport, not parents
+
+				if (cssPosition === "fixed") { // bounded by viewport, not parents
 					if (elPos.y < 0) {
 						elPos.h += elPos.y;
 						elPos.y = 0;
@@ -222,11 +254,13 @@ define([
 						elPos.w = rootWidth - elPos.x;
 					}
 				}
+
 				// calculate overflow in all 4 directions
 				var l = nodePos.x - elPos.x, // beyond left: < 0
 					t = nodePos.y - elPos.y, // beyond top: < 0
 					r = l + nodePos.w - elPos.w, // beyond right: > 0
 					bot = t + nodePos.h - elPos.h; // beyond bottom: > 0
+
 				var s, old;
 				if (r * l > 0 && (!!el.scrollLeft || el === scrollRoot || el.scrollWidth > el.offsetHeight)) {
 					s = Math[l < 0 ? "max" : "min"](l, r);
@@ -245,7 +279,14 @@ define([
 					s = el.scrollTop - old;
 					nodePos.y -= s;
 				}
-				el = (el !== scrollRoot) && !fixedPos && el.parentNode;
+
+				if (el === scrollRoot || isPopup(el, cs)) {
+					// Note: it doesn't make sense to scroll the ancestors of a popup node, especially since that may
+					// move the popup's anchor node out of view, triggering the popup to close.
+					break;
+				}
+
+				el = el.parentNode;
 			}
 		} catch (error) {
 			console.error("scrollIntoView: " + error);
