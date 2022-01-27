@@ -35,6 +35,10 @@ _Manual_ master installation:
     $ cd delite
     $ npm install
 
+## Testing
+
+    $ npx intern
+
 ## Documentation
 
 See the [introductory blog post](http://ibm-js.github.io/2014/07/18/delite-and-deliteful.html) to get started.
