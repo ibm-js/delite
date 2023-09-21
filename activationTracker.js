@@ -173,7 +173,7 @@ define([
 				body.addEventListener("mouseover", mouseOverHandler);
 
 				var observer = new MutationObserver(processMutations);
-				var observeHandle = observer.observe(body, {childList: true, subtree: true});
+				observer.observe(body, {childList: true, subtree: true});
 
 				return {
 					remove: function () {
@@ -183,7 +183,7 @@ define([
 							body.removeEventListener("focus", focusHandler, true);
 						}
 						body.removeEventListener("mouseover", mouseOverHandler);
-						observeHandle.disconnect();
+						observer.disconnect();
 					}
 				};
 			}
