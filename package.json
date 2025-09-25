@@ -13,7 +13,7 @@
 		"dcl": "^2.0.11",
 		"ibm-decor": "^0.8.1",
 		"lit-html": "^1.2.1",
-		"messageformat": "1.0.2",
+		"messageformat": "4.0.0-13",
 		"requirejs-domready": "2.0.x",
 		"requirejs-dplugins": "0.7.x",
 		"requirejs-text": "2.0.x",
